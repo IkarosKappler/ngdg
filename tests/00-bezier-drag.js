@@ -23,6 +23,7 @@
     // | A helper function to trigger fake click events.
     // +----------------------------
     var triggerClickEvent = function(element) {
+	console.log('dispatching custom event');
 	element.dispatchEvent( new MouseEvent('click', {
 	    view: window,
 	    bubbles: true,
@@ -42,23 +43,9 @@
 	// +-------------------------------
 	var config = {
 	    fullSize              : true,
-	    fitToParent           : true,
 	    backgroundColor       : '#ffffff',
 	    rebuild               : function() { rebuild(); },
-	    loadImage             : function() { var elem = document.getElementById('file'); elem.setAttribute('data-type','image-upload'); triggerClickEvent(elem); },
-	    showJSON              : function() { window.dialog.show( dildo.toJSON(), 'NG-DG', null, { messageClass : 'monospace' } ); },
-	    pasteJSON             : function() { window.dialog.showTextArea( dildo.toJSON(), 'NG-DG',
-									     { paste : { label : 'Paste',
-											 onclick : function() { console.log(window.dialog._textArea.value);
-														window.dialog.hide();
-														window.alert('Sorry, pasting JSON is not yet implemented');
-													      }
-										       },
-									       cancel : { label : 'Cancel', action : 'close' }
-									     },
-									     { messageClass : 'monospace' }
-									   );
-					       }
+	    loadImage             : function() { var elem = document.getElementById('file'); elem.setAttribute('data-type','image-upload'); triggerClickEvent(elem); } 
 	};
 	// Merge GET params into config
 	for( var k in config ) {
@@ -74,8 +61,7 @@
 	
 	var canvas              = document.getElementById('my-canvas'); 
 	var ctx                 = canvas.getContext('2d');
-	var draw                = new drawutils(ctx,false);
-	var fill                = new drawutils(ctx,true);
+	var draw                = new drawutils(ctx);
 	var activePointIndex    = 1;
 	var image               = null; // An image.
 	var imageBuffer         = null; // A canvas to read the pixel data from.
@@ -84,8 +70,6 @@
 	var paths               = []; 
 	var selectedElements    = []; // { type : 'bcurve', pindex : <int>, cindex : <int>, pid : <int> }
 	var draggedElements     = []; // ...
-
-	
 	
 	// +---------------------------------------------------------------------------------
         // | Generates a random point inside the canvas bounds.
@@ -116,64 +100,6 @@
 	    return Color.makeRGB( v, v, v );
 	};
 
-
-
-	// +---------------------------------------------------------------------------------
-        // | Construct the dildo.
-        // +-------------------------------
-	/*
-	var baseLength = 500;
-	var baseOffset = new Vertex(512,512);
-	var baseCurve = new CubicBezierCurve( baseOffset,
-					      baseOffset.clone().addXY(baseLength*0.333,0),
-					      baseOffset.clone().addXY(baseLength*0.66,-baseLength*0.66),
-					      baseOffset.clone().addXY(baseLength,-baseLength*0.75)
-					    );
-	var glansCurve = new CubicBezierCurve( baseCurve.endPoint,
-					       randomPoint(),
-					       randomPoint(),
-					       randomPoint() 
-					    );
-	
-	path.addCurve( baseCurve ); // new CubicBezierCurve( randomPoint(), randomPoint(), randomPoint(), randomPoint() ) );
-	path.addCurve( glansCurve ); // new CubicBezierCurve( randomPoint(), randomPoint(), randomPoint(), randomPoint() ) );
-	paths.push( path );
-	var dildo = new Dildo( baseCurve,
-			       glansCurve,
-			       'dildo#'+fecha.format(new Date(),"YYYYMMDD-HHmmss")
-			     );
-	*/
-	var dildo = Dildo.fromObject(
-	    { baseCurve : { "startPoint" : [81,248], "endPoint" : [473.5,142], "startControlPoint": [265,233], "endControlPoint" : [418.12150699905914,161.62408392414605] }, glansCurve : { "startPoint" : [473.5,142], "endPoint" : [544,80], "startControlPoint": [503.0451483760694,131.5302952488526], "endControlPoint" : [517,123] }, name : 'dildo#20180827-171705' }
-	);
-	var path = new BezierPath([]);
-	path.addCurve( dildo.baseCurve ); 
-	path.addCurve( dildo.glansCurve );
-	paths.push( path );
-	var baseTopPath = new BezierPath([]);
-	baseTopPath.addCurve( dildo.baseTopCurve );
-	//paths.push( baseTopPath );
-	console.log( 'dildo.name: ' + dildo.name );
-
-	
-	// +---------------------------------------------------------------------------------
-        // | Install drag listeners.
-        // +-------------------------------
-	dildo.baseCurve.startPoint.listeners.addDragListener( function(e) {
-	    console.log('baseCurve.startPoint dragged.');
-	    //dildo.baseCurve.moveCurvePoint( dildo.baseCurve.END_POINT, e.params.dragAmount, true, true );
-	    //dildo.glansCurve.moveCurvePoint( dildo.glansCurve.END_POINT, e.params.dragAmount, true, true );
-	    path.translate( e.params.dragAmount );
-	    path.bezierCurves[0].moveCurvePoint( path.START_POINT, new Vertex(-e.params.dragAmount.x,-e.params.dragAmount.y), true, true );
-	} );
-	dildo.baseCurve.endPoint.listeners.addDragListener( function(e) {
-	    console.log('baseCurve.endPoint dragged.');
-	    dildo.glansCurve.moveCurvePoint( dildo.glansCurve.END_POINT, e.params.dragAmount, true, true );
-	} );
-	dildo.glansCurve.endPoint.listeners.addDragListener( function(e) {
-	    console.log('glansCurve.endPoint dragged.');
-	} );
-	
 
 	// +---------------------------------------------------------------------------------
         // | Locates the point (index) at the passed position. Using an internal tolerance of 7 pixels.
@@ -214,8 +140,6 @@
 	// | The re-drawing function.
 	// +-------------------------------
 	var redraw = function() {
-	    dildo.update();
-	    
 	    // Note that the image might have an alpha channel. Clear the scene first.
 	    ctx.fillStyle = config.backgroundColor; 
 	    ctx.fillRect(0,0,canvasSize.width,canvasSize.height);
@@ -229,34 +153,19 @@
 		}
 	    } 
 
-	    // Draw the inner base circle
-	    draw.circle( dildo.baseCurve.startPoint,
-			 dildo.baseCurve.startPoint.distance( dildo.baseCurve.endPoint ),
-			 '#e8e8e8' );
-	    // Draw the glans circle  
-	    draw.circle( dildo.glansCurve.startPoint,
-			 dildo.glansCurve.startPoint.distance( dildo.glansCurve.endPoint ),
-			 '#e8e8e8' );
-	    // Draw the inner 'bones'
-	    draw.line( dildo.baseCurve.startPoint,  dildo.baseCurve.endPoint,  '#e0e0ff' );
-	    draw.line( dildo.glansCurve.startPoint, dildo.glansCurve.endPoint, '#e0e0ff' );
-	    
-	    
 	    // Draw all paths (and curves)
 	    for( var p in paths ) {
 		var path = paths[p];
 		for( var c in path.bezierCurves ) {
-		    draw.cubicBezierHandleLines(path.bezierCurves[c]);
 		    draw.cubicBezierCurve(path.bezierCurves[c]);
-		    fill.cubicBezierHandles(path.bezierCurves[c]);
 		}
 	    }
-	    
+
 	    // Draw dragged elements
 	    for( var i in draggedElements ) {
 		var p = draggedElements[i];
 		if( p.type == 'bpath' ) {
-		    fill.circle( paths[p.pindex].bezierCurves[p.cindex].getPointByID( p.pid ),
+		    draw.circle( paths[p.pindex].bezierCurves[p.cindex].getPointByID( p.pid ),
 				 7, 'rgba(255,0,0,0.5)' );
 		}
 	    }
@@ -338,17 +247,10 @@
 		canvasSize.width  = w;
 		canvasSize.height = h;
 	    };
-	    if( config.fullSize && !config.fitToParent ) {
-		    var width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-		    var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-		    _setSize( width, height );
-	    } else if( config.fitToParent ) {
-		var width  = canvas.parentNode.clientWidth - 2; // 1px border
-		var height = canvas.parentNode.clientHeight - 2; // 1px border
-		_setSize( width, height );
-	    } else {
-                _setSize( DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT );
-	    }
+	    var width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	    if( config.fullSize ) _setSize( width, height );
+	    else                  _setSize( DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT );
 	    redraw();
 	};
 	window.addEventListener( 'resize', resizeCanvas );
@@ -358,7 +260,7 @@
 	// +---------------------------------------------------------------------------------
 	// | Initialize dat.gui
 	// +-------------------------------
-	{ 
+        { 
 	    var gui = new dat.gui.GUI();
 	    gui.remember(config);
 
@@ -366,13 +268,15 @@
 
 	    var f3 = gui.addFolder('Settings');
 	    f3.add(config, 'fullSize').onChange( resizeCanvas ).title("Toggles the fullpage mode.");
-	    f3.add(config, 'fitToParent').onChange( resizeCanvas ).title("Toggles the fit-to-parent mode (overrides fullsize).");
 	    f3.addColor(config, 'backgroundColor').onChange( redraw ).title("Choose a background color.");
 	    f3.add(config, 'loadImage').name('Load Image').title("Load a background image to pick triangle colors from.");
 
-	    var f4 = gui.addFolder('Data');
-	    f4.add(config, 'showJSON').name('Show JSON').title("Show the current configuration as JSON.");
-	    f4.add(config, 'pasteJSON').name('Paste JSON').title("Import some JSON data via dialog."); 	    
+	    /*
+	    var f4 = gui.addFolder('Import & Export');
+	    f4.add(config, 'exportSVG').name('Export SVG').title("Export the current triangulation as a vector image.");
+	    f4.add(config, 'exportPointset').name('Export point set').title("Export the point set as JSON.");
+	    f4.add(config, 'importPointset').name('Import point set').title("Import the point set from JSON.");	    
+	    */
 	}
 
 
@@ -397,9 +301,6 @@
 		var p = locatePointNear( e.params.pos.x, e.params.pos.y );
 		if( !p ) return;
 		draggedElements.push( p );
-		//p.listeners.fireDragStartEvent( e );
-		if( p.type == 'bpath' )
-		    paths[p.pindex].bezierCurves[p.cindex].getPointByID(p.pid).listeners.fireDragEvent( e );
 		redraw();
 	    } )
 	    .drag( function(e) {
@@ -408,7 +309,6 @@
 		    // console.log( 'i', i, 'pid', p.pid, 'pindex', p.pindex, 'cindex', p.cindex );
 		    if( p.type == 'bpath' ) {
 			paths[p.pindex].moveCurvePoint( p.cindex, p.pid, e.params.dragAmount );
-			paths[p.pindex].bezierCurves[p.cindex].getPointByID(p.pid).listeners.fireDragEvent( e );
 		    }
 		}
 		redraw();
@@ -418,23 +318,16 @@
 		    return; // Only react on eft mouse;
 		if( !e.params.wasDragged )
 		    handleTap( e.params.pos.x, e.params.pos.y );
-		for( var i in draggedElements ) {
-		    var p = draggedElements[i];
-		    // console.log( 'i', i, 'pid', p.pid, 'pindex', p.pindex, 'cindex', p.cindex );
-		    if( p.type == 'bpath' ) {
-			paths[p.pindex].bezierCurves[p.cindex].getPointByID(p.pid).listeners.fireDragEndEvent( e );
-		    }
-		}
 		draggedElements = [];
 		redraw();
 	    } );
 
+	// Init
 
-	// Initialize the dialog
-	window.dialog = new overlayDialog('dialog-wrapper');
-	// window.dialog.show( 'Inhalt', 'NG-DG' );
-
-	// Init	
+	var path = new BezierPath([]);
+	path.addCurve( new CubicBezierCurve( randomPoint(), randomPoint(), randomPoint(), randomPoint() ) );
+	path.addCurve( new CubicBezierCurve( randomPoint(), randomPoint(), randomPoint(), randomPoint() ) );
+	paths.push( path );
 	redraw();
 	rebuild();
 	

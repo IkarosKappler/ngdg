@@ -37,11 +37,11 @@
 	    // Create a new Bezier curve inside the box
 	    var bCurve =  new CubicBezierCurve( pathPoints[i-1],
 						pathPoints[i],
-						new THREE.Vector2( pathPoints[i-1].x, 
+						new Vertex( pathPoints[i-1].x, 
 								   pathPoints[i-1].y - bounds.min/2
 								 ),
 						// This control point will be auto-adjusted in the next step
-						new THREE.Vector2( pathPoints[i].x + bounds.max/2,
+						new Vertex( pathPoints[i].x + bounds.max/2,
 								   pathPoints[i].y 
 								 )
 					      );
@@ -594,7 +594,6 @@
 	
 	return boundingBox;
     }
-
 
     BezierPath.prototype.moveCurvePoint = function( curveIndex,      // int
 						    pointID,         // int

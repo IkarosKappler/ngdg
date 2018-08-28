@@ -12,9 +12,10 @@
 (function(_context) {
     "use strict";
     
-    _context.drawutils = function( context ) {
+    _context.drawutils = function( context, fillShapes ) {
 	this.ctx = context;
-	this.offset = new Vertex(0,0); 
+	this.offset = new Vertex(0,0);
+	this.fillShapes = fillShapes;
     };
 
     // +---------------------------------------------------------------------------------
@@ -29,6 +30,17 @@
 	    this.ctx.lineWidth = 1;
 	    this.ctx.stroke();
     };
+
+
+    _context.drawutils.prototype._fillOrDraw = function( color ) {
+	if( this.fillShapes ) {
+	    this.ctx.fillStyle = color;
+	    this.ctx.fill();
+	} else {
+	    this.ctx.strokeStyle = color;
+	    this.ctx.stroke();
+	}
+    };
     
 
     
@@ -37,8 +49,8 @@
     // +-------------------------------
     _context.drawutils.prototype.cubicBezierCurve = function( curve ) {
 	// Draw handle lines
-	this.line( curve.startPoint, curve.startControlPoint, 'lightgrey' );
-	this.line( curve.endPoint, curve.endControlPoint, 'lightgrey' );
+	//this.line( curve.startPoint, curve.startControlPoint, 'lightgrey' );
+	//this.line( curve.endPoint, curve.endControlPoint, 'lightgrey' );
 
 	// Draw curve
 	this.ctx.beginPath();
@@ -46,8 +58,38 @@
 	this.ctx.bezierCurveTo( curve.startControlPoint.x, curve.startControlPoint.y,
 				curve.endControlPoint.x, curve.endControlPoint.y,
 				curve.endPoint.x, curve.endPoint.y );
+	//this.ctx.strokeStyle = '#00a822';
+	//this.ctx.stroke();
+	this._fillOrDraw( '#00a822' );
+
+	// Draw handles
+	/*
+	this.point( curve.startPoint, 'rgb(0,32,192)' );
+	this.point( curve.endPoint, 'rgb(0,32,192)' );
+	this.square( curve.startControlPoint, 5, 'rgb(0,32,192)' );
+	this.square( curve.endControlPoint, 5, 'rgb(0,32,192)' );
+	*/
+    };
+
+
+    // +---------------------------------------------------------------------------------
+    // | Draw the given (cubic) bézier curve.
+    // +-------------------------------
+    _context.drawutils.prototype.cubicBezierHandles = function( curve ) {
+	// Draw handle lines
+	//this.line( curve.startPoint, curve.startControlPoint, 'lightgrey' );
+	//this.line( curve.endPoint, curve.endControlPoint, 'lightgrey' );
+
+	// Draw curve
+	/*
+	this.ctx.beginPath();
+	this.ctx.moveTo( curve.startPoint.x, curve.startPoint.y );
+	this.ctx.bezierCurveTo( curve.startControlPoint.x, curve.startControlPoint.y,
+				curve.endControlPoint.x, curve.endControlPoint.y,
+				curve.endPoint.x, curve.endPoint.y );
 	this.ctx.strokeStyle = '#00a822';
 	this.ctx.stroke();
+	*/
 
 	// Draw handles
 	this.point( curve.startPoint, 'rgb(0,32,192)' );
@@ -55,6 +97,18 @@
 	this.square( curve.startControlPoint, 5, 'rgb(0,32,192)' );
 	this.square( curve.endControlPoint, 5, 'rgb(0,32,192)' );
     };
+
+
+    // +---------------------------------------------------------------------------------
+    // | Draw the given (cubic) bézier curve.
+    // +-------------------------------
+    _context.drawutils.prototype.cubicBezierHandleLines = function( curve ) {
+	// Draw handle lines
+	this.line( curve.startPoint, curve.startControlPoint, 'lightgrey' );
+	this.line( curve.endPoint, curve.endControlPoint, 'lightgrey' );
+    };
+
+
 
     
     // +---------------------------------------------------------------------------------
@@ -65,8 +119,7 @@
 	this.ctx.beginPath();
 	this.ctx.arc( p.x, p.y, radius, 0, 2 * Math.PI, false );
 	this.ctx.closePath();
-	this.ctx.fillStyle = color;
-	this.ctx.fill();
+	this._fillOrDraw( color );
     };
 
 
@@ -74,23 +127,24 @@
     // | Fill the given point with the specified (CSS-) color.
     // +-------------------------------
     _context.drawutils.prototype.circle = function( center, radius, color ) {
-	this.ctx.fillStyle = color;
+	//this.ctx.fillStyle = color;
 	this.ctx.beginPath();
 	this.ctx.arc( center.x, center.y, radius, 0, Math.PI*2 );
 	this.ctx.closePath();
-	this.ctx.fill();
+	//this.ctx.fill();
+	this._fillOrDraw( color );
     };
-
     
     // +---------------------------------------------------------------------------------
     // | Fill a square with the given (CSS-) color.
     // +-------------------------------
     _context.drawutils.prototype.square = function( center, size, color ) {
-	this.ctx.fillStyle = color;
+	//this.ctx.fillStyle = color;
 	this.ctx.beginPath();
 	this.ctx.rect( center.x-size/2.0, center.y-size/2.0, size, size );
 	this.ctx.closePath();
-	this.ctx.fill();
+	//this.ctx.fill();
+	this._fillOrDraw( color );
     };
     
     

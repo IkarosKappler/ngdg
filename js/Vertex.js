@@ -1,12 +1,15 @@
 /**
  * The vertex class for point set.
  *
+ * @require VertexAttr
+ * 
  * @author    Ikaros Kappler
  * @date_init 2012-10-17
  * @date      2018-04-03
  * @modified  2018-04-28 Added some documentation.
  * @modified  2018-08-16 Added the set() function.
- * @version   2.0.2
+ * @modified  2018-08-26 Added VertexAttr.
+ * @version   2.0.3
  **/
 
 
@@ -22,6 +25,8 @@
     var Vertex = _context.Vertex = function( x, y ) {
 	this.x = x;
 	this.y = y;
+	this.attr = new VertexAttr();
+	this.listeners = new VertexListeners();
     };
 
 
@@ -47,6 +52,21 @@
     Vertex.prototype.add = function( amount ) {
 	this.x += amount.x;
 	this.y += amount.y;
+	return this;
+    };
+
+
+    // +------------------------------------------------------------
+    // | Add the passed amount to x- and y- component of this vertex.
+    // |
+    // | @param amountX:number
+    // | @param amountY:number
+    // |
+    // | @return Vertex
+    // +-------------------------------------------------------
+    Vertex.prototype.addXY = function( amountX, amountY ) {
+	this.x += amountX;
+	this.y += amountY;
 	return this;
     };
     
@@ -76,6 +96,18 @@
     // +-------------------------------------------------------
     Vertex.prototype.clone = function() {
 	return new Vertex(this.x,this.y);
+    };
+
+
+    // +------------------------------------------------------------
+    // | Get the distance to the passed point.
+    // |
+    // | @param vert:Vertex
+    // | 
+    // | @return number
+    // +-------------------------------------------------------
+    Vertex.prototype.distance = function( vert ) {
+	return Math.sqrt( Math.pow(vert.x-this.x,2) + Math.pow(vert.y-this.y,2) );
     };
 
 

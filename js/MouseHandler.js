@@ -27,7 +27,8 @@
  * @date     2018-03-19
  * @modified 2018-04-28 Added the param 'wasDragged'.
  * @modified 2018-08-16 Added the param 'dragAmount'.
- * @version  1.0.2
+ * @modified 2018-08-27 Added the param 'element'.
+ * @version  1.0.3
  **/
 
 var MouseHandler = (function() {
@@ -61,7 +62,7 @@ var MouseHandler = (function() {
 	}
 	function mkParams(e,eventName) {
 	    var rel = relPos(e);
-	    e.params = { name : eventName, pos : rel, button : mouseButton, leftButton : mouseButton==0, middleButton : mouseButton==1, rightButton : mouseButton==2, mouseDownPos : mouseDownPos, draggedFrom : mouseDragPos, wasDragged : (mouseDownPos!=null&&(mouseDownPos.x!=rel.x||mouseDownPos.y!=rel.y)), dragAmount : (mouseDownPos!=null?{x:rel.x-mouseDragPos.x,y:rel.y-mouseDragPos.y}:{x:0,y:0}) };
+	    e.params = { element : element, name : eventName, pos : rel, button : mouseButton, leftButton : mouseButton==0, middleButton : mouseButton==1, rightButton : mouseButton==2, mouseDownPos : mouseDownPos, draggedFrom : mouseDragPos, wasDragged : (mouseDownPos!=null&&(mouseDownPos.x!=rel.x||mouseDownPos.y!=rel.y)), dragAmount : (mouseDownPos!=null?{x:rel.x-mouseDragPos.x,y:rel.y-mouseDragPos.y}:{x:0,y:0}) };
 	    return e;
 	}
 
