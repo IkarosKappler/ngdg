@@ -239,11 +239,11 @@
 	    // Draw the inner base circle
 	    draw.circle( dildo.baseCurve.startPoint,
 			 dildo.baseCurve.startPoint.distance( dildo.baseCurve.endPoint ),
-			 '#e8e8e8' );
+			 '#e0e0e0' );
 	    // Draw the glans circle  
 	    draw.circle( dildo.glansCurve.startPoint,
 			 dildo.glansCurve.startPoint.distance( dildo.glansCurve.endPoint ),
-			 '#e8e8e8' );
+			 '#e0e0e0' );
 	    // Draw the inner 'bones'
 	    draw.line( dildo.baseCurve.startPoint,  dildo.baseCurve.endPoint,  '#e0e0ff' );
 	    draw.line( dildo.glansCurve.startPoint, dildo.glansCurve.endPoint, '#e0e0ff' );
@@ -262,7 +262,7 @@
 	    // Draw all vertices
 	    for( var v in vertices ) {
 		var vert = vertices[v];
-		draw.crosshair( vert, 5, 'green' );
+		draw.crosshair( vert, 8, 'green' );
 	    }
 	    
 	    // Draw dragged elements
@@ -271,6 +271,12 @@
 		if( p.type == 'bpath' ) {
 		    fill.circle( paths[p.pindex].bezierCurves[p.cindex].getPointByID( p.pid ),
 				 7, 'rgba(255,0,0,0.5)' );
+		} else if( p.type == 'vertex' ) {
+		    var vert = vertices[p.vindex];
+		    draw.crosshair( vert, Math.max(canvasSize.width,canvasSize.height)*2 , 'lightgrey' );
+		    fill.circle( vert,
+				 7, 'rgba(255,0,0,0.5)' );
+		    draw.string( vert.toString(), vert.x+10, vert.y );
 		}
 	    }
 	    

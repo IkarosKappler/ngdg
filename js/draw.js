@@ -66,8 +66,8 @@
 	// Draw handles
 	this.point( curve.startPoint, 'rgb(0,32,192)' );
 	this.point( curve.endPoint, 'rgb(0,32,192)' );
-	this.square( curve.startControlPoint, 5, 'rgb(0,32,192)' );
-	this.square( curve.endControlPoint, 5, 'rgb(0,32,192)' );
+	this.square( curve.startControlPoint, 5, 'rgba(0,128,192,0.5)' );
+	this.square( curve.endControlPoint, 5, 'rgba(0,128,192,0.5)' );
     };
 
 
@@ -130,6 +130,16 @@
 	this.ctx.lineWidth = 0.5;
 	this.ctx.stroke();
 	this.ctx.closePath();
+    };
+
+    _context.drawutils.prototype.string = function( text, x, y ) {
+	if( this.fillShapes ) {
+	    this.ctx.fillStyle = 'black';
+	    this.ctx.fillText( text, x, y );
+	} else {
+	    this.ctx.strokeStyle = 'black';
+	    this.ctx.strokeText( text, x, y, );
+	}
     };
     
     

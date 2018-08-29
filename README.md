@@ -17,6 +17,7 @@ This project is still heavily under construction.
   * Added Vertex.multiplyScalar(scalar) (as in THREE.Vector2.multiplyScalar).
   * Added crosshair draw for vertex positions.
   * Added CubicBezierCurve.translate(amount).
+  * Added top path and bottom path.
 * 2018-08-28
   * Function for resizing draw canvas to parent now, not full window.
 * 2018-08-27
