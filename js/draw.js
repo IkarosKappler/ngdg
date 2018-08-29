@@ -48,27 +48,14 @@
     // | Draw the given (cubic) bézier curve.
     // +-------------------------------
     _context.drawutils.prototype.cubicBezierCurve = function( curve ) {
-	// Draw handle lines
-	//this.line( curve.startPoint, curve.startControlPoint, 'lightgrey' );
-	//this.line( curve.endPoint, curve.endControlPoint, 'lightgrey' );
-
 	// Draw curve
 	this.ctx.beginPath();
 	this.ctx.moveTo( curve.startPoint.x, curve.startPoint.y );
 	this.ctx.bezierCurveTo( curve.startControlPoint.x, curve.startControlPoint.y,
 				curve.endControlPoint.x, curve.endControlPoint.y,
 				curve.endPoint.x, curve.endPoint.y );
-	//this.ctx.strokeStyle = '#00a822';
-	//this.ctx.stroke();
 	this._fillOrDraw( '#00a822' );
 
-	// Draw handles
-	/*
-	this.point( curve.startPoint, 'rgb(0,32,192)' );
-	this.point( curve.endPoint, 'rgb(0,32,192)' );
-	this.square( curve.startControlPoint, 5, 'rgb(0,32,192)' );
-	this.square( curve.endControlPoint, 5, 'rgb(0,32,192)' );
-	*/
     };
 
 
@@ -76,21 +63,6 @@
     // | Draw the given (cubic) bézier curve.
     // +-------------------------------
     _context.drawutils.prototype.cubicBezierHandles = function( curve ) {
-	// Draw handle lines
-	//this.line( curve.startPoint, curve.startControlPoint, 'lightgrey' );
-	//this.line( curve.endPoint, curve.endControlPoint, 'lightgrey' );
-
-	// Draw curve
-	/*
-	this.ctx.beginPath();
-	this.ctx.moveTo( curve.startPoint.x, curve.startPoint.y );
-	this.ctx.bezierCurveTo( curve.startControlPoint.x, curve.startControlPoint.y,
-				curve.endControlPoint.x, curve.endControlPoint.y,
-				curve.endPoint.x, curve.endPoint.y );
-	this.ctx.strokeStyle = '#00a822';
-	this.ctx.stroke();
-	*/
-
 	// Draw handles
 	this.point( curve.startPoint, 'rgb(0,32,192)' );
 	this.point( curve.endPoint, 'rgb(0,32,192)' );
@@ -127,24 +99,37 @@
     // | Fill the given point with the specified (CSS-) color.
     // +-------------------------------
     _context.drawutils.prototype.circle = function( center, radius, color ) {
-	//this.ctx.fillStyle = color;
 	this.ctx.beginPath();
 	this.ctx.arc( center.x, center.y, radius, 0, Math.PI*2 );
 	this.ctx.closePath();
-	//this.ctx.fill();
 	this._fillOrDraw( color );
     };
+
     
     // +---------------------------------------------------------------------------------
     // | Fill a square with the given (CSS-) color.
     // +-------------------------------
     _context.drawutils.prototype.square = function( center, size, color ) {
-	//this.ctx.fillStyle = color;
 	this.ctx.beginPath();
 	this.ctx.rect( center.x-size/2.0, center.y-size/2.0, size, size );
 	this.ctx.closePath();
-	//this.ctx.fill();
 	this._fillOrDraw( color );
+    };
+
+
+    // +---------------------------------------------------------------------------------
+    // | Draw a crosshair with given radius and color at the given position.
+    // +-------------------------------
+    _context.drawutils.prototype.crosshair = function( center, radius, color ) {
+	this.ctx.beginPath();
+	this.ctx.moveTo( center.x-radius, center.y );
+	this.ctx.lineTo( center.x+radius, center.y );
+	this.ctx.moveTo( center.x, center.y-radius );
+	this.ctx.lineTo( center.x, center.y+radius );
+	this.ctx.strokeStyle = color;
+	this.ctx.lineWidth = 0.5;
+	this.ctx.stroke();
+	this.ctx.closePath();
     };
     
     

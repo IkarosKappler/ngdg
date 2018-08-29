@@ -44,6 +44,11 @@
 	
 	this.updateArcLengths();
     };
+
+    CubicBezierCurve.START_POINT         = 0;
+    CubicBezierCurve.START_CONTROL_POINT = 1;
+    CubicBezierCurve.END_CONTROL_POINT   = 2;
+    CubicBezierCurve.END_POINT           = 3;
     
     CubicBezierCurve.prototype = new Object();
     CubicBezierCurve.prototype.constructor = CubicBezierCurve; 
@@ -52,6 +57,8 @@
     CubicBezierCurve.prototype.START_CONTROL_POINT = 1;
     CubicBezierCurve.prototype.END_CONTROL_POINT   = 2;
     CubicBezierCurve.prototype.END_POINT           = 3;
+
+    
 
     CubicBezierCurve.prototype.moveCurvePoint = function( pointID,           // int
 							  moveAmount,        // Vertex
@@ -90,6 +97,20 @@
 	    this.updateArcLengths();
     }
 
+
+    // +---------------------------------------------------------------------------------
+    // | Translate the whole curve by the given {x,y} amount.
+    // |
+    // | @param amount:Vertex The amount to translate this curve by.
+    // | @return CubicBezierCurve (this curve for chaining).
+    // +-------------------------------
+    CubicBezierCurve.prototype.translate = function( amount ) {
+	this.startPoint.add( amount );
+	this.startControlPoint.add( amount );
+	this.endControlPoint.add( amount );
+	this.endPoint.add( amount );   
+    };
+    
 
     CubicBezierCurve._scalePoint = function( point,   // Vector2
 					     anchor,  // Vector2

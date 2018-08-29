@@ -1,11 +1,11 @@
 # NG-DG (Codename)
 This project is still heavily under construction.
 
-![Current State](screenshot-20180828-0.png "Current State")
+![First State](screenshot-20180828-0.png "First State")
+![Current State](screenshot-20180829-0.png "Current State")
 
 
 ## Todos:
-* Implement Vertex.multiplyScalar() like in https://threejs.org/docs/#api/math/Vector2.multiplyScalar
 * Change 'fullsize' mode to fit-to-parent, not fit-to-window.
 * JSON data export
 * JSON data import
@@ -13,6 +13,10 @@ This project is still heavily under construction.
 
 
 ### Changelog
+* 2018-08-29
+  * Added Vertex.multiplyScalar(scalar) (as in THREE.Vector2.multiplyScalar).
+  * Added crosshair draw for vertex positions.
+  * Added CubicBezierCurve.translate(amount).
 * 2018-08-28
   * Function for resizing draw canvas to parent now, not full window.
 * 2018-08-27

@@ -130,6 +130,23 @@
 
 
     // +------------------------------------------------------------
+    // | Multiply both components of this vertex with the given scalar.
+    // |
+    // | Note: as in
+    // |    https://threejs.org/docs/#api/math/Vector2.multiplyScalar
+    // |
+    // | @param scalar:float The scale factor; 1.0 means no change.
+    // |
+    // | @return Vertex This vertec for chaining.
+    // +-------------------------------------------------------
+    Vertex.prototype.multiplyScalar = function( scalar ) {
+		this.x *= scalar;
+		this.y *= scalar;
+		return this;
+    };
+
+
+    // +------------------------------------------------------------
     // | Convert this vertex into a human-readable format.
     // |
     // | @return string

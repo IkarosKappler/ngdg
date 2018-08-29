@@ -811,12 +811,12 @@
 	    throw "[IKRS.BezierPath.fromArray] Passed array must contain at least one bezier curve (has " + arr.length + ").";
 	
 	// Create an empty bezier path
-	var bPath = new IKRS.BezierPath( null );
+	var bPath = new BezierPath( null );
 	var lastCurve = null;
 	for( var i = 0; i < arr.length; i++ ) {
 	    
 	    // Convert object to bezier curve
-	    var bCurve = IKRS.CubicBezierCurve.fromObject( arr[i] );
+	    var bCurve = CubicBezierCurve.fromObject( arr[i] );
 	    // Set curve start point?
 	    // (avoid duplicate point instances!)
 	    if( lastCurve )

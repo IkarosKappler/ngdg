@@ -81,8 +81,11 @@
 	var imageBuffer         = null; // A canvas to read the pixel data from.
 	var canvasSize          = { width : DEFAULT_CANVAS_WIDTH, height : DEFAULT_CANVAS_HEIGHT };
 
-	var paths               = []; 
-	var selectedElements    = []; // { type : 'bcurve', pindex : <int>, cindex : <int>, pid : <int> }
+	var paths               = [];
+	var vertices            = [];
+	// { type : 'bcurve', pindex : <int>, cindex : <int>, pid : <int> }
+	// { type : 'vertex', vindex : <int> } 
+	var selectedElements    = []; 
 	var draggedElements     = []; // ...
 
 	
@@ -121,48 +124,41 @@
 	// +---------------------------------------------------------------------------------
         // | Construct the dildo.
         // +-------------------------------
+	// Version 0.0.1
 	/*
-	var baseLength = 500;
-	var baseOffset = new Vertex(512,512);
-	var baseCurve = new CubicBezierCurve( baseOffset,
-					      baseOffset.clone().addXY(baseLength*0.333,0),
-					      baseOffset.clone().addXY(baseLength*0.66,-baseLength*0.66),
-					      baseOffset.clone().addXY(baseLength,-baseLength*0.75)
-					    );
-	var glansCurve = new CubicBezierCurve( baseCurve.endPoint,
-					       randomPoint(),
-					       randomPoint(),
-					       randomPoint() 
-					    );
-	
-	path.addCurve( baseCurve ); // new CubicBezierCurve( randomPoint(), randomPoint(), randomPoint(), randomPoint() ) );
-	path.addCurve( glansCurve ); // new CubicBezierCurve( randomPoint(), randomPoint(), randomPoint(), randomPoint() ) );
-	paths.push( path );
-	var dildo = new Dildo( baseCurve,
-			       glansCurve,
-			       'dildo#'+fecha.format(new Date(),"YYYYMMDD-HHmmss")
-			     );
-	*/
 	var dildo = Dildo.fromObject(
 	    { baseCurve : { "startPoint" : [81,248], "endPoint" : [473.5,142], "startControlPoint": [265,233], "endControlPoint" : [418.12150699905914,161.62408392414605] }, glansCurve : { "startPoint" : [473.5,142], "endPoint" : [544,80], "startControlPoint": [503.0451483760694,131.5302952488526], "endControlPoint" : [517,123] }, name : 'dildo#20180827-171705' }
 	);
-	var path = new BezierPath([]);
+	*/
+	var dildo = Dildo.fromObject(
+	    { path : [ { "startPoint" : [81,248], "endPoint" : [473.5,142], "startControlPoint": [193,226], "endControlPoint" : [418.12150699905914,161.62408392414605] }, { "startPoint" : [473.5,142], "endPoint" : [544,80], "startControlPoint": [503.0451483760694,131.5302952488526], "endControlPoint" : [512,129] } ], topPath : [ { "startPoint" : [65,217], "endPoint" : [439.5,96], "startControlPoint": [156,120], "endControlPoint" : [445.9188520420132,115.49607216973386] }, { "startPoint" : [439.5,96], "endPoint" : [544,80], "startControlPoint": [414.40977312088575,19.793090915865974], "endControlPoint" : [489,90] } ], bottomPath : [ { "startPoint" : [81,357], "endPoint" : [500.5,184], "startControlPoint": [82,319], "endControlPoint" : [457.9876805919407,191.55985058492269] }, { "startPoint" : [500.5,184], "endPoint" : [544,80], "startControlPoint": [567.9324290080199,172.008673839085], "endControlPoint" : [604,85] } ], name : "dildo#20180827-171705"}
+	);
+	/*var path = new BezierPath([]);
 	path.addCurve( dildo.baseCurve ); 
 	path.addCurve( dildo.glansCurve );
-	paths.push( path );
+	*/
+	paths.push( dildo.path ); // path );
+	/*
 	var baseTopPath = new BezierPath([]);
 	baseTopPath.addCurve( dildo.baseTopCurve );
-	//paths.push( baseTopPath );
+	paths.push( baseTopPath );
+	var baseBottomPath = new BezierPath([]);
+	baseBottomPath.addCurve( dildo.baseBottomCurve );
+	paths.push( baseBottomPath );
+	*/
+	paths.push( dildo.topPath );
+	paths.push( dildo.bottomPath );
 	console.log( 'dildo.name: ' + dildo.name );
 
+
+	vertices.push( new Vertex(100,100) );
+	
 	
 	// +---------------------------------------------------------------------------------
         // | Install drag listeners.
         // +-------------------------------
 	dildo.baseCurve.startPoint.listeners.addDragListener( function(e) {
 	    console.log('baseCurve.startPoint dragged.');
-	    //dildo.baseCurve.moveCurvePoint( dildo.baseCurve.END_POINT, e.params.dragAmount, true, true );
-	    //dildo.glansCurve.moveCurvePoint( dildo.glansCurve.END_POINT, e.params.dragAmount, true, true );
 	    path.translate( e.params.dragAmount );
 	    path.bezierCurves[0].moveCurvePoint( path.START_POINT, new Vertex(-e.params.dragAmount.x,-e.params.dragAmount.y), true, true );
 	} );
@@ -184,24 +180,35 @@
         // +-------------------------------
         var locatePointNear = function( x, y ) {
             var tolerance = 7;
+	    var point = { x : x, y : y };
+	    // Search in vertices
+	    for( var vindex in vertices ) {
+		var vert = vertices[vindex];
+		if( vert.distance(point) < tolerance ) {
+		    // console.log( 'vertex found.' );
+		    return { type : 'vertex', vindex : vindex };
+		}
+	    }
+	    
+	    // Search in paths
 	    for( var pindex = 0; pindex < paths.length; pindex++ ) {
 		var path = paths[pindex];
 		for( var cindex = 0; cindex < path.bezierCurves.length; cindex++ ) {
 		    var curve = path.bezierCurves[cindex];
 		    let p = curve.startControlPoint;
-                    let dist = Math.sqrt( Math.pow(x-p.x,2) + Math.pow(y-p.y,2) );
+                    let dist = p.distance(point); // Math.sqrt( Math.pow(x-p.x,2) + Math.pow(y-p.y,2) );
                     if( dist <= tolerance )
 			return { type : 'bpath', pindex : pindex, cindex : cindex, pid : curve.START_CONTROL_POINT };
 		    p = curve.endControlPoint;
-                    dist = Math.sqrt( Math.pow(x-p.x,2) + Math.pow(y-p.y,2) );
+                    dist = p.distance(point); // Math.sqrt( Math.pow(x-p.x,2) + Math.pow(y-p.y,2) );
                     if( dist <= tolerance )
 			return { type : 'bpath', pindex : pindex, cindex : cindex, pid : curve.END_CONTROL_POINT };
 		    p = curve.startPoint;
-                    dist = Math.sqrt( Math.pow(x-p.x,2) + Math.pow(y-p.y,2) );
+                    dist = p.distance(point); // Math.sqrt( Math.pow(x-p.x,2) + Math.pow(y-p.y,2) );
                     if( dist <= tolerance )
 			return { type : 'bpath', pindex : pindex, cindex : cindex, pid : curve.START_POINT };
 		    p = curve.endPoint;
-                    dist = Math.sqrt( Math.pow(x-p.x,2) + Math.pow(y-p.y,2) );
+                    dist = p.distance(point); // Math.sqrt( Math.pow(x-p.x,2) + Math.pow(y-p.y,2) );
                     if( dist <= tolerance )
 			return { type : 'bpath', pindex : pindex, cindex : cindex, pid : curve.END_POINT };
 		}
@@ -214,7 +221,7 @@
 	// | The re-drawing function.
 	// +-------------------------------
 	var redraw = function() {
-	    dildo.update();
+	    // dildo.update();
 	    
 	    // Note that the image might have an alpha channel. Clear the scene first.
 	    ctx.fillStyle = config.backgroundColor; 
@@ -250,6 +257,12 @@
 		    draw.cubicBezierCurve(path.bezierCurves[c]);
 		    fill.cubicBezierHandles(path.bezierCurves[c]);
 		}
+	    }
+
+	    // Draw all vertices
+	    for( var v in vertices ) {
+		var vert = vertices[v];
+		draw.crosshair( vert, 5, 'green' );
 	    }
 	    
 	    // Draw dragged elements
@@ -399,7 +412,9 @@
 		draggedElements.push( p );
 		//p.listeners.fireDragStartEvent( e );
 		if( p.type == 'bpath' )
-		    paths[p.pindex].bezierCurves[p.cindex].getPointByID(p.pid).listeners.fireDragEvent( e );
+		    paths[p.pindex].bezierCurves[p.cindex].getPointByID(p.pid).listeners.fireDragStartEvent( e );
+		else if( p.type == 'vertex' )
+		    vertices[p.vindex].listeners.fireDragStartEvent( e );
 		redraw();
 	    } )
 	    .drag( function(e) {
@@ -409,6 +424,9 @@
 		    if( p.type == 'bpath' ) {
 			paths[p.pindex].moveCurvePoint( p.cindex, p.pid, e.params.dragAmount );
 			paths[p.pindex].bezierCurves[p.cindex].getPointByID(p.pid).listeners.fireDragEvent( e );
+		    } else if( p.type == 'vertex' ) {
+			vertices[p.vindex].add( e.params.dragAmount );
+			vertices[p.vindex].listeners.fireDragEvent( e );
 		    }
 		}
 		redraw();
@@ -423,6 +441,8 @@
 		    // console.log( 'i', i, 'pid', p.pid, 'pindex', p.pindex, 'cindex', p.cindex );
 		    if( p.type == 'bpath' ) {
 			paths[p.pindex].bezierCurves[p.cindex].getPointByID(p.pid).listeners.fireDragEndEvent( e );
+		    } else if( p.type == 'vertex' ) {
+			vertices[p.vindex].listeners.fireDragEndEvent( e );
 		    }
 		}
 		draggedElements = [];
