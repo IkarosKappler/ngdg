@@ -269,6 +269,9 @@
 	    for( var i in draggedElements ) {
 		var p = draggedElements[i];
 		if( p.type == 'bpath' ) {
+		    var vert = paths[p.pindex].bezierCurves[p.cindex].getPointByID( p.pid );
+		    draw.crosshair( vert, Math.max(canvasSize.width,canvasSize.height)*2 , 'lightgrey' );
+		    draw.string( vert.toString(), vert.x+10, vert.y );
 		    fill.circle( paths[p.pindex].bezierCurves[p.cindex].getPointByID( p.pid ),
 				 7, 'rgba(255,0,0,0.5)' );
 		} else if( p.type == 'vertex' ) {
