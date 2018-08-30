@@ -5,6 +5,10 @@ This project is still heavily under construction.
 ![Current State](screenshot-20180829-0.png "Current State")
 
 
+## Bugs
+* When moving the base start point the program fails
+
+
 ## Todos:
 * Change 'fullsize' mode to fit-to-parent, not fit-to-window.
 * JSON data export
@@ -13,6 +17,9 @@ This project is still heavily under construction.
 
 
 ### Changelog
+* 2018-08-30
+  * Moved the listener setup to the dildo class.
+  * Added drag listeners to last end points and last end control points.
 * 2018-08-29
   * Added Vertex.multiplyScalar(scalar) (as in THREE.Vector2.multiplyScalar).
   * Added crosshair draw for vertex positions.

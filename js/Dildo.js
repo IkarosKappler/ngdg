@@ -19,7 +19,9 @@
     // | @param _glansCurve
     // | @param _name:string
     // +-------------------------------
-    var Dildo = function( _baseCurve, _glansCurve, _name ) {
+    var Dildo = function( _baseCurve, _glansCurve, _name, _options ) {
+	if( !_baseCurve )
+	    return;
 	this.name = _name;
 	this.baseCurve = _baseCurve;
 	this.glansCurve = _glansCurve;
@@ -40,7 +42,8 @@
 	this.bottomPath.addCurve( this.glansBottomCurve );
 
 	this._construct();
-	this._installListeners();
+	if( _options && _options.installDragListeners )
+	    this._installListeners();
     };
 
     Dildo.prototype._construct = function() {
@@ -64,11 +67,17 @@
 
     Dildo.prototype._installListeners = function() {
 	var _self = this;
+	// +---------------------------------------------------------------------------------
+        // | Install drag listeners.
+        // +-------------------------------	
 	this.baseCurve.startPoint.listeners.addDragListener( function(e) {
-	    _self.baseTopCurve.translate( e.params.dragAmount );
-	    _self.baseBottomCurve.translate( e.params.dragAmount );
+	    console.log('x');
+	    _self.path.translate( e.params.dragAmount );
+	    _self.path.bezierCurves[0].moveCurvePoint( _self.path.START_POINT, new Vertex(-e.params.dragAmount.x,-e.params.dragAmount.y), true, true );
+	    _self.topPath.translate( e.params.dragAmount );
+	    _self.bottomPath.translate( e.params.dragAmount );
 	} );
-	this.baseCurve.startControlPoint.listeners.addDragListener( function(e) {
+	this.baseCurve.startControlPoint.listeners.addDragListener( function(e) { console.log('x');
 	    _self.baseTopCurve.moveCurvePoint( CubicBezierCurve.START_CONTROL_POINT, e.params.dragAmount, true, true );
 	    _self.baseBottomCurve.moveCurvePoint( CubicBezierCurve.START_CONTROL_POINT, e.params.dragAmount, true, true );
 	} );
@@ -79,12 +88,21 @@
 	    _self.bottomPath.moveCurvePoint( 0, CubicBezierCurve.END_CONTROL_POINT, e.params.dragAmount, true, true );
 	} );
 	this.baseCurve.endPoint.listeners.addDragListener( function(e) {
+	    _self.glansCurve.moveCurvePoint( CubicBezierCurve.END_POINT, e.params.dragAmount, true, true );
 	    //_self.baseTopCurve.moveCurvePoint( CubicBezierCurve.END_POINT, e.params.dragAmount, true, true );
 	    //_self.baseBottomCurve.moveCurvePoint( CubicBezierCurve.END_POINT, e.params.dragAmount, true, true );
 	    _self.topPath.moveCurvePoint( 0, CubicBezierCurve.END_POINT, e.params.dragAmount, true, true );
 	    _self.bottomPath.moveCurvePoint( 0, CubicBezierCurve.END_POINT, e.params.dragAmount, true, true );
 	    _self.topPath.moveCurvePoint( 1, CubicBezierCurve.END_POINT, e.params.dragAmount, true, true );
 	    _self.bottomPath.moveCurvePoint( 1, CubicBezierCurve.END_POINT, e.params.dragAmount, true, true );
+	} );
+	this.glansCurve.endPoint.listeners.addDragListener( function(e) {
+	    _self.topPath.moveCurvePoint( 1, CubicBezierCurve.END_POINT, e.params.dragAmount, true, true );
+	    _self.bottomPath.moveCurvePoint( 1, CubicBezierCurve.END_POINT, e.params.dragAmount, true, true );
+	} );
+	this.glansCurve.endControlPoint.listeners.addDragListener( function(e) {
+	    _self.topPath.moveCurvePoint( 1, CubicBezierCurve.END_CONTROL_POINT, e.params.dragAmount, true, true );
+	    _self.bottomPath.moveCurvePoint( 1, CubicBezierCurve.END_CONTROL_POINT, e.params.dragAmount, true, true );
 	} );
     };
 
@@ -151,15 +169,19 @@
 	    throw "Cannot create dildo from object: 'name' is missing.";
 
 	var path = BezierPath.fromArray( obj.path );
-	var dildo = new Dildo( path.bezierCurves[0], path.bezierCurves[1], obj.name );
+	var dildo = new Dildo( path.bezierCurves[0], path.bezierCurves[1], obj.name, { installDragListeners : false } );
+
+	dildo.path = path;
 	
 	dildo.topPath = BezierPath.fromArray( obj.topPath );
 	dildo.baseTopCurve = dildo.topPath.bezierCurves[0];
 	dildo.glansTopCurve = dildo.topPath.bezierCurves[1];
 	
 	dildo.bottomPath = BezierPath.fromArray( obj.bottomPath );
-	dildo.baseBottomPath = dildo.bottomPath.bezierCurves[0];
-	dildo.glansTopPath = dildo.bottomPath.bezierCurves[1];
+	dildo.baseBottomCurve = dildo.bottomPath.bezierCurves[0];
+	dildo.glansBottomCurve = dildo.bottomPath.bezierCurves[1];
+
+	dildo._installListeners();
 
 	return dildo;
 	

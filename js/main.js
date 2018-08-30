@@ -152,11 +152,12 @@
 
 
 	vertices.push( new Vertex(100,100) );
-	
-	
+
+
 	// +---------------------------------------------------------------------------------
         // | Install drag listeners.
         // +-------------------------------
+	/*
 	dildo.baseCurve.startPoint.listeners.addDragListener( function(e) {
 	    console.log('baseCurve.startPoint dragged.');
 	    path.translate( e.params.dragAmount );
@@ -169,6 +170,7 @@
 	dildo.glansCurve.endPoint.listeners.addDragListener( function(e) {
 	    console.log('glansCurve.endPoint dragged.');
 	} );
+	*/
 	
 
 	// +---------------------------------------------------------------------------------
