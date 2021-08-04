@@ -6,17 +6,19 @@ This project is still heavily under construction.
 
 
 ## Bugs
-* When moving the base start point the program fails
+* When slicing the mesh with open bottom there are mesh errors.
 
 
 ## Todos:
-* Change 'fullsize' mode to fit-to-parent, not fit-to-window.
-* JSON data export
-* JSON data import
-* Add 3D preview (with some cool WebGL library).
+* Arrange splits on plane.
 
 
 ### Changelog
+* 2021-08-04
+  * Complete refactor.
+  * Using PlotBoilerplate for 2D drawing now.
+  * Using AlloyFinger-typescript for touch gestures.
+* -break-
 * 2018-08-30
   * Moved the listener setup to the dildo class.
   * Added drag listeners to last end points and last end control points.
@@ -45,12 +47,10 @@ This project is still heavily under construction.
 
 ###
 Dependencies
-* CSS3 Flex
 * HTML5 Canvas
 * HTML5 WebGL
 
 
 
 ### Used Libraries
-* fecha.js
-  * https://github.com/taylorhakes/fecha
+* dat.gui

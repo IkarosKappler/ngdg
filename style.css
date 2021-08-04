@@ -12,29 +12,19 @@ html, body {
     overflow           : hidden;
 }
 
-#canvas-row {
-    display            : flex;
-}
-
-#canvas-wrapper {
-    display            : inline-block;
-    width              : 50%;
-    height             : 90%;
-    max-width          : 50%;
-    max-height         : 90%;
-}
-
-#preview-wrapper {
-    display            : inline-block;
-    width              : 50%;
-    height             : 90%;
-    max-width          : 50%;
-    max-height         : 90%;
-}
-
-
 #my-canvas {
     border             : 1px solid black;
+}
+
+.info {
+    position           : absolute;
+    display            : inline-block;
+    left               : auto;
+    right              : 10px;
+    top                : auto;
+    bottom             : 10px;
+    height             : 20px;
+    background         : rgba(255,255,255,0.5);
 }
 
 .monospace {
@@ -42,29 +32,22 @@ html, body {
     font-size          : 9pt;
 }
 
-/*
-.overlay-wrapper {
-    display            : none;
-    position           : fixed;
-    left               : 0px;
-    top                : 0px;
-    width              : 100vw;
-    height             : 100vh;
-}
-.overlay-blanket {
-    width              : 100%;
-    height             : 100%;
-    display            : flex;
-    align-items        : center;
-    justify-content    : center;
-    background         : rgba(0,0,0,0.5);
-}
-.overlay-content {
-    width              : 500px;
-    height             : 500px;
-    max-width          : 50%;
-    max-height         : 50%;
-    background         : white;
+#drag-rect {
+    position           : absolute;
+    display            : none; /* Initially invisible */
     border             : 1px solid grey;
+    background         : rgba(0,0,0,0.1);
 }
-*/
+
+/* --- BEGIN --- Dialog classes --- */
+/* Headline */
+.od-hl { }
+/* Content node */
+.od-cn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* Button line */
+od-bl { }
+/* --- END --- Dialog classes --- */

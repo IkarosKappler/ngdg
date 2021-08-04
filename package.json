@@ -1,0 +1,51 @@
+{
+  "name": "ngdg",
+  "version": "1.0.0",
+  "description": "A new dildo generator",
+  "main": "src/cjs/index.js",
+  "module": "src/esm/index.js",
+  "types": "src/cjs/index.d.ts",
+  "dependencies": {
+    "@babel/core": "^7.14.8",
+    "@types/three": "^0.130.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.2.2",
+    "eslint": "^7.32.0",
+    "plotboilerplate": "^1.12.5",
+    "rollup": "^2.55.1",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "source-map-loader": "^3.0.0",
+    "typescript": "^4.3.5",
+    "webpack": "^5.48.0",
+    "webpack-cli": "^4.7.2"
+  },
+  "devDependencies": {
+    "FileSaver": "^0.10.0",
+    "alloyfinger": "^0.1.16",
+    "dat.gui": "^0.7.7",
+    "touchy": "^0.1.6",
+    "ts-loader": "^7.0.5"
+  },
+  "scripts": {
+    "build": "npm run build-module && npm run build-browser",
+    "build-browser": "npm run compile-typescript-browser && npm run webpack-browser && cp dist/plotboilerplate.browser.min.js dist/plotboilerplate.min.js",
+    "build-module": "npm run compile-typescript-module && npm run rollup-module",
+    "compile-typescript-browser": "tsc -p tsconfig.browser.json",
+    "compile-typescript-module": "tsc -p tsconfig.module.json",
+    "mkdocs": "cd bin && ./run-mk-typedocs.sh",
+    "server": "npx http-server ./",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack-browser": "npx webpack --mode production --config ./webpack5.browser.config.js",
+    "webpack-dev": "npx webpack --mode development --config ./webpack5-dev.config.js",
+    "rollup-module": "npx rollup -c",
+    "tslint": "npx eslint ./src/ts/"
+  },
+  "author": "",
+  "license": "ISC"
+}
