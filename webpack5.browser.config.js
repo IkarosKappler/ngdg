@@ -9,20 +9,20 @@ module.exports = [
     // entry: "./src/esm/index.js",
     output: {
       path: path.resolve(__dirname, "./dist"),
-      filename: "plotboilerplate.browser.min.js"
+      filename: "ngdg.browser.min.js"
     },
     resolve: {
-      extensions: ['.ts', '.js', '.json', '.d.ts'],
-      modules: ['node_modules'],
+      extensions: [".ts", ".js", ".json"],
+      modules: ["node_modules"],
       symlinks: true,
       alias: {
-        three$: path.resolve(__dirname, 'node_modules/@types/three/index.d.ts'),
-      },
+        three$: path.resolve(__dirname, "node_modules/@types/three/index.d.ts")
+      }
     },
     resolveLoader: {
-      modules: ['node_modules'],
-      extensions: ['.js', '.json'],
-      mainFields: ['loader', 'main'],
+      modules: ["node_modules"],
+      extensions: [".js", ".json"],
+      mainFields: ["loader", "main"]
     },
     devtool: "source-map",
     optimization: {
@@ -32,10 +32,10 @@ module.exports = [
       rules: [
         {
           test: /.ts/,
-          loader: 'awesome-typescript-loader',
-          exclude: /node_modules/,
-        },
-      ],
+          loader: "awesome-typescript-loader",
+          exclude: /node_modules/
+        }
+      ]
     }
   },
   {
@@ -44,20 +44,20 @@ module.exports = [
     // entry: "./src/esm/index.js",
     output: {
       path: path.resolve(__dirname, "./dist"),
-      filename: "plotboilerplate.js"
+      filename: "ngdg.js"
     },
     resolve: {
-      extensions: ['.ts', '.js', '.json', '.d.ts'],
-      modules: ['node_modules'],
+      extensions: [".ts", ".js", ".json"],
+      modules: ["node_modules"],
       symlinks: true,
       alias: {
-        three$: path.resolve(__dirname, 'node_modules/@types/three/index.d.ts'),
-      },
+        three$: path.resolve(__dirname, "node_modules/@types/three/index.d.ts")
+      }
     },
     resolveLoader: {
-      modules: ['node_modules'],
-      extensions: ['.js', '.json'],
-      mainFields: ['loader', 'main'],
+      modules: ["node_modules"],
+      extensions: [".js", ".json"],
+      mainFields: ["loader", "main"]
     },
     optimization: {
       minimize: false
@@ -66,10 +66,10 @@ module.exports = [
       rules: [
         {
           test: /.ts/,
-          loader: 'awesome-typescript-loader',
-          exclude: /node_modules/,
-        },
-      ],
+          loader: "awesome-typescript-loader",
+          exclude: /node_modules/
+        }
+      ]
     }
   }
 ];

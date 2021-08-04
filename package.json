@@ -15,7 +15,7 @@
     "babel-loader": "^8.2.2",
     "eslint": "^7.32.0",
     "path": "^0.12.7",
-    "plotboilerplate": "^1.12.5",
+    "plotboilerplate": "^1.12.6",
     "rollup": "^2.55.1",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -28,6 +28,7 @@
     "webpack-cli": "^4.7.2"
   },
   "devDependencies": {
+    "@types/dat.gui": "^0.7.7",
     "FileSaver": "^0.10.0",
     "alloyfinger": "^0.1.16",
     "dat.gui": "^0.7.7",

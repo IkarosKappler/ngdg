@@ -9,33 +9,33 @@ module.exports = [
     // entry: "./src/esm/index.js",
     output: {
       path: path.resolve(__dirname, "./dist"),
-      filename: "plotboilerplate.js"
+      filename: "ngdg.js"
     },
     devtool: "source-map",
     optimization: {
       minimize: false
     },
     resolve: {
-      extensions: ['.ts', '.js', '.json', '.d.ts'],
-      modules: ['node_modules'],
+      extensions: [".ts", ".js", ".json"],
+      modules: ["node_modules"],
       symlinks: true,
       alias: {
-        three$: path.resolve(__dirname, 'node_modules/@types/three/index.d.ts'),
-      },
+        three$: path.resolve(__dirname, "node_modules/@types/three/index.d.ts")
+      }
     },
     resolveLoader: {
-      modules: ['node_modules'],
-      extensions: ['.js', '.json'],
-      mainFields: ['loader', 'main'],
+      modules: ["node_modules"],
+      extensions: [".js", ".json"],
+      mainFields: ["loader", "main"]
     },
     module: {
       rules: [
         {
           test: /.ts/,
-          loader: 'awesome-typescript-loader',
-          exclude: /node_modules/,
-        },
-      ],
+          loader: "awesome-typescript-loader",
+          exclude: /node_modules/
+        }
+      ]
     }
   }
 ];

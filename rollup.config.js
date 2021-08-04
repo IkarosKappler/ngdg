@@ -4,7 +4,7 @@ import external from "rollup-plugin-peer-deps-external";
 import resolve from "rollup-plugin-node-resolve";
 import {terser} from 'rollup-plugin-terser';
 
-const moduleName = "plotboilerplate";
+const moduleName = "ngdg";
 
 export default {
     input: "src/esm/index.js",
