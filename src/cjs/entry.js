@@ -1,4 +1,4 @@
 "use strict";
 /* Imports for webpack */
 
-// globalThis.Bounds = require("./Bounds.js").Bounds;
+globalThis.DildoMaterials = require("./DildoMaterials").DildoMaterials;

@@ -1,5 +1,3 @@
-import * as THREE from 'three';
-
 /**
  * A collection of materials and material making functions.
  *
@@ -10,7 +8,8 @@ import * as THREE from 'three';
  * @modified 2021-08-04 Ported to Typescript from vanilla JS.
  * @version 1.0.1
  */
-const DildoMaterials = (() => {
+import * as THREE from 'three';
+export const DildoMaterials = (() => {
     /**
      * Map<string,texture>
      */
@@ -97,6 +96,4 @@ const DildoMaterials = (() => {
     };
     return DildoMaterials;
 })();
-
-export { DildoMaterials };
-//# sourceMappingURL=index.esm.js.map
+//# sourceMappingURL=DildoMaterials.js.map

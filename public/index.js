@@ -70,7 +70,7 @@
         normalsLength: 10.0,
         normalizePerpendiculars: true,
         useTextureImage: true,
-        textureImagePath: "wood.png",
+        textureImagePath: "assets/img/wood.png",
         wireframe: false,
         performSlice: false,
         makeHollow: false,

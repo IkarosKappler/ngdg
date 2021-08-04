@@ -1,1 +1,1 @@
-export declare const Test = "Test";
+export * from "./DildoMaterials";

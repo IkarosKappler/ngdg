@@ -1,5 +1,4 @@
-import * as THREE from 'three';
-
+"use strict";
 /**
  * A collection of materials and material making functions.
  *
@@ -10,12 +9,15 @@ import * as THREE from 'three';
  * @modified 2021-08-04 Ported to Typescript from vanilla JS.
  * @version 1.0.1
  */
-const DildoMaterials = (() => {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DildoMaterials = void 0;
+var THREE = require("three");
+exports.DildoMaterials = (function () {
     /**
      * Map<string,texture>
      */
     var textureStore = new Map();
-    const DildoMaterials = {
+    var DildoMaterials = {
         /**
          * Create a new mesh material from the given parameters.
          *
@@ -86,7 +88,7 @@ const DildoMaterials = (() => {
      * @param {string} path - The path (absolute or relative) to the texture image to load.
      * @returns {THREE.Texture}
      */
-    const loadTextureImage = function (path) {
+    var loadTextureImage = function (path) {
         var texture = textureStore.get(path);
         if (!texture) {
             var loader = new THREE.TextureLoader();
@@ -97,6 +99,4 @@ const DildoMaterials = (() => {
     };
     return DildoMaterials;
 })();
-
-export { DildoMaterials };
-//# sourceMappingURL=index.esm.js.map
+//# sourceMappingURL=DildoMaterials.js.map

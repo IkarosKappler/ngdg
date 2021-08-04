@@ -1,2 +1,2 @@
-export const Test = "Test";
+export * from "./DildoMaterials";
 //# sourceMappingURL=index.js.map

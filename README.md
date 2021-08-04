@@ -3,6 +3,8 @@ Because 3d printing, web 3d, and dildos are cool.
 
 ## Bugs
 * When slicing the mesh with open bottom there are mesh errors.
+* Front face, back face and double face switching is not working.
+* Add a 'Material' switch/tab.
 
 
 ## Todos:
