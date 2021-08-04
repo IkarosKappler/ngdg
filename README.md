@@ -1,9 +1,5 @@
-# NG-DG (Codename)
-This project is still heavily under construction.
-
-![First State](screenshot-20180828-0.png "First State")
-![Current State](screenshot-20180829-0.png "Current State")
-
+# Codename NGDG
+Because 3d printing, web 3d, and dildos are cool.
 
 ## Bugs
 * When slicing the mesh with open bottom there are mesh errors.
