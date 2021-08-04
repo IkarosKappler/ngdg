@@ -13,7 +13,8 @@ Because 3d printing, web 3d, and dildos are cool.
 - Configure webpack to handle type definitions in node_modules correctly.
 - Port all vanilla JS parts to Typescript.
 - Arrange splits on plane.
-- Replace all THREE.Geometry instances by proper BufferGeometries (not supported any more since r125). See https://sbcode.net/threejs/geometry-to-buffergeometry/ for details.
+- Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
+  (not supported any more since r125). See https://sbcode.net/threejs/geometry-to-buffergeometry/ for details.
 - Rename base branch to 'main'.
 
 ### Changelog
