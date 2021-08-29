@@ -16,7 +16,7 @@ module.exports = [
       modules: ["node_modules"],
       symlinks: true,
       alias: {
-        three$: path.resolve(__dirname, "node_modules/@types/three/index.d.ts")
+        // three$: path.resolve(__dirname, "node_modules/@types/three/index.d.ts")
       }
     },
     resolveLoader: {
@@ -51,7 +51,7 @@ module.exports = [
       modules: ["node_modules"],
       symlinks: true,
       alias: {
-        three$: path.resolve(__dirname, "node_modules/@types/three/index.d.ts")
+        // three$: path.resolve(__dirname, "node_modules/@types/three/index.d.ts")
       }
     },
     resolveLoader: {

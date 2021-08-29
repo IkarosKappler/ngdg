@@ -21,17 +21,3 @@ import { Geometry } from "three/examples/jsm/deprecated/Geometry";
  * @param {THREE.Geometry} mergeGeometry
  */
 export declare const mergeGeometries: (baseGeometry: Geometry, mergeGeometry: Geometry, epsilon?: number) => void;
-/**
- * This function merges the vertices from a given geometry into a base geometry.
- * It will ty to locate existing vertices within an epsilon range and keep those. Vertices that
- * have no close existing counterpart in the base geometry will be added.
- *
- * The function returns a mapping of new/merged vertices inside the base geometry, showing
- * which vertex (index) was mapped whereto.
- *
- * @param {THREE-Geometry} baseGeometry
- * @param {THREE-Geometry} mergeGeometry
- * @param {number} epsilon
- * @returns Array<number>
- */
-export declare const mergeAndMapVertices: (baseGeometry: Geometry, mergeGeometry: Geometry, epsilon: number) => Array<number>;

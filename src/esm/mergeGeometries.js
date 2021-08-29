@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Merge one geometry (all vertices and faces) into the other.
  *
@@ -9,12 +8,10 @@
  * @modified 2021-08-04 Ported to Typescript from vanilla JS.
  * @version  1.0.0
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeAndMapVertices = exports.mergeGeometries = void 0;
-var THREE = require("three");
-var Geometry_1 = require("three/examples/jsm/deprecated/Geometry");
-var locateVertexInArray_1 = require("./locateVertexInArray");
-var EPS = 0.000001;
+import * as THREE from "three";
+import { Face3 } from "three/examples/jsm/deprecated/Geometry";
+import { locateVertexInArray } from "./locateVertexInArray";
+const EPS = 0.000001;
 /**
  * This function tries to merge the 'mergeGeometry' into the 'baseGeometry'.
  * It assumes that both geometries are somehow connected, so it will try to
@@ -26,11 +23,11 @@ var EPS = 0.000001;
  * @param {THREE.Geometry} baseGeometry
  * @param {THREE.Geometry} mergeGeometry
  */
-var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
+export const mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
     if (typeof epsilon === "undefined") {
         epsilon = EPS;
     }
-    var vertexMap = exports.mergeAndMapVertices(baseGeometry, mergeGeometry, epsilon);
+    var vertexMap = mergeAndMapVertices(baseGeometry, mergeGeometry, epsilon);
     for (var f = 0; f < mergeGeometry.faces.length; f++) {
         var face = mergeGeometry.faces[f];
         var a = vertexMap[face.a];
@@ -39,7 +36,7 @@ var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
         // baseGeometry.faces.push(new THREE.Face3(a, b, c));
         // TODO: how to use this here?
         // Face3 is not a constructor!!! Just a type!!!
-        baseGeometry.faces.push(new Geometry_1.Face3(a, b, c));
+        baseGeometry.faces.push(new Face3(a, b, c));
         if (mergeGeometry.faceVertexUvs.length > 0 && f < mergeGeometry.faceVertexUvs[0].length) {
             var uvData = mergeGeometry.faceVertexUvs[0][f]; // [Vector2,Vector2,Vector2]
             baseGeometry.faceVertexUvs[0].push([uvData[0].clone(), uvData[1].clone(), uvData[2].clone()]);
@@ -49,7 +46,6 @@ var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
         }
     }
 };
-exports.mergeGeometries = mergeGeometries;
 /**
  * This function merges the vertices from a given geometry into a base geometry.
  * It will ty to locate existing vertices within an epsilon range and keep those. Vertices that
@@ -64,10 +60,10 @@ exports.mergeGeometries = mergeGeometries;
  * @returns Array<number>
  */
 var mergeAndMapVertices = function (baseGeometry, mergeGeometry, epsilon) {
-    var vertexMap = [];
+    var vertexMap = []; // Array<number>
     for (var v = 0; v < mergeGeometry.vertices.length; v++) {
         var mergeVert = mergeGeometry.vertices[v];
-        var indexInBase = locateVertexInArray_1.locateVertexInArray(baseGeometry.vertices, mergeVert, epsilon);
+        var indexInBase = locateVertexInArray(baseGeometry.vertices, mergeVert, epsilon);
         if (indexInBase === -1) {
             // The current vertex cannot be found in the base geometry.
             //  -> add to geometry and remember new index.
@@ -80,5 +76,4 @@ var mergeAndMapVertices = function (baseGeometry, mergeGeometry, epsilon) {
     }
     return vertexMap;
 };
-exports.mergeAndMapVertices = mergeAndMapVertices;
 //# sourceMappingURL=mergeGeometries.js.map

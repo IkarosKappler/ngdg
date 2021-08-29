@@ -26,9 +26,26 @@ export const clearDuplicateVertices3 = (vertices, epsilon) => {
     }
     return result;
 };
+/**
+ * A distance checker: check if the passed to vertices are no more than 'eps' units apart.
+ *
+ * @param {THREE.Vector3} vertA
+ * @param {THREE.Vector3} vertB
+ * @param {number} eps
+ * @returns {boolean}
+ */
 const isCloseTo = (vertA, vertB, eps) => {
     return vertA.distanceTo(vertB) < eps;
 };
+/**
+ * Try to find an element in the given vertex array, starting at a given position (inclusive).
+ *
+ * @param {THREE.Vector3[]} vertices
+ * @param {THREE.Vector3} vertex
+ * @param {number} fromIndex
+ * @param {number} epsilon
+ * @returns {boolan}
+ */
 const containsElementFrom = (vertices, vertex, fromIndex, epsilon) => {
     for (var i = fromIndex; i < vertices.length; i++) {
         if (isCloseTo(vertices[i], vertex, epsilon)) {
