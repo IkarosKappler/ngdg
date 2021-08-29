@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Compute the intersection of a mesh and a plane.
  *
@@ -11,36 +10,28 @@
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
  * @version 1.0.0
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PlaneMeshIntersection = void 0;
-var THREE = require("three");
-var PlaneMeshIntersection = /** @class */ (function () {
+import * as THREE from "three";
+export class PlaneMeshIntersection {
     /**
      * Constructor.
      */
-    function PlaneMeshIntersection() {
-        var _this = this;
+    constructor() {
         /**
          *
          * @param {THREE.Mesh} mesh
          * @param {THREE.Geometry} geometry
-         * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
+         * @param {THREE.PlaneGeometry} plane
          * @returns {Array<THREE.Vector3>}
          */
-        // TODO: plane type???
-        this.getIntersectionPoints = function (mesh, geometry, plane, planeGeometryReal) {
+        this.getIntersectionPoints = (mesh, geometry, plane) => {
             // Note: this could also work with a directly passed Mesh.Plane object instead a THREE.PlaneGeometry.
-            _this.pointsOfIntersection = [];
+            this.pointsOfIntersection = [];
             var mathPlane = new THREE.Plane();
-            // var planeGeometry : THREE.Geometry = (plane as unknown).geometry;
-            // plane.localToWorld(this.planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
-            // plane.localToWorld(this.planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
-            // plane.localToWorld(this.planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
-            plane.localToWorld(_this.planePointA.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].a]));
-            plane.localToWorld(_this.planePointB.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].b]));
-            plane.localToWorld(_this.planePointC.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].c]));
-            mathPlane.setFromCoplanarPoints(_this.planePointA, _this.planePointB, _this.planePointC);
-            var _self = _this;
+            plane.localToWorld(this.planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
+            plane.localToWorld(this.planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
+            plane.localToWorld(this.planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
+            mathPlane.setFromCoplanarPoints(this.planePointA, this.planePointB, this.planePointC);
+            var _self = this;
             geometry.faces.forEach(function (face) {
                 mesh.localToWorld(_self.a.copy(geometry.vertices[face.a]));
                 mesh.localToWorld(_self.b.copy(geometry.vertices[face.b]));
@@ -52,7 +43,7 @@ var PlaneMeshIntersection = /** @class */ (function () {
                 _self.__setPointOfIntersection(_self.lineBC, mathPlane);
                 _self.__setPointOfIntersection(_self.lineCA, mathPlane);
             });
-            return _this.pointsOfIntersection;
+            return this.pointsOfIntersection;
         };
         this.__setPointOfIntersection = function (line, plane) {
             var intersectionPoint = plane.intersectLine(line, this.pointOfIntersection);
@@ -73,7 +64,5 @@ var PlaneMeshIntersection = /** @class */ (function () {
         this.lineCA = new THREE.Line3();
         this.pointOfIntersection = new THREE.Vector3();
     }
-    return PlaneMeshIntersection;
-}());
-exports.PlaneMeshIntersection = PlaneMeshIntersection;
+}
 //# sourceMappingURL=PlaneMeshIntersection.js.map

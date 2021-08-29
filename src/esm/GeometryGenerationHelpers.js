@@ -1,4 +1,3 @@
-"use strict";
 /**
  * A collection of helper function used to generate dildo meshes.
  *
@@ -9,16 +8,14 @@
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
  * @version  0.0.1-alpha
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GeometryGenerationHelpers = void 0;
-var THREE = require("three");
+import * as THREE from "three";
 // import earcut from "earcut"; // TODO: fix earcut types
-var earcut_1 = require("./thirdparty-ported/earcut"); // TODO: fix earcut types
-var plotboilerplate_1 = require("plotboilerplate");
+import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types
+import { Polygon, Vertex } from "plotboilerplate";
 // import sliceGeometry from "threejs-slice-geometry";
-var threejs_slice_geometry_1 = require("./thirdparty-ported/threejs-slice-geometry");
-var PlaneMeshIntersection_1 = require("./PlaneMeshIntersection");
-var clearDuplicateVertices3_1 = require("./clearDuplicateVertices3");
+import { sliceGeometry } from "./thirdparty-ported/threejs-slice-geometry";
+import { PlaneMeshIntersection } from "./PlaneMeshIntersection";
+import { clearDuplicateVertices3 } from "./clearDuplicateVertices3";
 // TODO: move to a global interfaces location
 // export interface DildoOptions {
 //   addPrecalculatedMassiveFaces?: boolean;
@@ -35,7 +32,7 @@ var clearDuplicateVertices3_1 = require("./clearDuplicateVertices3");
 //   getPerpendicularHullLines: () => Array<THREE.Line3>;
 //   getPerpendicularPathVertices: (includeBottom: boolean, getInner: boolean) => Array<THREE.Vector3>;
 // }
-exports.GeometryGenerationHelpers = {
+export const GeometryGenerationHelpers = {
     /**
      * Create a (right-turning) triangle of the three vertices at index A, B and C.
      *
@@ -47,7 +44,7 @@ exports.GeometryGenerationHelpers = {
      * @param {number} vertIndexC
      * @param {boolean=false} inverseFaceDirection - If true then the face will have left winding order (instead of right which is the default).
      */
-    makeFace3: function (geometry, vertIndexA, vertIndexB, vertIndexC, inverseFaceDirection) {
+    makeFace3: (geometry, vertIndexA, vertIndexB, vertIndexC, inverseFaceDirection) => {
         if (inverseFaceDirection) {
             geometry.faces.push(new THREE.Face3(vertIndexC, vertIndexB, vertIndexA));
         }
@@ -74,15 +71,15 @@ exports.GeometryGenerationHelpers = {
      * @param {number} vertIndexD - The fourth vertex index.
      * @param {boolean=false} inverseFaceDirection - If true then the face will have left winding order (instead of right which is the default).
      */
-    makeFace4: function (geometry, vertIndexA, vertIndexB, vertIndexC, vertIndexD, inverseFaceDirection) {
+    makeFace4: (geometry, vertIndexA, vertIndexB, vertIndexC, vertIndexD, inverseFaceDirection) => {
         if (inverseFaceDirection) {
             // Just inverse the winding order of both face3 elements
-            exports.GeometryGenerationHelpers.makeFace3(geometry, vertIndexA, vertIndexC, vertIndexB, false);
-            exports.GeometryGenerationHelpers.makeFace3(geometry, vertIndexC, vertIndexD, vertIndexB, false);
+            GeometryGenerationHelpers.makeFace3(geometry, vertIndexA, vertIndexC, vertIndexB, false);
+            GeometryGenerationHelpers.makeFace3(geometry, vertIndexC, vertIndexD, vertIndexB, false);
         }
         else {
-            exports.GeometryGenerationHelpers.makeFace3(geometry, vertIndexA, vertIndexB, vertIndexC, false);
-            exports.GeometryGenerationHelpers.makeFace3(geometry, vertIndexB, vertIndexD, vertIndexC, false);
+            GeometryGenerationHelpers.makeFace3(geometry, vertIndexA, vertIndexB, vertIndexC, false);
+            GeometryGenerationHelpers.makeFace3(geometry, vertIndexB, vertIndexD, vertIndexC, false);
         }
     },
     /**
@@ -97,7 +94,7 @@ exports.GeometryGenerationHelpers = {
      * @param {number} baseShapeSegmentCount - The total number of segments on the base shape.
      * @param {boolean=false} inverseFaceDirection - If true then the UV mapping is applied in left winding order (instead of right which is the default).
      */
-    addCylindricUV4: function (geometry, a, b, c, d, outlineSegmentCount, baseShapeSegmentCount, inverseFaceDirection) {
+    addCylindricUV4: (geometry, a, b, c, d, outlineSegmentCount, baseShapeSegmentCount, inverseFaceDirection) => {
         if (inverseFaceDirection) {
             // change: abc -> acb
             // change: bdc -> cdb
@@ -132,10 +129,10 @@ exports.GeometryGenerationHelpers = {
      * @param {number} a - The current base shape segment index, must be inside [0,baseShapeSegmentCount-1].
      * @param {number} baseShapeSegmentCount - The total number of base shape segments.
      */
-    addPyramidalBaseUV3: function (geometry, a, baseShapeSegmentCount) {
+    addPyramidalBaseUV3: (geometry, a, baseShapeSegmentCount) => {
         // Create a mirrored texture to avoid hard visual cuts
-        var ratioA = 1.0 - Math.abs(0.5 - a / baseShapeSegmentCount) * 2;
-        var ratioB = 1.0 - Math.abs(0.5 - (a + 1) / baseShapeSegmentCount) * 2;
+        const ratioA = 1.0 - Math.abs(0.5 - a / baseShapeSegmentCount) * 2;
+        const ratioB = 1.0 - Math.abs(0.5 - (a + 1) / baseShapeSegmentCount) * 2;
         geometry.faceVertexUvs[0].push([new THREE.Vector2(ratioA, 0), new THREE.Vector2(0.5, 1), new THREE.Vector2(ratioB, 0)]);
     },
     /**
@@ -145,9 +142,9 @@ exports.GeometryGenerationHelpers = {
      * @param {Array<XYCoords>} vertices2d
      * @returns {Array<number>}
      */
-    flattenVert2dArray: function (vertices2d) {
+    flattenVert2dArray: (vertices2d) => {
         // Array<number>
-        var coordinates = [];
+        const coordinates = [];
         for (var i = 0; i < vertices2d.length; i++) {
             coordinates.push(vertices2d[i].x, vertices2d[i].y);
         }
@@ -161,17 +158,17 @@ exports.GeometryGenerationHelpers = {
      * @param {number=1.0} excentricity - To create ellipses (default is 1.0).
      * @returns {Polygon}
      */
-    mkCircularPolygon: function (radius, pointCount, excentricity) {
+    mkCircularPolygon: (radius, pointCount, excentricity) => {
         if (typeof excentricity === "undefined") {
             excentricity = 1.0;
         }
-        var vertices = [];
-        var phi;
+        const vertices = [];
+        let phi;
         for (var i = 0; i < pointCount; i++) {
             phi = Math.PI * 2 * (i / pointCount);
-            vertices.push(new plotboilerplate_1.Vertex(Math.cos(phi) * radius * excentricity, Math.sin(phi) * radius));
+            vertices.push(new Vertex(Math.cos(phi) * radius * excentricity, Math.sin(phi) * radius));
         }
-        return new plotboilerplate_1.Polygon(vertices, false);
+        return new Polygon(vertices, false);
     },
     /**
      * Slice a geometry at the given plane and add the remaining part(s).
@@ -182,17 +179,17 @@ exports.GeometryGenerationHelpers = {
      * Note also that the mesh is open at the cut plane.
      *
      * @param {THREE.Geometry} unbufferedGeometry - The geometry to slice.
-     * @param {THREE.Plane} plane PlaneGeometry???
+     * @param {THREE.PlaneGeometry} plane
      * @return {THREE.Geometry}
      */
-    makeSlice: function (unbufferedGeometry, plane) {
+    makeSlice: (unbufferedGeometry, plane) => {
         // Slice mesh into two
         // See https://github.com/tdhooper/threejs-slice-geometry
-        var closeHoles = false; // This might be configurable in a later version.
+        const closeHoles = false; // This might be configurable in a later version.
         // TODO: cc
         // var sliceMaterial = DildoMaterials.createSliceMaterial(wireframe);
         // var slicedGeometry = sliceGeometry(unbufferedGeometry, plane, closeHoles);
-        var slicedGeometry = threejs_slice_geometry_1.sliceGeometry(unbufferedGeometry, plane, closeHoles);
+        const slicedGeometry = sliceGeometry(unbufferedGeometry, plane, closeHoles);
         // Now note that it's possible that the result might contain multiple vertices
         // at the same position, which makes further calculations quite difficult.
         // -> Merge multiple vertices into one
@@ -213,28 +210,26 @@ exports.GeometryGenerationHelpers = {
      * @param {DildoGeneration} thisGenerator
      * @param {THREE.Mesh} mesh
      * @param {IDildoGeometry} unbufferedGeometry
-     * @param {THREE.Plane} planeGeometry
+     * @param {THREE.Plane} planeMesh
      * @returns
      */
-    makeAndAddPlaneIntersection: function (thisGenerator, mesh, unbufferedGeometry, // THREE.Geometry,
-    planeGeometry, // THREE.Plane, // THREE.PlaneGeometry, // THREE.Plane ???
-    planeGeometryReal, 
+    makeAndAddPlaneIntersection: (thisGenerator, mesh, unbufferedGeometry, planeMesh, 
     // TODO: use a proper global interface here
     options // { showSplitShape?: boolean }
-    ) {
+    ) => {
         // Find the cut path
-        var planeMeshIntersection = new PlaneMeshIntersection_1.PlaneMeshIntersection();
+        const planeMeshIntersection = new PlaneMeshIntersection();
         // Array<THREE.Vector3>  (compatible with XYCoords :)
-        var intersectionPoints = planeMeshIntersection.getIntersectionPoints(mesh, unbufferedGeometry, planeGeometry, planeGeometryReal);
-        var EPS = 0.000001;
-        var uniqueIntersectionPoints = clearDuplicateVertices3_1.clearDuplicateVertices3(intersectionPoints, EPS);
-        var pointGeometry = new THREE.Geometry();
+        const intersectionPoints = planeMeshIntersection.getIntersectionPoints(mesh, unbufferedGeometry, planeMesh);
+        const EPS = 0.000001;
+        const uniqueIntersectionPoints = clearDuplicateVertices3(intersectionPoints, EPS);
+        const pointGeometry = new THREE.Geometry();
         pointGeometry.vertices = uniqueIntersectionPoints;
-        var pointsMaterial = new THREE.PointsMaterial({
+        const pointsMaterial = new THREE.PointsMaterial({
             size: 1.4,
             color: 0x00ffff
         });
-        var pointsMesh = new THREE.Points(pointGeometry, pointsMaterial);
+        const pointsMesh = new THREE.Points(pointGeometry, pointsMaterial);
         if (options.showSplitShape) {
             pointsMesh.position.y = -100;
             pointsMesh.position.z = -50;
@@ -242,12 +237,12 @@ exports.GeometryGenerationHelpers = {
         }
         // TODO: convert point set to path
         // Test: make a triangulation to see what the path looks like
-        var polygonData = exports.GeometryGenerationHelpers.flattenVert2dArray(uniqueIntersectionPoints);
+        const polygonData = GeometryGenerationHelpers.flattenVert2dArray(uniqueIntersectionPoints);
         // Run Earcut
-        var triangleIndices = earcut_1.earcut(polygonData);
+        const triangleIndices = earcut(polygonData);
         // Process the earcut result;
         //         add the retrieved triangles as geometry faces.
-        var triangleGeometry = new THREE.Geometry();
+        const triangleGeometry = new THREE.Geometry();
         for (var i = 0; i < uniqueIntersectionPoints.length; i++) {
             triangleGeometry.vertices.push(uniqueIntersectionPoints[i].clone());
         }
@@ -255,12 +250,12 @@ exports.GeometryGenerationHelpers = {
             var a = triangleIndices[i];
             var b = triangleIndices[i + 1];
             var c = triangleIndices[i + 2];
-            exports.GeometryGenerationHelpers.makeFace3(triangleGeometry, a, b, c);
+            GeometryGenerationHelpers.makeFace3(triangleGeometry, a, b, c);
         }
         if (options.addRawIntersectionTriangleMesh) {
             // This is more a quick experimental preview feature.
             // The data is often faulty and too unprecise.
-            var triangleMesh = new THREE.Mesh(triangleGeometry, new THREE.LineBasicMaterial({
+            const triangleMesh = new THREE.Mesh(triangleGeometry, new THREE.LineBasicMaterial({
                 color: 0xff8800
             }));
             triangleMesh.position.y = -100;
@@ -270,19 +265,19 @@ exports.GeometryGenerationHelpers = {
         // Make the actual models
         // CURRENTLY NOT IN USE. THE UNDERLYING MODEL IS A NON-TWISTED ONE.
         if (options.addPrecalculatedMassiveFaces) {
-            exports.GeometryGenerationHelpers.makeAndAddMassivePlaneIntersection(thisGenerator, unbufferedGeometry);
+            GeometryGenerationHelpers.makeAndAddMassivePlaneIntersection(thisGenerator, unbufferedGeometry);
         }
         if (options.addPrecalculatedHollowFaces) {
-            exports.GeometryGenerationHelpers.makeAndAddHollowPlaneIntersection(thisGenerator, unbufferedGeometry);
+            GeometryGenerationHelpers.makeAndAddHollowPlaneIntersection(thisGenerator, unbufferedGeometry);
         }
         return uniqueIntersectionPoints;
     },
     // CURRENTLY NOT REALLY IN USE. THE UNDERLYING MODEL IS A NON-TWISTED ONE.
-    makeAndAddMassivePlaneIntersection: function (thisGenerator, unbufferedGeometry) {
-        var intersectionPoints = unbufferedGeometry.getPerpendicularPathVertices(true, true); // includeBottom=true, getInner=true
-        var pointGeometry = new THREE.Geometry();
+    makeAndAddMassivePlaneIntersection: (thisGenerator, unbufferedGeometry) => {
+        const intersectionPoints = unbufferedGeometry.getPerpendicularPathVertices(true, true); // includeBottom=true, getInner=true
+        const pointGeometry = new THREE.Geometry();
         pointGeometry.vertices = intersectionPoints;
-        var pointsMaterial = new THREE.MeshBasicMaterial({
+        const pointsMaterial = new THREE.MeshBasicMaterial({
             wireframe: false,
             color: 0xff0000,
             opacity: 0.5,
@@ -290,27 +285,27 @@ exports.GeometryGenerationHelpers = {
             transparent: true
         });
         // Array<number,number,number,...>
-        var polygonData = exports.GeometryGenerationHelpers.flattenVert2dArray(intersectionPoints);
+        const polygonData = GeometryGenerationHelpers.flattenVert2dArray(intersectionPoints);
         // Step 3: run Earcut
-        var triangleIndices = earcut_1.earcut(polygonData);
+        const triangleIndices = earcut(polygonData);
         // Step 4: process the earcut result;
         //         add the retrieved triangles as geometry faces.
         for (var i = 0; i + 2 < triangleIndices.length; i += 3) {
-            var a = triangleIndices[i];
-            var b = triangleIndices[i + 1];
-            var c = triangleIndices[i + 2];
-            exports.GeometryGenerationHelpers.makeFace3(pointGeometry, a, b, c);
+            const a = triangleIndices[i];
+            const b = triangleIndices[i + 1];
+            const c = triangleIndices[i + 2];
+            GeometryGenerationHelpers.makeFace3(pointGeometry, a, b, c);
         }
-        var pointsMesh = new THREE.Mesh(pointGeometry, pointsMaterial);
+        const pointsMesh = new THREE.Mesh(pointGeometry, pointsMaterial);
         pointsMesh.position.y = -100;
         pointsMesh.position.z = 50;
         pointsMesh.userData["isExportable"] = false;
         thisGenerator.addMesh(pointsMesh);
     },
     // CURRENTLY NOT REALLY IN USE. THE UNDERLYING MODEL IS A NON-TWISTED ONE.
-    makeAndAddHollowPlaneIntersection: function (thisGenerator, unbufferedGeometry) {
-        var pointGeometry = new THREE.Geometry();
-        var perpLines = unbufferedGeometry.getPerpendicularHullLines();
+    makeAndAddHollowPlaneIntersection: (thisGenerator, unbufferedGeometry) => {
+        const pointGeometry = new THREE.Geometry();
+        const perpLines = unbufferedGeometry.getPerpendicularHullLines();
         for (var i = 0; i < perpLines.length; i++) {
             var innerPoint = perpLines[i].start;
             var outerPoint = perpLines[i].end;
@@ -321,14 +316,14 @@ exports.GeometryGenerationHelpers = {
                 pointGeometry.faces.push(new THREE.Face3(vertIndex - 3, vertIndex - 2, vertIndex - 1));
             }
         }
-        var pointsMaterial = new THREE.MeshBasicMaterial({
+        const pointsMaterial = new THREE.MeshBasicMaterial({
             wireframe: false,
             color: 0xff0000,
             opacity: 0.5,
             side: THREE.DoubleSide,
             transparent: true
         });
-        var pointsMesh = new THREE.Mesh(pointGeometry, pointsMaterial);
+        const pointsMesh = new THREE.Mesh(pointGeometry, pointsMaterial);
         pointsMesh.position.y = -100;
         pointsMesh.position.z = -50;
         pointsMesh.userData["isExportable"] = false;
@@ -340,7 +335,7 @@ exports.GeometryGenerationHelpers = {
      * @param {DildoGeneration} thisGenerator - The generator to add the new mesh to.
      * @param {THREE.Geometry} spineGeometry - The spine geometry itself.
      */
-    addSpine: function (thisGenerator, spineGeometry) {
+    addSpine: (thisGenerator, spineGeometry) => {
         var spineMesh = new THREE.LineSegments(spineGeometry, new THREE.LineBasicMaterial({
             color: 0xff8800
         }));
@@ -354,9 +349,9 @@ exports.GeometryGenerationHelpers = {
      * @param {DildoGeneration} thisGenerator - The generator to add the new two meshes to.
      * @param {DildoGeometry} unbufferedDildoGeometry - The dildo geometry to retrieve the perpendicular path from.
      */
-    addPerpendicularPaths: function (thisGenerator, unbufferedDildoGeometry) {
-        exports.GeometryGenerationHelpers.addPerpendicularPath(thisGenerator, unbufferedDildoGeometry.outerPerpLines, 0xff0000);
-        exports.GeometryGenerationHelpers.addPerpendicularPath(thisGenerator, unbufferedDildoGeometry.innerPerpLines, 0x00ff00);
+    addPerpendicularPaths: (thisGenerator, unbufferedDildoGeometry) => {
+        GeometryGenerationHelpers.addPerpendicularPath(thisGenerator, unbufferedDildoGeometry.outerPerpLines, 0xff0000);
+        GeometryGenerationHelpers.addPerpendicularPath(thisGenerator, unbufferedDildoGeometry.innerPerpLines, 0x00ff00);
     },
     /**
      * Add the given array of perpendicular lines (perpendicular to the mesh surface along the cut path)
@@ -366,13 +361,13 @@ exports.GeometryGenerationHelpers = {
      * @param {Array<THREE.Line3>} perpLines - The lines to
      * @param {number} materialColor - A color for the material to use (like 0xff0000 for red).
      */
-    addPerpendicularPath: function (thisGenerator, perpLines, materialColor) {
-        var outerPerpGeometry = new THREE.Geometry();
-        perpLines.forEach(function (perpLine) {
+    addPerpendicularPath: (thisGenerator, perpLines, materialColor) => {
+        const outerPerpGeometry = new THREE.Geometry();
+        perpLines.forEach((perpLine) => {
             outerPerpGeometry.vertices.push(perpLine.start.clone());
             outerPerpGeometry.vertices.push(perpLine.end.clone());
         });
-        var outerPerpMesh = new THREE.LineSegments(outerPerpGeometry, new THREE.LineBasicMaterial({
+        const outerPerpMesh = new THREE.LineSegments(outerPerpGeometry, new THREE.LineBasicMaterial({
             color: materialColor
         }));
         outerPerpMesh.position.y = -100;

@@ -9,7 +9,6 @@
   "dependencies": {
     "@babel/core": "^7.14.8",
     "@types/earcut": "^2.1.1",
-    "@types/three": "^0.130.2",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",
     "awesome-typescript-loader": "^5.2.1",

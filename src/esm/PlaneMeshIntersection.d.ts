@@ -11,7 +11,6 @@
  * @version 1.0.0
  */
 import * as THREE from "three";
-import { IDildoGeometry } from "./interfaces";
 export declare class PlaneMeshIntersection {
     pointsOfIntersection: Array<THREE.Vector3>;
     a: THREE.Vector3;
@@ -32,9 +31,9 @@ export declare class PlaneMeshIntersection {
      *
      * @param {THREE.Mesh} mesh
      * @param {THREE.Geometry} geometry
-     * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
+     * @param {THREE.PlaneGeometry} plane
      * @returns {Array<THREE.Vector3>}
      */
-    getIntersectionPoints: (mesh: THREE.Mesh, geometry: THREE.Geometry | IDildoGeometry, plane: THREE.Mesh, planeGeometryReal: THREE.PlaneGeometry) => Array<THREE.Vector3>;
+    getIntersectionPoints: (mesh: any, geometry: any, plane: any) => Array<THREE.Vector3>;
     private __setPointOfIntersection;
 }

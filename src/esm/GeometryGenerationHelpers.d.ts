@@ -11,7 +11,6 @@
 import * as THREE from "three";
 import { Polygon, XYCoords } from "plotboilerplate";
 import { DildoOptions, IDildoGeneration, IDildoGeometry } from "./interfaces";
-import { DildoBaseClass } from "./DildoGeometry";
 export declare const GeometryGenerationHelpers: {
     /**
      * Create a (right-turning) triangle of the three vertices at index A, B and C.
@@ -24,7 +23,7 @@ export declare const GeometryGenerationHelpers: {
      * @param {number} vertIndexC
      * @param {boolean=false} inverseFaceDirection - If true then the face will have left winding order (instead of right which is the default).
      */
-    makeFace3: (geometry: THREE.Geometry | DildoBaseClass, vertIndexA: number, vertIndexB: number, vertIndexC: number, inverseFaceDirection?: boolean) => void;
+    makeFace3: (geometry: THREE.Geometry, vertIndexA: number, vertIndexB: number, vertIndexC: number, inverseFaceDirection?: boolean) => void;
     /**
      * Build a triangulated face4 (two face3) for the given vertex indices. The method will create
      * two right-turning triangles by default, or two left-turning triangles if `inverseFaceDirection`.
@@ -44,7 +43,7 @@ export declare const GeometryGenerationHelpers: {
      * @param {number} vertIndexD - The fourth vertex index.
      * @param {boolean=false} inverseFaceDirection - If true then the face will have left winding order (instead of right which is the default).
      */
-    makeFace4: (geometry: THREE.Geometry | DildoBaseClass, vertIndexA: number, vertIndexB: number, vertIndexC: number, vertIndexD: number, inverseFaceDirection?: boolean) => void;
+    makeFace4: (geometry: THREE.Geometry, vertIndexA: number, vertIndexB: number, vertIndexC: number, vertIndexD: number, inverseFaceDirection?: boolean) => void;
     /**
      * Create texture UV coordinates for the rectangular two  triangles at matrix indices a, b, c and d.
      *
@@ -57,7 +56,7 @@ export declare const GeometryGenerationHelpers: {
      * @param {number} baseShapeSegmentCount - The total number of segments on the base shape.
      * @param {boolean=false} inverseFaceDirection - If true then the UV mapping is applied in left winding order (instead of right which is the default).
      */
-    addCylindricUV4: (geometry: THREE.Geometry | DildoBaseClass, a: number, b: number, c: number, d: number, outlineSegmentCount: number, baseShapeSegmentCount: number, inverseFaceDirection?: boolean) => void;
+    addCylindricUV4: (geometry: THREE.Geometry, a: number, b: number, c: number, d: number, outlineSegmentCount: number, baseShapeSegmentCount: number, inverseFaceDirection?: boolean) => void;
     /**
      * Create texture UV coordinates for the triangle at matrix indices a, b and c.
      *
@@ -65,7 +64,7 @@ export declare const GeometryGenerationHelpers: {
      * @param {number} a - The current base shape segment index, must be inside [0,baseShapeSegmentCount-1].
      * @param {number} baseShapeSegmentCount - The total number of base shape segments.
      */
-    addPyramidalBaseUV3: (geometry: THREE.Geometry | DildoBaseClass, a: number, baseShapeSegmentCount: number) => void;
+    addPyramidalBaseUV3: (geometry: THREE.Geometry, a: number, baseShapeSegmentCount: number) => void;
     /**
      * Flatten an array of 2d vertices into a flat array of coordinates.
      * (required by the earcut algorithm for example).
@@ -92,20 +91,20 @@ export declare const GeometryGenerationHelpers: {
      * Note also that the mesh is open at the cut plane.
      *
      * @param {THREE.Geometry} unbufferedGeometry - The geometry to slice.
-     * @param {THREE.Plane} plane PlaneGeometry???
+     * @param {THREE.PlaneGeometry} plane
      * @return {THREE.Geometry}
      */
-    makeSlice: (unbufferedGeometry: THREE.Geometry, plane: THREE.Plane) => THREE.Geometry;
+    makeSlice: (unbufferedGeometry: THREE.Geometry, plane: THREE.PlaneGeometry) => THREE.Geometry;
     /**
      * This function creates the cut intersection elements to fill the (open) slice meshes.
      *
      * @param {DildoGeneration} thisGenerator
      * @param {THREE.Mesh} mesh
      * @param {IDildoGeometry} unbufferedGeometry
-     * @param {THREE.Plane} planeGeometry
+     * @param {THREE.Plane} planeMesh
      * @returns
      */
-    makeAndAddPlaneIntersection: (thisGenerator: IDildoGeneration, mesh: THREE.Mesh, unbufferedGeometry: IDildoGeometry, planeGeometry: THREE.Mesh, planeGeometryReal: THREE.PlaneGeometry, options: DildoOptions) => THREE.Vector3[];
+    makeAndAddPlaneIntersection: (thisGenerator: IDildoGeneration, mesh: THREE.Mesh, unbufferedGeometry: IDildoGeometry, planeMesh: THREE.Plane, options: DildoOptions) => THREE.Vector3[];
     makeAndAddMassivePlaneIntersection: (thisGenerator: IDildoGeneration, unbufferedGeometry: IDildoGeometry) => void;
     makeAndAddHollowPlaneIntersection: (thisGenerator: IDildoGeneration, unbufferedGeometry: IDildoGeometry) => void;
     /**

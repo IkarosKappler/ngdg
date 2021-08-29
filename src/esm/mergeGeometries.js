@@ -9,7 +9,7 @@
  * @version  1.0.0
  */
 import * as THREE from "three";
-import { Face3 } from "three/examples/jsm/deprecated/Geometry";
+// import { Geometry, Face3 } from "three/examples/jsm/deprecated/Geometry";
 import { locateVertexInArray } from "./locateVertexInArray";
 const EPS = 0.000001;
 /**
@@ -23,7 +23,7 @@ const EPS = 0.000001;
  * @param {THREE.Geometry} baseGeometry
  * @param {THREE.Geometry} mergeGeometry
  */
-export const mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
+export const mergeGeometries = (baseGeometry, mergeGeometry, epsilon) => {
     if (typeof epsilon === "undefined") {
         epsilon = EPS;
     }
@@ -36,7 +36,7 @@ export const mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
         // baseGeometry.faces.push(new THREE.Face3(a, b, c));
         // TODO: how to use this here?
         // Face3 is not a constructor!!! Just a type!!!
-        baseGeometry.faces.push(new Face3(a, b, c));
+        baseGeometry.faces.push(new THREE.Face3(a, b, c));
         if (mergeGeometry.faceVertexUvs.length > 0 && f < mergeGeometry.faceVertexUvs[0].length) {
             var uvData = mergeGeometry.faceVertexUvs[0][f]; // [Vector2,Vector2,Vector2]
             baseGeometry.faceVertexUvs[0].push([uvData[0].clone(), uvData[1].clone(), uvData[2].clone()]);
@@ -59,11 +59,11 @@ export const mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
  * @param {number} epsilon
  * @returns Array<number>
  */
-var mergeAndMapVertices = function (baseGeometry, mergeGeometry, epsilon) {
-    var vertexMap = []; // Array<number>
+export const mergeAndMapVertices = (baseGeometry, mergeGeometry, epsilon) => {
+    const vertexMap = [];
     for (var v = 0; v < mergeGeometry.vertices.length; v++) {
-        var mergeVert = mergeGeometry.vertices[v];
-        var indexInBase = locateVertexInArray(baseGeometry.vertices, mergeVert, epsilon);
+        const mergeVert = mergeGeometry.vertices[v];
+        const indexInBase = locateVertexInArray(baseGeometry.vertices, mergeVert, epsilon);
         if (indexInBase === -1) {
             // The current vertex cannot be found in the base geometry.
             //  -> add to geometry and remember new index.

@@ -105,7 +105,12 @@
       GUP
     );
 
-    var dildoGeneration = new DildoGeneration("dildo-canvas");
+    var dildoGeneration = new DildoGeneration("dildo-canvas", {
+      makeOrbitControls: function (camera, domElement) {
+        // console.l
+        return new THREE.OrbitControls(camera, domElement);
+      }
+    });
     var modal = new Modal();
 
     // +---------------------------------------------------------------------------------
