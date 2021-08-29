@@ -10,7 +10,6 @@
  * @date     2021-07-06
  * @version  1.0.0
  */
-import { Geometry } from "three/examples/jsm/deprecated/Geometry";
 export declare class PathFinder {
     /**
      * Remembers all vertex indices that were already visited.
@@ -66,7 +65,7 @@ export declare class PathFinder {
      * @param {THREE.Vector3[]} pathVertices - The unsorted vertices (must form a connected path on the geometry).
      * @return {Array<number[]>} An array of paths; each path consists of an array of path vertex indices in the `pathVertices` param.
      */
-    findAllPathsOnMesh(unbufferedGeometry: Geometry, pathVertices: Array<THREE.Vector3>): Array<number[]>;
+    findAllPathsOnMesh(unbufferedGeometry: THREE.Geometry, pathVertices: Array<THREE.Vector3>): Array<number[]>;
     /**
      * Find the next sequence unvisited path (indices) of vertices that are directly connected
      * via some faces on the geometry's surface.
@@ -80,7 +79,7 @@ export declare class PathFinder {
      * @param {number} unvisitedIndex - The path vertex (index) to start with. This can be picked randomly.
      * @returns {Array<number>} The indices of the found path in an array (index sequence).
      */
-    findUnvisitedPaths(unbufferedGeometry: Geometry, pathVertIndices: Array<number>, unvisitedIndex: number): Array<number>;
+    findUnvisitedPaths(unbufferedGeometry: THREE.Geometry, pathVertIndices: Array<number>, unvisitedIndex: number): Array<number>;
     /**
      * Find the next unvisited vertex index that connects the given (unvisited) vertex
      * index of the path.
@@ -92,7 +91,7 @@ export declare class PathFinder {
      * @param {number} unvisitedIndex
      * @returns {number} The next adjacent face index or -1 if none can be found.
      */
-    findAdjacentFace(unbufferedGeometry: Geometry, pathVertIndices: Array<number>, unvisitedIndex: number): number;
+    findAdjacentFace(unbufferedGeometry: THREE.Geometry, pathVertIndices: Array<number>, unvisitedIndex: number): number;
     /**
      * Checks if the given vertex index (one of the path vertices) was already
      * marked as being visited.

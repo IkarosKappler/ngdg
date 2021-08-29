@@ -13,6 +13,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PathFinder = void 0;
+// import { Face3, Geometry } from "three/examples/jsm/deprecated/Geometry";
 var EPS = 0.000001;
 var PathFinder = /** @class */ (function () {
     /**

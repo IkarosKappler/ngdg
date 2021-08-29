@@ -4,7 +4,7 @@
  * @modified 2021-08-04 Ported to Typsescript from vanilla JS.
  * @version  1.0.1
  */
-import { Geometry } from "three/examples/jsm/deprecated/Geometry";
+import * as THREE from "three";
 import { Bounds } from "plotboilerplate";
 export declare const UVHelpers: {
     /**
@@ -16,5 +16,5 @@ export declare const UVHelpers: {
      * @param {number} vertIndexB - ...
      * @param {number} vertIndexC - ...
      */
-    makeFlatTriangleUVs: (thisGeometry: Geometry, shapeBounds: Bounds, vertIndexA: number, vertIndexB: number, vertIndexC: number) => void;
+    makeFlatTriangleUVs: (thisGeometry: THREE.Geometry, shapeBounds: Bounds, vertIndexA: number, vertIndexB: number, vertIndexC: number) => void;
 };

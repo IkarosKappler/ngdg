@@ -13,9 +13,12 @@ Because 3d printing, web 3d, and dildos are cool.
 - Configure webpack to handle type definitions in node_modules correctly.
 - Port all vanilla JS parts to Typescript.
 - Arrange splits on plane.
-- Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
+- Update to THREE >= r125. Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
   (not supported any more since r125). See https://sbcode.net/threejs/geometry-to-buffergeometry/ for details.
 - Rename base branch to 'main'.
+- Create a Typescript port from mapbox/earcut.
+- Create a Typescript port from tdhooper/threejs-slice-geometry.
+- Add a proper Typescript interface for all available dildo generation options.
 
 ### Changelog
 
@@ -54,6 +57,7 @@ Dependencies
 
 - HTML5 Canvas
 - HTML5 WebGL
+- [threejs-slice-geometry](https://github.com/tdhooper/threejs-slice-geometry)
 
 ### Used Libraries
 

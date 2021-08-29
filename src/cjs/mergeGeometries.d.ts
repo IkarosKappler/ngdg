@@ -8,7 +8,7 @@
  * @modified 2021-08-04 Ported to Typescript from vanilla JS.
  * @version  1.0.0
  */
-import { Geometry } from "three/examples/jsm/deprecated/Geometry";
+import * as THREE from "three";
 /**
  * This function tries to merge the 'mergeGeometry' into the 'baseGeometry'.
  * It assumes that both geometries are somehow connected, so it will try to
@@ -20,7 +20,7 @@ import { Geometry } from "three/examples/jsm/deprecated/Geometry";
  * @param {THREE.Geometry} baseGeometry
  * @param {THREE.Geometry} mergeGeometry
  */
-export declare const mergeGeometries: (baseGeometry: Geometry, mergeGeometry: Geometry, epsilon?: number) => void;
+export declare const mergeGeometries: (baseGeometry: THREE.Geometry, mergeGeometry: THREE.Geometry, epsilon?: number) => void;
 /**
  * This function merges the vertices from a given geometry into a base geometry.
  * It will ty to locate existing vertices within an epsilon range and keep those. Vertices that
@@ -34,4 +34,4 @@ export declare const mergeGeometries: (baseGeometry: Geometry, mergeGeometry: Ge
  * @param {number} epsilon
  * @returns Array<number>
  */
-export declare const mergeAndMapVertices: (baseGeometry: Geometry, mergeGeometry: Geometry, epsilon: number) => Array<number>;
+export declare const mergeAndMapVertices: (baseGeometry: THREE.Geometry, mergeGeometry: THREE.Geometry, epsilon: number) => Array<number>;

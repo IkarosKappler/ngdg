@@ -8,11 +8,13 @@
   "types": "src/cjs/index.d.ts",
   "dependencies": {
     "@babel/core": "^7.14.8",
-    "@types/three": "^0.130.1",
+    "@types/earcut": "^2.1.1",
+    "@types/three": "^0.130.2",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.2.2",
+    "earcut": "^2.2.3",
     "eslint": "^7.32.0",
     "path": "^0.12.7",
     "plotboilerplate": "^1.12.6",
@@ -23,7 +25,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.30.0",
     "source-map-loader": "^3.0.0",
-    "three": "^0.131.3",
+    "three": "^0.124.0",
     "typescript": "^4.3.5",
     "webpack": "^5.48.0",
     "webpack-cli": "^4.7.2"

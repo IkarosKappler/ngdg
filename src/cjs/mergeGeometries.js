@@ -12,7 +12,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mergeAndMapVertices = exports.mergeGeometries = void 0;
 var THREE = require("three");
-var Geometry_1 = require("three/examples/jsm/deprecated/Geometry");
+// import { Geometry, Face3 } from "three/examples/jsm/deprecated/Geometry";
 var locateVertexInArray_1 = require("./locateVertexInArray");
 var EPS = 0.000001;
 /**
@@ -39,7 +39,7 @@ var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
         // baseGeometry.faces.push(new THREE.Face3(a, b, c));
         // TODO: how to use this here?
         // Face3 is not a constructor!!! Just a type!!!
-        baseGeometry.faces.push(new Geometry_1.Face3(a, b, c));
+        baseGeometry.faces.push(new THREE.Face3(a, b, c));
         if (mergeGeometry.faceVertexUvs.length > 0 && f < mergeGeometry.faceVertexUvs[0].length) {
             var uvData = mergeGeometry.faceVertexUvs[0][f]; // [Vector2,Vector2,Vector2]
             baseGeometry.faceVertexUvs[0].push([uvData[0].clone(), uvData[1].clone(), uvData[2].clone()]);
