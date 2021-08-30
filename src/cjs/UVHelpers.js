@@ -25,7 +25,6 @@ exports.UVHelpers = {
         var vertC = thisGeometry.vertices[vertIndexC];
         // Convert a position vertex { x, y, * } to UV coordinates { u, v }
         var getUVRatios = function (vert) {
-            // console.log((vert.x - shapeBounds.min.x) / shapeBounds.width, (vert.y - shapeBounds.min.y) / shapeBounds.height);
             return new THREE.Vector2((vert.x - shapeBounds.min.x) / shapeBounds.width, (vert.y - shapeBounds.min.y) / shapeBounds.height);
         };
         thisGeometry.faceVertexUvs[0].push([getUVRatios(vertA), getUVRatios(vertB), getUVRatios(vertC)]);

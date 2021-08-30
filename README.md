@@ -22,6 +22,8 @@ Because 3d printing, web 3d, and dildos are cool.
 
 ### Changelog
 
+- 2021-08-29
+  - Ported most of the classes to Typescript.
 - 2021-08-04
   - Complete refactor.
   - Using PlotBoilerplate for 2D drawing now.

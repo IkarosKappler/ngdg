@@ -12,29 +12,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GeometryGenerationHelpers = void 0;
 var THREE = require("three");
-// import earcut from "earcut"; // TODO: fix earcut types
-var earcut_1 = require("./thirdparty-ported/earcut"); // TODO: fix earcut types
+var earcut_1 = require("./thirdparty-ported/earcut"); // TODO: fix earcut types, convert to custum library
 var plotboilerplate_1 = require("plotboilerplate");
-// import sliceGeometry from "threejs-slice-geometry";
-var threejs_slice_geometry_1 = require("./thirdparty-ported/threejs-slice-geometry");
+var threejs_slice_geometry_1 = require("./thirdparty-ported/threejs-slice-geometry"); // TODO: convert to custom library
 var PlaneMeshIntersection_1 = require("./PlaneMeshIntersection");
 var clearDuplicateVertices3_1 = require("./clearDuplicateVertices3");
-// TODO: move to a global interfaces location
-// export interface DildoOptions {
-//   addPrecalculatedMassiveFaces?: boolean;
-//   addPrecalculatedHollowFaces?: boolean;
-//   addRawIntersectionTriangleMesh?: boolean;
-//   showSplitShape?: boolean;
-// }
-// interface IDildoGeneration {
-//   addMesh: (mesh: THREE.Mesh | THREE.Points | THREE.LineSegments) => void;
-// }
-// interface IDildoGeometry {
-//   readonly innerPerpLines: Array<THREE.Line3>;
-//   readonly outerPerpLines: Array<THREE.Line3>;
-//   getPerpendicularHullLines: () => Array<THREE.Line3>;
-//   getPerpendicularPathVertices: (includeBottom: boolean, getInner: boolean) => Array<THREE.Vector3>;
-// }
+var UVHelpers_1 = require("./UVHelpers");
+var constants_1 = require("./constants");
 exports.GeometryGenerationHelpers = {
     /**
      * Create a (right-turning) triangle of the three vertices at index A, B and C.
@@ -377,6 +361,59 @@ exports.GeometryGenerationHelpers = {
         }));
         outerPerpMesh.position.y = -100;
         thisGenerator.addMesh(outerPerpMesh);
+    },
+    // TODO: add to global helper functions
+    /**
+     * Make a triangulation of the given path specified by the verted indices.
+     *
+     * @param {Array<number>} connectedPath - An array of vertex indices.
+     * @return {THREE.Geometry} trianglesMesh
+     */
+    makePlaneTriangulation: function (generator, sliceGeometry, connectedPath, options) {
+        // Convert the connected paths indices to [x, y, x, y, x, y, ...] coordinates (requied by earcut)
+        var currentPathXYData = connectedPath.reduce(function (earcutInput, vertIndex) {
+            var vert = sliceGeometry.vertices[vertIndex];
+            earcutInput.push(vert.x, vert.y);
+            return earcutInput;
+        }, []);
+        // Array<number> : triplets of vertex indices in the plain XY array
+        var triangles = earcut_1.earcut(currentPathXYData);
+        // Convert triangle indices back to a geometry
+        var trianglesGeometry = new THREE.Geometry();
+        // We will merge the geometries in the end which will create clones of the vertices.
+        // No need to clone here.
+        // trianglesGeometry.vertices = leftSliceGeometry.vertices;
+        trianglesGeometry.vertices = connectedPath.map(function (geometryVertexIndex) {
+            return sliceGeometry.vertices[geometryVertexIndex];
+        });
+        // Array<{x,y}> is compatible with Array<{x,y,z}> here :)
+        var flatSideBounds = plotboilerplate_1.Bounds.computeFromVertices(trianglesGeometry.vertices.map(function (vector3) { return new plotboilerplate_1.Vertex(vector3.x, vector3.y); }));
+        for (var t = 0; t < triangles.length; t += 3) {
+            var a = triangles[t];
+            var b = triangles[t + 1];
+            var c = triangles[t + 2];
+            trianglesGeometry.faces.push(new THREE.Face3(a, b, c));
+            // Add UVs
+            UVHelpers_1.UVHelpers.makeFlatTriangleUVs(trianglesGeometry, flatSideBounds, a, b, c);
+        }
+        trianglesGeometry.uvsNeedUpdate = true;
+        // TODO: check if this is still required
+        trianglesGeometry.buffersNeedUpdate = true;
+        trianglesGeometry.computeVertexNormals();
+        var trianglesMesh = new THREE.Mesh(trianglesGeometry, new THREE.MeshBasicMaterial({
+            color: 0x0048ff,
+            transparent: true,
+            opacity: 0.55,
+            side: THREE.DoubleSide
+        }));
+        trianglesMesh.position.y = -100;
+        // trianglesMesh.position.z += 1.0; // Avoid Moiré with plane mesh?
+        trianglesMesh.userData["isExportable"] = false;
+        generator.partialResults[constants_1.KEY_PLANE_INTERSECTION_TRIANGULATION] = trianglesGeometry;
+        if (options.showSplitShapeTriangulation) {
+            generator.addMesh(trianglesMesh);
+        }
+        return trianglesGeometry;
     }
 };
 //# sourceMappingURL=GeometryGenerationHelpers.js.map

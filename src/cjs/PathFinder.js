@@ -13,8 +13,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PathFinder = void 0;
-// import { Face3, Geometry } from "three/examples/jsm/deprecated/Geometry";
-var EPS = 0.000001;
+// var EPS = 0.000001;
+var constants_1 = require("./constants");
 var PathFinder = /** @class */ (function () {
     /**
      * Construct a new PathFinder.
@@ -25,7 +25,7 @@ var PathFinder = /** @class */ (function () {
         this.visitedVertices = new Set();
         this.unvisitedVertIndices = new Set(); // <number>
         this.numVisitedVertices = 0;
-        this.epsilon = typeof epsilon !== "undefined" && epsilon >= 0 ? epsilon : EPS;
+        this.epsilon = typeof epsilon !== "undefined" && epsilon >= 0 ? epsilon : constants_1.EPS;
     }
     /**
      * Find all connected paths specified by the path vertex array, that lay on the geometry's surface.
@@ -63,7 +63,7 @@ var PathFinder = /** @class */ (function () {
             collectedPaths.push(path);
         }
         // Try to find adjacent paths to connect them.
-        return this.combineAdjacentPaths(collectedPaths, unbufferedGeometry, pathVertices);
+        return this.combineAdjacentPaths(collectedPaths, unbufferedGeometry);
     };
     /**
      * Find the next sequence unvisited path (indices) of vertices that are directly connected
@@ -143,63 +143,6 @@ var PathFinder = /** @class */ (function () {
     PathFinder.prototype.isVisited = function (vertIndex) {
         return this.visitedVertices.has(vertIndex);
     };
-    // /**
-    //  * A simple check to determine if a face of the geometry (given by the face index)
-    //  * is adjacent to the given vertex index (a vertex index in the geometry.).
-    //  *
-    //  * @param {*} unbufferedGeometry
-    //  * @param {*} f
-    //  * @param {*} geometryVertexIndex
-    //  * @returns
-    //  */
-    // const faceHasVertIndex = function (unbufferedGeometry, f, geometryVertexIndex) {
-    //   var face = unbufferedGeometry.faces[f];
-    //   return face.a === geometryVertexIndex || face.b === geometryVertexIndex || face.c === geometryVertexIndex;
-    // };
-    // /**
-    //  * Get an array of vertex indices inside the geometry that represent the given path vertices,
-    //  *
-    //  * If no equivalent geometry vertex can be found (for a path vertex) then the path vertex
-    //  * will be skipped.
-    //  * So the returned array might be shorter than the path – and thus, have gaps.
-    //  *
-    //  * @param {THREE.Geometry} unbufferedGeometry
-    //  * @param {Array<THREE.Vector3>} pathVertices
-    //  * @returns
-    //  */
-    // const mapVerticesToGeometryIndices = function (unbufferedGeometry, pathVertices, epsilon) {
-    //   var pathVertIndices = []; // number[]
-    //   for (var i = 0; i < pathVertices.length; i++) {
-    //     var pathVert = pathVertices[i];
-    //     var foundIndex = -1;
-    //     var foundDist = epsilon; // EPS;
-    //     for (var j = 0; j < unbufferedGeometry.vertices.length; j++) {
-    //       var curDist = unbufferedGeometry.vertices[j].distanceTo(pathVert);
-    //       if (curDist <= foundDist) {
-    //         // Remember geometry index if closest to path vertex
-    //         if (
-    //           foundIndex === -1 ||
-    //           // By convention use smalled vertex index if multiple found
-    //           (foundIndex !== -1 && unbufferedGeometry.vertices[foundIndex].distanceTo(pathVert) >= curDist && foundIndex > j)
-    //         ) {
-    //           foundIndex = j;
-    //           foundDist = curDist;
-    //         }
-    //       }
-    //     }
-    //     if (foundIndex === -1) {
-    //       console.warn(
-    //         "PathFinder.mapVerticesToGeometryIndices could not find a matching geometry vertex for path point " +
-    //           i +
-    //           ". The final result might be locally broken."
-    //       );
-    //     } else {
-    //       // Note: it may be possible that NO MATCHING GEOMETRY VERT was found (foundIndex = -1).
-    //       pathVertIndices.push(foundIndex);
-    //     }
-    //   } // END for i
-    //   return pathVertIndices;
-    // };
     /**
      * Find adjacent paths and connect them.
      *
@@ -208,12 +151,9 @@ var PathFinder = /** @class */ (function () {
      * @param {THREE.Vector3[]} pathVertices
      * @return {Array<number[]>} A new sequence of paths (a path is an array of vertex indices).
      */
-    // TODO: pathVertices seems not to be used
-    PathFinder.prototype.combineAdjacentPaths = function (collectedPaths, unbufferedGeometry, pathVertices) {
-        // Array<number[]>
+    PathFinder.prototype.combineAdjacentPaths = function (collectedPaths, unbufferedGeometry) {
         var resultPaths = [];
         // First build up an unvisited path set (set of path indices)
-        // Set<number>
         var unvisitedPathIndexSet = new Set(collectedPaths.map(function (_path, index) {
             return index;
         }));
@@ -261,16 +201,17 @@ var faceHasVertIndex = function (unbufferedGeometry, faceIndex, geometryVertexIn
  * will be skipped.
  * So the returned array might be shorter than the path – and thus, have gaps.
  *
- * @param {THREE.Geometry} unbufferedGeometry
- * @param {Array<THREE.Vector3>} pathVertices
+ * @param {THREE.Geometry} unbufferedGeometry - The Three.js geometry to use.
+ * @param {Array<THREE.Vector3>} pathVertices - The acual mesh vertices of the current path.
+ * @param {number} epsilon - Is required here (just pass through).
  * @returns
  */
 var mapVerticesToGeometryIndices = function (unbufferedGeometry, pathVertices, epsilon) {
-    var pathVertIndices = []; // number[]
+    var pathVertIndices = [];
     for (var i = 0; i < pathVertices.length; i++) {
         var pathVert = pathVertices[i];
         var foundIndex = -1;
-        var foundDist = epsilon; // EPS;
+        var foundDist = epsilon;
         for (var j = 0; j < unbufferedGeometry.vertices.length; j++) {
             var curDist = unbufferedGeometry.vertices[j].distanceTo(pathVert);
             if (curDist <= foundDist) {

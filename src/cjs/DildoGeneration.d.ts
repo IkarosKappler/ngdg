@@ -10,11 +10,13 @@
  **/
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { IDildoGeneration } from "./interfaces";
-interface DildoGenerationOptions {
-    makeOrbitControls: (camera: THREE.Camera, domElement: HTMLCanvasElement) => OrbitControls;
-}
+import { DildoGenerationOptions, DildoOptions, ExtendedDildoOptions, IDildoGeneration, IDildoGeometry } from "./interfaces";
 export declare class DildoGeneration implements IDildoGeneration {
+    /**
+     * @member {HTMLCanvasElement} canvas
+     * @memberof DildoGeneration
+     *
+     */
     canvas: HTMLCanvasElement;
     parent: HTMLElement;
     scene: THREE.Scene;
@@ -46,7 +48,7 @@ export declare class DildoGeneration implements IDildoGeneration {
      * @param {boolean?}   options.wireframe
      * @param {string}     options.renderFaces - "double" or "front" (default) or "back"
      **/
-    rebuild(options: any): void;
+    rebuild(options: ExtendedDildoOptions): void;
     /**
      * Perform the actual slice operation.
      *
@@ -63,7 +65,7 @@ export declare class DildoGeneration implements IDildoGeneration {
      * @param {DildoGeometry} latheUnbufferedGeometry - The unbuffered dildo geometry (required to obtain the perpendicular path lines).
      * @param {boolean} wireframe
      */
-    __performPlaneSlice(latheMesh: any, latheUnbufferedGeometry: any, wireframe: any, useTextureImage: any, textureImagePath: any, options: any): void;
+    __performPlaneSlice(latheMesh: THREE.Mesh, latheUnbufferedGeometry: IDildoGeometry, wireframe: boolean, useTextureImage: boolean, textureImagePath: string, options: DildoOptions): void;
     /**
      * NOT CURRENTLY IN USE (too unstable?)
      *
@@ -86,4 +88,3 @@ export declare class DildoGeneration implements IDildoGeneration {
      **/
     generateSTL(options: any): void;
 }
-export {};

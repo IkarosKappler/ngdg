@@ -15,6 +15,7 @@ var THREE = require("three");
 // import { Geometry, Face3 } from "three/examples/jsm/deprecated/Geometry";
 var locateVertexInArray_1 = require("./locateVertexInArray");
 var EPS = 0.000001;
+// import { EPS } from "./constants";
 /**
  * This function tries to merge the 'mergeGeometry' into the 'baseGeometry'.
  * It assumes that both geometries are somehow connected, so it will try to

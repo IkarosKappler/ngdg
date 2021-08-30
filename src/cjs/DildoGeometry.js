@@ -37,6 +37,7 @@ var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
 var earcut_1 = require("./thirdparty-ported/earcut"); // TODO: fix earcut types
 var UVHelpers_1 = require("./UVHelpers");
 var DEG_TO_RAD = Math.PI / 180.0;
+// import { DEG_TO_RAD } from "./constants";
 // This is a dirty workaround to
 // avoid direct class extending of THREE.Geometry.
 // I am using `THREE.Geometry.call(this);` instead :/
@@ -80,9 +81,6 @@ var DildoGeometry = /** @class */ (function (_super) {
         // The four corner vertices from the hollow shell plus the bottom vertex indices left and right
         _this.hollowBottomEdgeVertIndices = []; // [number,number,number,number, number, number]
         _this.hollowBottomTriagles = []; // Array<[number,number,number]>
-        // _buildVertices.call(this, options);
-        // _buildFaces.call(this, options);
-        // _buildUVMapping.call(this, options);
         _this._buildVertices(options);
         _this._buildFaces(options);
         _this._buildUVMapping(options);

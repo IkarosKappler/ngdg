@@ -95,7 +95,7 @@ export declare const GeometryGenerationHelpers: {
      * @param {THREE.Plane} plane PlaneGeometry???
      * @return {THREE.Geometry}
      */
-    makeSlice: (unbufferedGeometry: THREE.Geometry, plane: THREE.Plane) => THREE.Geometry;
+    makeSlice: (unbufferedGeometry: THREE.Geometry | IDildoGeometry, plane: THREE.Plane) => THREE.Geometry;
     /**
      * This function creates the cut intersection elements to fill the (open) slice meshes.
      *
@@ -132,4 +132,11 @@ export declare const GeometryGenerationHelpers: {
      * @param {number} materialColor - A color for the material to use (like 0xff0000 for red).
      */
     addPerpendicularPath: (thisGenerator: IDildoGeneration, perpLines: Array<THREE.Line3>, materialColor: number) => void;
+    /**
+     * Make a triangulation of the given path specified by the verted indices.
+     *
+     * @param {Array<number>} connectedPath - An array of vertex indices.
+     * @return {THREE.Geometry} trianglesMesh
+     */
+    makePlaneTriangulation: (generator: IDildoGeneration, sliceGeometry: THREE.Geometry, connectedPath: number[], options: DildoOptions) => THREE.Geometry;
 };

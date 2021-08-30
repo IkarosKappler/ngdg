@@ -11,11 +11,7 @@
  **/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DildoGeneration = void 0;
-// TODO: show normals for split elements, too
-var plotboilerplate_1 = require("plotboilerplate");
 var THREE = require("three");
-var earcut_1 = require("./thirdparty-ported/earcut"); // TODO: fix earcut types
-var OrbitControls_js_1 = require("three/examples/jsm/controls/OrbitControls.js");
 var VertexNormalsHelper_1 = require("three/examples/jsm/helpers/VertexNormalsHelper");
 var STLExporter_1 = require("three/examples/jsm/exporters/STLExporter");
 var DildoGeometry_1 = require("./DildoGeometry");
@@ -24,15 +20,7 @@ var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
 var mergeGeometries_1 = require("./mergeGeometries");
 var PathFinder_1 = require("./PathFinder");
 var randomWebColor_1 = require("./randomWebColor");
-var UVHelpers_1 = require("./UVHelpers");
-var KEY_LEFT_SLICE_GEOMETRY = "KEY_LEFT_SLICE_GEOMETRY"; // THREE.Geometry
-var KEY_RIGHT_SLICE_GEOMETRY = "KEY_RIGHT_SLICE_GEOMETRY"; // THREE.Geometry
-var KEY_LEFT_SLICE_PLANE = "KEY_LEFT_SLICE_PLANE"; // THREE.Plane
-var KEY_RIGHT_SLICE_PLANE = "KEY_RIGHT_SLICE_PLANE"; // THREE.Plane
-var KEY_SPLIT_PANE_MESH = "KEY_SPLIT_PANE_MESH"; // THREE.Mesh
-var KEY_PLANE_INTERSECTION_POINTS = "KEY_PLANE_INTERSECTION_POINTS"; // Array<Vector3>
-var KEY_PLANE_INTERSECTION_TRIANGULATION = "KEY_PLANE_INTERSECTION_TRIANGULATION"; // THREE.Geometry
-var KEY_SPLIT_TRIANGULATION_GEOMETRIES = "KEY_SPLIT_TRIANGULATION_GEOMETRIES"; // Array<THREE.Geometry>
+var constants_1 = require("./constants");
 var DildoGeneration = /** @class */ (function () {
     function DildoGeneration(canvasId, options) {
         this.canvas = document.getElementById(canvasId);
@@ -63,7 +51,6 @@ var DildoGeneration = /** @class */ (function () {
             preserveDrawingBuffer: true,
             antialias: true // false
         });
-        console.log("OrbitControls", OrbitControls_js_1.OrbitControls);
         // TODO: check if this works!
         // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls = options.makeOrbitControls(this.camera, this.renderer.domElement);
@@ -78,13 +65,11 @@ var DildoGeneration = /** @class */ (function () {
             _self.resizeCanvas();
         });
         this.resizeCanvas();
-        var i = 0;
-        function animate() {
+        var animate = function () {
             requestAnimationFrame(animate);
             _self.controls.update();
             _self.renderer.render(_self.scene, _self.camera);
-            i++;
-        }
+        };
         animate();
     }
     /**
@@ -129,9 +114,9 @@ var DildoGeneration = /** @class */ (function () {
         var material = DildoMaterials_1.DildoMaterials.createMainMaterial(useTextureImage, wireframe, textureImagePath, doubleSingleSide);
         var bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry);
         bufferedGeometry.computeVertexNormals();
-        var latheMesh = new THREE.Mesh(bufferedGeometry, material);
+        var dildoMesh = new THREE.Mesh(bufferedGeometry, material);
         this.camera.lookAt(new THREE.Vector3(20, 0, 150));
-        this.camera.lookAt(latheMesh.position);
+        this.camera.lookAt(dildoMesh.position);
         var spineGeometry = new THREE.Geometry();
         dildoGeometry.spineVertices.forEach(function (spineVert) {
             spineGeometry.vertices.push(spineVert.clone());
@@ -140,16 +125,16 @@ var DildoGeneration = /** @class */ (function () {
             GeometryGenerationHelpers_1.GeometryGenerationHelpers.addSpine(this, spineGeometry);
         }
         if (options.performSlice) {
-            this.__performPlaneSlice(latheMesh, dildoGeometry, wireframe, useTextureImage, textureImagePath, options);
+            this.__performPlaneSlice(dildoMesh, dildoGeometry, wireframe, useTextureImage, textureImagePath, options);
             // The CSG operations are not reliable.
             // this.__performCsgSlice(latheMesh, geometry, material);
         }
         else {
-            latheMesh.position.y = -100;
-            latheMesh.userData["isExportable"] = true;
-            this.addMesh(latheMesh);
+            dildoMesh.position.y = -100;
+            dildoMesh.userData["isExportable"] = true;
+            this.addMesh(dildoMesh);
             if (options.showNormals) {
-                var vnHelper = new VertexNormalsHelper_1.VertexNormalsHelper(latheMesh, options.normalsLength, 0x00ff00); // Fourth param 1?
+                var vnHelper = new VertexNormalsHelper_1.VertexNormalsHelper(dildoMesh, options.normalsLength, 0x00ff00); // Fourth param 1?
                 this.scene.add(vnHelper);
                 this.geometries.push(vnHelper);
             }
@@ -176,12 +161,12 @@ var DildoGeneration = /** @class */ (function () {
      * @param {boolean} wireframe
      */
     DildoGeneration.prototype.__performPlaneSlice = function (latheMesh, latheUnbufferedGeometry, wireframe, useTextureImage, textureImagePath, options) {
-        var epsilon = 0.000001;
+        // var epsilon = 0.000001;
         var leftPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
         var leftSliceGeometry = GeometryGenerationHelpers_1.GeometryGenerationHelpers.makeSlice(latheUnbufferedGeometry, leftPlane);
         var rightPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0);
         var rightSliceGeometry = GeometryGenerationHelpers_1.GeometryGenerationHelpers.makeSlice(latheUnbufferedGeometry, rightPlane);
-        var sliceMaterial = DildoMaterials_1.DildoMaterials.createSliceMaterial(useTextureImage, wireframe, textureImagePath); // wireframe);
+        var sliceMaterial = DildoMaterials_1.DildoMaterials.createSliceMaterial(useTextureImage, wireframe, textureImagePath);
         // Find points on intersection path (this is a single path in this configuration)
         var planeGeom = new THREE.PlaneGeometry(300, 500);
         var planeMesh = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial({
@@ -191,31 +176,30 @@ var DildoGeneration = /** @class */ (function () {
             side: THREE.DoubleSide
         }));
         planeMesh.rotation.x = Math.PI / 5;
-        this.partialResults[KEY_SPLIT_PANE_MESH] = planeMesh;
+        this.partialResults[constants_1.KEY_SPLIT_PANE_MESH] = planeMesh;
         if (options.showSplitPane) {
             planeMesh.position.z = 0.5;
             this.addMesh(planeMesh);
         }
-        // Array<Vector3>
-        var planeIntersectionPoints = GeometryGenerationHelpers_1.GeometryGenerationHelpers.makeAndAddPlaneIntersection(this, latheMesh, latheUnbufferedGeometry, planeMesh, // leftPlane, // planeMesh, // planeGeom, // planeMesh,
-        planeGeom, options);
+        var planeIntersectionPoints = GeometryGenerationHelpers_1.GeometryGenerationHelpers.makeAndAddPlaneIntersection(this, latheMesh, latheUnbufferedGeometry, planeMesh, planeGeom, options);
         // Find the connected path (there is only one if you choose the cut plane properly)
         // Note that it doesn't matter which slice geometry we use as left and right match
         // perfectly together at their cut plane.
         // Array<number[]>
         var connectedPaths = new PathFinder_1.PathFinder().findAllPathsOnMesh(leftSliceGeometry, planeIntersectionPoints);
         // TEST what the connected paths look like
+        // TODO: add an option and only add to scene if desired.
         for (var p = 0; p < connectedPaths.length; p++) {
             var geometry = new THREE.Geometry();
             geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
                 return leftSliceGeometry.vertices[geometryVertexIndex];
             });
-            var linesMesh = new THREE.Line(geometry, new THREE.LineBasicMaterial({
+            var linesMesh_1 = new THREE.Line(geometry, new THREE.LineBasicMaterial({
                 color: randomWebColor_1.randomWebColor(i, "Mixed") // 0x8800a8
             }));
-            linesMesh.position.y = -100;
+            linesMesh_1.position.y = -100;
             // linesMesh.position.z = -50;
-            this.addMesh(linesMesh);
+            this.addMesh(linesMesh_1);
         }
         if (options.addPrecalculatedShapeOutlines) {
             // TEST what the line mesh looks like
@@ -231,13 +215,13 @@ var DildoGeneration = /** @class */ (function () {
         // Triangulate connected paths
         var triangulatedGeometries = [];
         for (var i = 0; i < connectedPaths.length; i++) {
-            var triangulationGeometry = makePlaneTriangulation(this, leftSliceGeometry, connectedPaths[i], options);
+            var triangulationGeometry = GeometryGenerationHelpers_1.GeometryGenerationHelpers.makePlaneTriangulation(this, leftSliceGeometry, connectedPaths[i], options);
             triangulatedGeometries.push(triangulationGeometry);
             // Merge together left and right slice geometry with the triangulated
             // cut faces.
             if (options.closeCutAreas) {
-                mergeGeometries_1.mergeGeometries(leftSliceGeometry, triangulationGeometry, epsilon);
-                mergeGeometries_1.mergeGeometries(rightSliceGeometry, triangulationGeometry, epsilon);
+                mergeGeometries_1.mergeGeometries(leftSliceGeometry, triangulationGeometry, constants_1.EPS);
+                mergeGeometries_1.mergeGeometries(rightSliceGeometry, triangulationGeometry, constants_1.EPS);
             }
         }
         if (options.showLeftSplit) {
@@ -273,12 +257,12 @@ var DildoGeneration = /** @class */ (function () {
             }
         }
         // Remember everything
-        this.partialResults[KEY_LEFT_SLICE_PLANE] = leftPlane;
-        this.partialResults[KEY_LEFT_SLICE_GEOMETRY] = leftSliceGeometry;
-        this.partialResults[KEY_RIGHT_SLICE_PLANE] = rightPlane;
-        this.partialResults[KEY_RIGHT_SLICE_GEOMETRY] = rightSliceGeometry;
-        this.partialResults[KEY_PLANE_INTERSECTION_POINTS] = planeIntersectionPoints;
-        this.partialResults[KEY_SPLIT_TRIANGULATION_GEOMETRIES] = triangulatedGeometries;
+        this.partialResults[constants_1.KEY_LEFT_SLICE_PLANE] = leftPlane;
+        this.partialResults[constants_1.KEY_LEFT_SLICE_GEOMETRY] = leftSliceGeometry;
+        this.partialResults[constants_1.KEY_RIGHT_SLICE_PLANE] = rightPlane;
+        this.partialResults[constants_1.KEY_RIGHT_SLICE_GEOMETRY] = rightSliceGeometry;
+        this.partialResults[constants_1.KEY_PLANE_INTERSECTION_POINTS] = planeIntersectionPoints;
+        this.partialResults[constants_1.KEY_SPLIT_TRIANGULATION_GEOMETRIES] = triangulatedGeometries;
     };
     //   /**
     //    * Make a triangulation of the given path specified by the verted indices.
@@ -386,8 +370,8 @@ var DildoGeneration = /** @class */ (function () {
                 old.geometry.dispose();
                 old.material.dispose();
             }
-            this.geometries = [];
         }
+        this.geometries = [];
     };
     /**
      * Generate an STL string from the (exportable) meshes that are currently stored inside this generator.
@@ -413,57 +397,4 @@ var DildoGeneration = /** @class */ (function () {
     return DildoGeneration;
 }()); // END class
 exports.DildoGeneration = DildoGeneration;
-// TODO: add to global helper functions
-/**
- * Make a triangulation of the given path specified by the verted indices.
- *
- * @param {Array<number>} connectedPath - An array of vertex indices.
- * @return {THREE.Geometry} trianglesMesh
- */
-var makePlaneTriangulation = function (generator, sliceGeometry, connectedPath, options) {
-    // Convert the connected paths indices to [x, y, x, y, x, y, ...] coordinates (requied by earcut)
-    var currentPathXYData = connectedPath.reduce(function (earcutInput, vertIndex) {
-        var vert = sliceGeometry.vertices[vertIndex];
-        earcutInput.push(vert.x, vert.y);
-        return earcutInput;
-    }, []);
-    // Array<number> : triplets of vertex indices in the plain XY array
-    var triangles = earcut_1.earcut(currentPathXYData);
-    // Convert triangle indices back to a geometry
-    var trianglesGeometry = new THREE.Geometry();
-    // We will merge the geometries in the end which will create clones of the vertices.
-    // No need to clone here.
-    // trianglesGeometry.vertices = leftSliceGeometry.vertices;
-    trianglesGeometry.vertices = connectedPath.map(function (geometryVertexIndex) {
-        return sliceGeometry.vertices[geometryVertexIndex];
-    });
-    // Array<{x,y}> is compatible with Array<{x,y,z}> here :)
-    var flatSideBounds = plotboilerplate_1.Bounds.computeFromVertices(trianglesGeometry.vertices.map(function (vector3) { return new plotboilerplate_1.Vertex(vector3.x, vector3.y); }));
-    for (var t = 0; t < triangles.length; t += 3) {
-        var a = triangles[t];
-        var b = triangles[t + 1];
-        var c = triangles[t + 2];
-        trianglesGeometry.faces.push(new THREE.Face3(a, b, c));
-        // Add UVs
-        UVHelpers_1.UVHelpers.makeFlatTriangleUVs(trianglesGeometry, flatSideBounds, a, b, c);
-    }
-    trianglesGeometry.uvsNeedUpdate = true;
-    // TODO: check if this is still required
-    trianglesGeometry.buffersNeedUpdate = true;
-    trianglesGeometry.computeVertexNormals();
-    var trianglesMesh = new THREE.Mesh(trianglesGeometry, new THREE.MeshBasicMaterial({
-        color: 0x0048ff,
-        transparent: true,
-        opacity: 0.55,
-        side: THREE.DoubleSide
-    }));
-    trianglesMesh.position.y = -100;
-    // trianglesMesh.position.z += 1.0; // Avoid Moiré with plane mesh?
-    trianglesMesh.userData["isExportable"] = false;
-    generator.partialResults[KEY_PLANE_INTERSECTION_TRIANGULATION] = trianglesGeometry;
-    if (options.showSplitShapeTriangulation) {
-        generator.addMesh(trianglesMesh);
-    }
-    return trianglesGeometry;
-};
 //# sourceMappingURL=DildoGeneration.js.map
