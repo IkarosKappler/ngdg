@@ -41,7 +41,7 @@ exports.DildoMaterials = (function () {
                     emissive: 0x0,
                     reflectivity: 1.0,
                     refractionRatio: 0.89,
-                    map: loadTextureImage(textureImagePath)
+                    map: DildoMaterials.loadTextureImage(textureImagePath)
                 })
                 : new THREE.MeshPhongMaterial({
                     color: 0x3838ff,
@@ -76,26 +76,27 @@ exports.DildoMaterials = (function () {
                     emissive: 0x0,
                     reflectivity: 1.0,
                     refractionRatio: 0.89,
-                    map: useTextureImage ? loadTextureImage(textureImagePath) : null,
+                    map: useTextureImage ? DildoMaterials.loadTextureImage(textureImagePath) : null,
                     vertexColors: false
                 });
             }
         },
-    };
-    /**
-     * Load a texture or get it from the internal buffer if it was already loaded before.
-     *
-     * @param {string} path - The path (absolute or relative) to the texture image to load.
-     * @returns {THREE.Texture}
-     */
-    var loadTextureImage = function (path) {
-        var texture = textureStore.get(path);
-        if (!texture) {
-            var loader = new THREE.TextureLoader();
-            var texture = loader.load(path);
-            textureStore.set(path, texture);
+        /**
+         * Load a texture or get it from the internal buffer if it was already loaded before.
+         *
+         * @param {string} path - The path (absolute or relative) to the texture image to load.
+         * @returns {THREE.Texture}
+         */
+        loadTextureImage: function (path) {
+            var texture = textureStore.get(path);
+            if (!texture) {
+                // TODO: use a singleton here?
+                var loader = new THREE.TextureLoader();
+                texture = loader.load(path);
+                textureStore.set(path, texture);
+            }
+            return texture;
         }
-        return texture;
     };
     return DildoMaterials;
 })();

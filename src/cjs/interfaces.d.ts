@@ -5,7 +5,7 @@
  * @date    2021-08-28
  * @version 1.0.0
  */
-import { BezierPath } from "plotboilerplate";
+import { BezierPath, Polygon } from "plotboilerplate";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 export interface DildoGenerationOptions {
     makeOrbitControls: (camera: THREE.Camera, domElement: HTMLCanvasElement) => OrbitControls;
@@ -29,6 +29,9 @@ export interface DildoOptions {
     twistAngle: number;
     baseShapeExcentricity: number;
     closeCutAreas: boolean;
+    previewBumpmap: boolean;
+    useBumpmap: boolean;
+    bumpmapStrength: number;
     showBasicPerpendiculars: boolean;
     addSpine: boolean;
     showSplitPane: boolean;
@@ -42,6 +45,9 @@ export interface DildoOptions {
     addPrecalculatedShapeOutlines: boolean;
 }
 export interface ExtendedDildoOptions extends DildoOptions {
+    baseShape: Polygon;
+    bumpmapTexture?: THREE.Texture;
+    isBending: boolean;
     outline: BezierPath;
 }
 export interface IDildoGeneration {
@@ -55,8 +61,12 @@ export interface IDildoGeometry {
     uvsNeedUpdate: boolean;
     buffersNeedUpdate: boolean;
     spineVertices: Array<THREE.Vector3>;
+    dildoNormals: Array<Array<THREE.Vector3>>;
     readonly innerPerpLines: Array<THREE.Line3>;
     readonly outerPerpLines: Array<THREE.Line3>;
     getPerpendicularHullLines: () => Array<THREE.Line3>;
     getPerpendicularPathVertices: (includeBottom: boolean, getInner: boolean) => Array<THREE.Vector3>;
+}
+export interface ExportOptions {
+    onComplete?: (data: string) => void;
 }

@@ -414,6 +414,37 @@ exports.GeometryGenerationHelpers = {
             generator.addMesh(trianglesMesh);
         }
         return trianglesGeometry;
+    },
+    /**
+     * Normalize a 2D vector to a given length.
+     *
+     * @param {XYCoords} base - The start point.
+     * @param {XYCoords} extend - The end point.
+     * @param {number} normalLength - The desired length
+     */
+    // TODO: add types
+    normalizeVectorXY: function (base, extend, normalLength) {
+        var diff = { x: extend.x - base.x, y: extend.y - base.y }; // XYCoords
+        var length = Math.sqrt(diff.x * diff.x + diff.y * diff.y);
+        var ratio = normalLength / length;
+        extend.x = base.x + diff.x * ratio;
+        extend.y = base.y + diff.y * ratio;
+    },
+    /**
+     * Normalize a 2D vector to a given length.
+     *
+     * @param {XYCoords} base - The start point.
+     * @param {XYCoords} extend - The end point.
+     * @param {number} normalLength - The desired length
+     */
+    // TODO: add types
+    normalizeVectorXYZ: function (base, extend, normalLength) {
+        var diff = { x: extend.x - base.x, y: extend.y - base.y, z: extend.z - base.z };
+        var length = Math.sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+        var ratio = normalLength / length;
+        extend.x = base.x + diff.x * ratio;
+        extend.y = base.y + diff.y * ratio;
+        extend.z = base.z + diff.z * ratio;
     }
 };
 //# sourceMappingURL=GeometryGenerationHelpers.js.map

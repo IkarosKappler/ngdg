@@ -139,4 +139,20 @@ export declare const GeometryGenerationHelpers: {
      * @return {THREE.Geometry} trianglesMesh
      */
     makePlaneTriangulation: (generator: IDildoGeneration, sliceGeometry: THREE.Geometry, connectedPath: number[], options: DildoOptions) => THREE.Geometry;
+    /**
+     * Normalize a 2D vector to a given length.
+     *
+     * @param {XYCoords} base - The start point.
+     * @param {XYCoords} extend - The end point.
+     * @param {number} normalLength - The desired length
+     */
+    normalizeVectorXY: (base: any, extend: any, normalLength: any) => void;
+    /**
+     * Normalize a 2D vector to a given length.
+     *
+     * @param {XYCoords} base - The start point.
+     * @param {XYCoords} extend - The end point.
+     * @param {number} normalLength - The desired length
+     */
+    normalizeVectorXYZ: (base: THREE.Vector3, extend: THREE.Vector3, normalLength: number) => void;
 };

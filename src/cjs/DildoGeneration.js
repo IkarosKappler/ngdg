@@ -21,6 +21,7 @@ var mergeGeometries_1 = require("./mergeGeometries");
 var PathFinder_1 = require("./PathFinder");
 var randomWebColor_1 = require("./randomWebColor");
 var constants_1 = require("./constants");
+var computeVertexNormals_1 = require("./computeVertexNormals");
 var DildoGeneration = /** @class */ (function () {
     function DildoGeneration(canvasId, options) {
         this.canvas = document.getElementById(canvasId);
@@ -106,14 +107,18 @@ var DildoGeneration = /** @class */ (function () {
         this.removeCachedGeometries();
         var baseRadius = options.outline.getBounds().width;
         var baseShape = GeometryGenerationHelpers_1.GeometryGenerationHelpers.mkCircularPolygon(baseRadius, options.shapeSegmentCount, options.baseShapeExcentricity);
-        var dildoGeometry = new DildoGeometry_1.DildoGeometry(Object.assign({ baseShape: baseShape }, options));
+        var useBumpmap = typeof options.useBumpmap !== "undefined" ? options.useBumpmap : false;
+        var bumpmapPath = "./assets/img/bumpmap.png";
+        var bumpmapTexture = useBumpmap ? DildoMaterials_1.DildoMaterials.loadTextureImage(bumpmapPath) : null;
+        var dildoGeometry = new DildoGeometry_1.DildoGeometry(Object.assign({ baseShape: baseShape, bumpmapTexture: bumpmapTexture }, options));
         var useTextureImage = options.useTextureImage && typeof options.textureImagePath !== "undefined";
         var textureImagePath = typeof options.textureImagePath !== "undefined" ? options.textureImagePath : null;
         var doubleSingleSide = options.renderFaces === "double" ? THREE.DoubleSide : options.renderFaces === "back" ? THREE.BackSide : THREE.FrontSide;
-        var wireframe = typeof options.wireframe !== "undefined" ? options.wireframe : null;
+        var wireframe = typeof options.wireframe !== "undefined" ? options.wireframe : false;
         var material = DildoMaterials_1.DildoMaterials.createMainMaterial(useTextureImage, wireframe, textureImagePath, doubleSingleSide);
         var bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry);
         bufferedGeometry.computeVertexNormals();
+        // dildoGeometry.computeFaceNormals();
         var dildoMesh = new THREE.Mesh(bufferedGeometry, material);
         this.camera.lookAt(new THREE.Vector3(20, 0, 150));
         this.camera.lookAt(dildoMesh.position);
@@ -135,6 +140,7 @@ var DildoGeneration = /** @class */ (function () {
             this.addMesh(dildoMesh);
             if (options.showNormals) {
                 var vnHelper = new VertexNormalsHelper_1.VertexNormalsHelper(dildoMesh, options.normalsLength, 0x00ff00); // Fourth param 1?
+                // TODO: use addMesh() here?
                 this.scene.add(vnHelper);
                 this.geometries.push(vnHelper);
             }
@@ -142,6 +148,104 @@ var DildoGeneration = /** @class */ (function () {
         // Add perpendicular path?
         if (options.showBasicPerpendiculars) {
             GeometryGenerationHelpers_1.GeometryGenerationHelpers.addPerpendicularPaths(this, dildoGeometry);
+        }
+        // Show computed dildo normals?
+        // if (true) {
+        //   console.log("Adding normals geometry");
+        //   const dildoNormalGeometry = new THREE.Geometry();
+        //   for (var i = 0; i < dildoGeometry.dildoNormals.length; i++) {
+        //     for (var j = 0; j < dildoGeometry.dildoNormals[i].length; j++) {
+        //       dildoNormalGeometry.vertices.push(dildoGeometry.dildoNormals[i][j].clone());
+        //       if (i > 0 && j > 0) {
+        //         GeometryGenerationHelpers.makeFace4(dildoNormalGeometry, i - 1, i, j, j - 1);
+        //       }
+        //     }
+        //   }
+        //   //   const dildoNormalsMesh = new THREE.Mesh(
+        //   //     dildoNormalGeometry,
+        //   //     new THREE.MeshBasicMaterial({
+        //   //       color: 0x0048ff,
+        //   //       transparent: false,
+        //   //       opacity: 0.55,
+        //   //       side: THREE.DoubleSide
+        //   //     })
+        //   //   );
+        //   const dildoNormalsMesh: THREE.Line = new THREE.Line(
+        //     dildoNormalGeometry,
+        //     new THREE.LineBasicMaterial({
+        //       color: randomWebColor(i, "Mixed") // 0x8800a8
+        //     })
+        //   );
+        //   dildoNormalsMesh.position.y = -100;
+        //   this.addMesh(dildoNormalsMesh);
+        // }
+        // // Show computed dildo normals?
+        // if (true) {
+        //   // console.log(bufferedGeometry)
+        //   // const vertexNormals : THREE.BufferAttribute | THREE.InterleavedBufferAttribute = bufferedGeometry.getAttribute("normal");
+        //   console.log("normals", vertexNormals);
+        //   const collectedVertexNormals = computeVertexNormals(dildoGeometry);
+        //   const dildoNormalGeometry = new THREE.Geometry();
+        //   dildoNormalGeometry.vertices = collectedVertexNormals.map((normalLine: THREE.Line3) => normalLine.end);
+        //   const dildoNormalsMesh: THREE.Points = new THREE.Points(
+        //     dildoNormalGeometry,
+        //     new THREE.PointsMaterial({
+        //       size: 1.4,
+        //       color: 0x00ffff
+        //     })
+        //   );
+        //   dildoNormalsMesh.position.y = -100;
+        //   this.addMesh(dildoNormalsMesh);
+        // }
+        // // Show computed dildo normals?
+        // if (true) {
+        //   // console.log(bufferedGeometry)
+        //   const vertexNormals: THREE.BufferAttribute | THREE.InterleavedBufferAttribute = bufferedGeometry.getAttribute("normal");
+        //   console.log("normals", vertexNormals);
+        //   const dildoNormalGeometry = new THREE.Geometry();
+        //   let vertIndex: number = 0;
+        //   console.log(
+        //     "dildoGeometry.vertices.length",
+        //     dildoGeometry.vertices.length,
+        //     "dildoGeometry.faces.length",
+        //     dildoGeometry.faces.length,
+        //     "vertexNormals.array.length/3",
+        //     vertexNormals.array.length / 3
+        //   );
+        //   for (var i = 0; i < vertexNormals.array.length; i += 3) {
+        //     const normalVector: THREE.Vector3 = new THREE.Vector3(vertexNormals[i], vertexNormals[i + 1], vertexNormals[i + 2]);
+        //     normalVector.add(dildoGeometry.vertices[vertIndex]);
+        //     dildoNormalGeometry.vertices.push(normalVector);
+        //     vertIndex++;
+        //   }
+        //   const dildoNormalsMesh: THREE.Points = new THREE.Points(
+        //     dildoNormalGeometry,
+        //     new THREE.PointsMaterial({
+        //       size: 1.4,
+        //       color: 0x00ffff
+        //     })
+        //   );
+        //   dildoNormalsMesh.position.y = -100;
+        //   this.addMesh(dildoNormalsMesh);
+        // }
+        // Show computed dildo normals?
+        if (options.previewBumpmap) {
+            // console.log(bufferedGeometry)
+            // const vertexNormals : THREE.BufferAttribute | THREE.InterleavedBufferAttribute = bufferedGeometry.getAttribute("normal");
+            // console.log("normals", vertexNormals);
+            var collectedVertexNormals = computeVertexNormals_1.computeVertexNormals(dildoGeometry, bufferedGeometry);
+            var dildoNormalGeometry = new THREE.Geometry();
+            dildoNormalGeometry.vertices = collectedVertexNormals.map(function (normalLine) {
+                var endPoint = normalLine.end.clone();
+                GeometryGenerationHelpers_1.GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
+                return endPoint;
+            });
+            var dildoNormalsMesh = new THREE.Points(dildoNormalGeometry, new THREE.PointsMaterial({
+                size: 1.4,
+                color: 0x00ffff
+            }));
+            dildoNormalsMesh.position.y = -100;
+            this.addMesh(dildoNormalsMesh);
         }
     };
     /**
@@ -379,8 +483,9 @@ var DildoGeneration = /** @class */ (function () {
      * @param {function(string)} options.onComplete
      **/
     DildoGeneration.prototype.generateSTL = function (options) {
-        var exporter = new STLExporter_1.STLExporter(); // new THREE.STLExporter();
-        var stlBuffer = []; // Array<string>
+        var exporter = new STLExporter_1.STLExporter();
+        var stlBuffer = [];
+        // TODO: merge all exportable geometries together and export as one.
         for (var i in this.geometries) {
             if (this.geometries[i].userData["isExportable"] === true) {
                 var stlData = exporter.parse(this.geometries[i]);

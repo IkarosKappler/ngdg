@@ -19,6 +19,7 @@ Because 3d printing, web 3d, and dildos are cool.
 - Create a Typescript port from mapbox/earcut.
 - Create a Typescript port from tdhooper/threejs-slice-geometry.
 - Add a proper Typescript interface for all available dildo generation options.
+- STL-Export: merge all exportable geometries together and export as one.
 
 ### Changelog
 
@@ -64,3 +65,7 @@ Dependencies
 ### Used Libraries
 
 - dat.gui
+
+### Credits
+
+- [jkmott about computing vertex normals](https://meshola.wordpress.com/2016/07/24/three-js-vertex-normals/) as used in the `computeVertexNormals` function.

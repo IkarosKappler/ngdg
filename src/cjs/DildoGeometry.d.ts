@@ -7,9 +7,9 @@
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
  * @version  1.0.2
  **/
-import { Bounds, Polygon } from "plotboilerplate";
+import { Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
-import { DildoOptions } from "./interfaces";
+import { ExtendedDildoOptions } from "./interfaces";
 export declare class DildoBaseClass {
     vertices: Array<THREE.Vector3>;
     faces: Array<THREE.Face3>;
@@ -33,6 +33,7 @@ export declare class DildoGeometry extends DildoBaseClass {
     flatSideBounds: Bounds;
     hollowBottomEdgeVertIndices: Array<number>;
     hollowBottomTriagles: Array<[number, number, number]>;
+    dildoNormals: Array<Array<THREE.Vector3>>;
     /**
      * Create a new dildo geometry from the passed options..
      *
@@ -43,7 +44,7 @@ export declare class DildoGeometry extends DildoBaseClass {
      * @param {boolean} options.isBending - Switch bending on/off no matter what the bend angle says.
      * @param {boolean} options.makeHollow - Make a hollow mold.
      **/
-    constructor(options: DildoOptions);
+    constructor(options: ExtendedDildoOptions);
     /**
      *
      * @param {Polygon} baseShape
@@ -80,7 +81,6 @@ export declare class DildoGeometry extends DildoBaseClass {
     /**
      *
      * @param {Polygon} baseShape
-     * @param {Vertex} shapeCenter
      * @param {Bounds} outlineBounds
      * @param {THREE.Vertex3} outlineVert
      * @param {number} sliceIndex
@@ -92,7 +92,8 @@ export declare class DildoGeometry extends DildoBaseClass {
      * @param {number=} normalsLength
      * @return { yMin: number, yMax : number }
      */
-    __buildPerps(baseShape: any, outlineBounds: any, outlineVert: any, perpendicularVert: any, heightT: any, isBending: any, bendAngle: any, arcRadius: any, normalizePerpendiculars: any, normalsLength: any): void;
+    __buildPerps(baseShape: Polygon, outlineBounds: Bounds, outlineVert: Vertex, // THREE.Vector3?
+    perpendicularVert: Vertex, heightT: number, isBending: boolean, bendAngle: number, arcRadius: number, normalizePerpendiculars: boolean, normalsLength: number): void;
     /**
      * Pre: perpLines are already built.
      *
@@ -147,6 +148,7 @@ export declare class DildoGeometry extends DildoBaseClass {
      * @param {number} yCenter
      * @returns
      */
+    applyBumpMap(bumpMapTexture: THREE.Texture): void;
     /**
      * Build up the faces for this geometry.
      * @param {*} options
@@ -202,4 +204,5 @@ export declare class DildoGeometry extends DildoBaseClass {
      * @param {} options
      */
     private _buildVertices;
+    private __applyBumpmap;
 }

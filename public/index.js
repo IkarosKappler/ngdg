@@ -79,6 +79,9 @@
         twistAngle: 0.0,
         baseShapeExcentricity: 1.0,
         closeCutAreas: true,
+        previewBumpmap: true,
+        useBumpmap: false,
+        bumpmapStrength: 10.0,
         // Render settings
         showBasicPerpendiculars: false,
         addSpine: false,
@@ -342,6 +345,12 @@
       fold0.add(config, "closeTop").onChange( function() { rebuild() } ).name('closeTop').title('Close the geometry at the top point (recommended).');
       // prettier-ignore
       fold0.add(config, "closeBottom").onChange( function() { rebuild() } ).name('closeBottom').title('Close the geometry at the bottom point.');
+      // prettier-ignore
+      fold0.add(config, "previewBumpmap").onChange( function() { rebuild() } ).name('previewBumpmap').title('Check to toggle the bumpmap preview.');
+      // prettier-ignore
+      fold0.add(config, "useBumpmap").onChange( function() { rebuild() } ).name('useBumpmap').title('Check wether the mesh should use a bumpmap.');
+      // prettier-ignore
+      fold0.add(config, "bumpmapStrength").min(0.0).max(20.0).onChange( function() { rebuild() } ).name('bumpmapStrength').title('How strong should the bumpmap be applied.');
 
       var fold1 = gui.addFolder("Hollow");
       // prettier-ignore
