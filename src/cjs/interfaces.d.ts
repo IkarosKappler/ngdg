@@ -31,6 +31,8 @@ export interface DildoOptions {
     closeCutAreas: boolean;
     previewBumpmap: boolean;
     useBumpmap: boolean;
+    showBumpmapTargets: boolean;
+    bumpmap?: IBumpmap;
     bumpmapStrength: number;
     showBasicPerpendiculars: boolean;
     addSpine: boolean;
@@ -69,4 +71,17 @@ export interface IDildoGeometry {
 }
 export interface ExportOptions {
     onComplete?: (data: string) => void;
+}
+/**
+ * A bumpmap stores height information for any rectangular vertex mesh (spheres, cylinders, lathes, dildos, ...).
+ */
+export interface IBumpmap {
+    /**
+     * Get the bumpmap's height-value at the given relative coordinates.
+     *
+     * @param {number} ratioX - A value for the horizontal position, must be in [0..1].
+     * @param {number} ratioY - A value for the vertical position, must be in [0..1].
+     * @return {number} The bumpmap's height value in the range [0..1].
+     */
+    getHeightAt(ratioX: number, ratioY: number): number;
 }

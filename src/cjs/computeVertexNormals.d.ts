@@ -13,4 +13,13 @@
  * @version 1.0.0
  */
 import * as THREE from "three";
+/**
+ * Compute the vertex normals of a base geometry and its buffered counterpart (both parts are required here).
+ *
+ * Note that unbufferedGeometry.computeVertexNormals() must have been called for this to work.
+ *
+ * @param {THREE.Geometry} unbufferedGeometry - The base geometry.
+ * @param {THREE.BufferedGeometry} bufferedGeometry - The buffered geometry.
+ * @returns
+ */
 export declare const computeVertexNormals: (unbufferedGeometry: THREE.Geometry, bufferedGeometry: THREE.BufferGeometry) => Array<THREE.Line3>;

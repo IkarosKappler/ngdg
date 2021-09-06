@@ -56,6 +56,18 @@
     var bezierDistanceT = 0;
     var bezierDistanceLine = null;
 
+    var bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
+    var bumpmap = null;
+    const image = ImageStore.getImage(bumpmapPath, function (completeImage) {
+      console.log("Image loaded", completeImage);
+      bumpmap = new RasteredBumpmap(completeImage);
+      console.log("Bumpap initialized");
+      rebuild();
+    });
+    if (ImageStore.isImageLoaded(image) && !bumpmap) {
+      bumpmap = new RasteredBumpmap(image);
+    }
+
     // +---------------------------------------------------------------------------------
     // | A global config that's attached to the dat.gui control interface.
     // +-------------------------------
@@ -81,6 +93,8 @@
         closeCutAreas: true,
         previewBumpmap: true,
         useBumpmap: false,
+        showBumpmapTargets: false,
+        bumpmap: null, // This is not configurable at the moment and merge in later
         bumpmapStrength: 10.0,
         // Render settings
         showBasicPerpendiculars: false,
@@ -199,8 +213,14 @@
         (function (bId) {
           return function () {
             if (bId == buildId) {
-              // Set the bending flag if bendAngle is not zero.
-              dildoGeneration.rebuild(Object.assign({ outline: outline, isBending: config.bendAngle !== 0 }, config));
+              console.log("[rebuild] Bumpap initialized?", bumpmap);
+              // Set the bending flag only if bendAngle if not zero.
+              // dildoGeneration.rebuild(
+              //   Object.assign({ outline: outline, isBending: config.bendAngle !== 0, bumpmap: bumpmap }, config)
+              // );
+              dildoGeneration.rebuild(
+                Object.assign(config, { outline: outline, isBending: config.bendAngle !== 0, bumpmap: bumpmap })
+              );
             }
           };
         })(buildId),
@@ -373,6 +393,8 @@
       fold3.add(config, "wireframe").onChange( function() { rebuild() } ).name('wireframe').title('Display the mesh as a wireframe model?');
       // prettier-ignore
       fold3.add(config, "useTextureImage").onChange( function() { rebuild() } ).name('useTextureImage').title('Use a texture image?');
+      // prettier-ignore
+      fold3.add(config, "showBumpmapTargets").onChange( function() { rebuild() } ).name('showBumpmapTargets').title('Show the bumpmap maximal lerping hull.');
       // prettier-ignore
       fold3.add(config, "renderFaces", ["double","front","back"]).onChange( function() { rebuild() } ).name('renderFaces').title('Render mesh faces double or single sided?');
       // prettier-ignore

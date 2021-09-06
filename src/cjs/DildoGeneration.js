@@ -108,17 +108,20 @@ var DildoGeneration = /** @class */ (function () {
         var baseRadius = options.outline.getBounds().width;
         var baseShape = GeometryGenerationHelpers_1.GeometryGenerationHelpers.mkCircularPolygon(baseRadius, options.shapeSegmentCount, options.baseShapeExcentricity);
         var useBumpmap = typeof options.useBumpmap !== "undefined" ? options.useBumpmap : false;
-        var bumpmapPath = "./assets/img/bumpmap.png";
-        var bumpmapTexture = useBumpmap ? DildoMaterials_1.DildoMaterials.loadTextureImage(bumpmapPath) : null;
-        var dildoGeometry = new DildoGeometry_1.DildoGeometry(Object.assign({ baseShape: baseShape, bumpmapTexture: bumpmapTexture }, options));
+        // const bumpmapPath = "./assets/img/bumpmap.png";
+        // const bumpmapTexture: THREE.Texture | null = useBumpmap ? DildoMaterials.loadTextureImage(bumpmapPath) : null;
+        var bumpmap = useBumpmap && options.bumpmap ? options.bumpmap : null;
+        var dildoGeometry = new DildoGeometry_1.DildoGeometry(Object.assign({ baseShape: baseShape /*, bumpmapTexture: bumpmapTexture */ }, options));
         var useTextureImage = options.useTextureImage && typeof options.textureImagePath !== "undefined";
         var textureImagePath = typeof options.textureImagePath !== "undefined" ? options.textureImagePath : null;
         var doubleSingleSide = options.renderFaces === "double" ? THREE.DoubleSide : options.renderFaces === "back" ? THREE.BackSide : THREE.FrontSide;
         var wireframe = typeof options.wireframe !== "undefined" ? options.wireframe : false;
+        // const isBumpmappingPossible : boolean = (options.useBumpmap && bumpmapTexture);
         var material = DildoMaterials_1.DildoMaterials.createMainMaterial(useTextureImage, wireframe, textureImagePath, doubleSingleSide);
+        // This can be overriden in later steps! (after bumpmap was applied)
         var bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry);
         bufferedGeometry.computeVertexNormals();
-        // dildoGeometry.computeFaceNormals();
+        // This can be overriden in later steps! (after bumpmap was applied)
         var dildoMesh = new THREE.Mesh(bufferedGeometry, material);
         this.camera.lookAt(new THREE.Vector3(20, 0, 150));
         this.camera.lookAt(dildoMesh.position);
@@ -128,6 +131,66 @@ var DildoGeneration = /** @class */ (function () {
         });
         if (options.addSpine) {
             GeometryGenerationHelpers_1.GeometryGenerationHelpers.addSpine(this, spineGeometry);
+        }
+        // if (options.performSlice) {
+        //   this.__performPlaneSlice(dildoMesh, dildoGeometry, wireframe, useTextureImage, textureImagePath, options);
+        //   // The CSG operations are not reliable.
+        //   // this.__performCsgSlice(latheMesh, geometry, material);
+        // } else {
+        //   dildoMesh.position.y = -100;
+        //   dildoMesh.userData["isExportable"] = true;
+        //   this.addMesh(dildoMesh);
+        //   if (options.showNormals) {
+        //     var vnHelper = new VertexNormalsHelper(dildoMesh, options.normalsLength, 0x00ff00); // Fourth param 1?
+        //     // TODO: use addMesh() here?
+        //     this.scene.add(vnHelper);
+        //     this.geometries.push(vnHelper);
+        //   }
+        // }
+        // Add perpendicular path?
+        if (options.showBasicPerpendiculars) {
+            GeometryGenerationHelpers_1.GeometryGenerationHelpers.addPerpendicularPaths(this, dildoGeometry);
+        }
+        // Show computed dildo normals?
+        if (options.previewBumpmap || options.useBumpmap) {
+            var collectedVertexNormals = computeVertexNormals_1.computeVertexNormals(dildoGeometry, bufferedGeometry);
+            var dildoNormalGeometry = new THREE.Geometry();
+            dildoNormalGeometry.vertices = collectedVertexNormals.map(function (normalLine) {
+                var endPoint = normalLine.end.clone();
+                GeometryGenerationHelpers_1.GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
+                return endPoint;
+            });
+            var dildoNormalsMesh = new THREE.Points(dildoNormalGeometry, new THREE.PointsMaterial({
+                size: 1.4,
+                color: 0x00ffff
+            }));
+            if (options.showBumpmapTargets) {
+                dildoNormalsMesh.position.y = -100;
+                this.addMesh(dildoNormalsMesh);
+            }
+            console.log("options.useBumpmap", options.useBumpmap, "bumpmap", bumpmap);
+            // const heightMap = createHeightMapFromImage( bumpmapTexture ):
+            if (options.useBumpmap && bumpmap) {
+                for (var y = 0; y < dildoGeometry.vertexMatrix.length; y++) {
+                    for (var x = 0; x < dildoGeometry.vertexMatrix[y].length; x++) {
+                        var vertIndex = dildoGeometry.vertexMatrix[y][x];
+                        var vertex = dildoGeometry.vertices[vertIndex];
+                        var yRatio = y / (dildoGeometry.vertexMatrix.length - 1);
+                        var xRatio = x / (dildoGeometry.vertexMatrix[y].length - 1);
+                        var lerpFactor = bumpmap.getHeightAt(xRatio, yRatio); //  * options.bumpmapStrength;
+                        // if (y < 5 && x < 5) {
+                        //   console.log("lerpFactor", lerpFactor, "x", x, "y", y, "xRatio", xRatio, "yRatio", yRatio);
+                        // }
+                        var lerpTarget = dildoNormalGeometry.vertices[vertIndex];
+                        vertex.lerp(lerpTarget, lerpFactor);
+                    }
+                }
+                // Override the buffered geometry! (bumpmap has been applied)
+                bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry);
+                bufferedGeometry.computeVertexNormals();
+                // Override the mesh! (bumpmap has been applied)
+                dildoMesh = new THREE.Mesh(bufferedGeometry, material);
+            }
         }
         if (options.performSlice) {
             this.__performPlaneSlice(dildoMesh, dildoGeometry, wireframe, useTextureImage, textureImagePath, options);
@@ -144,108 +207,6 @@ var DildoGeneration = /** @class */ (function () {
                 this.scene.add(vnHelper);
                 this.geometries.push(vnHelper);
             }
-        }
-        // Add perpendicular path?
-        if (options.showBasicPerpendiculars) {
-            GeometryGenerationHelpers_1.GeometryGenerationHelpers.addPerpendicularPaths(this, dildoGeometry);
-        }
-        // Show computed dildo normals?
-        // if (true) {
-        //   console.log("Adding normals geometry");
-        //   const dildoNormalGeometry = new THREE.Geometry();
-        //   for (var i = 0; i < dildoGeometry.dildoNormals.length; i++) {
-        //     for (var j = 0; j < dildoGeometry.dildoNormals[i].length; j++) {
-        //       dildoNormalGeometry.vertices.push(dildoGeometry.dildoNormals[i][j].clone());
-        //       if (i > 0 && j > 0) {
-        //         GeometryGenerationHelpers.makeFace4(dildoNormalGeometry, i - 1, i, j, j - 1);
-        //       }
-        //     }
-        //   }
-        //   //   const dildoNormalsMesh = new THREE.Mesh(
-        //   //     dildoNormalGeometry,
-        //   //     new THREE.MeshBasicMaterial({
-        //   //       color: 0x0048ff,
-        //   //       transparent: false,
-        //   //       opacity: 0.55,
-        //   //       side: THREE.DoubleSide
-        //   //     })
-        //   //   );
-        //   const dildoNormalsMesh: THREE.Line = new THREE.Line(
-        //     dildoNormalGeometry,
-        //     new THREE.LineBasicMaterial({
-        //       color: randomWebColor(i, "Mixed") // 0x8800a8
-        //     })
-        //   );
-        //   dildoNormalsMesh.position.y = -100;
-        //   this.addMesh(dildoNormalsMesh);
-        // }
-        // // Show computed dildo normals?
-        // if (true) {
-        //   // console.log(bufferedGeometry)
-        //   // const vertexNormals : THREE.BufferAttribute | THREE.InterleavedBufferAttribute = bufferedGeometry.getAttribute("normal");
-        //   console.log("normals", vertexNormals);
-        //   const collectedVertexNormals = computeVertexNormals(dildoGeometry);
-        //   const dildoNormalGeometry = new THREE.Geometry();
-        //   dildoNormalGeometry.vertices = collectedVertexNormals.map((normalLine: THREE.Line3) => normalLine.end);
-        //   const dildoNormalsMesh: THREE.Points = new THREE.Points(
-        //     dildoNormalGeometry,
-        //     new THREE.PointsMaterial({
-        //       size: 1.4,
-        //       color: 0x00ffff
-        //     })
-        //   );
-        //   dildoNormalsMesh.position.y = -100;
-        //   this.addMesh(dildoNormalsMesh);
-        // }
-        // // Show computed dildo normals?
-        // if (true) {
-        //   // console.log(bufferedGeometry)
-        //   const vertexNormals: THREE.BufferAttribute | THREE.InterleavedBufferAttribute = bufferedGeometry.getAttribute("normal");
-        //   console.log("normals", vertexNormals);
-        //   const dildoNormalGeometry = new THREE.Geometry();
-        //   let vertIndex: number = 0;
-        //   console.log(
-        //     "dildoGeometry.vertices.length",
-        //     dildoGeometry.vertices.length,
-        //     "dildoGeometry.faces.length",
-        //     dildoGeometry.faces.length,
-        //     "vertexNormals.array.length/3",
-        //     vertexNormals.array.length / 3
-        //   );
-        //   for (var i = 0; i < vertexNormals.array.length; i += 3) {
-        //     const normalVector: THREE.Vector3 = new THREE.Vector3(vertexNormals[i], vertexNormals[i + 1], vertexNormals[i + 2]);
-        //     normalVector.add(dildoGeometry.vertices[vertIndex]);
-        //     dildoNormalGeometry.vertices.push(normalVector);
-        //     vertIndex++;
-        //   }
-        //   const dildoNormalsMesh: THREE.Points = new THREE.Points(
-        //     dildoNormalGeometry,
-        //     new THREE.PointsMaterial({
-        //       size: 1.4,
-        //       color: 0x00ffff
-        //     })
-        //   );
-        //   dildoNormalsMesh.position.y = -100;
-        //   this.addMesh(dildoNormalsMesh);
-        // }
-        // Show computed dildo normals?
-        if (options.previewBumpmap) {
-            // console.log(bufferedGeometry)
-            // const vertexNormals : THREE.BufferAttribute | THREE.InterleavedBufferAttribute = bufferedGeometry.getAttribute("normal");
-            // console.log("normals", vertexNormals);
-            var collectedVertexNormals = computeVertexNormals_1.computeVertexNormals(dildoGeometry, bufferedGeometry);
-            var dildoNormalGeometry = new THREE.Geometry();
-            dildoNormalGeometry.vertices = collectedVertexNormals.map(function (normalLine) {
-                var endPoint = normalLine.end.clone();
-                GeometryGenerationHelpers_1.GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
-                return endPoint;
-            });
-            var dildoNormalsMesh = new THREE.Points(dildoNormalGeometry, new THREE.PointsMaterial({
-                size: 1.4,
-                color: 0x00ffff
-            }));
-            dildoNormalsMesh.position.y = -100;
-            this.addMesh(dildoNormalsMesh);
         }
     };
     /**
