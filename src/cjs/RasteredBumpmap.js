@@ -7,20 +7,26 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RasteredBumpmap = void 0;
 var RasteredBumpmap = /** @class */ (function () {
-    function RasteredBumpmap(image) {
+    function RasteredBumpmap(image, rasterWidth, rasterHeight) {
         // TODO ...
-        console.log("Creating Bumpmap", image, image.naturalWidth, image.naturalHeight);
+        console.log("Creating Bumpmap", image, rasterWidth, rasterHeight, image.naturalWidth, image.naturalHeight);
+        // rasterWidth = image.naturalWidth;
+        // rasterHeight = image.naturalHeight;
+        // rasterWidth++;
+        // rasterHeight++;
         // var img = new Image();
         // img.src = url;
         var canvas = document.createElement("canvas");
-        canvas.setAttribute("width", image.naturalWidth + "px");
-        canvas.setAttribute("height", image.naturalHeight + "px");
+        // canvas.setAttribute("width", `${image.naturalWidth}px`);
+        // canvas.setAttribute("height", `${image.naturalHeight}px`);
+        canvas.setAttribute("width", rasterWidth + "px");
+        canvas.setAttribute("height", rasterHeight + "px");
         this.context = canvas.getContext("2d");
-        this.context.drawImage(image, 0, 0);
-        this.imageData = this.context.getImageData(0, 0, image.naturalWidth, image.naturalHeight).data;
+        this.context.drawImage(image, 0, 0, rasterWidth, rasterHeight);
+        this.imageData = this.context.getImageData(0, 0, rasterWidth, rasterHeight).data;
         this.image = image;
-        this.width = this.image.naturalWidth;
-        this.height = this.image.naturalHeight;
+        this.width = rasterWidth; // this.image.naturalWidth;
+        this.height = rasterHeight; // this.image.naturalHeight;
         // document.getElementById("testoutput").appendChild(canvas);
         // document.getElementById("testoutput").style.display = "block";
     }

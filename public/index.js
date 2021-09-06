@@ -58,15 +58,15 @@
 
     var bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
     var bumpmap = null;
-    const image = ImageStore.getImage(bumpmapPath, function (completeImage) {
-      console.log("Image loaded", completeImage);
-      bumpmap = new RasteredBumpmap(completeImage);
-      console.log("Bumpap initialized");
+    var bumpmapRasterImage = ImageStore.getImage(bumpmapPath, function (completeImage) {
+      // console.log("Image loaded", completeImage);
+      // bumpmap = new RasteredBumpmap(completeImage);
+      // console.log("Bumpap initialized");
       rebuild();
     });
-    if (ImageStore.isImageLoaded(image) && !bumpmap) {
-      bumpmap = new RasteredBumpmap(image);
-    }
+    // if (ImageStore.isImageLoaded(bumpmapRasterImage) && !bumpmap) {
+    //   bumpmap = new RasteredBumpmap(bumpmapRasterImage);
+    // }
 
     // +---------------------------------------------------------------------------------
     // | A global config that's attached to the dat.gui control interface.
@@ -213,6 +213,11 @@
         (function (bId) {
           return function () {
             if (bId == buildId) {
+              if (ImageStore.isImageLoaded(bumpmapRasterImage)) {
+                // Resize the bumpmap to satisfy the mesh resolution.
+                // bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.outlineSegmentCount, config.shapeSegmentCount);
+                bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.shapeSegmentCount, config.outlineSegmentCount);
+              }
               console.log("[rebuild] Bumpap initialized?", bumpmap);
               // Set the bending flag only if bendAngle if not zero.
               // dildoGeneration.rebuild(

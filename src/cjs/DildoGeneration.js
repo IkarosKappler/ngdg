@@ -177,10 +177,16 @@ var DildoGeneration = /** @class */ (function () {
                         var vertex = dildoGeometry.vertices[vertIndex];
                         var yRatio = y / (dildoGeometry.vertexMatrix.length - 1);
                         var xRatio = x / (dildoGeometry.vertexMatrix[y].length - 1);
-                        var lerpFactor = bumpmap.getHeightAt(xRatio, yRatio); //  * options.bumpmapStrength;
+                        var lerpFactor = bumpmap.getHeightAt(xRatio, yRatio);
                         // if (y < 5 && x < 5) {
                         //   console.log("lerpFactor", lerpFactor, "x", x, "y", y, "xRatio", xRatio, "yRatio", yRatio);
                         // }
+                        if (lerpFactor === NaN) {
+                            console.log("lerpFactor is NaN", x, y);
+                        }
+                        if (lerpFactor === undefined) {
+                            console.log("lerpFactor is undefined", x, y);
+                        }
                         var lerpTarget = dildoNormalGeometry.vertices[vertIndex];
                         vertex.lerp(lerpTarget, lerpFactor);
                     }

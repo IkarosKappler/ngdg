@@ -263,11 +263,7 @@ export class DildoGeneration implements IDildoGeneration {
             const vertex: THREE.Vector3 = dildoGeometry.vertices[vertIndex];
             const yRatio: number = y / (dildoGeometry.vertexMatrix.length - 1);
             const xRatio: number = x / (dildoGeometry.vertexMatrix[y].length - 1);
-            const lerpFactor: number = bumpmap.getHeightAt(xRatio, yRatio); //  * options.bumpmapStrength;
-
-            // if (y < 5 && x < 5) {
-            //   console.log("lerpFactor", lerpFactor, "x", x, "y", y, "xRatio", xRatio, "yRatio", yRatio);
-            // }
+            const lerpFactor: number = bumpmap.getHeightAt(xRatio, yRatio);
             const lerpTarget: THREE.Vector3 = dildoNormalGeometry.vertices[vertIndex];
             vertex.lerp(lerpTarget, lerpFactor);
           }

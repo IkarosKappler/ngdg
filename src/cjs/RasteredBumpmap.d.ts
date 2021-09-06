@@ -15,7 +15,7 @@ export declare class RasteredBumpmap implements IBumpmap {
     imageData: Uint8ClampedArray;
     width: number;
     height: number;
-    constructor(image: HTMLImageElement);
+    constructor(image: HTMLImageElement, rasterWidth: number, rasterHeight: number);
     /**
      * Get the bumpmap's height-value at the given relative coordinates.
      *
