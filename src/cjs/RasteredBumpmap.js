@@ -60,12 +60,19 @@ var RasteredBumpmap = /** @class */ (function () {
     RasteredBumpmap.prototype.createPreviewImage = function () {
         var imageElem = document.createElement("img");
         imageElem.setAttribute("src", this.canvas.toDataURL("image/png"));
+        imageElem.setAttribute("width", "" + this.width);
+        imageElem.setAttribute("height", "" + this.height);
         return imageElem;
+    };
+    /**
+     * Get the dimension of the bumpmap (number of columns and number of rows).
+     *
+     * @return {Dimension}
+     */
+    RasteredBumpmap.prototype.getDimension = function () {
+        return { width: this.width, height: this.height };
     };
     return RasteredBumpmap;
 }());
 exports.RasteredBumpmap = RasteredBumpmap;
-// const clamp = (n: number, min: number, max: number) => {
-//   return Math.max(Math.min(n, max), min);
-// };
 //# sourceMappingURL=RasteredBumpmap.js.map

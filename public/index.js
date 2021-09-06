@@ -243,10 +243,23 @@
      */
     var updateBumpmapPreview = function (bumpmap, isPreviewVisible) {
       var previewImageElem = bumpmap.createPreviewImage();
+      previewImageElem.style["object-fit"] = "contain";
+      previewImageElem.style["position"] = "relative";
+      previewImageElem.style["box-flex"] = 1;
+      previewImageElem.style["flex"] = "1 1 auto";
+      previewImageElem.style["width"] = "100%";
+      previewImageElem.style["height"] = "100%";
       var previewWrapper = document.getElementById("bumpmap-preview");
       GeometryGenerationHelpers.removeAllChildNodes(previewWrapper);
       previewWrapper.appendChild(previewImageElem);
-      previewWrapper.style.display = isPreviewVisible ? "block" : "none";
+
+      previewWrapper.style.display = isPreviewVisible ? "flex" : "none";
+
+      // var wrapperHeight = previewWrapper.getBoundingClientRect().height;
+      // console.log("wrapperHeight", wrapperHeight);
+      // var dimension = bumpmap.getDimension();
+      // var scaleFactor = wrapperHeight / dimension.height;
+      // previewWrapper.style.transform = "scale(" + scaleFactor + ")";
     };
 
     // +---------------------------------------------------------------------------------

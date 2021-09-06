@@ -3,7 +3,7 @@
  * @version 1.0.0
  * @date    2021-09-02
  */
-import { IBumpmap } from "./interfaces";
+import { Dimension, IBumpmap } from "./interfaces";
 export declare class RasteredBumpmap implements IBumpmap {
     image: HTMLImageElement;
     canvas: HTMLCanvasElement;
@@ -31,4 +31,10 @@ export declare class RasteredBumpmap implements IBumpmap {
      * @return {HTMLImageElement}
      */
     createPreviewImage(): HTMLImageElement;
+    /**
+     * Get the dimension of the bumpmap (number of columns and number of rows).
+     *
+     * @return {Dimension}
+     */
+    getDimension(): Dimension;
 }

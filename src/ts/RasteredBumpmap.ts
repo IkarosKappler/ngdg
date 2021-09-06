@@ -5,7 +5,7 @@
  */
 
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
-import { IBumpmap } from "./interfaces";
+import { Dimension, IBumpmap } from "./interfaces";
 
 interface IPixel {
   r: number;
@@ -85,10 +85,17 @@ export class RasteredBumpmap implements IBumpmap {
   createPreviewImage(): HTMLImageElement {
     const imageElem: HTMLImageElement = document.createElement("img");
     imageElem.setAttribute("src", this.canvas.toDataURL("image/png"));
+    imageElem.setAttribute("width", `${this.width}`);
+    imageElem.setAttribute("height", `${this.height}`);
     return imageElem;
   }
-}
 
-// const clamp = (n: number, min: number, max: number) => {
-//   return Math.max(Math.min(n, max), min);
-// };
+  /**
+   * Get the dimension of the bumpmap (number of columns and number of rows).
+   *
+   * @return {Dimension}
+   */
+  getDimension(): Dimension {
+    return { width: this.width, height: this.height };
+  }
+}

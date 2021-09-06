@@ -86,6 +86,11 @@ export interface ExportOptions {
   onComplete?: (data: string) => void;
 }
 
+export interface Dimension {
+  width: number;
+  height: number;
+}
+
 /**
  * A bumpmap stores height information for any rectangular vertex mesh (spheres, cylinders, lathes, dildos, ...).
  */
@@ -105,4 +110,11 @@ export interface IBumpmap {
    * @return {HTMLImageElement}
    */
   createPreviewImage(): HTMLImageElement;
+
+  /**
+   * Get the dimension of the bumpmap (number of columns and number of rows).
+   *
+   * @return {Dimension}
+   */
+  getDimension(): Dimension;
 }

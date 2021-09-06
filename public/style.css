@@ -53,6 +53,25 @@ body.fullscreen {
   right: 0;
   height: 15vh;
   display: none;
+  /* transform-origin: top right; */
+  display: flex;
+
+  /* -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  box-orient: horizontal;
+  flex-direction: row;
+
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  box-pack: center;
+  justify-content: center;
+
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  box-align: center;
+  align-items: center;
+
+  box-sizing: content-box; */
 }
 
 /* --- BEGIN --- Dialog classes --- */
