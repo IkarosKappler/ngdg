@@ -21,7 +21,7 @@ var mergeGeometries_1 = require("./mergeGeometries");
 var PathFinder_1 = require("./PathFinder");
 var randomWebColor_1 = require("./randomWebColor");
 var constants_1 = require("./constants");
-var computeVertexNormals_1 = require("./computeVertexNormals");
+var BumpMapper_1 = require("./BumpMapper");
 var DildoGeneration = /** @class */ (function () {
     function DildoGeneration(canvasId, options) {
         this.canvas = document.getElementById(canvasId);
@@ -132,70 +132,59 @@ var DildoGeneration = /** @class */ (function () {
         if (options.addSpine) {
             GeometryGenerationHelpers_1.GeometryGenerationHelpers.addSpine(this, spineGeometry);
         }
-        // if (options.performSlice) {
-        //   this.__performPlaneSlice(dildoMesh, dildoGeometry, wireframe, useTextureImage, textureImagePath, options);
-        //   // The CSG operations are not reliable.
-        //   // this.__performCsgSlice(latheMesh, geometry, material);
-        // } else {
-        //   dildoMesh.position.y = -100;
-        //   dildoMesh.userData["isExportable"] = true;
-        //   this.addMesh(dildoMesh);
-        //   if (options.showNormals) {
-        //     var vnHelper = new VertexNormalsHelper(dildoMesh, options.normalsLength, 0x00ff00); // Fourth param 1?
-        //     // TODO: use addMesh() here?
-        //     this.scene.add(vnHelper);
-        //     this.geometries.push(vnHelper);
-        //   }
-        // }
         // Add perpendicular path?
         if (options.showBasicPerpendiculars) {
             GeometryGenerationHelpers_1.GeometryGenerationHelpers.addPerpendicularPaths(this, dildoGeometry);
         }
         // Show computed dildo normals?
-        if (options.previewBumpmap || options.useBumpmap) {
-            var collectedVertexNormals = computeVertexNormals_1.computeVertexNormals(dildoGeometry, bufferedGeometry);
-            var dildoNormalGeometry = new THREE.Geometry();
-            dildoNormalGeometry.vertices = collectedVertexNormals.map(function (normalLine) {
-                var endPoint = normalLine.end.clone();
-                GeometryGenerationHelpers_1.GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
-                return endPoint;
-            });
-            var dildoNormalsMesh = new THREE.Points(dildoNormalGeometry, new THREE.PointsMaterial({
-                size: 1.4,
-                color: 0x00ffff
-            }));
+        // if (options.previewBumpmap || options.useBumpmap) {
+        if (options.useBumpmap) {
+            // const collectedVertexNormals: Array<THREE.Line3> = computeVertexNormals(
+            //   dildoGeometry as unknown as THREE.Geometry,
+            //   bufferedGeometry
+            // );
+            // const dildoNormalGeometry = new THREE.Geometry();
+            // dildoNormalGeometry.vertices = collectedVertexNormals.map((normalLine: THREE.Line3) => {
+            //   const endPoint: THREE.Vector3 = normalLine.end.clone();
+            //   GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
+            //   return endPoint;
+            // });
+            // const dildoNormalsMesh: THREE.Points = new THREE.Points(
+            //   dildoNormalGeometry,
+            //   new THREE.PointsMaterial({
+            //     size: 1.4,
+            //     color: 0x00ffff
+            //   })
+            // );
+            // if (options.showBumpmapTargets) {
+            //   dildoNormalsMesh.position.y = -100;
+            //   this.addMesh(dildoNormalsMesh);
+            // }
+            // console.log("options.useBumpmap", options.useBumpmap, "bumpmap", bumpmap);
+            // // const heightMap = createHeightMapFromImage( bumpmapTexture ):
+            // if (options.useBumpmap && bumpmap) {
+            //   for (var y = 0; y < dildoGeometry.vertexMatrix.length; y++) {
+            //     for (var x = 0; x < dildoGeometry.vertexMatrix[y].length; x++) {
+            //       const vertIndex: number = dildoGeometry.vertexMatrix[y][x];
+            //       const vertex: THREE.Vector3 = dildoGeometry.vertices[vertIndex];
+            //       const yRatio: number = y / (dildoGeometry.vertexMatrix.length - 1);
+            //       const xRatio: number = x / (dildoGeometry.vertexMatrix[y].length - 1);
+            //       const lerpFactor: number = bumpmap.getHeightAt(xRatio, yRatio);
+            //       const lerpTarget: THREE.Vector3 = dildoNormalGeometry.vertices[vertIndex];
+            //       vertex.lerp(lerpTarget, lerpFactor);
+            //     }
+            //   }
+            //   // Override the buffered geometry! (bumpmap has been applied)
+            //   bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry as unknown as THREE.Geometry);
+            //   bufferedGeometry.computeVertexNormals();
+            //   // Override the mesh! (bumpmap has been applied)
+            //   dildoMesh = new THREE.Mesh(bufferedGeometry, material);
+            // }
+            var _a = BumpMapper_1.BumpMapper.applyBumpmap(dildoGeometry, bufferedGeometry, bumpmap, material, options), bumpmappedDildoMesh = _a.dildoMesh, dildoNormalsMesh = _a.dildoNormalsMesh;
+            dildoMesh = bumpmappedDildoMesh;
             if (options.showBumpmapTargets) {
                 dildoNormalsMesh.position.y = -100;
                 this.addMesh(dildoNormalsMesh);
-            }
-            console.log("options.useBumpmap", options.useBumpmap, "bumpmap", bumpmap);
-            // const heightMap = createHeightMapFromImage( bumpmapTexture ):
-            if (options.useBumpmap && bumpmap) {
-                for (var y = 0; y < dildoGeometry.vertexMatrix.length; y++) {
-                    for (var x = 0; x < dildoGeometry.vertexMatrix[y].length; x++) {
-                        var vertIndex = dildoGeometry.vertexMatrix[y][x];
-                        var vertex = dildoGeometry.vertices[vertIndex];
-                        var yRatio = y / (dildoGeometry.vertexMatrix.length - 1);
-                        var xRatio = x / (dildoGeometry.vertexMatrix[y].length - 1);
-                        var lerpFactor = bumpmap.getHeightAt(xRatio, yRatio);
-                        // if (y < 5 && x < 5) {
-                        //   console.log("lerpFactor", lerpFactor, "x", x, "y", y, "xRatio", xRatio, "yRatio", yRatio);
-                        // }
-                        if (lerpFactor === NaN) {
-                            console.log("lerpFactor is NaN", x, y);
-                        }
-                        if (lerpFactor === undefined) {
-                            console.log("lerpFactor is undefined", x, y);
-                        }
-                        var lerpTarget = dildoNormalGeometry.vertices[vertIndex];
-                        vertex.lerp(lerpTarget, lerpFactor);
-                    }
-                }
-                // Override the buffered geometry! (bumpmap has been applied)
-                bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry);
-                bufferedGeometry.computeVertexNormals();
-                // Override the mesh! (bumpmap has been applied)
-                dildoMesh = new THREE.Mesh(bufferedGeometry, material);
             }
         }
         if (options.performSlice) {

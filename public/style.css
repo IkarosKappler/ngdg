@@ -3,57 +3,69 @@
  * @date   2017-04-10
  **/
 
-html, body {
-    width              : 100%;
-    height             : 100%;
-    padding            : 0;
-    margin             : 0;
-    border             : 0;
+html,
+body {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
 }
 
-html.fullscreen, body.fullscreen {
-    width              : 100%;
-    height             : 100%;
-    overflow           : hidden;
+html.fullscreen,
+body.fullscreen {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 #my-canvas {
-    border             : 1px solid black;
-    background-image   : url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAMAAAANf8AYAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAYUExURUxpcf///////////wCA/////wB7/w6H/3bDZgMAAAAIdFJOUwABAwIQBB8RHT6p9AAAAGJJREFUSMft0OEKgCAMBOC7ben7v3GKpAUVzB9SsG8gKhwbAxyInEnCifBnMNHnp9i3dNQJqNRBWkm/bLWG8hKB+NTUpelQmt98ahvqIfMKIYQQwlpmKzPmCVhK5ZjKfHgHO7OoAi6rfI2ZAAAAAElFTkSuQmCC'); 
+  border: 1px solid black;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAMAAAANf8AYAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAYUExURUxpcf///////////wCA/////wB7/w6H/3bDZgMAAAAIdFJOUwABAwIQBB8RHT6p9AAAAGJJREFUSMft0OEKgCAMBOC7ben7v3GKpAUVzB9SsG8gKhwbAxyInEnCifBnMNHnp9i3dNQJqNRBWkm/bLWG8hKB+NTUpelQmt98ahvqIfMKIYQQwlpmKzPmCVhK5ZjKfHgHO7OoAi6rfI2ZAAAAAElFTkSuQmCC");
 }
 
 .info {
-    position           : absolute;
-    display            : inline-block;
-    left               : auto;
-    right              : 10px;
-    top                : auto;
-    bottom             : 10px;
-    height             : 20px;
-    background         : rgba(255,255,255,0.5);
+  position: absolute;
+  display: inline-block;
+  left: auto;
+  right: 10px;
+  top: auto;
+  bottom: 10px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .monospace {
-    font-family        : 'Courier New', Courier,  Monospace;
-    font-size          : 9pt;
+  font-family: "Courier New", Courier, Monospace;
+  font-size: 9pt;
 }
 
 #drag-rect {
-    position           : absolute;
-    display            : none; /* Initially invisible */
-    border             : 1px solid grey;
-    background         : rgba(0,0,0,0.1);
+  position: absolute;
+  display: none; /* Initially invisible */
+  border: 1px solid grey;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+#bumpmap-preview {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 15vh;
+  display: none;
 }
 
 /* --- BEGIN --- Dialog classes --- */
 /* Headline */
-.od-hl { }
+.od-hl {
+}
 /* Content node */
 .od-cn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 /* Button line */
-od-bl { }
+od-bl {
+}
 /* --- END --- Dialog classes --- */

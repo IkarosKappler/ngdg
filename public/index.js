@@ -94,6 +94,7 @@
         previewBumpmap: true,
         useBumpmap: false,
         showBumpmapTargets: false,
+        showBumpmapImage: true, // Not part of the generator interface
         bumpmap: null, // This is not configurable at the moment and merge in later
         bumpmapStrength: 10.0,
         // Render settings
@@ -213,11 +214,12 @@
         (function (bId) {
           return function () {
             if (bId == buildId) {
-              if (ImageStore.isImageLoaded(bumpmapRasterImage)) {
+              if (config.useBumpmap && ImageStore.isImageLoaded(bumpmapRasterImage)) {
                 // Resize the bumpmap to satisfy the mesh resolution.
                 // bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.outlineSegmentCount, config.shapeSegmentCount);
                 bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.shapeSegmentCount, config.outlineSegmentCount);
               }
+              updateBumpmapPreview(bumpmap, config.useBumpmap && typeof bumpmap !== "undefined" && config.showBumpmapImage);
               console.log("[rebuild] Bumpap initialized?", bumpmap);
               // Set the bending flag only if bendAngle if not zero.
               // dildoGeneration.rebuild(
@@ -231,6 +233,20 @@
         })(buildId),
         50
       );
+    };
+
+    /**
+     * Create a pewview for the used bumpmap.
+     *
+     * @param {IBumpmap} bumpmap
+     * @param {boolean} isPreviewVisible
+     */
+    var updateBumpmapPreview = function (bumpmap, isPreviewVisible) {
+      var previewImageElem = bumpmap.createPreviewImage();
+      var previewWrapper = document.getElementById("bumpmap-preview");
+      GeometryGenerationHelpers.removeAllChildNodes(previewWrapper);
+      previewWrapper.appendChild(previewImageElem);
+      previewWrapper.style.display = isPreviewVisible ? "block" : "none";
     };
 
     // +---------------------------------------------------------------------------------
@@ -371,8 +387,6 @@
       // prettier-ignore
       fold0.add(config, "closeBottom").onChange( function() { rebuild() } ).name('closeBottom').title('Close the geometry at the bottom point.');
       // prettier-ignore
-      fold0.add(config, "previewBumpmap").onChange( function() { rebuild() } ).name('previewBumpmap').title('Check to toggle the bumpmap preview.');
-      // prettier-ignore
       fold0.add(config, "useBumpmap").onChange( function() { rebuild() } ).name('useBumpmap').title('Check wether the mesh should use a bumpmap.');
       // prettier-ignore
       fold0.add(config, "bumpmapStrength").min(0.0).max(20.0).onChange( function() { rebuild() } ).name('bumpmapStrength').title('How strong should the bumpmap be applied.');
@@ -400,6 +414,10 @@
       fold3.add(config, "useTextureImage").onChange( function() { rebuild() } ).name('useTextureImage').title('Use a texture image?');
       // prettier-ignore
       fold3.add(config, "showBumpmapTargets").onChange( function() { rebuild() } ).name('showBumpmapTargets').title('Show the bumpmap maximal lerping hull.');
+      // prettier-ignore
+      fold3.add(config, "showBumpmapImage").onChange( function() { rebuild() } ).name('showBumpmapImage').title('Check if you want to see a preview of the bumpmap image.');
+      // prettier-ignore
+      // fold3.add(config, "previewBumpmap").onChange( function() { rebuild() } ).name('previewBumpmap').title('Check to toggle the bumpmap preview.');
       // prettier-ignore
       fold3.add(config, "renderFaces", ["double","front","back"]).onChange( function() { rebuild() } ).name('renderFaces').title('Render mesh faces double or single sided?');
       // prettier-ignore

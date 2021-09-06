@@ -35,6 +35,7 @@ export interface DildoOptions {
   previewBumpmap: boolean;
   useBumpmap: boolean;
   showBumpmapTargets: boolean;
+  // showBumpmapImage: boolean; // Not part of the generation
   bumpmap?: IBumpmap;
   bumpmapStrength: number;
   // Render settings
@@ -70,6 +71,8 @@ export interface IDildoGeometry {
   uvsNeedUpdate: boolean;
   buffersNeedUpdate: boolean;
 
+  topIndex: number;
+  vertexMatrix: Array<Array<number>>;
   spineVertices: Array<THREE.Vector3>;
   dildoNormals: Array<Array<THREE.Vector3>>;
 
@@ -95,4 +98,11 @@ export interface IBumpmap {
    * @return {number} The bumpmap's height value in the range [0..1].
    */
   getHeightAt(ratioX: number, ratioY: number): number;
+
+  /**
+   * Get a preview image to use in the DOM.
+   *
+   * @return {HTMLImageElement}
+   */
+  createPreviewImage(): HTMLImageElement;
 }

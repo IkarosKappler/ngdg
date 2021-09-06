@@ -445,6 +445,27 @@ exports.GeometryGenerationHelpers = {
         extend.x = base.x + diff.x * ratio;
         extend.y = base.y + diff.y * ratio;
         extend.z = base.z + diff.z * ratio;
+    },
+    /**
+     * A helper function to clear all child nodes from the given HTML DOM node.
+     *
+     * @param {HTMLElement} rootNoode
+     */
+    removeAllChildNodes: function (rootNode) {
+        while (rootNode.lastChild) {
+            rootNode.removeChild(rootNode.lastChild);
+        }
+    },
+    /**
+     * Clamp the given number into the passed min-max interval.
+     *
+     * @param {number} n
+     * @param {number} min
+     * @param {number} max
+     * @returns
+     */
+    clamp: function (n, min, max) {
+        return Math.max(Math.min(n, max), min);
     }
 };
 //# sourceMappingURL=GeometryGenerationHelpers.js.map

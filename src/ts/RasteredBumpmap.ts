@@ -4,6 +4,7 @@
  * @date    2021-09-02
  */
 
+import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { IBumpmap } from "./interfaces";
 
 interface IPixel {
@@ -15,6 +16,7 @@ interface IPixel {
 
 export class RasteredBumpmap implements IBumpmap {
   image: HTMLImageElement;
+  canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
 
   /**
@@ -27,30 +29,27 @@ export class RasteredBumpmap implements IBumpmap {
   width: number;
   height: number;
 
-  constructor(image: HTMLImageElement, rasterWidth: number, rasterHeight: number) {
-    // TODO ...
-    console.log("Creating Bumpmap", image, rasterWidth, rasterHeight, image.naturalWidth, image.naturalHeight);
-    // rasterWidth = image.naturalWidth;
-    // rasterHeight = image.naturalHeight;
-    // rasterWidth++;
-    // rasterHeight++;
+  constructor(image: HTMLImageElement, rasterWidth?: number, rasterHeight?: number) {
+    // console.log("Creating Bumpmap", image, rasterWidth, rasterHeight, image.naturalWidth, image.naturalHeight);
+    if (!rasterWidth) {
+      rasterWidth = image.naturalWidth;
+    }
+    if (!rasterHeight) {
+      rasterWidth = image.naturalHeight;
+    }
 
-    // var img = new Image();
-    // img.src = url;
-    const canvas: HTMLCanvasElement = document.createElement("canvas");
-    // canvas.setAttribute("width", `${image.naturalWidth}px`);
-    // canvas.setAttribute("height", `${image.naturalHeight}px`);
-    canvas.setAttribute("width", `${rasterWidth}px`);
-    canvas.setAttribute("height", `${rasterHeight}px`);
-    this.context = canvas.getContext("2d");
+    this.canvas = document.createElement("canvas");
+    this.canvas.setAttribute("width", `${rasterWidth}px`);
+    this.canvas.setAttribute("height", `${rasterHeight}px`);
+    this.context = this.canvas.getContext("2d");
     this.context.drawImage(image, 0, 0, rasterWidth, rasterHeight);
     this.imageData = this.context.getImageData(0, 0, rasterWidth, rasterHeight).data;
     this.image = image;
-    this.width = rasterWidth; // this.image.naturalWidth;
-    this.height = rasterHeight; // this.image.naturalHeight;
+    this.width = rasterWidth;
+    this.height = rasterHeight;
 
-    // document.getElementById("testoutput").appendChild(canvas);
-    // document.getElementById("testoutput").style.display = "block";
+    // document.getElementById("bumpmap-preview").appendChild(canvas);
+    // document.getElementById("bumpmap-preview").style.display = "block";
   }
 
   /**
@@ -61,8 +60,8 @@ export class RasteredBumpmap implements IBumpmap {
    * @return {number} The bumpmap's height value in the range [0..1].
    */
   getHeightAt(ratioX: number, ratioY: number): number {
-    const x: number = Math.floor((this.width - 1) * clamp(ratioX, 0.0, 1.0));
-    const y: number = Math.floor((this.height - 1) * clamp(ratioY, 0.0, 1.0));
+    const x: number = Math.floor((this.width - 1) * GeometryGenerationHelpers.clamp(ratioX, 0.0, 1.0));
+    const y: number = Math.floor((this.height - 1) * GeometryGenerationHelpers.clamp(ratioY, 0.0, 1.0));
     const offset: number = (y * this.width + x) * 4;
     // const offset: number = y * this.width + x;
     // Each pixel value must a byte, so each component is in [0..255]
@@ -77,8 +76,19 @@ export class RasteredBumpmap implements IBumpmap {
     const brightness: number = (0.21 * pixel.r + 0.72 * pixel.g + 0.07 * pixel.b) / 255;
     return brightness;
   }
+
+  /**
+   * Get a preview image to use in the DOM.
+   *
+   * @return {HTMLImageElement}
+   */
+  createPreviewImage(): HTMLImageElement {
+    const imageElem: HTMLImageElement = document.createElement("img");
+    imageElem.setAttribute("src", this.canvas.toDataURL("image/png"));
+    return imageElem;
+  }
 }
 
-const clamp = (n: number, min: number, max: number) => {
-  return Math.max(Math.min(n, max), min);
-};
+// const clamp = (n: number, min: number, max: number) => {
+//   return Math.max(Math.min(n, max), min);
+// };

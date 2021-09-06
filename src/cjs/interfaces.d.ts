@@ -62,6 +62,8 @@ export interface IDildoGeometry {
     faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
     uvsNeedUpdate: boolean;
     buffersNeedUpdate: boolean;
+    topIndex: number;
+    vertexMatrix: Array<Array<number>>;
     spineVertices: Array<THREE.Vector3>;
     dildoNormals: Array<Array<THREE.Vector3>>;
     readonly innerPerpLines: Array<THREE.Line3>;
@@ -84,4 +86,10 @@ export interface IBumpmap {
      * @return {number} The bumpmap's height value in the range [0..1].
      */
     getHeightAt(ratioX: number, ratioY: number): number;
+    /**
+     * Get a preview image to use in the DOM.
+     *
+     * @return {HTMLImageElement}
+     */
+    createPreviewImage(): HTMLImageElement;
 }

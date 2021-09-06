@@ -155,4 +155,19 @@ export declare const GeometryGenerationHelpers: {
      * @param {number} normalLength - The desired length
      */
     normalizeVectorXYZ: (base: THREE.Vector3, extend: THREE.Vector3, normalLength: number) => void;
+    /**
+     * A helper function to clear all child nodes from the given HTML DOM node.
+     *
+     * @param {HTMLElement} rootNoode
+     */
+    removeAllChildNodes: (rootNode: HTMLElement) => void;
+    /**
+     * Clamp the given number into the passed min-max interval.
+     *
+     * @param {number} n
+     * @param {number} min
+     * @param {number} max
+     * @returns
+     */
+    clamp: (n: number, min: number, max: number) => number;
 };

@@ -6,6 +6,7 @@
 import { IBumpmap } from "./interfaces";
 export declare class RasteredBumpmap implements IBumpmap {
     image: HTMLImageElement;
+    canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     /**
      * Contains the pixel data as a raw array of RGBA values (each pixel has 4 array entries).
@@ -15,7 +16,7 @@ export declare class RasteredBumpmap implements IBumpmap {
     imageData: Uint8ClampedArray;
     width: number;
     height: number;
-    constructor(image: HTMLImageElement, rasterWidth: number, rasterHeight: number);
+    constructor(image: HTMLImageElement, rasterWidth?: number, rasterHeight?: number);
     /**
      * Get the bumpmap's height-value at the given relative coordinates.
      *
@@ -24,4 +25,10 @@ export declare class RasteredBumpmap implements IBumpmap {
      * @return {number} The bumpmap's height value in the range [0..1].
      */
     getHeightAt(ratioX: number, ratioY: number): number;
+    /**
+     * Get a preview image to use in the DOM.
+     *
+     * @return {HTMLImageElement}
+     */
+    createPreviewImage(): HTMLImageElement;
 }
