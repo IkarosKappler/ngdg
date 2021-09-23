@@ -571,8 +571,8 @@ export class DildoGeneration implements IDildoGeneration {
    *
    * @param {function(string)} options.onComplete
    **/
-  generateSTL(options: ExportOptions) {
-    const exporter: STLExporter = new STLExporter();
+  generateSTL(options: ExportOptions, exporter: STLExporter) {
+    // const exporter: STLExporter = new STLExporter();
     const stlBuffer: Array<string> = [];
     // TODO: merge all exportable geometries together and export as one.
     for (var i in this.geometries) {

@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DildoGeneration = void 0;
 var THREE = require("three");
 var VertexNormalsHelper_1 = require("three/examples/jsm/helpers/VertexNormalsHelper");
-var STLExporter_1 = require("three/examples/jsm/exporters/STLExporter");
 var DildoGeometry_1 = require("./DildoGeometry");
 var DildoMaterials_1 = require("./DildoMaterials");
 var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
@@ -438,8 +437,8 @@ var DildoGeneration = /** @class */ (function () {
      *
      * @param {function(string)} options.onComplete
      **/
-    DildoGeneration.prototype.generateSTL = function (options) {
-        var exporter = new STLExporter_1.STLExporter();
+    DildoGeneration.prototype.generateSTL = function (options, exporter) {
+        // const exporter: STLExporter = new STLExporter();
         var stlBuffer = [];
         // TODO: merge all exportable geometries together and export as one.
         for (var i in this.geometries) {

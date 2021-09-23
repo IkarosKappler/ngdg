@@ -19,9 +19,7 @@ exports.ImageStore = (function () {
                     onComplete(image);
                 };
                 image.setAttribute("src", path);
-                // image.src = path;
             }
-            console.log("image", path, image);
             return image;
         },
         isImageLoaded: function (image) {

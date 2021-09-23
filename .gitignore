@@ -40,3 +40,7 @@ demos/22-threejs/dildomodels/
 # src/ts/**
 
 _backup
+
+public/lib/ngdg
+public/lib/plotboilerplate
+public/lib/three

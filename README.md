@@ -2,6 +2,8 @@
 
 Because 3d printing, web 3d, and dildos are cool.
 
+![Screenshot](screenshot.png)
+
 ## Bugs
 
 - When slicing the mesh with open bottom there are mesh errors.
@@ -11,14 +13,14 @@ Because 3d printing, web 3d, and dildos are cool.
 ## Todos:
 
 - Configure webpack to handle type definitions in node_modules correctly.
-- Port all vanilla JS parts to Typescript.
+- [x] Port all vanilla JS parts to Typescript.
 - Arrange splits on plane.
 - Update to THREE >= r125. Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
   (not supported any more since r125). See https://sbcode.net/threejs/geometry-to-buffergeometry/ for details.
-- Rename base branch to 'main'.
+- [x] Rename base branch to 'main'.
 - Create a Typescript port from mapbox/earcut.
 - Create a Typescript port from tdhooper/threejs-slice-geometry.
-- Add a proper Typescript interface for all available dildo generation options.
+- [x] Add a proper Typescript interface for all available dildo generation options.
 - STL-Export: merge all exportable geometries together and export as one.
 
 ### Changelog

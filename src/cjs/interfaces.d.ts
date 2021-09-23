@@ -29,7 +29,6 @@ export interface DildoOptions {
     twistAngle: number;
     baseShapeExcentricity: number;
     closeCutAreas: boolean;
-    previewBumpmap: boolean;
     useBumpmap: boolean;
     showBumpmapTargets: boolean;
     bumpmap?: IBumpmap;

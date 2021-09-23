@@ -56,17 +56,12 @@
     var bezierDistanceT = 0;
     var bezierDistanceLine = null;
 
+    // Note: bumpmapping is not yet finished.
     var bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
     var bumpmap = null;
     var bumpmapRasterImage = ImageStore.getImage(bumpmapPath, function (completeImage) {
-      // console.log("Image loaded", completeImage);
-      // bumpmap = new RasteredBumpmap(completeImage);
-      // console.log("Bumpap initialized");
       rebuild();
     });
-    // if (ImageStore.isImageLoaded(bumpmapRasterImage) && !bumpmap) {
-    //   bumpmap = new RasteredBumpmap(bumpmapRasterImage);
-    // }
 
     // +---------------------------------------------------------------------------------
     // | A global config that's attached to the dat.gui control interface.
@@ -91,10 +86,10 @@
         twistAngle: 0.0,
         baseShapeExcentricity: 1.0,
         closeCutAreas: true,
-        previewBumpmap: true,
+        // previewBumpmap: false, // TODO: Is this actually in use?
         useBumpmap: false,
         showBumpmapTargets: false,
-        showBumpmapImage: true, // Not part of the generator interface
+        showBumpmapImage: false, // Not part of the generator interface
         bumpmap: null, // This is not configurable at the moment and merge in later
         bumpmapStrength: 10.0,
         // Render settings
@@ -152,17 +147,21 @@
       modal.setBody("Loading ...");
       modal.open();
       try {
-        dildoGeneration.generateSTL({
-          onComplete: function (stlData) {
-            window.setTimeout(function () {
-              modal.setBody("File ready.");
-              modal.setActions([Modal.ACTION_CLOSE]);
-              saveFile(stlData, "dildomodel.stl");
-            }, 500);
-            // modal.close();
-          }
-        });
+        dildoGeneration.generateSTL(
+          {
+            onComplete: function (stlData) {
+              window.setTimeout(function () {
+                modal.setBody("File ready.");
+                modal.setActions([Modal.ACTION_CLOSE]);
+                saveFile(stlData, "dildomodel.stl");
+              }, 500);
+              // modal.close();
+            }
+          },
+          new THREE.STLExporter()
+        );
       } catch (e) {
+        console.error(e);
         modal.setBody("Error: " + e);
         modal.setActions([Modal.ACTION_CLOSE]);
       }
@@ -216,15 +215,10 @@
             if (bId == buildId) {
               if (config.useBumpmap && ImageStore.isImageLoaded(bumpmapRasterImage)) {
                 // Resize the bumpmap to satisfy the mesh resolution.
-                // bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.outlineSegmentCount, config.shapeSegmentCount);
                 bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.shapeSegmentCount, config.outlineSegmentCount);
               }
               updateBumpmapPreview(bumpmap, config.useBumpmap && typeof bumpmap !== "undefined" && config.showBumpmapImage);
-              console.log("[rebuild] Bumpap initialized?", bumpmap);
               // Set the bending flag only if bendAngle if not zero.
-              // dildoGeneration.rebuild(
-              //   Object.assign({ outline: outline, isBending: config.bendAngle !== 0, bumpmap: bumpmap }, config)
-              // );
               dildoGeneration.rebuild(
                 Object.assign(config, { outline: outline, isBending: config.bendAngle !== 0, bumpmap: bumpmap })
               );
@@ -238,28 +232,25 @@
     /**
      * Create a pewview for the used bumpmap.
      *
-     * @param {IBumpmap} bumpmap
+     * @param {IBumpmap|undefined} bumpmap
      * @param {boolean} isPreviewVisible
      */
     var updateBumpmapPreview = function (bumpmap, isPreviewVisible) {
-      var previewImageElem = bumpmap.createPreviewImage();
-      previewImageElem.style["object-fit"] = "contain";
-      previewImageElem.style["position"] = "relative";
-      previewImageElem.style["box-flex"] = 1;
-      previewImageElem.style["flex"] = "1 1 auto";
-      previewImageElem.style["width"] = "100%";
-      previewImageElem.style["height"] = "100%";
       var previewWrapper = document.getElementById("bumpmap-preview");
-      GeometryGenerationHelpers.removeAllChildNodes(previewWrapper);
-      previewWrapper.appendChild(previewImageElem);
-
-      previewWrapper.style.display = isPreviewVisible ? "flex" : "none";
-
-      // var wrapperHeight = previewWrapper.getBoundingClientRect().height;
-      // console.log("wrapperHeight", wrapperHeight);
-      // var dimension = bumpmap.getDimension();
-      // var scaleFactor = wrapperHeight / dimension.height;
-      // previewWrapper.style.transform = "scale(" + scaleFactor + ")";
+      if (bumpmap && isPreviewVisible) {
+        var previewImageElem = bumpmap.createPreviewImage();
+        previewImageElem.style["object-fit"] = "contain";
+        previewImageElem.style["position"] = "relative";
+        previewImageElem.style["box-flex"] = 1;
+        previewImageElem.style["flex"] = "1 1 auto";
+        previewImageElem.style["width"] = "100%";
+        previewImageElem.style["height"] = "100%";
+        GeometryGenerationHelpers.removeAllChildNodes(previewWrapper);
+        previewWrapper.appendChild(previewImageElem);
+        previewWrapper.style.display = "flex";
+      } else {
+        previewWrapper.style.display = "none";
+      }
     };
 
     // +---------------------------------------------------------------------------------
@@ -425,12 +416,11 @@
       fold3.add(config, "wireframe").onChange( function() { rebuild() } ).name('wireframe').title('Display the mesh as a wireframe model?');
       // prettier-ignore
       fold3.add(config, "useTextureImage").onChange( function() { rebuild() } ).name('useTextureImage').title('Use a texture image?');
-      // prettier-ignore
-      fold3.add(config, "showBumpmapTargets").onChange( function() { rebuild() } ).name('showBumpmapTargets').title('Show the bumpmap maximal lerping hull.');
-      // prettier-ignore
-      fold3.add(config, "showBumpmapImage").onChange( function() { rebuild() } ).name('showBumpmapImage').title('Check if you want to see a preview of the bumpmap image.');
-      // prettier-ignore
-      // fold3.add(config, "previewBumpmap").onChange( function() { rebuild() } ).name('previewBumpmap').title('Check to toggle the bumpmap preview.');
+      // TODO: implement this in a proper next step (bumpmapping is still buggy)
+      // // prettier-ignore
+      // fold3.add(config, "showBumpmapTargets").onChange( function() { rebuild() } ).name('showBumpmapTargets').title('Show the bumpmap maximal lerping hull.');
+      // // prettier-ignore
+      // fold3.add(config, "showBumpmapImage").onChange( function() { rebuild() } ).name('showBumpmapImage').title('Check if you want to see a preview of the bumpmap image.');
       // prettier-ignore
       fold3.add(config, "renderFaces", ["double","front","back"]).onChange( function() { rebuild() } ).name('renderFaces').title('Render mesh faces double or single sided?');
       // prettier-ignore

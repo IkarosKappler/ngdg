@@ -10,6 +10,7 @@
  **/
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { STLExporter } from "three/examples/jsm/exporters/STLExporter";
 import { DildoGenerationOptions, DildoOptions, ExportOptions, ExtendedDildoOptions, IDildoGeneration, IDildoGeometry } from "./interfaces";
 export declare class DildoGeneration implements IDildoGeneration {
     /**
@@ -86,5 +87,5 @@ export declare class DildoGeneration implements IDildoGeneration {
      *
      * @param {function(string)} options.onComplete
      **/
-    generateSTL(options: ExportOptions): void;
+    generateSTL(options: ExportOptions, exporter: STLExporter): void;
 }

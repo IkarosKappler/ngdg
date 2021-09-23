@@ -32,7 +32,7 @@ export interface DildoOptions {
   twistAngle: number;
   baseShapeExcentricity: number;
   closeCutAreas: boolean;
-  previewBumpmap: boolean;
+  // previewBumpmap: boolean; // Not in use any more. TODO: cc
   useBumpmap: boolean;
   showBumpmapTargets: boolean;
   // showBumpmapImage: boolean; // Not part of the generation
