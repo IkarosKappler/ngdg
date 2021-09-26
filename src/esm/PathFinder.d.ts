@@ -108,5 +108,5 @@ export declare class PathFinder {
      * @param {THREE.Vector3[]} pathVertices
      * @return {Array<number[]>} A new sequence of paths (a path is an array of vertex indices).
      */
-    combineAdjacentPaths(collectedPaths: any, unbufferedGeometry: any, pathVertices: any): Array<number[]>;
+    private combineAdjacentPaths;
 }

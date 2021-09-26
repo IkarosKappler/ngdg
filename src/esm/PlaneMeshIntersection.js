@@ -20,16 +20,21 @@ export class PlaneMeshIntersection {
          *
          * @param {THREE.Mesh} mesh
          * @param {THREE.Geometry} geometry
-         * @param {THREE.PlaneGeometry} plane
+         * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
          * @returns {Array<THREE.Vector3>}
          */
-        this.getIntersectionPoints = (mesh, geometry, plane) => {
+        // TODO: plane type???
+        this.getIntersectionPoints = (mesh, geometry, plane, planeGeometryReal) => {
             // Note: this could also work with a directly passed Mesh.Plane object instead a THREE.PlaneGeometry.
             this.pointsOfIntersection = [];
             var mathPlane = new THREE.Plane();
-            plane.localToWorld(this.planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
-            plane.localToWorld(this.planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
-            plane.localToWorld(this.planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
+            // var planeGeometry : THREE.Geometry = (plane as unknown).geometry;
+            // plane.localToWorld(this.planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
+            // plane.localToWorld(this.planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
+            // plane.localToWorld(this.planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
+            plane.localToWorld(this.planePointA.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].a]));
+            plane.localToWorld(this.planePointB.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].b]));
+            plane.localToWorld(this.planePointC.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].c]));
             mathPlane.setFromCoplanarPoints(this.planePointA, this.planePointB, this.planePointC);
             var _self = this;
             geometry.faces.forEach(function (face) {

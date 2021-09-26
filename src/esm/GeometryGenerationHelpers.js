@@ -9,29 +9,13 @@
  * @version  0.0.1-alpha
  */
 import * as THREE from "three";
-// import earcut from "earcut"; // TODO: fix earcut types
-import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types
-import { Polygon, Vertex } from "plotboilerplate";
-// import sliceGeometry from "threejs-slice-geometry";
-import { sliceGeometry } from "./thirdparty-ported/threejs-slice-geometry";
+import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types, convert to custum library
+import { Bounds, Polygon, Vertex } from "plotboilerplate";
+import { sliceGeometry } from "./thirdparty-ported/threejs-slice-geometry"; // TODO: convert to custom library
 import { PlaneMeshIntersection } from "./PlaneMeshIntersection";
 import { clearDuplicateVertices3 } from "./clearDuplicateVertices3";
-// TODO: move to a global interfaces location
-// export interface DildoOptions {
-//   addPrecalculatedMassiveFaces?: boolean;
-//   addPrecalculatedHollowFaces?: boolean;
-//   addRawIntersectionTriangleMesh?: boolean;
-//   showSplitShape?: boolean;
-// }
-// interface IDildoGeneration {
-//   addMesh: (mesh: THREE.Mesh | THREE.Points | THREE.LineSegments) => void;
-// }
-// interface IDildoGeometry {
-//   readonly innerPerpLines: Array<THREE.Line3>;
-//   readonly outerPerpLines: Array<THREE.Line3>;
-//   getPerpendicularHullLines: () => Array<THREE.Line3>;
-//   getPerpendicularPathVertices: (includeBottom: boolean, getInner: boolean) => Array<THREE.Vector3>;
-// }
+import { UVHelpers } from "./UVHelpers";
+import { KEY_PLANE_INTERSECTION_TRIANGULATION } from "./constants";
 export const GeometryGenerationHelpers = {
     /**
      * Create a (right-turning) triangle of the three vertices at index A, B and C.
@@ -179,7 +163,7 @@ export const GeometryGenerationHelpers = {
      * Note also that the mesh is open at the cut plane.
      *
      * @param {THREE.Geometry} unbufferedGeometry - The geometry to slice.
-     * @param {THREE.PlaneGeometry} plane
+     * @param {THREE.Plane} plane PlaneGeometry???
      * @return {THREE.Geometry}
      */
     makeSlice: (unbufferedGeometry, plane) => {
@@ -210,17 +194,19 @@ export const GeometryGenerationHelpers = {
      * @param {DildoGeneration} thisGenerator
      * @param {THREE.Mesh} mesh
      * @param {IDildoGeometry} unbufferedGeometry
-     * @param {THREE.Plane} planeMesh
+     * @param {THREE.Plane} planeGeometry
      * @returns
      */
-    makeAndAddPlaneIntersection: (thisGenerator, mesh, unbufferedGeometry, planeMesh, 
+    makeAndAddPlaneIntersection: (thisGenerator, mesh, unbufferedGeometry, // THREE.Geometry,
+    planeGeometry, // THREE.Plane, // THREE.PlaneGeometry, // THREE.Plane ???
+    planeGeometryReal, 
     // TODO: use a proper global interface here
     options // { showSplitShape?: boolean }
     ) => {
         // Find the cut path
         const planeMeshIntersection = new PlaneMeshIntersection();
         // Array<THREE.Vector3>  (compatible with XYCoords :)
-        const intersectionPoints = planeMeshIntersection.getIntersectionPoints(mesh, unbufferedGeometry, planeMesh);
+        const intersectionPoints = planeMeshIntersection.getIntersectionPoints(mesh, unbufferedGeometry, planeGeometry, planeGeometryReal);
         const EPS = 0.000001;
         const uniqueIntersectionPoints = clearDuplicateVertices3(intersectionPoints, EPS);
         const pointGeometry = new THREE.Geometry();
@@ -372,6 +358,111 @@ export const GeometryGenerationHelpers = {
         }));
         outerPerpMesh.position.y = -100;
         thisGenerator.addMesh(outerPerpMesh);
+    },
+    // TODO: add to global helper functions
+    /**
+     * Make a triangulation of the given path specified by the verted indices.
+     *
+     * @param {Array<number>} connectedPath - An array of vertex indices.
+     * @return {THREE.Geometry} trianglesMesh
+     */
+    makePlaneTriangulation: (generator, sliceGeometry, connectedPath, options) => {
+        // Convert the connected paths indices to [x, y, x, y, x, y, ...] coordinates (requied by earcut)
+        const currentPathXYData = connectedPath.reduce((earcutInput, vertIndex) => {
+            const vert = sliceGeometry.vertices[vertIndex];
+            earcutInput.push(vert.x, vert.y);
+            return earcutInput;
+        }, []);
+        // Array<number> : triplets of vertex indices in the plain XY array
+        const triangles = earcut(currentPathXYData);
+        // Convert triangle indices back to a geometry
+        const trianglesGeometry = new THREE.Geometry();
+        // We will merge the geometries in the end which will create clones of the vertices.
+        // No need to clone here.
+        // trianglesGeometry.vertices = leftSliceGeometry.vertices;
+        trianglesGeometry.vertices = connectedPath.map((geometryVertexIndex) => {
+            return sliceGeometry.vertices[geometryVertexIndex];
+        });
+        // Array<{x,y}> is compatible with Array<{x,y,z}> here :)
+        const flatSideBounds = Bounds.computeFromVertices(trianglesGeometry.vertices.map((vector3) => new Vertex(vector3.x, vector3.y)));
+        for (var t = 0; t < triangles.length; t += 3) {
+            const a = triangles[t];
+            const b = triangles[t + 1];
+            const c = triangles[t + 2];
+            trianglesGeometry.faces.push(new THREE.Face3(a, b, c));
+            // Add UVs
+            UVHelpers.makeFlatTriangleUVs(trianglesGeometry, flatSideBounds, a, b, c);
+        }
+        trianglesGeometry.uvsNeedUpdate = true;
+        // TODO: check if this is still required
+        trianglesGeometry.buffersNeedUpdate = true;
+        trianglesGeometry.computeVertexNormals();
+        var trianglesMesh = new THREE.Mesh(trianglesGeometry, new THREE.MeshBasicMaterial({
+            color: 0x0048ff,
+            transparent: true,
+            opacity: 0.55,
+            side: THREE.DoubleSide
+        }));
+        trianglesMesh.position.y = -100;
+        // trianglesMesh.position.z += 1.0; // Avoid Moiré with plane mesh?
+        trianglesMesh.userData["isExportable"] = false;
+        generator.partialResults[KEY_PLANE_INTERSECTION_TRIANGULATION] = trianglesGeometry;
+        if (options.showSplitShapeTriangulation) {
+            generator.addMesh(trianglesMesh);
+        }
+        return trianglesGeometry;
+    },
+    /**
+     * Normalize a 2D vector to a given length.
+     *
+     * @param {XYCoords} base - The start point.
+     * @param {XYCoords} extend - The end point.
+     * @param {number} normalLength - The desired length
+     */
+    // TODO: add types
+    normalizeVectorXY: (base, extend, normalLength) => {
+        var diff = { x: extend.x - base.x, y: extend.y - base.y }; // XYCoords
+        var length = Math.sqrt(diff.x * diff.x + diff.y * diff.y);
+        var ratio = normalLength / length;
+        extend.x = base.x + diff.x * ratio;
+        extend.y = base.y + diff.y * ratio;
+    },
+    /**
+     * Normalize a 2D vector to a given length.
+     *
+     * @param {XYCoords} base - The start point.
+     * @param {XYCoords} extend - The end point.
+     * @param {number} normalLength - The desired length
+     */
+    // TODO: add types
+    normalizeVectorXYZ: (base, extend, normalLength) => {
+        var diff = { x: extend.x - base.x, y: extend.y - base.y, z: extend.z - base.z };
+        var length = Math.sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+        var ratio = normalLength / length;
+        extend.x = base.x + diff.x * ratio;
+        extend.y = base.y + diff.y * ratio;
+        extend.z = base.z + diff.z * ratio;
+    },
+    /**
+     * A helper function to clear all child nodes from the given HTML DOM node.
+     *
+     * @param {HTMLElement} rootNoode
+     */
+    removeAllChildNodes: (rootNode) => {
+        while (rootNode.lastChild) {
+            rootNode.removeChild(rootNode.lastChild);
+        }
+    },
+    /**
+     * Clamp the given number into the passed min-max interval.
+     *
+     * @param {number} n
+     * @param {number} min
+     * @param {number} max
+     * @returns
+     */
+    clamp: (n, min, max) => {
+        return Math.max(Math.min(n, max), min);
     }
 };
 //# sourceMappingURL=GeometryGenerationHelpers.js.map

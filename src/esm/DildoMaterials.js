@@ -8,12 +8,12 @@
  * @modified 2021-08-04 Ported to Typescript from vanilla JS.
  * @version 1.0.1
  */
-import * as THREE from 'three';
+import * as THREE from "three";
 export const DildoMaterials = (() => {
     /**
      * Map<string,texture>
      */
-    var textureStore = new Map();
+    const textureStore = new Map();
     const DildoMaterials = {
         /**
          * Create a new mesh material from the given parameters.
@@ -38,7 +38,7 @@ export const DildoMaterials = (() => {
                     emissive: 0x0,
                     reflectivity: 1.0,
                     refractionRatio: 0.89,
-                    map: loadTextureImage(textureImagePath)
+                    map: DildoMaterials.loadTextureImage(textureImagePath)
                 })
                 : new THREE.MeshPhongMaterial({
                     color: 0x3838ff,
@@ -73,26 +73,27 @@ export const DildoMaterials = (() => {
                     emissive: 0x0,
                     reflectivity: 1.0,
                     refractionRatio: 0.89,
-                    map: useTextureImage ? loadTextureImage(textureImagePath) : null,
+                    map: useTextureImage ? DildoMaterials.loadTextureImage(textureImagePath) : null,
                     vertexColors: false
                 });
             }
         },
-    };
-    /**
-     * Load a texture or get it from the internal buffer if it was already loaded before.
-     *
-     * @param {string} path - The path (absolute or relative) to the texture image to load.
-     * @returns {THREE.Texture}
-     */
-    const loadTextureImage = function (path) {
-        var texture = textureStore.get(path);
-        if (!texture) {
-            var loader = new THREE.TextureLoader();
-            var texture = loader.load(path);
-            textureStore.set(path, texture);
+        /**
+         * Load a texture or get it from the internal buffer if it was already loaded before.
+         *
+         * @param {string} path - The path (absolute or relative) to the texture image to load.
+         * @returns {THREE.Texture}
+         */
+        loadTextureImage: (path) => {
+            let texture = textureStore.get(path);
+            if (!texture) {
+                // TODO: use a singleton here?
+                const loader = new THREE.TextureLoader();
+                texture = loader.load(path);
+                textureStore.set(path, texture);
+            }
+            return texture;
         }
-        return texture;
     };
     return DildoMaterials;
 })();
