@@ -13,7 +13,7 @@ var computeVertexNormals_1 = require("./computeVertexNormals");
 var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
 exports.BumpMapper = {
     applyBumpmap: function (dildoGeometry, bufferedGeometry, bumpmap, material, options) {
-        var collectedVertexNormals = computeVertexNormals_1.computeVertexNormals(dildoGeometry, bufferedGeometry);
+        var collectedVertexNormals = (0, computeVertexNormals_1.computeVertexNormals)(dildoGeometry, bufferedGeometry);
         var dildoNormalGeometry = new THREE.Geometry();
         dildoNormalGeometry.vertices = collectedVertexNormals.map(function (normalLine) {
             var endPoint = normalLine.end.clone();

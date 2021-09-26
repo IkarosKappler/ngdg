@@ -254,7 +254,7 @@ var DildoGeneration = /** @class */ (function () {
                 return leftSliceGeometry.vertices[geometryVertexIndex];
             });
             var linesMesh_1 = new THREE.Line(geometry, new THREE.LineBasicMaterial({
-                color: randomWebColor_1.randomWebColor(i, "Mixed") // 0x8800a8
+                color: (0, randomWebColor_1.randomWebColor)(i, "Mixed") // 0x8800a8
             }));
             linesMesh_1.position.y = -100;
             // linesMesh.position.z = -50;
@@ -279,8 +279,8 @@ var DildoGeneration = /** @class */ (function () {
             // Merge together left and right slice geometry with the triangulated
             // cut faces.
             if (options.closeCutAreas) {
-                mergeGeometries_1.mergeGeometries(leftSliceGeometry, triangulationGeometry, constants_1.EPS);
-                mergeGeometries_1.mergeGeometries(rightSliceGeometry, triangulationGeometry, constants_1.EPS);
+                (0, mergeGeometries_1.mergeGeometries)(leftSliceGeometry, triangulationGeometry, constants_1.EPS);
+                (0, mergeGeometries_1.mergeGeometries)(rightSliceGeometry, triangulationGeometry, constants_1.EPS);
             }
         }
         if (options.showLeftSplit) {

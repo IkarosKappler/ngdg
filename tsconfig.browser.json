@@ -21,6 +21,6 @@
 		"noUnusedParameters": false
     },
     "include": ["./src/ts/**/*.ts"],
-    "exclude": ["./dist", "./tmp","./src/js","./src/vanilla", "./npm-package", "./demos"],
+    "exclude": ["./dist", "./tmp", "./src/js", "./src/vanilla", "./npm-package", "./demos", "node_modules"],
     "removeComments": false
 }

@@ -31,7 +31,7 @@ var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
     if (typeof epsilon === "undefined") {
         epsilon = EPS;
     }
-    var vertexMap = exports.mergeAndMapVertices(baseGeometry, mergeGeometry, epsilon);
+    var vertexMap = (0, exports.mergeAndMapVertices)(baseGeometry, mergeGeometry, epsilon);
     for (var f = 0; f < mergeGeometry.faces.length; f++) {
         var face = mergeGeometry.faces[f];
         var a = vertexMap[face.a];
@@ -68,7 +68,7 @@ var mergeAndMapVertices = function (baseGeometry, mergeGeometry, epsilon) {
     var vertexMap = [];
     for (var v = 0; v < mergeGeometry.vertices.length; v++) {
         var mergeVert = mergeGeometry.vertices[v];
-        var indexInBase = locateVertexInArray_1.locateVertexInArray(baseGeometry.vertices, mergeVert, epsilon);
+        var indexInBase = (0, locateVertexInArray_1.locateVertexInArray)(baseGeometry.vertices, mergeVert, epsilon);
         if (indexInBase === -1) {
             // The current vertex cannot be found in the base geometry.
             //  -> add to geometry and remember new index.

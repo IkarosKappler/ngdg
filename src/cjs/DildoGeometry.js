@@ -394,7 +394,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         });
         var polygonData = GeometryGenerationHelpers_1.GeometryGenerationHelpers.flattenVert2dArray(polygonVertices);
         // Step 3: run Earcut
-        var triangleIndices = earcut_1.earcut(polygonData);
+        var triangleIndices = (0, earcut_1.earcut)(polygonData);
         // Step 4: process the earcut result;
         //         add the retrieved triangles as geometry faces.
         for (var i = 0; i + 2 < triangleIndices.length; i += 3) {
