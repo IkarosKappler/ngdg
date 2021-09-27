@@ -1,0 +1,1 @@
+{"version":3,"file":"ngdg.js","sourceRoot":"","sources":["../ts/ngdg.ts"],"names":[],"mappings":"AAAA;;;;;;;;GAQG;AAEH,OAAO,EAAE,mBAAmB,EAAE,MAAM,YAAY,CAAC;AACjD,OAAO,EAAE,UAAU,EAAE,MAAM,cAAc,CAAC;AAC1C,OAAO,EAAE,eAAe,EAAE,MAAM,mBAAmB,CAAC;AAEpD,MAAM,CAAC,MAAM,IAAI,GAAG;IAClB,mBAAmB;IAEnB,eAAe;IACf,UAAU;CACX,CAAC"}

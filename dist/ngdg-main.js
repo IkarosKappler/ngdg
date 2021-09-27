@@ -2499,93 +2499,6 @@ exports.PlaneMeshIntersection = PlaneMeshIntersection;
 
 /***/ }),
 
-/***/ "./src/cjs/RasteredBumpmap.js":
-/*!************************************!*\
-  !*** ./src/cjs/RasteredBumpmap.js ***!
-  \************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-/**
- * @author Ikaros Kappler
- * @version 1.0.0
- * @date    2021-09-02
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RasteredBumpmap = void 0;
-var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
-var RasteredBumpmap = /** @class */ (function () {
-    function RasteredBumpmap(image, rasterWidth, rasterHeight) {
-        // console.log("Creating Bumpmap", image, rasterWidth, rasterHeight, image.naturalWidth, image.naturalHeight);
-        if (!rasterWidth) {
-            rasterWidth = image.naturalWidth;
-        }
-        if (!rasterHeight) {
-            rasterWidth = image.naturalHeight;
-        }
-        this.canvas = document.createElement("canvas");
-        this.canvas.setAttribute("width", rasterWidth + "px");
-        this.canvas.setAttribute("height", rasterHeight + "px");
-        this.context = this.canvas.getContext("2d");
-        this.context.drawImage(image, 0, 0, rasterWidth, rasterHeight);
-        this.imageData = this.context.getImageData(0, 0, rasterWidth, rasterHeight).data;
-        this.image = image;
-        this.width = rasterWidth;
-        this.height = rasterHeight;
-        // document.getElementById("bumpmap-preview").appendChild(canvas);
-        // document.getElementById("bumpmap-preview").style.display = "block";
-    }
-    /**
-     * Get the bumpmap's height-value at the given relative coordinates.
-     *
-     * @param {number} ratioX - A value for the horizontal position, must be in [0..1].
-     * @param {number} ratioY - A value for the vertical position, must be in [0..1].
-     * @return {number} The bumpmap's height value in the range [0..1].
-     */
-    RasteredBumpmap.prototype.getHeightAt = function (ratioX, ratioY) {
-        var x = Math.floor((this.width - 1) * GeometryGenerationHelpers_1.GeometryGenerationHelpers.clamp(ratioX, 0.0, 1.0));
-        var y = Math.floor((this.height - 1) * GeometryGenerationHelpers_1.GeometryGenerationHelpers.clamp(ratioY, 0.0, 1.0));
-        var offset = (y * this.width + x) * 4;
-        // const offset: number = y * this.width + x;
-        // Each pixel value must a byte, so each component is in [0..255]
-        var pixel = {
-            r: this.imageData[offset],
-            g: this.imageData[offset + 1],
-            b: this.imageData[offset + 2],
-            a: this.imageData[offset + 3] // Ignore alpha channel?
-        };
-        // Convert rgb pixel data to `radiant intensity`
-        // https://computergraphics.stackexchange.com/questions/5085/light-intensity-of-an-rgb-value
-        var brightness = (0.21 * pixel.r + 0.72 * pixel.g + 0.07 * pixel.b) / 255;
-        return brightness;
-    };
-    /**
-     * Get a preview image to use in the DOM.
-     *
-     * @return {HTMLImageElement}
-     */
-    RasteredBumpmap.prototype.createPreviewImage = function () {
-        var imageElem = document.createElement("img");
-        imageElem.setAttribute("src", this.canvas.toDataURL("image/png"));
-        imageElem.setAttribute("width", "" + this.width);
-        imageElem.setAttribute("height", "" + this.height);
-        return imageElem;
-    };
-    /**
-     * Get the dimension of the bumpmap (number of columns and number of rows).
-     *
-     * @return {Dimension}
-     */
-    RasteredBumpmap.prototype.getDimension = function () {
-        return { width: this.width, height: this.height };
-    };
-    return RasteredBumpmap;
-}());
-exports.RasteredBumpmap = RasteredBumpmap;
-//# sourceMappingURL=RasteredBumpmap.js.map
-
-/***/ }),
-
 /***/ "./src/cjs/UVHelpers.js":
 /*!******************************!*\
   !*** ./src/cjs/UVHelpers.js ***!
@@ -2839,7 +2752,9 @@ exports.KEY_SPLIT_TRIANGULATION_GEOMETRIES = "KEY_SPLIT_TRIANGULATION_GEOMETRIES
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DEFAULT_BEZIER_JSON = void 0;
 // Refactored from dildo-generator
-exports.DEFAULT_BEZIER_JSON = "[ { \"startPoint\" : [-122,77.80736634304651], \"endPoint\" : [-65.59022229786551,21.46778533702511], \"startControlPoint\": [-121.62058129515852,25.08908859418696], \"endControlPoint\" : [-79.33419353770395,48.71529293460728] }, { \"startPoint\" : [-65.59022229786551,21.46778533702511], \"endPoint\" : [-65.66917273472913,-149.23537680826058], \"startControlPoint\": [-52.448492057756646,-4.585775770903305], \"endControlPoint\" : [-86.1618869001374,-62.11613821618976] }, { \"startPoint\" : [-65.66917273472913,-149.23537680826058], \"endPoint\" : [-61.86203591980055,-243.8368165606738], \"startControlPoint\": [-53.701578771473564,-200.1123697454778], \"endControlPoint\" : [-69.80704300441666,-205.36451303641783] }, { \"startPoint\" : [-61.86203591980055,-243.8368165606738], \"endPoint\" : [-21.108966092052256,-323], \"startControlPoint\": [-54.08681426887413,-281.486963896856], \"endControlPoint\" : [-53.05779349623559,-323] } ]";
+exports.DEFAULT_BEZIER_JSON = 
+//'[ { "startPoint" : [-122,77.80736634304651], "endPoint" : [-65.59022229786551,21.46778533702511], "startControlPoint": [-121.62058129515852,25.08908859418696], "endControlPoint" : [-79.33419353770395,48.71529293460728] }, { "startPoint" : [-65.59022229786551,21.46778533702511], "endPoint" : [-65.66917273472913,-149.23537680826058], "startControlPoint": [-52.448492057756646,-4.585775770903305], "endControlPoint" : [-86.1618869001374,-62.11613821618976] }, { "startPoint" : [-65.66917273472913,-149.23537680826058], "endPoint" : [-61.86203591980055,-243.8368165606738], "startControlPoint": [-53.701578771473564,-200.1123697454778], "endControlPoint" : [-69.80704300441666,-205.36451303641783] }, { "startPoint" : [-61.86203591980055,-243.8368165606738], "endPoint" : [-21.108966092052256,-323], "startControlPoint": [-54.08681426887413,-281.486963896856], "endControlPoint" : [-53.05779349623559,-323] } ]';
+"\n  [\n    {\n       \"startPoint\":[\n          -122,\n          77.80736634304651\n       ],\n       \"endPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"startControlPoint\":[\n          -121.62058129515852,\n          25.08908859418696\n       ],\n       \"endControlPoint\":[\n          -79.33419353770395,\n          48.71529293460728\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"endPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"startControlPoint\":[\n          -52.448492057756646,\n          -4.585775770903305\n       ],\n       \"endControlPoint\":[\n          -86.1618869001374,\n          -62.11613821618976\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"endPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"startControlPoint\":[\n          -53.701578771473564,\n          -200.1123697454778\n       ],\n       \"endControlPoint\":[\n          -69.80704300441666,\n          -205.36451303641783\n       ]\n    },\n    {\n       \"startPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"endPoint\":[\n          -21.108966092052256,\n          -323\n       ],\n       \"startControlPoint\":[\n          -54.08681426887413,\n          -281.486963896856\n       ],\n       \"endControlPoint\":[\n          -53.05779349623559,\n          -323\n       ]\n    }\n ]\n  ";
 //# sourceMappingURL=defaults.js.map
 
 /***/ }),
@@ -2851,59 +2766,56 @@ exports.DEFAULT_BEZIER_JSON = "[ { \"startPoint\" : [-122,77.80736634304651], \"
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 
-/* Imports for webpack */
-// Object.defineProperty(exports, "__esModule", { value: true });
-// exports.DildoMaterials = void 0;
 
-const DildoMaterials = __webpack_require__(/*! ./DildoMaterials */ "./src/cjs/DildoMaterials.js").DildoMaterials;
-globalThis.DildoMaterials = DildoMaterials;
+// // const DildoMaterials = require("./DildoMaterials").DildoMaterials;
+// // globalThis.DildoMaterials = DildoMaterials;
 // globalThis.DildoMaterials = require("./DildoMaterials").DildoMaterials;
-globalThis.DEFAULT_BEZIER_JSON = __webpack_require__(/*! ./defaults */ "./src/cjs/defaults.js").DEFAULT_BEZIER_JSON;
-globalThis.clearDuplicateVertices3 = __webpack_require__(/*! ./clearDuplicateVertices3 */ "./src/cjs/clearDuplicateVertices3.js").clearDuplicateVertices3;
-globalThis.UVHelpers = __webpack_require__(/*! ./UVHelpers */ "./src/cjs/UVHelpers.js").UVHelpers;
-globalThis.locateVertexInArray = __webpack_require__(/*! ./locateVertexInArray */ "./src/cjs/locateVertexInArray.js").locateVertexInArray;
+// globalThis.DEFAULT_BEZIER_JSON = require("./defaults").DEFAULT_BEZIER_JSON;
+// globalThis.clearDuplicateVertices3 = require("./clearDuplicateVertices3").clearDuplicateVertices3;
+// globalThis.UVHelpers = require("./UVHelpers").UVHelpers;
+// globalThis.locateVertexInArray = require("./locateVertexInArray").locateVertexInArray;
 
-globalThis.earcut = __webpack_require__(/*! ./thirdparty-ported/earcut */ "./src/cjs/thirdparty-ported/earcut/index.js").earcut;
-globalThis.sliceGeometry = __webpack_require__(/*! ./thirdparty-ported/threejs-slice-geometry */ "./src/cjs/thirdparty-ported/threejs-slice-geometry/index.js").sliceGeometry;
-globalThis.BumpMapper = __webpack_require__(/*! ./BumpMapper */ "./src/cjs/BumpMapper.js").BumpMapper;
-globalThis.computeVertexNormals = __webpack_require__(/*! ./computeVertexNormals */ "./src/cjs/computeVertexNormals.js").computeVertexNormals;
-// globalThis.DEG_TO_RAD = require("./constants").DEG_TO_RAD;
-// globalThis.EPS = require("./constants").EPS;
-// globalThis.KEY_LEFT_SLICE_GEOMETRY = require("./constants").KEY_LEFT_SLICE_GEOMETRY;
-// globalThis.KEY_LEFT_SLICE_PLANE = require("./constants").KEY_LEFT_SLICE_PLANE;
-// globalThis.KEY_PLANE_INTERSECTION_POINTS = require("./constants").KEY_PLANE_INTERSECTION_POINTS;
-// globalThis.KEY_PLANE_INTERSECTION_TRIANGULATION = require("./constants").KEY_PLANE_INTERSECTION_TRIANGULATION;
-// globalThis.KEY_RIGHT_SLICE_GEOMETRY = require("./constants").KEY_RIGHT_SLICE_GEOMETRY;
-// globalThis.KEY_RIGHT_SLICE_PLANE = require("./constants").KEY_RIGHT_SLICE_PLANE;
-// globalThis.KEY_SPLIT_PANE_MESH = require("./constants").KEY_SPLIT_PANE_MESH;
-// globalThis.KEY_SPLIT_TRIANGULATION_GEOMETRIES = require("./constants").KEY_SPLIT_TRIANGULATION_GEOMETRIES;
-// globalThis.DEFAULT_BEZIER_JSON = require("./constants").DEFAULT_BEZIER_JSON;
-const constants = __webpack_require__(/*! ./constants */ "./src/cjs/constants.js");
-globalThis.DEG_TO_RAD = constants.DEG_TO_RAD;
-globalThis.EPS = constants.EPS;
-globalThis.KEY_LEFT_SLICE_GEOMETRY = constants.KEY_LEFT_SLICE_GEOMETRY;
-globalThis.KEY_LEFT_SLICE_PLANE = constants.KEY_LEFT_SLICE_PLANE;
-globalThis.KEY_PLANE_INTERSECTION_POINTS = constants.KEY_PLANE_INTERSECTION_POINTS;
-globalThis.KEY_PLANE_INTERSECTION_TRIANGULATION = constants.KEY_PLANE_INTERSECTION_TRIANGULATION;
-globalThis.KEY_RIGHT_SLICE_GEOMETRY = constants.KEY_RIGHT_SLICE_GEOMETRY;
-globalThis.KEY_RIGHT_SLICE_PLANE = constants.KEY_RIGHT_SLICE_PLANE;
-globalThis.KEY_SPLIT_PANE_MESH = constants.KEY_SPLIT_PANE_MESH;
-globalThis.KEY_SPLIT_TRIANGULATION_GEOMETRIES = constants.KEY_SPLIT_TRIANGULATION_GEOMETRIES;
-globalThis.DEFAULT_BEZIER_JSON = constants.DEFAULT_BEZIER_JSON;
-globalThis.DildoGeneration = __webpack_require__(/*! ./DildoGeneration */ "./src/cjs/DildoGeneration.js").DildoGeneration;
-globalThis.GeometryGenerationHelpers = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js").GeometryGenerationHelpers;
-globalThis.ImageStore = __webpack_require__(/*! ./ImageStore */ "./src/cjs/ImageStore.js").ImageStore;
-// globalThis.DildoMaterials = require("./index ?
-// globalThis.DildoMaterials = require("./interfaces ?
-globalThis.mergeGeometries = __webpack_require__(/*! ./mergeGeometries */ "./src/cjs/mergeGeometries.js").mergeGeometries;
-globalThis.PathFinder = __webpack_require__(/*! ./PathFinder */ "./src/cjs/PathFinder.js").PathFinder;
-globalThis.PlaneMeshIntersection = __webpack_require__(/*! ./PlaneMeshIntersection */ "./src/cjs/PlaneMeshIntersection.js").PlaneMeshIntersection;
-globalThis.randomWebColor = __webpack_require__(/*! ./randomWebColor */ "./src/cjs/randomWebColor.js").randomWebColor;
-globalThis.RasteredBumpmap = __webpack_require__(/*! ./RasteredBumpmap */ "./src/cjs/RasteredBumpmap.js").RasteredBumpmap;
-globalThis.UVHelpers = __webpack_require__(/*! ./UVHelpers */ "./src/cjs/UVHelpers.js").UVHelpers;
+// globalThis.earcut = require("./thirdparty-ported/earcut").earcut;
+// globalThis.sliceGeometry = require("./thirdparty-ported/threejs-slice-geometry").sliceGeometry;
+// globalThis.BumpMapper = require("./BumpMapper").BumpMapper;
+// globalThis.computeVertexNormals = require("./computeVertexNormals").computeVertexNormals;
+// // globalThis.DEG_TO_RAD = require("./constants").DEG_TO_RAD;
+// // globalThis.EPS = require("./constants").EPS;
+// // globalThis.KEY_LEFT_SLICE_GEOMETRY = require("./constants").KEY_LEFT_SLICE_GEOMETRY;
+// // globalThis.KEY_LEFT_SLICE_PLANE = require("./constants").KEY_LEFT_SLICE_PLANE;
+// // globalThis.KEY_PLANE_INTERSECTION_POINTS = require("./constants").KEY_PLANE_INTERSECTION_POINTS;
+// // globalThis.KEY_PLANE_INTERSECTION_TRIANGULATION = require("./constants").KEY_PLANE_INTERSECTION_TRIANGULATION;
+// // globalThis.KEY_RIGHT_SLICE_GEOMETRY = require("./constants").KEY_RIGHT_SLICE_GEOMETRY;
+// // globalThis.KEY_RIGHT_SLICE_PLANE = require("./constants").KEY_RIGHT_SLICE_PLANE;
+// // globalThis.KEY_SPLIT_PANE_MESH = require("./constants").KEY_SPLIT_PANE_MESH;
+// // globalThis.KEY_SPLIT_TRIANGULATION_GEOMETRIES = require("./constants").KEY_SPLIT_TRIANGULATION_GEOMETRIES;
+// // globalThis.DEFAULT_BEZIER_JSON = require("./constants").DEFAULT_BEZIER_JSON;
+// const constants = require("./constants");
+// globalThis.DEG_TO_RAD = constants.DEG_TO_RAD;
+// globalThis.EPS = constants.EPS;
+// globalThis.KEY_LEFT_SLICE_GEOMETRY = constants.KEY_LEFT_SLICE_GEOMETRY;
+// globalThis.KEY_LEFT_SLICE_PLANE = constants.KEY_LEFT_SLICE_PLANE;
+// globalThis.KEY_PLANE_INTERSECTION_POINTS = constants.KEY_PLANE_INTERSECTION_POINTS;
+// globalThis.KEY_PLANE_INTERSECTION_TRIANGULATION = constants.KEY_PLANE_INTERSECTION_TRIANGULATION;
+// globalThis.KEY_RIGHT_SLICE_GEOMETRY = constants.KEY_RIGHT_SLICE_GEOMETRY;
+// globalThis.KEY_RIGHT_SLICE_PLANE = constants.KEY_RIGHT_SLICE_PLANE;
+// globalThis.KEY_SPLIT_PANE_MESH = constants.KEY_SPLIT_PANE_MESH;
+// globalThis.KEY_SPLIT_TRIANGULATION_GEOMETRIES = constants.KEY_SPLIT_TRIANGULATION_GEOMETRIES;
+// globalThis.DEFAULT_BEZIER_JSON = constants.DEFAULT_BEZIER_JSON;
+// globalThis.DildoGeneration = require("./DildoGeneration").DildoGeneration;
+// globalThis.GeometryGenerationHelpers = require("./GeometryGenerationHelpers").GeometryGenerationHelpers;
+// globalThis.ImageStore = require("./ImageStore").ImageStore;
+// // globalThis.index = require("./index ?
+// // globalThis.interfaces = require("./interfaces ?
+// globalThis.mergeGeometries = require("./mergeGeometries").mergeGeometries;
+// globalThis.PathFinder = require("./PathFinder").PathFinder;
+// globalThis.PlaneMeshIntersection = require("./PlaneMeshIntersection").PlaneMeshIntersection;
+// globalThis.randomWebColor = require("./randomWebColor").randomWebColor;
+// globalThis.RasteredBumpmap = require("./RasteredBumpmap").RasteredBumpmap;
+// globalThis.UVHelpers = require("./UVHelpers").UVHelpers;
 
-// exports.DildoMaterials = DildoMaterials;
-// export {};
+// In the end this should be the only export I need:
+globalThis.ngdg = __webpack_require__(/*! ./ngdg */ "./src/cjs/ngdg.js").ngdg;
 
 
 /***/ }),
@@ -3041,6 +2953,36 @@ var mergeAndMapVertices = function (baseGeometry, mergeGeometry, epsilon) {
 };
 exports.mergeAndMapVertices = mergeAndMapVertices;
 //# sourceMappingURL=mergeGeometries.js.map
+
+/***/ }),
+
+/***/ "./src/cjs/ngdg.js":
+/*!*************************!*\
+  !*** ./src/cjs/ngdg.js ***!
+  \*************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+/**
+ * This defines the globally exported wrapper library.
+ *
+ * See ./src/cjs/entry.js
+ *
+ * @author  Ikaros Kappler
+ * @version 1.0.0
+ * @date    2021-09-27
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ngdg = void 0;
+var defaults_1 = __webpack_require__(/*! ./defaults */ "./src/cjs/defaults.js");
+var ImageStore_1 = __webpack_require__(/*! ./ImageStore */ "./src/cjs/ImageStore.js");
+var DildoGeneration_1 = __webpack_require__(/*! ./DildoGeneration */ "./src/cjs/DildoGeneration.js");
+exports.ngdg = {
+    DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
+    DildoGeneration: DildoGeneration_1.DildoGeneration,
+    ImageStore: ImageStore_1.ImageStore
+};
+//# sourceMappingURL=ngdg.js.map
 
 /***/ }),
 

@@ -44,14 +44,16 @@
     "ts-loader": "^7.0.5"
   },
   "scripts": {
-    "build": "npm run compile && npm run webpack",
+    "build": "npm run compile && npm run webpack && npm run copy-libs-public",
     "compile": "npm run compile:cjs && npm run compile:esm",
-    "compile:cjs": "tsc -p tsconfig.json --target es5 --module commonjs --outDir src/cjs/ && npm run copy-to-public",
+    "compile:cjs": "tsc -p tsconfig.json --target es5 --module commonjs --outDir src/cjs/ && npm run copy-src-to-public",
     "compile:esm": "tsc -p tsconfig.json --target ES2015 --module ESNext --outdir src/esm/ --moduleResolution node",
     "webpack": "npm run webpack:dev && npm run webpack:prod",
-    "webpack:dev": "npx webpack --env=development --config webpack.config.js",
-    "webpack:prod": "npx webpack --env=production --config webpack.config.js",
-    "copy-to-public": "cp -R src public/lib/ngdg && cp node_modules/three/build/three.min.js public/lib/three/build/three.min.js && cp -R node_modules/plotboilerplate/src/ public/lib/plotboilerplate/src",
+    "webpack:dev": "npx webpack --env=development --config webpack.config.js && npm run copy-dist-to-public",
+    "webpack:prod": "npx webpack --env=production --config webpack.config.js && npm run copy-dist-to-public",
+    "copy-src-to-public": "cp -R src public/lib/ngdg",
+    "copy-dist-to-public": "cp -R dist public/lib/ngdg",
+    "copy-libs-public": "cp node_modules/three/build/three.min.js public/lib/three/build/three.min.js && cp -R node_modules/plotboilerplate/src/ public/lib/plotboilerplate/src",
     "server": "npx http-server ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tslint": "npx eslint ./src/ts/"

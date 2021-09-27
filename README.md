@@ -8,20 +8,22 @@ Because 3d printing, web 3d, and dildos are cool.
 
 - When slicing the mesh with open bottom there are mesh errors.
 - Front face, back face and double face switching is not working.
-- Add a 'Material' switch/tab.
 
 ## Todos:
 
-- Configure webpack to handle type definitions in node_modules correctly.
+- [ ] Configure webpack to handle type definitions in node_modules correctly.
 - [x] Port all vanilla JS parts to Typescript.
-- Arrange splits on plane.
-- Update to THREE >= r125. Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
-  (not supported any more since r125). See https://sbcode.net/threejs/geometry-to-buffergeometry/ for details.
+- [ ] Arrange splits on plane.
+- [ ] Update to THREE >= r125. Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
+      (not supported any more since r125). See https://sbcode.net/threejs/geometry-to-buffergeometry/ for details.
 - [x] Rename base branch to 'main'.
-- Create a Typescript port from mapbox/earcut.
-- Create a Typescript port from tdhooper/threejs-slice-geometry.
+- [ ] Create a Typescript port from mapbox/earcut.
+- [ ] Create a Typescript port from tdhooper/threejs-slice-geometry.
 - [x] Add a proper Typescript interface for all available dildo generation options.
-- STL-Export: merge all exportable geometries together and export as one.
+- [ ] STL-Export: merge all exportable geometries together and export as one.
+- [ ] Add a 'Material' switch/tab.
+- [ ] Update the package.json's copy scripts (using OS dependent `cp` command). Better use an npm compatible copy here.
+- [ ] Define one global library export to avoid environment pollution.
 
 ### Changelog
 
