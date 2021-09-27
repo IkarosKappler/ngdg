@@ -19,7 +19,7 @@
     "babel-cli": "^6.26.0",
     "babel-loader": "^8.2.2",
     "cross-env": "^7.0.3",
-    "earcut": "^2.2.3",
+    "earcut-typescript": "../earcut-typescript",
     "eslint": "^7.32.0",
     "path": "^0.12.7",
     "plotboilerplate": "^1.12.6",

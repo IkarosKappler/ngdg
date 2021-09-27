@@ -34,7 +34,8 @@ exports.DildoGeometry = exports.DildoBaseClass = void 0;
 var plotboilerplate_1 = require("plotboilerplate");
 var THREE = require("three");
 var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
-var earcut_1 = require("./thirdparty-ported/earcut"); // TODO: fix earcut types
+// import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types
+var earcut_typescript_1 = require("earcut-typescript"); // TODO: fix earcut types
 var UVHelpers_1 = require("./UVHelpers");
 var DEG_TO_RAD = Math.PI / 180.0;
 // import { DEG_TO_RAD } from "./constants";
@@ -394,7 +395,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         });
         var polygonData = GeometryGenerationHelpers_1.GeometryGenerationHelpers.flattenVert2dArray(polygonVertices);
         // Step 3: run Earcut
-        var triangleIndices = (0, earcut_1.earcut)(polygonData);
+        var triangleIndices = (0, earcut_typescript_1.earcut)(polygonData);
         // Step 4: process the earcut result;
         //         add the retrieved triangles as geometry faces.
         for (var i = 0; i + 2 < triangleIndices.length; i += 3) {
