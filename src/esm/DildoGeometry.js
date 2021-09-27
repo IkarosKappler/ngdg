@@ -16,7 +16,8 @@
 import { Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
-import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types
+// import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types
+import { earcut } from "earcut-typescript"; // TODO: fix earcut types
 import { UVHelpers } from "./UVHelpers";
 var DEG_TO_RAD = Math.PI / 180.0;
 // import { DEG_TO_RAD } from "./constants";

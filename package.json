@@ -19,7 +19,7 @@
     "babel-cli": "^6.26.0",
     "babel-loader": "^8.2.2",
     "cross-env": "^7.0.3",
-    "earcut-typescript": "../earcut-typescript",
+    "earcut-typescript": "^2.2.3",
     "eslint": "^7.32.0",
     "path": "^0.12.7",
     "plotboilerplate": "^1.12.6",
@@ -44,7 +44,7 @@
     "ts-loader": "^7.0.5"
   },
   "scripts": {
-    "build": "npm run compile && npm run webpack && npm run copy-libs-public",
+    "build": "npm run compile && npm run webpack && npm run copy-libs-to-public",
     "compile": "npm run compile:cjs && npm run compile:esm",
     "compile:cjs": "tsc -p tsconfig.json --target es5 --module commonjs --outDir src/cjs/ && npm run copy-src-to-public",
     "compile:esm": "tsc -p tsconfig.json --target ES2015 --module ESNext --outdir src/esm/ --moduleResolution node",
@@ -53,7 +53,7 @@
     "webpack:prod": "npx webpack --env=production --config webpack.config.js && npm run copy-dist-to-public",
     "copy-src-to-public": "cp -R src public/lib/ngdg",
     "copy-dist-to-public": "cp -R dist public/lib/ngdg",
-    "copy-libs-public": "cp node_modules/three/build/three.min.js public/lib/three/build/three.min.js && cp -R node_modules/plotboilerplate/src/ public/lib/plotboilerplate/src",
+    "copy-libs-to-public": "cp node_modules/three/build/three.min.js public/lib/three/build/three.min.js && cp -R node_modules/plotboilerplate/src/ public/lib/plotboilerplate/src && cp -R node_modules/earcut-typescript/dist public/lib/earcut-typescript",
     "server": "npx http-server ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tslint": "npx eslint ./src/ts/"
