@@ -1,6 +1,6 @@
 # Codename NGDG
 
-Because 3d printing, web 3d, and dildos are cool.
+Because 3d printing, web 3d, and dildos are fun.
 
 ![Screenshot](screenshot.png)
 
@@ -23,7 +23,8 @@ Because 3d printing, web 3d, and dildos are cool.
 - [ ] STL-Export: merge all exportable geometries together and export as one.
 - [ ] Add a 'Material' switch/tab.
 - [ ] Update the package.json's copy scripts (using OS dependent `cp` command). Better use an npm compatible copy here.
-- [ ] Define one global library export to avoid environment pollution.
+- [x] Define one global library export to avoid environment pollution.
+- [ ] Remove unused build libraries: babel.
 
 ### Changelog
 
