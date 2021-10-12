@@ -2230,7 +2230,8 @@ var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.m
 // import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types, convert to custum library
 var earcut_typescript_1 = __webpack_require__(/*! earcut-typescript */ "../earcut-typescript/src/cjs/earcut.js");
 var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
-var threejs_slice_geometry_1 = __webpack_require__(/*! ./thirdparty-ported/threejs-slice-geometry */ "./src/cjs/thirdparty-ported/threejs-slice-geometry/index.js"); // TODO: convert to custom library
+// import { sliceGeometry } from "./thirdparty-ported/threejs-slice-geometry"; // TODO: convert to custom library
+var threejs_slice_geometry_typescript_1 = __webpack_require__(/*! threejs-slice-geometry-typescript */ "../threejs-slice-geometry-typescript/src/cjs/slice.js"); // TODO: convert to custom library
 var PlaneMeshIntersection_1 = __webpack_require__(/*! ./PlaneMeshIntersection */ "./src/cjs/PlaneMeshIntersection.js");
 var clearDuplicateVertices3_1 = __webpack_require__(/*! ./clearDuplicateVertices3 */ "./src/cjs/clearDuplicateVertices3.js");
 var UVHelpers_1 = __webpack_require__(/*! ./UVHelpers */ "./src/cjs/UVHelpers.js");
@@ -2392,7 +2393,7 @@ exports.GeometryGenerationHelpers = {
         // TODO: cc
         // var sliceMaterial = DildoMaterials.createSliceMaterial(wireframe);
         // var slicedGeometry = sliceGeometry(unbufferedGeometry, plane, closeHoles);
-        var slicedGeometry = (0, threejs_slice_geometry_1.sliceGeometry)(unbufferedGeometry, plane, closeHoles);
+        var slicedGeometry = (0, threejs_slice_geometry_typescript_1.sliceGeometry)(unbufferedGeometry, plane, closeHoles);
         // Now note that it's possible that the result might contain multiple vertices
         // at the same position, which makes further calculations quite difficult.
         // -> Merge multiple vertices into one
@@ -3610,26 +3611,277 @@ exports.randomWebColor = randomWebColor;
 
 /***/ }),
 
-/***/ "./src/cjs/thirdparty-ported/threejs-slice-geometry/faces-from-edges.js":
-/*!******************************************************************************!*\
-  !*** ./src/cjs/thirdparty-ported/threejs-slice-geometry/faces-from-edges.js ***!
-  \******************************************************************************/
+/***/ "../threejs-slice-geometry-typescript/src/cjs/GeometryBuilder.js":
+/*!***********************************************************************!*\
+  !*** ../threejs-slice-geometry-typescript/src/cjs/GeometryBuilder.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+/**
+ * Ported to TypeScript from vanilla-js by Ikaros Kappler.
+ *
+ * @date 2021-09-28
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GeometryBuilder = void 0;
+// Note: THREE.Geometry is only available until version 0.124.0
+var THREE = __webpack_require__(/*! three */ "../threejs-slice-geometry-typescript/node_modules/three/build/three.module.js");
+var faces_from_edges_1 = __webpack_require__(/*! ./faces-from-edges */ "../threejs-slice-geometry-typescript/src/cjs/faces-from-edges.js");
+var constants_1 = __webpack_require__(/*! ./constants */ "../threejs-slice-geometry-typescript/src/cjs/constants.js");
+var GeometryBuilder = /** @class */ (function () {
+    function GeometryBuilder(sourceGeometry, targetGeometry, slicePlane) {
+        this.sourceGeometry = sourceGeometry;
+        this.targetGeometry = targetGeometry;
+        this.slicePlane = slicePlane;
+        this.addedVertices = [];
+        this.addedIntersections = [];
+        this.newEdges = [[]];
+    }
+    ;
+    // TODO: check undfined?
+    // This is called without params in line ---67 but param used here as an index??
+    GeometryBuilder.prototype.startFace = function (sourceFaceIndex) {
+        this.sourceFaceIndex = sourceFaceIndex;
+        this.sourceFace = this.sourceGeometry.faces[sourceFaceIndex];
+        this.sourceFaceUvs = this.sourceGeometry.faceVertexUvs[0][sourceFaceIndex];
+        this.faceIndices = [];
+        this.faceNormals = [];
+        this.faceUvs = [];
+    };
+    ;
+    GeometryBuilder.prototype.endFace = function () {
+        var indices = this.faceIndices.map(function (index, i) {
+            return i;
+        });
+        this.addFace(indices);
+    };
+    ;
+    GeometryBuilder.prototype.closeHoles = function () {
+        var _this = this;
+        if (!this.newEdges[0].length) {
+            return;
+        }
+        (0, faces_from_edges_1.facesFromEdges)(this.newEdges)
+            .forEach(function (faceIndices) {
+            var normal = _this.faceNormal(faceIndices);
+            if (normal.dot(_this.slicePlane.normal) > .5) {
+                faceIndices.reverse();
+            }
+            _this.startFace();
+            _this.faceIndices = faceIndices;
+            _this.endFace();
+        }, this);
+    };
+    ;
+    GeometryBuilder.prototype.addVertex = function (key) {
+        this.addUv(key);
+        this.addNormal(key);
+        var index = this.sourceFace[key];
+        var newIndex;
+        if (this.addedVertices.hasOwnProperty(index)) {
+            newIndex = this.addedVertices[index];
+        }
+        else {
+            var vertex = this.sourceGeometry.vertices[index];
+            this.targetGeometry.vertices.push(vertex);
+            newIndex = this.targetGeometry.vertices.length - 1;
+            this.addedVertices[index] = newIndex;
+        }
+        this.faceIndices.push(newIndex);
+    };
+    ;
+    GeometryBuilder.prototype.addIntersection = function (keyA, keyB, distanceA, distanceB) {
+        var t = Math.abs(distanceA) / (Math.abs(distanceA) + Math.abs(distanceB));
+        this.addIntersectionUv(keyA, keyB, t);
+        this.addIntersectionNormal(keyA, keyB, t);
+        var indexA = this.sourceFace[keyA];
+        var indexB = this.sourceFace[keyB];
+        var id = this.intersectionId(indexA, indexB);
+        var index;
+        if (this.addedIntersections.hasOwnProperty(id)) {
+            index = this.addedIntersections[id];
+        }
+        else {
+            var vertexA = this.sourceGeometry.vertices[indexA];
+            var vertexB = this.sourceGeometry.vertices[indexB];
+            var newVertex = vertexA.clone().lerp(vertexB, t);
+            this.targetGeometry.vertices.push(newVertex);
+            index = this.targetGeometry.vertices.length - 1;
+            this.addedIntersections[id] = index;
+        }
+        this.faceIndices.push(index);
+        this.updateNewEdges(index);
+    };
+    ;
+    GeometryBuilder.prototype.addUv = function (key) {
+        if (!this.sourceFaceUvs) {
+            return;
+        }
+        var index = this.keyIndex(key);
+        var uv = this.sourceFaceUvs[index];
+        this.faceUvs.push(uv);
+    };
+    ;
+    GeometryBuilder.prototype.addIntersectionUv = function (keyA, keyB, t) {
+        if (!this.sourceFaceUvs) {
+            return;
+        }
+        var indexA = this.keyIndex(keyA);
+        var indexB = this.keyIndex(keyB);
+        var uvA = this.sourceFaceUvs[indexA];
+        var uvB = this.sourceFaceUvs[indexB];
+        var uv = uvA.clone().lerp(uvB, t);
+        this.faceUvs.push(uv);
+    };
+    ;
+    GeometryBuilder.prototype.addNormal = function (key) {
+        if (!this.sourceFace.vertexNormals.length) {
+            return;
+        }
+        var index = this.keyIndex(key);
+        var normal = this.sourceFace.vertexNormals[index];
+        this.faceNormals.push(normal);
+    };
+    ;
+    GeometryBuilder.prototype.addIntersectionNormal = function (keyA, keyB, t) {
+        if (!this.sourceFace.vertexNormals.length) {
+            return;
+        }
+        var indexA = this.keyIndex(keyA);
+        var indexB = this.keyIndex(keyB);
+        var normalA = this.sourceFace.vertexNormals[indexA];
+        var normalB = this.sourceFace.vertexNormals[indexB];
+        var normal = normalA.clone().lerp(normalB, t).normalize();
+        this.faceNormals.push(normal);
+    };
+    ;
+    GeometryBuilder.prototype.addFace = function (indices) {
+        var _this = this;
+        if (indices.length === 3) {
+            this.addFacePart(indices[0], indices[1], indices[2]);
+            return;
+        }
+        var pairs = [];
+        for (var i = 0; i < indices.length; i++) {
+            for (var j = i + 1; j < indices.length; j++) {
+                var diff = Math.abs(i - j);
+                if (diff > 1 && diff < indices.length - 1) {
+                    pairs.push([indices[i], indices[j]]);
+                }
+            }
+        }
+        pairs.sort((function (pairA, pairB) {
+            var lengthA = _this.faceEdgeLength(pairA[0], pairA[1]);
+            var lengthB = _this.faceEdgeLength(pairB[0], pairB[1]);
+            return lengthA - lengthB;
+        }).bind(this));
+        var a = indices.indexOf(pairs[0][0]);
+        indices = indices.slice(a).concat(indices.slice(0, a));
+        var b = indices.indexOf(pairs[0][1]);
+        var indicesA = indices.slice(0, b + 1);
+        var indicesB = indices.slice(b).concat(indices.slice(0, 1));
+        this.addFace(indicesA);
+        this.addFace(indicesB);
+    };
+    ;
+    GeometryBuilder.prototype.addFacePart = function (a, b, c) {
+        var normals = null;
+        if (this.faceNormals.length) {
+            normals = [
+                this.faceNormals[a],
+                this.faceNormals[b],
+                this.faceNormals[c],
+            ];
+        }
+        var face = new THREE.Face3(this.faceIndices[a], this.faceIndices[b], this.faceIndices[c], normals);
+        this.targetGeometry.faces.push(face);
+        if (!this.sourceFaceUvs) {
+            return;
+        }
+        this.targetGeometry.faceVertexUvs[0].push([
+            this.faceUvs[a],
+            this.faceUvs[b],
+            this.faceUvs[c]
+        ]);
+    };
+    ;
+    GeometryBuilder.prototype.faceEdgeLength = function (a, b) {
+        var indexA = this.faceIndices[a];
+        var indexB = this.faceIndices[b];
+        var vertexA = this.targetGeometry.vertices[indexA];
+        var vertexB = this.targetGeometry.vertices[indexB];
+        return vertexA.distanceToSquared(vertexB);
+    };
+    ;
+    GeometryBuilder.prototype.intersectionId = function (indexA, indexB) {
+        return [indexA, indexB].sort().join(',');
+    };
+    ;
+    GeometryBuilder.prototype.keyIndex = function (key) {
+        return constants_1.FACE_KEYS.indexOf(key);
+    };
+    ;
+    GeometryBuilder.prototype.updateNewEdges = function (index) {
+        var edgeIndex = this.newEdges.length - 1;
+        var edge = this.newEdges[edgeIndex];
+        if (edge.length < 2) {
+            edge.push(index);
+        }
+        else {
+            this.newEdges.push([index]);
+        }
+    };
+    ;
+    GeometryBuilder.prototype.faceNormal = function (faceIndices) {
+        var _this = this;
+        var vertices = faceIndices.map((function (index) {
+            return _this.targetGeometry.vertices[index];
+        }).bind(this));
+        var edgeA = vertices[0].clone().sub(vertices[1]);
+        var edgeB = vertices[0].clone().sub(vertices[2]);
+        return edgeA.cross(edgeB).normalize();
+    };
+    ;
+    return GeometryBuilder;
+}());
+exports.GeometryBuilder = GeometryBuilder;
+//# sourceMappingURL=GeometryBuilder.js.map
+
+/***/ }),
+
+/***/ "../threejs-slice-geometry-typescript/src/cjs/constants.js":
+/*!*****************************************************************!*\
+  !*** ../threejs-slice-geometry-typescript/src/cjs/constants.js ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FACE_KEYS = exports.ON = exports.BACK = exports.FRONT = void 0;
+exports.FRONT = 'front';
+exports.BACK = 'back';
+exports.ON = 'on';
+exports.FACE_KEYS = ['a', 'b', 'c'];
+//# sourceMappingURL=constants.js.map
+
+/***/ }),
+
+/***/ "../threejs-slice-geometry-typescript/src/cjs/faces-from-edges.js":
+/*!************************************************************************!*\
+  !*** ../threejs-slice-geometry-typescript/src/cjs/faces-from-edges.js ***!
+  \************************************************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 
 /**
- * This is a typescript port for the threejs-slice-geometry/faces-from-edges.js script.
+ * Ported to TypeScript from vanilla-js by Ikaros Kappler.
  *
- * https://github.com/tdhooper/threejs-slice-geometry/blob/master/src/faces-from-edges.js
- *
- * @co-author Ikaros Kappler
- * @date 2021-08-29
- * @version 1.0.0
+ * @date 2021-09-28
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.facesFromEdges = void 0;
-// TODO: port this into a separate typescript-port-package
-function facesFromEdges(edges) {
+var facesFromEdges = function (edges) {
     var chains = joinEdges(edges).filter(validFace);
     var faces = chains.map(function (chain) {
         return chain.map(function (edge) {
@@ -3637,7 +3889,7 @@ function facesFromEdges(edges) {
         });
     });
     return faces;
-}
+};
 exports.facesFromEdges = facesFromEdges;
 function joinEdges(edges) {
     var changes = true;
@@ -3708,53 +3960,30 @@ function validFace(chain) {
 
 /***/ }),
 
-/***/ "./src/cjs/thirdparty-ported/threejs-slice-geometry/index.js":
-/*!*******************************************************************!*\
-  !*** ./src/cjs/thirdparty-ported/threejs-slice-geometry/index.js ***!
-  \*******************************************************************/
+/***/ "../threejs-slice-geometry-typescript/src/cjs/slice.js":
+/*!*************************************************************!*\
+  !*** ../threejs-slice-geometry-typescript/src/cjs/slice.js ***!
+  \*************************************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.sliceGeometry = void 0;
-var slice_1 = __webpack_require__(/*! ./slice */ "./src/cjs/thirdparty-ported/threejs-slice-geometry/slice.js");
-Object.defineProperty(exports, "sliceGeometry", ({ enumerable: true, get: function () { return slice_1.sliceGeometry; } }));
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-
-/***/ "./src/cjs/thirdparty-ported/threejs-slice-geometry/slice.js":
-/*!*******************************************************************!*\
-  !*** ./src/cjs/thirdparty-ported/threejs-slice-geometry/slice.js ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-/**
- * This is a typescript port for the threejs-slice-geometry/slice.js script.
- *
- * https://github.com/tdhooper/threejs-slice-geometry/blob/master/src/slice.js
- *
- * @co-author Ikaros Kappler
- * @date 2021-08-29
- * @version 1.0.0
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.sliceGeometry = void 0;
-// TODO: add proper types
-// TODO: port to separated library
-// var facesFromEdges = require('./faces-from-edges.js');
-var faces_from_edges_1 = __webpack_require__(/*! ./faces-from-edges */ "./src/cjs/thirdparty-ported/threejs-slice-geometry/faces-from-edges.js");
-var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
-// module.exports = function (THREE) {
-//   "use strict";
-var FRONT = "front";
-var BACK = "back";
-var ON = "on";
-var FACE_KEYS = ["a", "b", "c"];
+// Note: THREE.Geometry is only available until version 0.124.0
+var THREE = __webpack_require__(/*! three */ "../threejs-slice-geometry-typescript/node_modules/three/build/three.module.js");
+var GeometryBuilder_1 = __webpack_require__(/*! ./GeometryBuilder */ "../threejs-slice-geometry-typescript/src/cjs/GeometryBuilder.js");
+var constants_1 = __webpack_require__(/*! ./constants */ "../threejs-slice-geometry-typescript/src/cjs/constants.js");
+// TODO: cc
+// module.exports = function(THREE:THREE) {
+// "use strict";
+// const FRONT : string = 'front';
+// const BACK : string = 'back';
+// const ON : string = 'on';
+// export type FACE_KEY = 'a' | 'b' | 'c';
+// export const FACE_KEYS : [FACE_KEY,FACE_KEY,FACE_KEY]= ['a', 'b', 'c'];
 var sliceGeometry = function (geometry, plane, closeHoles) {
     var sliced = new THREE.Geometry();
-    var builder = new GeometryBuilder(geometry, sliced, plane);
+    var builder = new GeometryBuilder_1.GeometryBuilder(geometry, sliced, plane);
     var distances = [];
     var positions = [];
     geometry.vertices.forEach(function (vertex) {
@@ -3764,23 +3993,24 @@ var sliceGeometry = function (geometry, plane, closeHoles) {
         positions.push(position);
     });
     geometry.faces.forEach(function (face, faceIndex) {
-        var facePositions = FACE_KEYS.map(function (key) {
+        var facePositions = constants_1.FACE_KEYS.map(function (key) {
             return positions[face[key]];
         });
-        if (facePositions.indexOf(FRONT) === -1 && facePositions.indexOf(BACK) !== -1) {
+        if (facePositions.indexOf(constants_1.FRONT) === -1 &&
+            facePositions.indexOf(constants_1.BACK) !== -1) {
             return;
         }
         builder.startFace(faceIndex);
-        var lastKey = FACE_KEYS[FACE_KEYS.length - 1];
+        var lastKey = constants_1.FACE_KEYS[constants_1.FACE_KEYS.length - 1];
         var lastIndex = face[lastKey];
         var lastDistance = distances[lastIndex];
         var lastPosition = positions[lastIndex];
-        FACE_KEYS.map(function (key) {
+        constants_1.FACE_KEYS.map(function (key) {
             var index = face[key];
             var distance = distances[index];
             var position = positions[index];
-            if (position === FRONT) {
-                if (lastPosition === BACK) {
+            if (position === constants_1.FRONT) {
+                if (lastPosition === constants_1.BACK) {
                     builder.addIntersection(lastKey, key, lastDistance, distance);
                     builder.addVertex(key);
                 }
@@ -3788,10 +4018,10 @@ var sliceGeometry = function (geometry, plane, closeHoles) {
                     builder.addVertex(key);
                 }
             }
-            if (position === ON) {
+            if (position === constants_1.ON) {
                 builder.addVertex(key);
             }
-            if (position === BACK && lastPosition === FRONT) {
+            if (position === constants_1.BACK && lastPosition === constants_1.FRONT) {
                 builder.addIntersection(lastKey, key, lastDistance, distance);
             }
             lastKey = key;
@@ -3809,199 +4039,216 @@ var sliceGeometry = function (geometry, plane, closeHoles) {
 exports.sliceGeometry = sliceGeometry;
 var distanceAsPosition = function (distance) {
     if (distance < 0) {
-        return BACK;
+        return constants_1.BACK;
     }
     if (distance > 0) {
-        return FRONT;
+        return constants_1.FRONT;
     }
-    return ON;
+    return constants_1.ON;
 };
 var findDistance = function (vertex, plane) {
     return plane.distanceToPoint(vertex);
 };
-var GeometryBuilder = function (sourceGeometry, targetGeometry, slicePlane) {
-    this.sourceGeometry = sourceGeometry;
-    this.targetGeometry = targetGeometry;
-    this.slicePlane = slicePlane;
-    this.addedVertices = [];
-    this.addedIntersections = [];
-    this.newEdges = [[]];
-};
-GeometryBuilder.prototype.startFace = function (sourceFaceIndex) {
-    this.sourceFaceIndex = sourceFaceIndex;
-    this.sourceFace = this.sourceGeometry.faces[sourceFaceIndex];
-    this.sourceFaceUvs = this.sourceGeometry.faceVertexUvs[0][sourceFaceIndex];
-    this.faceIndices = [];
-    this.faceNormals = [];
-    this.faceUvs = [];
-};
-GeometryBuilder.prototype.endFace = function () {
-    var indices = this.faceIndices.map(function (index, i) {
-        return i;
-    });
-    this.addFace(indices);
-};
-GeometryBuilder.prototype.closeHoles = function () {
-    if (!this.newEdges[0].length) {
-        return;
-    }
-    (0, faces_from_edges_1.facesFromEdges)(this.newEdges).forEach(function (faceIndices) {
-        var normal = this.faceNormal(faceIndices);
-        if (normal.dot(this.slicePlane.normal) > 0.5) {
-            faceIndices.reverse();
-        }
-        this.startFace();
-        this.faceIndices = faceIndices;
-        this.endFace();
-    }, this);
-};
-GeometryBuilder.prototype.addVertex = function (key) {
-    this.addUv(key);
-    this.addNormal(key);
-    var index = this.sourceFace[key];
-    var newIndex;
-    if (this.addedVertices.hasOwnProperty(index)) {
-        newIndex = this.addedVertices[index];
-    }
-    else {
-        var vertex = this.sourceGeometry.vertices[index];
-        this.targetGeometry.vertices.push(vertex);
-        newIndex = this.targetGeometry.vertices.length - 1;
-        this.addedVertices[index] = newIndex;
-    }
-    this.faceIndices.push(newIndex);
-};
-GeometryBuilder.prototype.addIntersection = function (keyA, keyB, distanceA, distanceB) {
-    var t = Math.abs(distanceA) / (Math.abs(distanceA) + Math.abs(distanceB));
-    this.addIntersectionUv(keyA, keyB, t);
-    this.addIntersectionNormal(keyA, keyB, t);
-    var indexA = this.sourceFace[keyA];
-    var indexB = this.sourceFace[keyB];
-    var id = this.intersectionId(indexA, indexB);
-    var index;
-    if (this.addedIntersections.hasOwnProperty(id)) {
-        index = this.addedIntersections[id];
-    }
-    else {
-        var vertexA = this.sourceGeometry.vertices[indexA];
-        var vertexB = this.sourceGeometry.vertices[indexB];
-        var newVertex = vertexA.clone().lerp(vertexB, t);
-        this.targetGeometry.vertices.push(newVertex);
-        index = this.targetGeometry.vertices.length - 1;
-        this.addedIntersections[id] = index;
-    }
-    this.faceIndices.push(index);
-    this.updateNewEdges(index);
-};
-GeometryBuilder.prototype.addUv = function (key) {
-    if (!this.sourceFaceUvs) {
-        return;
-    }
-    var index = this.keyIndex(key);
-    var uv = this.sourceFaceUvs[index];
-    this.faceUvs.push(uv);
-};
-GeometryBuilder.prototype.addIntersectionUv = function (keyA, keyB, t) {
-    if (!this.sourceFaceUvs) {
-        return;
-    }
-    var indexA = this.keyIndex(keyA);
-    var indexB = this.keyIndex(keyB);
-    var uvA = this.sourceFaceUvs[indexA];
-    var uvB = this.sourceFaceUvs[indexB];
-    var uv = uvA.clone().lerp(uvB, t);
-    this.faceUvs.push(uv);
-};
-GeometryBuilder.prototype.addNormal = function (key) {
-    if (!this.sourceFace.vertexNormals.length) {
-        return;
-    }
-    var index = this.keyIndex(key);
-    var normal = this.sourceFace.vertexNormals[index];
-    this.faceNormals.push(normal);
-};
-GeometryBuilder.prototype.addIntersectionNormal = function (keyA, keyB, t) {
-    if (!this.sourceFace.vertexNormals.length) {
-        return;
-    }
-    var indexA = this.keyIndex(keyA);
-    var indexB = this.keyIndex(keyB);
-    var normalA = this.sourceFace.vertexNormals[indexA];
-    var normalB = this.sourceFace.vertexNormals[indexB];
-    var normal = normalA.clone().lerp(normalB, t).normalize();
-    this.faceNormals.push(normal);
-};
-GeometryBuilder.prototype.addFace = function (indices) {
-    if (indices.length === 3) {
-        this.addFacePart(indices[0], indices[1], indices[2]);
-        return;
-    }
-    var pairs = [];
-    for (var i = 0; i < indices.length; i++) {
-        for (var j = i + 1; j < indices.length; j++) {
-            var diff = Math.abs(i - j);
-            if (diff > 1 && diff < indices.length - 1) {
-                pairs.push([indices[i], indices[j]]);
-            }
-        }
-    }
-    pairs.sort(function (pairA, pairB) {
-        var lengthA = this.faceEdgeLength(pairA[0], pairA[1]);
-        var lengthB = this.faceEdgeLength(pairB[0], pairB[1]);
-        return lengthA - lengthB;
-    }.bind(this));
-    var a = indices.indexOf(pairs[0][0]);
-    indices = indices.slice(a).concat(indices.slice(0, a));
-    var b = indices.indexOf(pairs[0][1]);
-    var indicesA = indices.slice(0, b + 1);
-    var indicesB = indices.slice(b).concat(indices.slice(0, 1));
-    this.addFace(indicesA);
-    this.addFace(indicesB);
-};
-GeometryBuilder.prototype.addFacePart = function (a, b, c) {
-    var normals = null;
-    if (this.faceNormals.length) {
-        normals = [this.faceNormals[a], this.faceNormals[b], this.faceNormals[c]];
-    }
-    var face = new THREE.Face3(this.faceIndices[a], this.faceIndices[b], this.faceIndices[c], normals);
-    this.targetGeometry.faces.push(face);
-    if (!this.sourceFaceUvs) {
-        return;
-    }
-    this.targetGeometry.faceVertexUvs[0].push([this.faceUvs[a], this.faceUvs[b], this.faceUvs[c]]);
-};
-GeometryBuilder.prototype.faceEdgeLength = function (a, b) {
-    var indexA = this.faceIndices[a];
-    var indexB = this.faceIndices[b];
-    var vertexA = this.targetGeometry.vertices[indexA];
-    var vertexB = this.targetGeometry.vertices[indexB];
-    return vertexA.distanceToSquared(vertexB);
-};
-GeometryBuilder.prototype.intersectionId = function (indexA, indexB) {
-    return [indexA, indexB].sort().join(",");
-};
-GeometryBuilder.prototype.keyIndex = function (key) {
-    return FACE_KEYS.indexOf(key);
-};
-GeometryBuilder.prototype.updateNewEdges = function (index) {
-    var edgeIndex = this.newEdges.length - 1;
-    var edge = this.newEdges[edgeIndex];
-    if (edge.length < 2) {
-        edge.push(index);
-    }
-    else {
-        this.newEdges.push([index]);
-    }
-};
-GeometryBuilder.prototype.faceNormal = function (faceIndices) {
-    var vertices = faceIndices.map(function (index) {
-        return this.targetGeometry.vertices[index];
-    }.bind(this));
-    var edgeA = vertices[0].clone().sub(vertices[1]);
-    var edgeB = vertices[0].clone().sub(vertices[2]);
-    return edgeA.cross(edgeB).normalize();
-};
-//   return sliceGeometry;
+// function FRONT(FRONT: any) {
+//     throw new Error("Function not implemented.");
+// }
+// function BACK(BACK: any) {
+//     throw new Error("Function not implemented.");
+// }
+// const GeometryBuilder = function(sourceGeometry, targetGeometry, slicePlane) {
+//     this.sourceGeometry = sourceGeometry;
+//     this.targetGeometry = targetGeometry;
+//     this.slicePlane = slicePlane;
+//     this.addedVertices = [];
+//     this.addedIntersections = [];
+//     this.newEdges = [[]];
+// };
+// GeometryBuilder.prototype.startFace = function(sourceFaceIndex) {
+//     this.sourceFaceIndex = sourceFaceIndex;
+//     this.sourceFace = this.sourceGeometry.faces[sourceFaceIndex];
+//     this.sourceFaceUvs = this.sourceGeometry.faceVertexUvs[0][sourceFaceIndex];
+//     this.faceIndices = [];
+//     this.faceNormals = [];
+//     this.faceUvs = [];
+// };
+// GeometryBuilder.prototype.endFace = function() {
+//     var indices = this.faceIndices.map(function(index, i) {
+//         return i;
+//     });
+//     this.addFace(indices);
+// };
+// GeometryBuilder.prototype.closeHoles = function() {
+//     if ( ! this.newEdges[0].length) {
+//         return;
+//     }
+//     facesFromEdges(this.newEdges)
+//         .forEach(function(faceIndices) {
+//             var normal = this.faceNormal(faceIndices);
+//             if (normal.dot(this.slicePlane.normal) > .5) {
+//                 faceIndices.reverse();
+//             }
+//             this.startFace();
+//             this.faceIndices = faceIndices;
+//             this.endFace();
+//         }, this);
+// };
+// GeometryBuilder.prototype.addVertex = function(key) {
+//     this.addUv(key);
+//     this.addNormal(key);
+//     var index = this.sourceFace[key];
+//     var newIndex;
+//     if (this.addedVertices.hasOwnProperty(index)) {
+//         newIndex = this.addedVertices[index];
+//     } else {
+//         var vertex = this.sourceGeometry.vertices[index];
+//         this.targetGeometry.vertices.push(vertex);
+//         newIndex = this.targetGeometry.vertices.length - 1;
+//         this.addedVertices[index] = newIndex;
+//     }
+//     this.faceIndices.push(newIndex);
+// };
+// GeometryBuilder.prototype.addIntersection = function(keyA, keyB, distanceA, distanceB) {
+//     var t = Math.abs(distanceA) / (Math.abs(distanceA) + Math.abs(distanceB));
+//     this.addIntersectionUv(keyA, keyB, t);
+//     this.addIntersectionNormal(keyA, keyB, t);
+//     var indexA = this.sourceFace[keyA];
+//     var indexB = this.sourceFace[keyB];
+//     var id = this.intersectionId(indexA, indexB);
+//     var index;
+//     if (this.addedIntersections.hasOwnProperty(id)) {
+//         index = this.addedIntersections[id];
+//     } else {
+//         var vertexA = this.sourceGeometry.vertices[indexA];
+//         var vertexB = this.sourceGeometry.vertices[indexB];
+//         var newVertex = vertexA.clone().lerp(vertexB, t);
+//         this.targetGeometry.vertices.push(newVertex);
+//         index = this.targetGeometry.vertices.length - 1;
+//         this.addedIntersections[id] = index;
+//     }
+//     this.faceIndices.push(index);
+//     this.updateNewEdges(index);
+// };
+// GeometryBuilder.prototype.addUv = function(key) {
+//     if ( ! this.sourceFaceUvs) {
+//         return;
+//     }
+//     var index = this.keyIndex(key);
+//     var uv = this.sourceFaceUvs[index];
+//     this.faceUvs.push(uv);
+// };
+// GeometryBuilder.prototype.addIntersectionUv = function(keyA, keyB, t) {
+//     if ( ! this.sourceFaceUvs) {
+//         return;
+//     }
+//     var indexA = this.keyIndex(keyA);
+//     var indexB = this.keyIndex(keyB);
+//     var uvA = this.sourceFaceUvs[indexA];
+//     var uvB = this.sourceFaceUvs[indexB];
+//     var uv = uvA.clone().lerp(uvB, t);
+//     this.faceUvs.push(uv);
+// };
+// GeometryBuilder.prototype.addNormal = function(key) {
+//     if ( ! this.sourceFace.vertexNormals.length) {
+//         return;
+//     }
+//     var index = this.keyIndex(key);
+//     var normal = this.sourceFace.vertexNormals[index];
+//     this.faceNormals.push(normal);
+// };
+// GeometryBuilder.prototype.addIntersectionNormal = function(keyA, keyB, t) {
+//     if ( ! this.sourceFace.vertexNormals.length) {
+//         return;
+//     }
+//     var indexA = this.keyIndex(keyA);
+//     var indexB = this.keyIndex(keyB);
+//     var normalA = this.sourceFace.vertexNormals[indexA];
+//     var normalB = this.sourceFace.vertexNormals[indexB];
+//     var normal = normalA.clone().lerp(normalB, t).normalize();
+//     this.faceNormals.push(normal);
+// };
+// GeometryBuilder.prototype.addFace = function(indices) {
+//     if (indices.length === 3) {
+//         this.addFacePart(indices[0], indices[1], indices[2]);
+//         return;
+//     }
+//     var pairs = [];
+//     for (var i = 0; i < indices.length; i++) {
+//         for (var j = i + 1; j < indices.length; j++) {
+//             var diff = Math.abs(i - j);
+//             if (diff > 1 && diff < indices.length - 1) {
+//                 pairs.push([indices[i], indices[j]]);
+//             }
+//         }
+//     }
+//     pairs.sort(function(pairA, pairB) {
+//         var lengthA = this.faceEdgeLength(pairA[0], pairA[1]);
+//         var lengthB = this.faceEdgeLength(pairB[0], pairB[1]);
+//         return lengthA - lengthB;
+//     }.bind(this));
+//     var a = indices.indexOf(pairs[0][0]);
+//     indices = indices.slice(a).concat(indices.slice(0, a));
+//     var b = indices.indexOf(pairs[0][1]);
+//     var indicesA = indices.slice(0, b + 1);
+//     var indicesB = indices.slice(b).concat(indices.slice(0, 1));
+//     this.addFace(indicesA);
+//     this.addFace(indicesB);
+// };
+// GeometryBuilder.prototype.addFacePart = function(a, b, c) {
+//     var normals = null;
+//     if (this.faceNormals.length) {
+//         normals = [
+//             this.faceNormals[a],
+//             this.faceNormals[b],
+//             this.faceNormals[c],
+//         ];
+//     }
+//     var face = new THREE.Face3(
+//         this.faceIndices[a],
+//         this.faceIndices[b],
+//         this.faceIndices[c],
+//         normals
+//     );
+//     this.targetGeometry.faces.push(face);
+//     if ( ! this.sourceFaceUvs) {
+//         return;
+//     }
+//     this.targetGeometry.faceVertexUvs[0].push([
+//         this.faceUvs[a],
+//         this.faceUvs[b],
+//         this.faceUvs[c]
+//     ]);
+// };
+// GeometryBuilder.prototype.faceEdgeLength = function(a, b) {
+//     var indexA = this.faceIndices[a];
+//     var indexB = this.faceIndices[b];
+//     var vertexA = this.targetGeometry.vertices[indexA];
+//     var vertexB = this.targetGeometry.vertices[indexB];
+//     return vertexA.distanceToSquared(vertexB);
+// };
+// GeometryBuilder.prototype.intersectionId = function(indexA, indexB) {
+//     return [indexA, indexB].sort().join(',');
+// };
+// GeometryBuilder.prototype.keyIndex = function(key) {
+//     return FACE_KEYS.indexOf(key);
+// };
+// GeometryBuilder.prototype.updateNewEdges = function(index) {
+//     var edgeIndex = this.newEdges.length - 1;
+//     var edge = this.newEdges[edgeIndex];
+//     if (edge.length < 2) {
+//         edge.push(index);
+//     } else {
+//         this.newEdges.push([index]);
+//     }
+// };
+// GeometryBuilder.prototype.faceNormal = function(faceIndices) {
+//     var vertices = faceIndices.map(function(index) {
+//         return this.targetGeometry.vertices[index];
+//     }.bind(this));
+//     var edgeA = vertices[0].clone().sub(vertices[1]);
+//     var edgeB = vertices[0].clone().sub(vertices[2]);
+//     return edgeA.cross(edgeB).normalize();
+// };
+//     return sliceGeometry;
 // };
 //# sourceMappingURL=slice.js.map
 

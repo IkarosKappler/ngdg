@@ -15,7 +15,8 @@ var THREE = require("three");
 // import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types, convert to custum library
 var earcut_typescript_1 = require("earcut-typescript");
 var plotboilerplate_1 = require("plotboilerplate");
-var threejs_slice_geometry_1 = require("./thirdparty-ported/threejs-slice-geometry"); // TODO: convert to custom library
+// import { sliceGeometry } from "./thirdparty-ported/threejs-slice-geometry"; // TODO: convert to custom library
+var threejs_slice_geometry_typescript_1 = require("threejs-slice-geometry-typescript"); // TODO: convert to custom library
 var PlaneMeshIntersection_1 = require("./PlaneMeshIntersection");
 var clearDuplicateVertices3_1 = require("./clearDuplicateVertices3");
 var UVHelpers_1 = require("./UVHelpers");
@@ -177,7 +178,7 @@ exports.GeometryGenerationHelpers = {
         // TODO: cc
         // var sliceMaterial = DildoMaterials.createSliceMaterial(wireframe);
         // var slicedGeometry = sliceGeometry(unbufferedGeometry, plane, closeHoles);
-        var slicedGeometry = (0, threejs_slice_geometry_1.sliceGeometry)(unbufferedGeometry, plane, closeHoles);
+        var slicedGeometry = (0, threejs_slice_geometry_typescript_1.sliceGeometry)(unbufferedGeometry, plane, closeHoles);
         // Now note that it's possible that the result might contain multiple vertices
         // at the same position, which makes further calculations quite difficult.
         // -> Merge multiple vertices into one

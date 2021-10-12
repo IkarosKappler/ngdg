@@ -1,1 +1,0 @@
-export { sliceGeometry } from "./slice";
