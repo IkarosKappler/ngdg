@@ -52,6 +52,14 @@
         GUP
       )
     );
+    console.log("pb.drawConfig", pb.drawConfig);
+    pb.drawConfig.bezier.color = "#000000";
+    pb.drawConfig.bezier.lineWidth = 2.0;
+    pb.drawConfig.bezier.handleLine.color = "rgba(0,0,0,0.35)";
+    pb.drawConfig.bezier.pathVertex.color = "#B400FF";
+    pb.drawConfig.bezier.pathVertex.fill = true;
+    pb.drawConfig.bezier.controlVertex.color = "#B8D438";
+    pb.drawConfig.bezier.controlVertex.fill = true;
 
     var bezierDistanceT = 0;
     var bezierDistanceLine = null;
@@ -104,6 +112,7 @@
         addPrecalculatedHollowFaces: false,
         addRawIntersectionTriangleMesh: false,
         addPrecalculatedShapeOutlines: false,
+        bezierFillColor: "rgba(0,0,0,0.15)",
         // Functions
         exportSTL: function () {
           exportSTL();
@@ -286,7 +295,7 @@
       for (var i = 0; i < pathSteps; i++) {
         polyline.push(outline.getPointAt(i / pathSteps));
       }
-      pb.fill.polyline(polyline, false, "rgba(0,0,0,0.25)");
+      pb.fill.polyline(polyline, false, config.bezierFillColor);
     };
 
     // +---------------------------------------------------------------------------------
@@ -324,6 +333,7 @@
       }
       outline = newOutline;
       addPathListeners(outline);
+      setOutlineColors(outline);
       pb.add(newOutline);
 
       // +---------------------------------------------------------------------------------
@@ -347,6 +357,7 @@
           removePathListeners(outline);
           outline = newPath;
           addPathListeners(outline);
+          setOutlineColors(outline);
           rebuild();
         },
         onVerticesDeleted: function (pathIndex, deletedVertIndices, newPath, oldPath) {
@@ -354,10 +365,18 @@
           removePathListeners(outline);
           outline = newPath;
           addPathListeners(outline);
+          setOutlineColors(outline);
           rebuild();
         }
       });
     }; // END setPathInstance
+
+    var setOutlineColors = function (bezierPath) {
+      for (var i = 0; i < bezierPath.bezierCurves.length; i++) {
+        // Sorry, PlotBoilerplate this implemented yet.
+        // bezierPath.bezierCurves[i].startPoint.color = "purple";
+      }
+    };
 
     // +---------------------------------------------------------------------------------
     // | Create the outline: a Bézier path.

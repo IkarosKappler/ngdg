@@ -30,7 +30,11 @@ Because 3d printing, web 3d, and dildos are fun.
 - [ ] Add a 'Material' switch/tab.
 - [ ] Update the package.json's copy scripts (using OS dependent `cp` command). Better use an npm compatible copy here.
 - [x] Define one global library export to avoid environment pollution.
-- [ ] Remove unused build libraries: babel.
+- [x] Remove unused build libraries: babel, rollup.
+- [x] Remove old alloyfinger library. Replace by alloyfinger-typescript.
+- [ ] Add a session storage for the current settings, especially the Bézier curve and bend.
+- [ ] Make the Bézier curve more look like in the old version.
+- [ ] Add horizonal and vertical scale like in the old version.
 
 ### Changelog
 
