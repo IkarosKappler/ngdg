@@ -7,14 +7,22 @@
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
  * @version  1.0.2
  **/
-import { Bounds, Polygon } from "plotboilerplate";
+import { Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
-import { DildoOptions } from "./interfaces";
-export declare class DildoGeometry extends THREE.Geometry {
+import { ExtendedDildoOptions } from "./interfaces";
+export declare class DildoBaseClass {
+    vertices: Array<THREE.Vector3>;
+    faces: Array<THREE.Face3>;
+    faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
+    uvsNeedUpdate: boolean;
+    buffersNeedUpdate: boolean;
+    constructor();
+}
+export declare class DildoGeometry extends DildoBaseClass {
     vertexMatrix: Array<Array<number>>;
     topIndex: number;
     bottomIndex: number;
-    spineVertices: Array<THREE.Vector>;
+    spineVertices: Array<THREE.Vector3>;
     outerPerpLines: Array<THREE.Line3>;
     innerPerpLines: Array<THREE.Line3>;
     flatSidePolygon: Polygon;
@@ -25,6 +33,7 @@ export declare class DildoGeometry extends THREE.Geometry {
     flatSideBounds: Bounds;
     hollowBottomEdgeVertIndices: Array<number>;
     hollowBottomTriagles: Array<[number, number, number]>;
+    dildoNormals: Array<Array<THREE.Vector3>>;
     /**
      * Create a new dildo geometry from the passed options..
      *
@@ -35,7 +44,7 @@ export declare class DildoGeometry extends THREE.Geometry {
      * @param {boolean} options.isBending - Switch bending on/off no matter what the bend angle says.
      * @param {boolean} options.makeHollow - Make a hollow mold.
      **/
-    constructor(options: DildoOptions);
+    constructor(options: ExtendedDildoOptions);
     /**
      *
      * @param {Polygon} baseShape
@@ -72,7 +81,6 @@ export declare class DildoGeometry extends THREE.Geometry {
     /**
      *
      * @param {Polygon} baseShape
-     * @param {Vertex} shapeCenter
      * @param {Bounds} outlineBounds
      * @param {THREE.Vertex3} outlineVert
      * @param {number} sliceIndex
@@ -84,7 +92,8 @@ export declare class DildoGeometry extends THREE.Geometry {
      * @param {number=} normalsLength
      * @return { yMin: number, yMax : number }
      */
-    __buildPerps(baseShape: any, outlineBounds: any, outlineVert: any, perpendicularVert: any, heightT: any, isBending: any, bendAngle: any, arcRadius: any, normalizePerpendiculars: any, normalsLength: any): void;
+    __buildPerps(baseShape: Polygon, outlineBounds: Bounds, outlineVert: Vertex, // THREE.Vector3?
+    perpendicularVert: Vertex, heightT: number, isBending: boolean, bendAngle: number, arcRadius: number, normalizePerpendiculars: boolean, normalsLength: number): void;
     /**
      * Pre: perpLines are already built.
      *
@@ -101,8 +110,8 @@ export declare class DildoGeometry extends THREE.Geometry {
      * @param {*}
      */
     private __makeFlatSideFaces;
-    getPerpendicularPathVertices(includeBottomVert: any, getInner?: boolean): THREE.Vector3[];
-    getPerpendicularHullLines(): THREE.Line3[];
+    getPerpendicularPathVertices(includeBottomVert: any, getInner?: boolean): any[];
+    getPerpendicularHullLines(): any[];
     /**
      * Construct the top vertex that's used to closed the cylinder geometry at the top.
      *
@@ -139,6 +148,7 @@ export declare class DildoGeometry extends THREE.Geometry {
      * @param {number} yCenter
      * @returns
      */
+    applyBumpMap(bumpMapTexture: THREE.Texture): void;
     /**
      * Build up the faces for this geometry.
      * @param {*} options
@@ -194,4 +204,5 @@ export declare class DildoGeometry extends THREE.Geometry {
      * @param {} options
      */
     private _buildVertices;
+    private __applyBumpmap;
 }

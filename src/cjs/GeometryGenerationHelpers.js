@@ -12,9 +12,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GeometryGenerationHelpers = void 0;
 var THREE = require("three");
-var earcut_1 = require("./thirdparty-ported/earcut"); // TODO: fix earcut types, convert to custum library
+// import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types, convert to custum library
+var earcut_typescript_1 = require("earcut-typescript");
 var plotboilerplate_1 = require("plotboilerplate");
-var threejs_slice_geometry_1 = require("./thirdparty-ported/threejs-slice-geometry"); // TODO: convert to custom library
+// import { sliceGeometry } from "./thirdparty-ported/threejs-slice-geometry"; // TODO: convert to custom library
+var threejs_slice_geometry_typescript_1 = require("threejs-slice-geometry-typescript"); // TODO: convert to custom library
 var PlaneMeshIntersection_1 = require("./PlaneMeshIntersection");
 var clearDuplicateVertices3_1 = require("./clearDuplicateVertices3");
 var UVHelpers_1 = require("./UVHelpers");
@@ -176,7 +178,7 @@ exports.GeometryGenerationHelpers = {
         // TODO: cc
         // var sliceMaterial = DildoMaterials.createSliceMaterial(wireframe);
         // var slicedGeometry = sliceGeometry(unbufferedGeometry, plane, closeHoles);
-        var slicedGeometry = threejs_slice_geometry_1.sliceGeometry(unbufferedGeometry, plane, closeHoles);
+        var slicedGeometry = (0, threejs_slice_geometry_typescript_1.sliceGeometry)(unbufferedGeometry, plane, closeHoles);
         // Now note that it's possible that the result might contain multiple vertices
         // at the same position, which makes further calculations quite difficult.
         // -> Merge multiple vertices into one
@@ -211,7 +213,7 @@ exports.GeometryGenerationHelpers = {
         // Array<THREE.Vector3>  (compatible with XYCoords :)
         var intersectionPoints = planeMeshIntersection.getIntersectionPoints(mesh, unbufferedGeometry, planeGeometry, planeGeometryReal);
         var EPS = 0.000001;
-        var uniqueIntersectionPoints = clearDuplicateVertices3_1.clearDuplicateVertices3(intersectionPoints, EPS);
+        var uniqueIntersectionPoints = (0, clearDuplicateVertices3_1.clearDuplicateVertices3)(intersectionPoints, EPS);
         var pointGeometry = new THREE.Geometry();
         pointGeometry.vertices = uniqueIntersectionPoints;
         var pointsMaterial = new THREE.PointsMaterial({
@@ -228,7 +230,7 @@ exports.GeometryGenerationHelpers = {
         // Test: make a triangulation to see what the path looks like
         var polygonData = exports.GeometryGenerationHelpers.flattenVert2dArray(uniqueIntersectionPoints);
         // Run Earcut
-        var triangleIndices = earcut_1.earcut(polygonData);
+        var triangleIndices = (0, earcut_typescript_1.earcut)(polygonData);
         // Process the earcut result;
         //         add the retrieved triangles as geometry faces.
         var triangleGeometry = new THREE.Geometry();
@@ -276,7 +278,7 @@ exports.GeometryGenerationHelpers = {
         // Array<number,number,number,...>
         var polygonData = exports.GeometryGenerationHelpers.flattenVert2dArray(intersectionPoints);
         // Step 3: run Earcut
-        var triangleIndices = earcut_1.earcut(polygonData);
+        var triangleIndices = (0, earcut_typescript_1.earcut)(polygonData);
         // Step 4: process the earcut result;
         //         add the retrieved triangles as geometry faces.
         for (var i = 0; i + 2 < triangleIndices.length; i += 3) {
@@ -377,7 +379,7 @@ exports.GeometryGenerationHelpers = {
             return earcutInput;
         }, []);
         // Array<number> : triplets of vertex indices in the plain XY array
-        var triangles = earcut_1.earcut(currentPathXYData);
+        var triangles = (0, earcut_typescript_1.earcut)(currentPathXYData);
         // Convert triangle indices back to a geometry
         var trianglesGeometry = new THREE.Geometry();
         // We will merge the geometries in the end which will create clones of the vertices.

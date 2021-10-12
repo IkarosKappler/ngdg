@@ -6,6 +6,7 @@
  */
 import * as THREE from "three";
 import { Bounds } from "plotboilerplate";
+import { DildoBaseClass } from "./DildoGeometry";
 export declare const UVHelpers: {
     /**
      * Helper function to create triangular UV Mappings for a triangle.
@@ -16,5 +17,5 @@ export declare const UVHelpers: {
      * @param {number} vertIndexB - ...
      * @param {number} vertIndexC - ...
      */
-    makeFlatTriangleUVs: (thisGeometry: THREE.Geometry, shapeBounds: Bounds, vertIndexA: number, vertIndexB: number, vertIndexC: number) => void;
+    makeFlatTriangleUVs: (thisGeometry: THREE.Geometry | DildoBaseClass, shapeBounds: Bounds, vertIndexA: number, vertIndexB: number, vertIndexC: number) => void;
 };

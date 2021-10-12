@@ -10,9 +10,11 @@
  */
 
 import * as THREE from "three";
-import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types, convert to custum library
+// import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types, convert to custum library
+import { earcut } from "earcut-typescript";
 import { Bounds, Polygon, Vertex, XYCoords } from "plotboilerplate";
-import { sliceGeometry } from "./thirdparty-ported/threejs-slice-geometry"; // TODO: convert to custom library
+// import { sliceGeometry } from "./thirdparty-ported/threejs-slice-geometry"; // TODO: convert to custom library
+import { sliceGeometry } from "threejs-slice-geometry-typescript"; // TODO: convert to custom library
 import { PlaneMeshIntersection } from "./PlaneMeshIntersection";
 import { clearDuplicateVertices3 } from "./clearDuplicateVertices3";
 

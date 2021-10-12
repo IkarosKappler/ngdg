@@ -114,7 +114,7 @@ GeometryBuilder.prototype.closeHoles = function () {
     if (!this.newEdges[0].length) {
         return;
     }
-    faces_from_edges_1.facesFromEdges(this.newEdges).forEach(function (faceIndices) {
+    (0, faces_from_edges_1.facesFromEdges)(this.newEdges).forEach(function (faceIndices) {
         var normal = this.faceNormal(faceIndices);
         if (normal.dot(this.slicePlane.normal) > 0.5) {
             faceIndices.reverse();

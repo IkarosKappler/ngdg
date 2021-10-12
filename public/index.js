@@ -59,7 +59,7 @@
     // Note: bumpmapping is not yet finished.
     var bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
     var bumpmap = null;
-    var bumpmapRasterImage = ImageStore.getImage(bumpmapPath, function (completeImage) {
+    var bumpmapRasterImage = ngdg.ImageStore.getImage(bumpmapPath, function (completeImage) {
       rebuild();
     });
 
@@ -118,7 +118,7 @@
       GUP
     );
 
-    var dildoGeneration = new DildoGeneration("dildo-canvas", {
+    var dildoGeneration = new ngdg.DildoGeneration("dildo-canvas", {
       makeOrbitControls: function (camera, domElement) {
         // console.l
         return new THREE.OrbitControls(camera, domElement);
@@ -364,7 +364,8 @@
     // +-------------------------------
     var outline = null;
     // This will trigger the first initial postDraw/draw/redraw call
-    setPathInstance(BezierPath.fromJSON(DEFAULT_BEZIER_JSON));
+    // console.log("DEFAULT_BEZIER_JSON", window.ngdg, ngdg.DEFAULT_BEZIER_JSON);
+    setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
 
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui

@@ -1,30 +1,43 @@
 # Codename NGDG
 
-Because 3d printing, web 3d, and dildos are cool.
+Because 3d printing, web 3d, and dildos are fun.
 
 ![Screenshot](screenshot.png)
+
+#### Table of contents
+
+- [Bugs](#bugs)
+- [todos](#todos)
+- [changelog]
 
 ## Bugs
 
 - When slicing the mesh with open bottom there are mesh errors.
 - Front face, back face and double face switching is not working.
-- Add a 'Material' switch/tab.
 
 ## Todos:
 
-- Configure webpack to handle type definitions in node_modules correctly.
+- [x] Configure webpack to handle type definitions in node_modules correctly.
 - [x] Port all vanilla JS parts to Typescript.
-- Arrange splits on plane.
-- Update to THREE >= r125. Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
-  (not supported any more since r125). See https://sbcode.net/threejs/geometry-to-buffergeometry/ for details.
+- [ ] Arrange splits on plane.
+- [ ] Update to THREE >= r125. Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
+      (not supported any more since r125). See https://sbcode.net/threejs/geometry-to-buffergeometry/ for details.
 - [x] Rename base branch to 'main'.
-- Create a Typescript port from mapbox/earcut.
-- Create a Typescript port from tdhooper/threejs-slice-geometry.
+- [x] Create a Typescript port from mapbox/earcut.
+- [ ] Create a Typescript port from tdhooper/threejs-slice-geometry.
 - [x] Add a proper Typescript interface for all available dildo generation options.
-- STL-Export: merge all exportable geometries together and export as one.
+- [ ] STL-Export: merge all exportable geometries together and export as one.
+- [ ] Add a 'Material' switch/tab.
+- [ ] Update the package.json's copy scripts (using OS dependent `cp` command). Better use an npm compatible copy here.
+- [x] Define one global library export to avoid environment pollution.
+- [ ] Remove unused build libraries: babel.
 
 ### Changelog
 
+- 2021-09-27
+  - Replaced in internal earcut implementation by an node module (https://www.npmjs.com/package/earcut-typescript).
+- 2021-09-26
+  - Replaced the old build tool chain by a clean one (https://github.com/IkarosKappler/tswebpack).
 - 2021-08-29
   - Ported most of the classes to Typescript.
 - 2021-08-04
@@ -70,4 +83,6 @@ Dependencies
 
 ### Credits
 
+- [mapbox](https://github.com/mapbox/earcut) for the [earcut library](https://www.npmjs.com/package/earcut)
+- [tdhooper](https://github.com/tdhooper/threejs-slice-geometry/) for the [threejs-slice-geometry library](https://www.npmjs.com/package/threejs-slice-geometry)
 - [jkmott about computing vertex normals](https://meshola.wordpress.com/2016/07/24/three-js-vertex-normals/) as used in the `computeVertexNormals` function.

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html class="fullscreen">
+  <head>
+    <title>2D Plotting Boilerplate – Demonstrating PlotBoilerplate with THREE.js</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="A javascript and HTML canvas plotting boilerplate to draw my 2D stuff.">
+    <meta name="keywords" content="2D painting and plotting, javascript, canvas, context2d, draw, fill, select, bezier, polygon, shape, path, line, curve, 3d, three, three.js threejs, dildo, dong, toy">
+    <meta name="author" content="Ikaros Kappler">
+    <meta name="date" content="2020-07-01">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@humanearthpig">
+    <meta name="twitter:creator" content="@humanearthpig">
+    <meta property="og:url" content="https://www.plotboilerplate.de">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Demonstrating PlotBoilerplate with THREE.js.">
+    <meta property="og:description" content="Demonstrating PlotBoilerplate with THREE.js.">
+    <meta property="og:image" content="https://plotboilerplate.io/repo/screenshots/screenshot-20201019-threejs-highres.png">
+
+    <!-- Polyfills for IE -->
+    <script src="lib/globalthis-polyfill.min.js"></script> 
+    <script src="lib/path2d-polyfill.min.js"></script>
+
+    <script src="lib/dat.gui.min.js"></script>
+    <script src="lib/FileSaver.min.js"></script>
+    <script src="lib/Color.js"></script>
+  
+    <script src="lib/plotboilerplate/src/cjs/utils/dat.gui.title.polyfill.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/dat.gui.arrowbounce.polyfill.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/creategui.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/module.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/gup.js"></script>
+    
+    <!-- <script src="lib/ngdg/src/cjs/defaults.js"></script>
+    <script src="lib/ngdg/src/cjs/computeVertexNormals.js"></script>
+    <script src="lib/ngdg/src/cjs/DildoGeneration.js"></script>
+    <script src="lib/ngdg/src/cjs/DildoGeometry.js"></script>
+    <script src="lib/ngdg/src/cjs/DildoMaterials.js"></script>
+    <script src="lib/ngdg/src/cjs/PlaneMeshIntersection.js"></script>
+    <script src="lib/ngdg/src/cjs/GeometryGenerationHelpers.js"></script>
+    <script src="lib/ngdg/src/cjs/PathFinder.js"></script>
+    <script src="lib/ngdg/src/cjs/clearDuplicateVertices3.js"></script>
+    <script src="lib/ngdg/src/cjs/locateVertexInArray.js"></script>
+    <script src="lib/ngdg/src/cjs/mergeGeometries.js"></script>
+    <script src="lib/ngdg/src/cjs/UVHelpers.js"></script>
+    <script src="lib/ngdg/src/cjs/ImageStore.js"></script>
+    <script src="lib/ngdg/src/cjs/RasteredBumpmap.js"></script>
+    <script src="lib/ngdg/src/cjs/BumpMapper.js"></script> -->
+    <script src="lib/ngdg/dist/ngdg-vendor.js"></script>
+    <script src="lib/ngdg/dist/ngdg-main.js"></script>
+    
+    <!-- <script src="lib/plotboilerplate/dist/plotboilerplate.min.js"></script> -->
+    <script src="lib/plotboilerplate/dist/plotboilerplate.min.js"></script>
+    <script src="lib/alloy_finger.js"></script>
+    <!-- <script src="lib/ngdg/src/cjs/thirdparty-ported/threejs-slice-geometry/faces-from-edges.js"></script>
+    <script src="lib/ngdg/src/cjs/thirdparty-ported/threejs-slice-geometry/slice.js"></script>
+    <script src="lib/ngdg/src/cjs/thirdparty-ported/earcut/earcut.js"></script> -->
+    <script src="lib/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/WebColors.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/WebColorsContrast.js"></script>
+    <script src="lib/ngdg/src/js/randomWebColor.js"></script>
+    <script src="modal.js"></script>
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="modal.css">
+
+    <script src="lib/three/build/three.min.js"></script> 
+    <script src="OrbitControls.js"></script>
+    <!-- <script src="../node_modules/three/examples/jsm/controls/OrbitControls.js"></script> -->
+    <script src="STLExporter.js"></script>
+    <script src="VertexNormalsHelper.js"></script>
+  </head>
+  <body class="fullscreen">
+    <div class="w-50 left">
+      <canvas id="my-canvas" width="1024" height="768">Your browser does not support the canvas tag.</canvas>
+      <div class="info monospace">
+	[<span id="cx">-</span>,<span id="cy">-</span>]
+      </div>
+    </div>
+    <div class="w-50 right">
+      <canvas id="dildo-canvas" width="1024" height="768">Your browser does not support the canvas tag.</canvas>
+    </div>
+    <div id="bumpmap-preview"></div>
+
+  </body>
+  <style>
+    body {
+       display: flex;
+    }
+    .w-50 {
+       width : 50%;
+    }
+    .left {
+       position : relative;
+       float : left;
+    }
+    .right {
+       float : right;
+    }
+    #gui { position: absolute; top: 2px; left: 2px }
+  </style>
+</html>

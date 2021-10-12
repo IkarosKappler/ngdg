@@ -44,3 +44,7 @@ _backup
 public/lib/ngdg
 public/lib/plotboilerplate
 public/lib/three
+
+src/cjs/thirdparty-ported/_earcut/
+src/ts/thirdparty-ported/_earcut/
+src/esm/thirdparty-ported/_earcut/
