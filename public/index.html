@@ -24,54 +24,18 @@
     <script src="lib/dat.gui.min.js"></script>
     <script src="lib/FileSaver.min.js"></script>
     <script src="lib/Color.js"></script>
-    <!-- <script src="../../lib/alloy_finger.js"></script> -->
-    <!-- <script src="lib/three-r118.min.js"></script> -->
-    <!-- https://github.com/tdhooper/threejs-slice-geometry -->
-    <!-- <script src="lib/slice.min.js"></script> -->
-    <!-- https://raw.githubusercontent.com/chandlerprall/ThreeCSG/master/ThreeCSG.js -->
-    <!-- <script src="lib/three-csg.js"></script> -->
 
-    <!-- <script>
-      globalThis.exports = globalThis;
-    </script> -->
-
-    <!-- <script src="../node_modules/three/build/three.min.js"></script> -->
-    <!-- <script>console.log("Global THREE", THREE);</script>
-    <script src="lib/ngdg/src/cjs/DildoGeometry.js"></script> -->
-
-    <!-- <script src="lib/require.min.js"></script>
-    <script src="../node_modules/three/build/three.min.js"></script> -->
-    
-    <!-- <script src="../node_modules/plotboilerplate/src/cjs/utils/dat.gui.title.polyfill.js"></script>
-    <script src="../node_modules/plotboilerplate/src/cjs/utils/dat.gui.arrowbounce.polyfill.js"></script>
-    <script src="../node_modules/plotboilerplate/src/cjs/utils/creategui.js"></script>
-    <script src="../node_modules/plotboilerplate/src/cjs/utils/module.js"></script>
-    <script src="../node_modules/plotboilerplate/src/cjs/utils/gup.js"></script> -->
     <script src="lib/plotboilerplate/src/cjs/utils/dat.gui.title.polyfill.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/dat.gui.arrowbounce.polyfill.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/creategui.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/module.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/gup.js"></script>
 
-
-    <!-- <script src="lib/three-r118.min.js"></script> -->
-    
-    <!-- <script src="OrbitControls.js"></script>
-    <script src="STLExporter.js"></script>
-    <script src="VertexNormalsHelper.js"></script> -->
-
-    <!-- <script src="../node_modules/three/examples/jsm/deprecated/Geometry.d.ts"></script> -->
-    <!-- <script src="../node_modules/threejs-slice-geometry/build/slice.min.js"></script> -->
-    <!-- <script src="../node_modules/earcut/src/earcut.js"></script> -->
-
-    <!-- <script src="../node_modules/three/src/core/Geometry.js"></script> -->
-    <!-- <script src="lib/three-r124.min.js"></script> -->
-    <!-- <script>
-      console.log("Global THREE", THREE)
-    </script> -->
     
     <script src="lib/ngdg/src/cjs/defaults.js"></script>
     <script src="lib/ngdg/src/cjs/computeVertexNormals.js"></script>
+    <script src="lib/ngdg/src/cjs/ConfigIO.js"></script>
+    <script src="lib/ngdg/src/cjs/constants.js"></script>
     <script src="lib/ngdg/src/cjs/DildoGeneration.js"></script>
     <script src="lib/ngdg/src/cjs/DildoGeometry.js"></script>
     <script src="lib/ngdg/src/cjs/DildoMaterials.js"></script>
@@ -87,18 +51,9 @@
     <script src="lib/ngdg/src/cjs/BumpMapper.js"></script>
     <script src="lib/ngdg/src/cjs/ngdg.js"></script>
     
-    <!-- <script src="../node_modules/plotboilerplate/dist/plotboilerplate.min.js"></script> -->
     <script src="lib/plotboilerplate/dist/plotboilerplate.min.js"></script>
     <script src="lib/alloy_finger.js"></script>
-    <!-- <script src="lib/earcut.min.js"></script> -->
     <script src="lib/earcut-typescript/dist/earcut.min.js"></script>
-    <script src="lib/ngdg/src/cjs/thirdparty-ported/threejs-slice-geometry/faces-from-edges.js"></script>
-    <script src="lib/ngdg/src/cjs/thirdparty-ported/threejs-slice-geometry/slice.js"></script>
-    <script src="../node_modules/earcut/dist/earcut.min.js"></script>
-    <script src="lib/ngdg/src/cjs/thirdparty-ported/earcut/earcut.js"></script>
-    <!-- <script src="../node_modules/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js"></script>
-    <script src="../node_modules/plotboilerplate/src/cjs/utils/WebColors.js"></script>
-    <script src="../node_modules/plotboilerplate/src/cjs/utils/WebColorsContrast.js"></script> -->
     <script src="lib/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/WebColors.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/WebColorsContrast.js"></script>
@@ -111,6 +66,8 @@
     <!-- <script src="lib/three-r118.min.js"></script> -->
     <!-- <script src="../node_modules/three/build/three.min.js"></script> -->
     <script src="lib/three/build/three.min.js"></script> 
+    <!-- Include this after threejs -->
+    <script src="lib/threejs-slice-geometry-typescript/slice.min.js"></script>
     <script src="OrbitControls.js"></script>
     <!-- <script src="../node_modules/three/examples/jsm/controls/OrbitControls.js"></script> -->
     <script src="STLExporter.js"></script>
@@ -122,7 +79,7 @@
     <div class="w-50 left">
       <canvas id="my-canvas" width="1024" height="768">Your browser does not support the canvas tag.</canvas>
       <div class="info monospace">
-	[<span id="cx">-</span>,<span id="cy">-</span>]
+	      [<span id="cx">-</span>,<span id="cy">-</span>]
       </div>
     </div>
     <div class="w-50 right">

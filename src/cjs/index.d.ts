@@ -1,6 +1,7 @@
 export * from "./BumpMapper";
 export * from "./clearDuplicateVertices3";
 export * from "./computeVertexNormals";
+export * from "./ConfigIO";
 export * from "./constants";
 export * from "./defaults";
 export * from "./DildoGeneration";

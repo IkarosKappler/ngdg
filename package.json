@@ -17,7 +17,7 @@
     "earcut-typescript": "^2.2.3",
     "eslint": "^7.32.0",
     "path": "^0.12.7",
-    "plotboilerplate": "file:../plotboilerplate",
+    "plotboilerplate": "^1.12.8",
     "source-map-loader": "^3.0.0",
     "three": "^0.124.0",
     "threejs-slice-geometry-typescript": "^0.2.2",
@@ -42,7 +42,7 @@
     "webpack:prod": "npx webpack --env=production --config webpack.config.js && npm run copy-dist-to-public",
     "copy-src-to-public": "cp -R src public/lib/ngdg",
     "copy-dist-to-public": "cp -R dist public/lib/ngdg",
-    "copy-libs-to-public": "cp node_modules/three/build/three.min.js public/lib/three/build/three.min.js && cp -R node_modules/plotboilerplate/src/* public/lib/plotboilerplate/src && cp -R node_modules/plotboilerplate/dist/* public/lib/plotboilerplate/dist && cp -R node_modules/earcut-typescript/dist public/lib/earcut-typescript",
+    "copy-libs-to-public": "cp node_modules/three/build/three.min.js public/lib/three/build/three.min.js && cp -R node_modules/plotboilerplate/src/* public/lib/plotboilerplate/src && cp -R node_modules/plotboilerplate/dist/* public/lib/plotboilerplate/dist && cp -R node_modules/earcut-typescript/dist public/lib/earcut-typescript && cp -R node_modules/threejs-slice-geometry-typescript/build public/lib/threejs-slice-geometry-typescript",
     "server": "npx http-server ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tslint": "npx eslint ./src/ts/"

@@ -52,7 +52,6 @@
         GUP
       )
     );
-    console.log("pb.drawConfig", pb.drawConfig);
     pb.drawConfig.bezier.color = "#000000";
     pb.drawConfig.bezier.lineWidth = 2.0;
     pb.drawConfig.bezier.handleLine.color = "rgba(0,0,0,0.35)";
@@ -129,9 +128,13 @@
 
     var dildoGeneration = new ngdg.DildoGeneration("dildo-canvas", {
       makeOrbitControls: function (camera, domElement) {
-        // console.l
         return new THREE.OrbitControls(camera, domElement);
       }
+    });
+    var configIO = new ngdg.ConfigIO(document.getElementsByTagName("body")[0]);
+    configIO.onPathDropped(function (jsonString) {
+      console.log("json string loaded", jsonString);
+      loadPathJSON(jsonString);
     });
     var modal = new Modal();
 
@@ -173,6 +176,7 @@
         console.error(e);
         modal.setBody("Error: " + e);
         modal.setActions([Modal.ACTION_CLOSE]);
+        modal.open();
       }
     };
 
@@ -206,9 +210,18 @@
     };
 
     var loadPathJSON = function (jsonData) {
-      var newOutline = BezierPath.fromJSON(jsonData);
-      setPathInstance(newOutline);
-      rebuild();
+      var newOutline = null;
+      try {
+        newOutline = BezierPath.fromJSON(jsonData);
+      } catch (e) {
+        console.log("Error parsing JSON path:", e.getMessage());
+      } finally {
+        if (newOutline) {
+          setPathInstance(newOutline);
+          acquireOptimalPathView();
+          rebuild();
+        }
+      }
     };
 
     // +---------------------------------------------------------------------------------
@@ -327,13 +340,55 @@
       return new Bounds(new Vertex(bounds.min).scale(scaleFactor, center), new Vertex(bounds.max).scale(scaleFactor, center));
     };
 
+    // +---------------------------------------------------------------------------------
+    // | Scale a given Bounds instance to a new size (from its center).
+    // +-------------------------------
+    var acquireOptimalPathView = function () {
+      var frameSize = new THREE.Vector2(25, 25);
+      // Compute the applicable canvas size, which leaves the passed frame untouched
+      // var applicableCanvasWidth = this.canvasWidth - frameSize.x * 2;
+      // var applicableCanvasHeight = this.canvasHeight - frameSize.y * 2;
+      var applicableCanvasWidth = pb.canvasSize.width - frameSize.x * 2;
+      var applicableCanvasHeight = pb.canvasSize.height - frameSize.y * 2;
+
+      // var bounds = outline.computeBoundingBox();
+
+      // Move center of bezier polygon to (0,0)
+      var bounds = outline.getBounds();
+      console.log("bounds", bounds);
+      var moveAmount = new THREE.Vector2(bounds.width / 2.0 - bounds.xMax, bounds.height / 2.0 - bounds.yMax);
+      outline.translate(moveAmount); //TODO: HERE IS A  PROBLEM!
+
+      // Update bounds (values have changed now)
+      bounds.xMin += moveAmount.x;
+      bounds.xMax += moveAmount.x;
+      bounds.yMin += moveAmount.y;
+      bounds.yMax += moveAmount.y;
+
+      var ratioX = bounds.width / applicableCanvasWidth;
+      var ratioY = bounds.height / applicableCanvasHeight;
+
+      // The minimal match (width or height) is our choice
+      // pb.set.zoomFactor = Math.min(1.0 / ratioX, 1.0 / ratioY);
+      var newZoomFactor = Math.min(1.0 / ratioX, 1.0 / ratioY);
+      pb.setZoom(newZoomFactor, newZoomFactor, { x: 0, y: 0 });
+
+      // Set the draw offset position
+      var drawOffsetX = applicableCanvasWidth / 2.0 - bounds.xMin - bounds.width / 2.0 + frameSize.x;
+      var drawOffsetY = applicableCanvasHeight / 2.0 - bounds.yMin - bounds.height / 2.0 + frameSize.y;
+      pb.setOffset({ x: drawOffsetX, y: drawOffsetY });
+
+      // Don't forget to redraw
+      // redraw();
+      console.log("DONE");
+    };
+
     var setPathInstance = function (newOutline) {
       if (typeof outline != "undefined") {
         pb.removeAll(false); // Do not keep vertices
       }
       outline = newOutline;
       addPathListeners(outline);
-      setOutlineColors(outline);
       pb.add(newOutline);
 
       // +---------------------------------------------------------------------------------
@@ -357,7 +412,6 @@
           removePathListeners(outline);
           outline = newPath;
           addPathListeners(outline);
-          setOutlineColors(outline);
           rebuild();
         },
         onVerticesDeleted: function (pathIndex, deletedVertIndices, newPath, oldPath) {
@@ -365,26 +419,36 @@
           removePathListeners(outline);
           outline = newPath;
           addPathListeners(outline);
-          setOutlineColors(outline);
           rebuild();
         }
       });
     }; // END setPathInstance
-
-    var setOutlineColors = function (bezierPath) {
-      for (var i = 0; i < bezierPath.bezierCurves.length; i++) {
-        // Sorry, PlotBoilerplate this implemented yet.
-        // bezierPath.bezierCurves[i].startPoint.color = "purple";
-      }
-    };
 
     // +---------------------------------------------------------------------------------
     // | Create the outline: a Bézier path.
     // +-------------------------------
     var outline = null;
     // This will trigger the first initial postDraw/draw/redraw call
-    // console.log("DEFAULT_BEZIER_JSON", window.ngdg, ngdg.DEFAULT_BEZIER_JSON);
-    setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
+    // setPathInstance(BezierPath.fromJSON(initialPathJSON));
+    if (GUP.rbdata) {
+      // If you need some test data:
+      //    this seems to be the most favourite dildo shape regarding the ranking on Google (2021-10-12)
+      //    (plus bendAngle=23.0)
+      // [-58.5,243,-59.2,200,-12,217,6.3,196,23.3,176.6,38.7,113,-4.6,76.2,-69.8,20.9,6.2,-65.1,-5.7,-112.6,-30.8,-213,35.4,-243,58.5,-243]
+      if (!GUP.rbdata.endsWith("]")) {
+        GUP.rbdata += "]"; // Twitter hack
+      }
+      try {
+        setPathInstance(BezierPath.fromReducedListRepresentation(GUP.rbdata));
+      } catch (e) {
+        console.error(e);
+        modal.setBody("Your Bézier path data could not be parsed: <pre>" + GUP.rbdata + "</pre>");
+        modal.setActions([Modal.ACTION_CLOSE]);
+        modal.open();
+      }
+    } else {
+      setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
+    }
 
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
@@ -411,9 +475,9 @@
       // prettier-ignore
       fold0.add(config, "closeBottom").onChange( function() { rebuild() } ).name('closeBottom').title('Close the geometry at the bottom point.');
       // prettier-ignore
-      fold0.add(config, "useBumpmap").onChange( function() { rebuild() } ).name('useBumpmap').title('Check wether the mesh should use a bumpmap.');
+      // fold0.add(config, "useBumpmap").onChange( function() { rebuild() } ).name('useBumpmap').title('Check wether the mesh should use a bumpmap.');
       // prettier-ignore
-      fold0.add(config, "bumpmapStrength").min(0.0).max(20.0).onChange( function() { rebuild() } ).name('bumpmapStrength').title('How strong should the bumpmap be applied.');
+      // fold0.add(config, "bumpmapStrength").min(0.0).max(20.0).onChange( function() { rebuild() } ).name('bumpmapStrength').title('How strong should the bumpmap be applied.');
 
       var fold1 = gui.addFolder("Hollow");
       // prettier-ignore
@@ -478,7 +542,10 @@
       // prettier-ignore
       fold5.add(config, "insertPathJSON").name('Insert Path JSON ...').title('Insert path data as JSON.');
 
-      fold2.open();
+      fold0.open();
+      if (!GUP.openGui) {
+        gui.close();
+      }
     }
 
     pb.config.preDraw = preDraw;

@@ -7434,60 +7434,40 @@ class PlotBoilerplate {
             for (var c in d.bezierCurves) {
                 draw.cubicBezier(d.bezierCurves[c].startPoint, d.bezierCurves[c].endPoint, d.bezierCurves[c].startControlPoint, d.bezierCurves[c].endControlPoint, this.drawConfig.bezier.color, this.drawConfig.bezier.lineWidth);
                 if (this.drawConfig.drawBezierHandlePoints && this.drawConfig.drawHandlePoints) {
-                    // if (!d.bezierCurves[c].startPoint.attr.bezierAutoAdjust) {
-                    //   if (d.bezierCurves[c].startPoint.attr.visible) {
-                    //     draw.setCurrentId(`${d.uid}_h0`);
-                    //     draw.setCurrentClassName(`${d.className}-start-handle`);
-                    //     draw.diamondHandle(
-                    //       d.bezierCurves[c].startPoint,
-                    //       7,
-                    //       this._handleColor(d.bezierCurves[c].startPoint, this.drawConfig.bezier.pathVertex.color)
-                    //     );
-                    //   }
-                    //   d.bezierCurves[c].startPoint.attr.renderTime = renderTime;
-                    // }
                     if (d.bezierCurves[c].startPoint.attr.visible) {
-                        draw.setCurrentId(`${d.uid}_h0`);
-                        draw.setCurrentClassName(`${d.className}-start-handle`);
+                        const df = this.drawConfig.bezier.pathVertex.fill ? fill : draw;
+                        df.setCurrentId(`${d.uid}_h0`);
+                        df.setCurrentClassName(`${d.className}-start-handle`);
                         if (d.bezierCurves[c].startPoint.attr.bezierAutoAdjust) {
-                            draw.squareHandle(d.bezierCurves[c].startPoint, 5, this._handleColor(d.bezierCurves[c].startPoint, this.drawConfig.bezier.pathVertex.color));
+                            df.squareHandle(d.bezierCurves[c].startPoint, 5, this._handleColor(d.bezierCurves[c].startPoint, this.drawConfig.bezier.pathVertex.color));
                         }
                         else {
-                            draw.diamondHandle(d.bezierCurves[c].startPoint, 7, this._handleColor(d.bezierCurves[c].startPoint, this.drawConfig.bezier.pathVertex.color));
+                            df.diamondHandle(d.bezierCurves[c].startPoint, 7, this._handleColor(d.bezierCurves[c].startPoint, this.drawConfig.bezier.pathVertex.color));
                         }
                     }
                     d.bezierCurves[c].startPoint.attr.renderTime = renderTime;
-                    // if (!d.bezierCurves[c].endPoint.attr.bezierAutoAdjust) {
-                    //   if (d.bezierCurves[c].endPoint.attr.visible) {
-                    //     draw.setCurrentId(`${d.uid}_h1`);
-                    //     draw.setCurrentClassName(`${d.className}-end-handle`);
-                    //     draw.diamondHandle(
-                    //       d.bezierCurves[c].endPoint,
-                    //       7,
-                    //       this._handleColor(d.bezierCurves[c].endPoint, "#ff0000") // this.drawConfig.bezier.pathVertex.color)
-                    //     );
-                    //   }
-                    //   d.bezierCurves[c].endPoint.attr.renderTime = renderTime;
-                    // }
                     if (d.bezierCurves[c].endPoint.attr.visible) {
-                        draw.setCurrentId(`${d.uid}_h0`);
-                        draw.setCurrentClassName(`${d.className}-start-handle`);
+                        const df = this.drawConfig.bezier.pathVertex.fill ? fill : draw;
+                        df.setCurrentId(`${d.uid}_h0`);
+                        df.setCurrentClassName(`${d.className}-start-handle`);
                         if (d.bezierCurves[c].endPoint.attr.bezierAutoAdjust) {
-                            draw.squareHandle(d.bezierCurves[c].endPoint, 5, this._handleColor(d.bezierCurves[c].endPoint, this.drawConfig.bezier.pathVertex.color));
+                            df.squareHandle(d.bezierCurves[c].endPoint, 5, this._handleColor(d.bezierCurves[c].endPoint, this.drawConfig.bezier.pathVertex.color));
                         }
                         else {
-                            draw.diamondHandle(d.bezierCurves[c].endPoint, 7, this._handleColor(d.bezierCurves[c].endPoint, this.drawConfig.bezier.pathVertex.color));
+                            df.diamondHandle(d.bezierCurves[c].endPoint, 7, this._handleColor(d.bezierCurves[c].endPoint, this.drawConfig.bezier.pathVertex.color));
                         }
                     }
                     if (d.bezierCurves[c].startControlPoint.attr.visible) {
-                        draw.setCurrentId(`${d.uid}_h2`);
-                        draw.setCurrentClassName(`${d.className}-start-control-handle`);
-                        draw.circleHandle(d.bezierCurves[c].startControlPoint, 3, this._handleColor(d.bezierCurves[c].startControlPoint, this.drawConfig.bezier.controlVertex.color));
+                        const df = this.drawConfig.bezier.controlVertex.fill ? fill : draw;
+                        df.setCurrentId(`${d.uid}_h2`);
+                        df.setCurrentClassName(`${d.className}-start-control-handle`);
+                        df.circleHandle(d.bezierCurves[c].startControlPoint, 3, this._handleColor(d.bezierCurves[c].startControlPoint, this.drawConfig.bezier.controlVertex.color));
                     }
                     if (d.bezierCurves[c].endControlPoint.attr.visible) {
-                        draw.setCurrentId(`${d.uid}_h3`);
-                        draw.setCurrentClassName(`${d.className}-end-control-handle`);
-                        draw.circleHandle(d.bezierCurves[c].endControlPoint, 3, this._handleColor(d.bezierCurves[c].endControlPoint, this.drawConfig.bezier.controlVertex.color));
+                        const df = this.drawConfig.bezier.controlVertex.fill ? fill : draw;
+                        df.setCurrentId(`${d.uid}_h3`);
+                        df.setCurrentClassName(`${d.className}-end-control-handle`);
+                        df.circleHandle(d.bezierCurves[c].endControlPoint, 3, this._handleColor(d.bezierCurves[c].endControlPoint, this.drawConfig.bezier.controlVertex.color));
                     }
                     d.bezierCurves[c].startPoint.attr.renderTime = renderTime;
                     d.bezierCurves[c].endPoint.attr.renderTime = renderTime;
