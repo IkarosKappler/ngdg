@@ -322,6 +322,64 @@
         pb.draw.line(bezierDistanceLine.a, bezierDistanceLine.b, "rgb(255,192,0)", 2);
         pb.fill.circleHandle(bezierDistanceLine.a, 3.0, "rgb(255,192,0)");
       }
+      // Draw the ruler.
+      // console.log("Post draw");
+      var bounds = outline.getBounds();
+      var color = "rgba(0,128,192,0.5)";
+      var mmPerUnit = 0.5;
+      var stepSize = 20; // pixels
+      var fontSize = 9;
+      // Draw vertical ruler
+      pb.draw.line({ x: bounds.max.x + 10, y: bounds.min.y }, { x: bounds.max.x + 10, y: bounds.max.y }, color, 0.5);
+      var verticalStepCount = bounds.height / stepSize;
+      for (var i = 0; i < verticalStepCount; i++) {
+        pb.draw.line(
+          { x: bounds.max.x + 10 - 3, y: bounds.max.y - i * stepSize },
+          { x: bounds.max.x + 10 + 3, y: bounds.max.y - i * stepSize },
+          color,
+          0.5
+        );
+        // Draw label?
+        if (i % 2 === 0) {
+          pb.fill.text(
+            Number(i * stepSize * mmPerUnit).toFixed(1) + "mm",
+            bounds.max.x + 16,
+            bounds.max.y - i * stepSize + fontSize * 0.25,
+            { color: color }
+          );
+        }
+      }
+      // Draw horizontal ruler
+      pb.draw.line({ x: bounds.min.x, y: bounds.max.y + 10 }, { x: bounds.max.x, y: bounds.max.y + 10 }, color, 0.5);
+      var horizontalStepCount = bounds.width / stepSize;
+      for (var i = 0; i < horizontalStepCount; i++) {
+        pb.draw.line(
+          { x: bounds.max.x - i * stepSize, y: bounds.max.y + 10 - 3 },
+          { x: bounds.max.x - i * stepSize, y: bounds.max.y + 10 + 3 },
+          color,
+          0.5
+        );
+        // Draw label?
+        if (i % 2 === 0) {
+          // TODO: implement rotation as feature
+          pb.fill.ctx.rotate(Math.PI / 2); // This only works in CANVAS context
+          if (i == 0) console.log("i", i);
+          // pb.fill.text(
+          //   Number(i * stepSize * mmPerUnit).toFixed(1) + "mm",
+          //   bounds.max.y - i * stepSize + fontSize * 0.25,
+          //   -bounds.max.x + 16,
+          //   { color: color }
+          // );
+          pb.fill.ctx.fillStyle = color;
+          var x = bounds.max.x - i * stepSize - fontSize * 0.25;
+          var y = bounds.max.y + 16;
+          var x = pb.fill.offset.x + x * pb.fill.scale.x;
+          var y = pb.fill.offset.y + y * pb.fill.scale.y;
+          pb.fill.ctx.fillText(Number(i * stepSize * mmPerUnit).toFixed(1) + "mm", y, -x);
+          // pb.fill.ctx.restore();
+          pb.fill.ctx.rotate(-Math.PI / 2);
+        }
+      }
     };
 
     // +---------------------------------------------------------------------------------
