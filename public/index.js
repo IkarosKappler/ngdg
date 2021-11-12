@@ -121,6 +121,9 @@
         },
         insertPathJSON: function () {
           insertPathJSON();
+        },
+        acquireOptimalPathView: function () {
+          acquireOptimalPathView();
         }
       },
       GUP
@@ -344,43 +347,31 @@
     // | Scale a given Bounds instance to a new size (from its center).
     // +-------------------------------
     var acquireOptimalPathView = function () {
-      var frameSize = new THREE.Vector2(25, 25);
+      // var frameSize = new THREE.Vector2(25, 25);
+      // Just keep a 10% frame to stay clear of the canvas limits.
+      var frameSize = new THREE.Vector2(pb.canvasSize.width * 0.1, pb.canvasSize.height * 0.1);
+
       // Compute the applicable canvas size, which leaves the passed frame untouched
-      // var applicableCanvasWidth = this.canvasWidth - frameSize.x * 2;
-      // var applicableCanvasHeight = this.canvasHeight - frameSize.y * 2;
       var applicableCanvasWidth = pb.canvasSize.width - frameSize.x * 2;
       var applicableCanvasHeight = pb.canvasSize.height - frameSize.y * 2;
 
-      // var bounds = outline.computeBoundingBox();
-
       // Move center of bezier polygon to (0,0)
       var bounds = outline.getBounds();
-      console.log("bounds", bounds);
-      var moveAmount = new THREE.Vector2(bounds.width / 2.0 - bounds.xMax, bounds.height / 2.0 - bounds.yMax);
-      outline.translate(moveAmount); //TODO: HERE IS A  PROBLEM!
-
-      // Update bounds (values have changed now)
-      bounds.xMin += moveAmount.x;
-      bounds.xMax += moveAmount.x;
-      bounds.yMin += moveAmount.y;
-      bounds.yMax += moveAmount.y;
-
       var ratioX = bounds.width / applicableCanvasWidth;
       var ratioY = bounds.height / applicableCanvasHeight;
 
-      // The minimal match (width or height) is our choice
-      // pb.set.zoomFactor = Math.min(1.0 / ratioX, 1.0 / ratioY);
+      // The minimal match (width or height) is our choice.
       var newZoomFactor = Math.min(1.0 / ratioX, 1.0 / ratioY);
       pb.setZoom(newZoomFactor, newZoomFactor, { x: 0, y: 0 });
 
       // Set the draw offset position
-      var drawOffsetX = applicableCanvasWidth / 2.0 - bounds.xMin - bounds.width / 2.0 + frameSize.x;
-      var drawOffsetY = applicableCanvasHeight / 2.0 - bounds.yMin - bounds.height / 2.0 + frameSize.y;
+      var drawOffsetX = frameSize.x + applicableCanvasWidth / 2.0 - (bounds.min.x + bounds.width / 2) * newZoomFactor;
+      var drawOffsetY = frameSize.y + applicableCanvasHeight / 2.0 - (bounds.min.y + bounds.height / 2) * newZoomFactor;
+
       pb.setOffset({ x: drawOffsetX, y: drawOffsetY });
 
       // Don't forget to redraw
-      // redraw();
-      console.log("DONE");
+      pb.redraw();
     };
 
     var setPathInstance = function (newOutline) {
@@ -459,90 +450,94 @@
       var gui = pb.createGUI(); // { autoPlace: false });
       gui.domElement.id = "gui";
 
-      var fold0 = gui.addFolder("Mesh");
+      var fold0 = gui.addFolder("Path");
       // prettier-ignore
-      fold0.add(config, "outlineSegmentCount").min(3).max(512).onChange( function() { rebuild() } ).name('outlineSegmentCount').title('The number of segments on the outline.');
+      fold0.add( config, "acquireOptimalPathView" );
+
+      var fold1 = gui.addFolder("Mesh");
       // prettier-ignore
-      fold0.add(config, "shapeSegmentCount").min(3).max(256).onChange( function() { rebuild() } ).name('shapeSegmentCount').title('The number of segments on the shape.');
+      fold1.add(config, "outlineSegmentCount").min(3).max(512).onChange( function() { rebuild() } ).name('outlineSegmentCount').title('The number of segments on the outline.');
       // prettier-ignore
-      fold0.add(config, "bendAngle").min(0).max(180).onChange( function() { rebuild() } ).name('bendAngle').title('The bending angle in degrees.');
+      fold1.add(config, "shapeSegmentCount").min(3).max(256).onChange( function() { rebuild() } ).name('shapeSegmentCount').title('The number of segments on the shape.');
       // prettier-ignore
-      fold0.add(config, "twistAngle").min(-360.0*3).max(360.0*3).onChange( function() { rebuild() } ).name('twistAngle').title('Twist the mesh along its spine.');
+      fold1.add(config, "bendAngle").min(0).max(180).onChange( function() { rebuild() } ).name('bendAngle').title('The bending angle in degrees.');
       // prettier-ignore
-      fold0.add(config, "baseShapeExcentricity").min(0.1).max(2.0).onChange( function() { rebuild() } ).name('baseShapeExcentricity').title('Make the base shape more elliptic.');
+      fold1.add(config, "twistAngle").min(-360.0*3).max(360.0*3).onChange( function() { rebuild() } ).name('twistAngle').title('Twist the mesh along its spine.');
       // prettier-ignore
-      fold0.add(config, "closeTop").onChange( function() { rebuild() } ).name('closeTop').title('Close the geometry at the top point (recommended).');
+      fold1.add(config, "baseShapeExcentricity").min(0.1).max(2.0).onChange( function() { rebuild() } ).name('baseShapeExcentricity').title('Make the base shape more elliptic.');
       // prettier-ignore
-      fold0.add(config, "closeBottom").onChange( function() { rebuild() } ).name('closeBottom').title('Close the geometry at the bottom point.');
+      fold1.add(config, "closeTop").onChange( function() { rebuild() } ).name('closeTop').title('Close the geometry at the top point (recommended).');
+      // prettier-ignore
+      fold1.add(config, "closeBottom").onChange( function() { rebuild() } ).name('closeBottom').title('Close the geometry at the bottom point.');
       // prettier-ignore
       // fold0.add(config, "useBumpmap").onChange( function() { rebuild() } ).name('useBumpmap').title('Check wether the mesh should use a bumpmap.');
       // prettier-ignore
       // fold0.add(config, "bumpmapStrength").min(0.0).max(20.0).onChange( function() { rebuild() } ).name('bumpmapStrength').title('How strong should the bumpmap be applied.');
 
-      var fold1 = gui.addFolder("Hollow");
+      var fold2 = gui.addFolder("Hollow");
       // prettier-ignore
-      fold1.add(config, "makeHollow").onChange( function() { rebuild() } ).name('makeHollow').title('Make a hollow mold?');
+      fold2.add(config, "makeHollow").onChange( function() { rebuild() } ).name('makeHollow').title('Make a hollow mold?');
       // prettier-ignore
-      fold1.add(config, "normalsLength").min(1.0).max(50.0).onChange( function() { rebuild() } ).name('normalsLength').title('The length of rendered normals.');
+      fold2.add(config, "normalsLength").min(1.0).max(50.0).onChange( function() { rebuild() } ).name('normalsLength').title('The length of rendered normals.');
       // prettier-ignore
-      fold1.add(config, "hollowStrengthX").min(0.0).max(50.0).onChange( function() { rebuild() } ).name('hollowStrengthX').title('How thick make the walls?');
+      fold2.add(config, "hollowStrengthX").min(0.0).max(50.0).onChange( function() { rebuild() } ).name('hollowStrengthX').title('How thick make the walls?');
       // prettier-ignore
-      fold1.add(config, "normalizePerpendiculars").onChange( function() { rebuild() } ).name('normalizePerpendiculars').title('Normalize the XZ perpendiculars (recommended).');
+      fold2.add(config, "normalizePerpendiculars").onChange( function() { rebuild() } ).name('normalizePerpendiculars').title('Normalize the XZ perpendiculars (recommended).');
 
-      var fold2 = gui.addFolder("Slice");
+      var fold3 = gui.addFolder("Slice");
       // prettier-ignore
-      fold2.add(config, "performSlice").onChange( function() { rebuild() } ).name('performSlice').title('Slice the model along the x axis?');
+      fold3.add(config, "performSlice").onChange( function() { rebuild() } ).name('performSlice').title('Slice the model along the x axis?');
       // prettier-ignore
-      fold2.add(config, "closeCutAreas").onChange( function() { rebuild() } ).name('closeCutAreas').title('Close the open cut areas on the split.');
+      fold3.add(config, "closeCutAreas").onChange( function() { rebuild() } ).name('closeCutAreas').title('Close the open cut areas on the split.');
 
-      var fold3 = gui.addFolder("Render Settings");
+      var fold4 = gui.addFolder("Render Settings");
       // prettier-ignore
-      fold3.add(config, "wireframe").onChange( function() { rebuild() } ).name('wireframe').title('Display the mesh as a wireframe model?');
+      fold4.add(config, "wireframe").onChange( function() { rebuild() } ).name('wireframe').title('Display the mesh as a wireframe model?');
       // prettier-ignore
-      fold3.add(config, "useTextureImage").onChange( function() { rebuild() } ).name('useTextureImage').title('Use a texture image?');
+      fold4.add(config, "useTextureImage").onChange( function() { rebuild() } ).name('useTextureImage').title('Use a texture image?');
       // TODO: implement this in a proper next step (bumpmapping is still buggy)
       // // prettier-ignore
       // fold3.add(config, "showBumpmapTargets").onChange( function() { rebuild() } ).name('showBumpmapTargets').title('Show the bumpmap maximal lerping hull.');
       // // prettier-ignore
       // fold3.add(config, "showBumpmapImage").onChange( function() { rebuild() } ).name('showBumpmapImage').title('Check if you want to see a preview of the bumpmap image.');
       // prettier-ignore
-      fold3.add(config, "renderFaces", ["double","front","back"]).onChange( function() { rebuild() } ).name('renderFaces').title('Render mesh faces double or single sided?');
+      fold4.add(config, "renderFaces", ["double","front","back"]).onChange( function() { rebuild() } ).name('renderFaces').title('Render mesh faces double or single sided?');
       // prettier-ignore
-      fold3.add(config, "showNormals").onChange( function() { rebuild() } ).name('showNormals').title('Show the vertex normals.');
+      fold4.add(config, "showNormals").onChange( function() { rebuild() } ).name('showNormals').title('Show the vertex normals.');
       // prettier-ignore
-      fold3.add(config, "showBasicPerpendiculars").onChange( function() { rebuild() } ).name('showBasicPerpendiculars').title('Show the meshes perpendicular on the XZ plane.');
+      fold4.add(config, "showBasicPerpendiculars").onChange( function() { rebuild() } ).name('showBasicPerpendiculars').title('Show the meshes perpendicular on the XZ plane.');
       // prettier-ignore
-      fold3.add(config, "addSpine").onChange( function() { rebuild() } ).name('addSpine').title("Add the model's spine?");
+      fold4.add(config, "addSpine").onChange( function() { rebuild() } ).name('addSpine').title("Add the model's spine?");
       // prettier-ignore
-      fold3.add(config, "addPrecalculatedMassiveFaces").onChange( function() { rebuild() } ).name('addPrecalculatedMassiveFaces').title("Add a pre-calculated massive intersection fill?");
+      fold4.add(config, "addPrecalculatedMassiveFaces").onChange( function() { rebuild() } ).name('addPrecalculatedMassiveFaces').title("Add a pre-calculated massive intersection fill?");
       // prettier-ignore
-      fold3.add(config, "addPrecalculatedHollowFaces").onChange( function() { rebuild() } ).name('addPrecalculatedHollowFaces').title("Add a pre-calculated hollow intersection fill?");
+      fold4.add(config, "addPrecalculatedHollowFaces").onChange( function() { rebuild() } ).name('addPrecalculatedHollowFaces').title("Add a pre-calculated hollow intersection fill?");
       // prettier-ignore
-      fold3.add(config, "showSplitPane").onChange( function() { rebuild() } ).name('showSplitPane').title('Show split pane.');
+      fold4.add(config, "showSplitPane").onChange( function() { rebuild() } ).name('showSplitPane').title('Show split pane.');
       // prettier-ignore
-      fold3.add(config, "showLeftSplit").onChange( function() { rebuild() } ).name('showLeftSplit').title('Show left split.');
+      fold4.add(config, "showLeftSplit").onChange( function() { rebuild() } ).name('showLeftSplit').title('Show left split.');
       // prettier-ignore
-      fold3.add(config, "showRightSplit").onChange( function() { rebuild() } ).name('showRightSplit').title('Show right split.');
+      fold4.add(config, "showRightSplit").onChange( function() { rebuild() } ).name('showRightSplit').title('Show right split.');
       // prettier-ignore
-      fold3.add(config, "showSplitShape").onChange( function() { rebuild() } ).name('showSplitShape').title('Show split shape.');
+      fold4.add(config, "showSplitShape").onChange( function() { rebuild() } ).name('showSplitShape').title('Show split shape.');
       // prettier-ignore
-      fold3.add(config, "showSplitShapeTriangulation").onChange( function() { rebuild() } ).name('showSplitShapeTriangulation').title('Show split shape triangulation?');
+      fold4.add(config, "showSplitShapeTriangulation").onChange( function() { rebuild() } ).name('showSplitShapeTriangulation').title('Show split shape triangulation?');
       // prettier-ignore
-      fold3.add(config, "addRawIntersectionTriangleMesh").onChange( function() { rebuild() } ).name('addRawIntersectionTriangleMesh').title('Show raw unoptimized split face triangulation?');
+      fold4.add(config, "addRawIntersectionTriangleMesh").onChange( function() { rebuild() } ).name('addRawIntersectionTriangleMesh').title('Show raw unoptimized split face triangulation?');
       // prettier-ignore
-      fold3.add(config, "addPrecalculatedShapeOutlines").onChange( function() { rebuild() } ).name('addPrecalculatedShapeOutlines').title('Show raw unoptimized split shape outline(s)?');
+      fold4.add(config, "addPrecalculatedShapeOutlines").onChange( function() { rebuild() } ).name('addPrecalculatedShapeOutlines').title('Show raw unoptimized split shape outline(s)?');
 
-      var fold4 = gui.addFolder("Export");
+      var fold5 = gui.addFolder("Export");
       // prettier-ignore
-      fold4.add(config, "exportSTL").name('STL').title('Export an STL file.');
+      fold5.add(config, "exportSTL").name('STL').title('Export an STL file.');
       // prettier-ignore
-      fold4.add(config, "showPathJSON").name('Show Path JSON ...').title('Show the path data.');
+      fold5.add(config, "showPathJSON").name('Show Path JSON ...').title('Show the path data.');
 
-      var fold5 = gui.addFolder("Import");
+      var fold6 = gui.addFolder("Import");
       // prettier-ignore
-      fold5.add(config, "insertPathJSON").name('Insert Path JSON ...').title('Insert path data as JSON.');
+      fold6.add(config, "insertPathJSON").name('Insert Path JSON ...').title('Insert path data as JSON.');
 
-      fold0.open();
+      fold2.open();
       if (!GUP.openGui) {
         gui.close();
       }
