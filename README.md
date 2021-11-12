@@ -38,6 +38,9 @@ Because 3d printing, web 3d, and dildos are fun.
 
 ### Changelog
 
+- 2012-11-12
+  - Added basic rulers to the 2d canvas.
+  - Fixed the broken scale-to-best-fit function.
 - 2021-09-27
   - Replaced in internal earcut implementation by an node module (https://www.npmjs.com/package/earcut-typescript).
 - 2021-09-26
