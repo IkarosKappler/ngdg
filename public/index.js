@@ -318,10 +318,56 @@
     // | Draw the split-indicator (if split position ready).
     // +-------------------------------
     var postDraw = function () {
+      drawBezierDistanceLine();
+      drawRulers();
+      drawResizeHandleLines();
+    };
+
+    var drawBezierDistanceLine = function () {
       if (bezierDistanceLine != null) {
         pb.draw.line(bezierDistanceLine.a, bezierDistanceLine.b, "rgb(255,192,0)", 2);
         pb.fill.circleHandle(bezierDistanceLine.a, 3.0, "rgb(255,192,0)");
       }
+    };
+
+    var drawRulers = function () {
+      drawVerticalRuler();
+      drawHorizontalRuler();
+    };
+
+    var drawHorizontalRuler = function () {
+      // Draw the ruler.
+      // console.log("Post draw");
+      var bounds = outline.getBounds();
+      var color = "rgba(0,128,192,0.5)";
+      var mmPerUnit = 0.5;
+      var stepSize = 20; // pixels
+      var fontSize = 7;
+      // Draw horizontal ruler
+      pb.draw.line({ x: bounds.min.x, y: bounds.max.y + 10 }, { x: bounds.max.x, y: bounds.max.y + 10 }, color, 0.5);
+      var horizontalStepCount = bounds.width / stepSize;
+      for (var i = 0; i < horizontalStepCount; i++) {
+        pb.draw.line(
+          { x: bounds.max.x - i * stepSize, y: bounds.max.y + 10 - 3 },
+          { x: bounds.max.x - i * stepSize, y: bounds.max.y + 10 + 3 },
+          color,
+          0.5
+        );
+        // Draw label?
+        if (i % 2 === 0) {
+          var x = bounds.max.x - i * stepSize; //  - fontSize * 0.25;
+          var y = bounds.max.y + 16;
+          pb.fill.text(Number(i * stepSize * mmPerUnit).toFixed(0) + "mm", x, y, {
+            color: color,
+            fontSize: fontSize,
+            textAlign: "right",
+            rotation: -Math.PI / 4
+          });
+        }
+      }
+    };
+
+    var drawVerticalRuler = function () {
       // Draw the ruler.
       // console.log("Post draw");
       var bounds = outline.getBounds();
@@ -349,27 +395,27 @@
           );
         }
       }
-      // Draw horizontal ruler
-      pb.draw.line({ x: bounds.min.x, y: bounds.max.y + 10 }, { x: bounds.max.x, y: bounds.max.y + 10 }, color, 0.5);
-      var horizontalStepCount = bounds.width / stepSize;
-      for (var i = 0; i < horizontalStepCount; i++) {
+    };
+
+    var drawResizeHandleLines = function () {
+      var bounds = outline.getBounds();
+      if (verticalResizeHandleDragStartPosition) {
+        // TODO: draw a dashed line? : )
         pb.draw.line(
-          { x: bounds.max.x - i * stepSize, y: bounds.max.y + 10 - 3 },
-          { x: bounds.max.x - i * stepSize, y: bounds.max.y + 10 + 3 },
-          color,
-          0.5
+          { x: bounds.min.x, y: verticalResizeHandle.y },
+          { x: bounds.max.x, y: verticalResizeHandle.y },
+          "rgba(128,128,128,0.5)",
+          1.0
         );
-        // Draw label?
-        if (i % 2 === 0) {
-          var x = bounds.max.x - i * stepSize; //  - fontSize * 0.25;
-          var y = bounds.max.y + 16;
-          pb.fill.text(Number(i * stepSize * mmPerUnit).toFixed(0) + "mm", x, y, {
-            color: color,
-            fontSize: fontSize,
-            textAlign: "right",
-            rotation: -Math.PI / 4
-          });
-        }
+      }
+      if (horizontalResizeHandleDragStartPosition) {
+        // TODO: draw a dashed line? : )
+        pb.draw.line(
+          { x: horizontalResizeHandle.x, y: bounds.min.y },
+          { x: horizontalResizeHandle.x, y: bounds.max.y },
+          "rgba(128,128,128,0.5)",
+          1.0
+        );
       }
     };
 
@@ -423,17 +469,19 @@
       pb.redraw();
     };
 
+    // +---------------------------------------------------------------------------------
+    // | Set the new path instance and install a Bézier interaction helper.
+    // +-------------------------------
     var setPathInstance = function (newOutline) {
       if (typeof outline != "undefined") {
         pb.removeAll(false); // Do not keep vertices
       }
       outline = newOutline;
       addPathListeners(outline);
-      pb.add(newOutline);
+      // pb.add(newOutline);
+      pb.add([newOutline, verticalResizeHandle, horizontalResizeHandle]);
 
-      // +---------------------------------------------------------------------------------
-      // | Install a Bézier interaction helper.
-      // +-------------------------------
+      // Install a Bézier interaction helper.
       new BezierPathInteractionHelper(pb, [outline], {
         maxDetectDistance: 32.0,
         autoAdjustPaths: true,
@@ -462,7 +510,115 @@
           rebuild();
         }
       });
+
+      updateResizeHandles();
     }; // END setPathInstance
+
+    // +---------------------------------------------------------------------------------
+    // | Set the new path instance and install a Bézier interaction helper.
+    // +-------------------------------
+    var updateResizeHandles = function () {
+      var handleOffset = 0;
+      var bounds = outline.getBounds();
+      horizontalResizeHandle.set(bounds.min.x - handleOffset, bounds.min.y + bounds.height / 2.0);
+      verticalResizeHandle.set(bounds.min.x + bounds.width / 2.0, bounds.min.y - handleOffset);
+    };
+
+    // +---------------------------------------------------------------------------------
+    // | Create two resize handles and add some nice logic.
+    // +-------------------------------
+    var outline = null;
+    var verticalResizeHandle = new Vertex(0, 0);
+    var horizontalResizeHandle = new Vertex(0, 0);
+    var verticalResizeHandleDragStartPosition = null;
+    var horizontalResizeHandleDragStartPosition = null;
+    verticalResizeHandle.listeners.addDragStartListener(function (e) {
+      var relPos = pb.transformMousePosition(e.params.draggedFrom.x, e.params.draggedFrom.y);
+      verticalResizeHandleDragStartPosition = relPos;
+    });
+    verticalResizeHandle.listeners.addDragEndListener(function (e) {
+      // TODO:  Instead of this add 'updateResizeHandles' to the end of this function
+      // verticalResizeHandle.setX(resizeHandleDragStartPosition.x);
+
+      var relTargetPos = pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
+      var targetHeightDifference = verticalResizeHandleDragStartPosition.y - relTargetPos.y;
+      console.log("targetHeightDifference", targetHeightDifference);
+      changePathHeightBy(targetHeightDifference);
+      updateResizeHandles();
+      verticalResizeHandleDragStartPosition = null;
+      rebuild();
+    });
+
+    horizontalResizeHandle.listeners.addDragStartListener(function (e) {
+      var relPos = pb.transformMousePosition(e.params.draggedFrom.x, e.params.draggedFrom.y);
+      horizontalResizeHandleDragStartPosition = relPos;
+    });
+    horizontalResizeHandle.listeners.addDragEndListener(function (e) {
+      // TODO:  Instead of this add 'updateResizeHandles' to the end of this function
+      // horizontalResizeHandle.setY(resizeHandleDragStartPosition.x);
+
+      var relTargetPos = pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
+      var targetWidthDifference = horizontalResizeHandleDragStartPosition.x - relTargetPos.x;
+      console.log("targetWidthDifference", targetWidthDifference);
+      changePathWidthBy(targetWidthDifference);
+      updateResizeHandles();
+      horizontalResizeHandleDragStartPosition = null;
+      rebuild();
+    });
+
+    // @param {number} heightAmount
+    var changePathHeightBy = function (heightAmount) {
+      var bounds = outline.getBounds();
+      var scaleAnchor = bounds.max;
+      var verticalScaleFactor = (bounds.height + heightAmount) / bounds.height;
+
+      // TODO: this should be a function BezierPath.scaleX or scaleHeight
+      for (var i = 0; i < outline.bezierCurves.length; i++) {
+        var curve = outline.bezierCurves[i];
+        curve.getStartPoint().scale(verticalScaleFactor, { x: curve.getStartPoint().x, y: scaleAnchor.y });
+        curve.getStartControlPoint().scale(verticalScaleFactor, { x: curve.getStartControlPoint().x, y: scaleAnchor.y });
+        curve.getEndControlPoint().scale(verticalScaleFactor, { x: curve.getEndControlPoint().x, y: scaleAnchor.y });
+        // Do NOT scale the end point here!
+        // Don't forget that the curves are connected and on curve's end point
+        // the the successor's start point (same instance)!
+      }
+
+      // Finally move the last end point (was not scaled yet)
+      if (outline.bezierCurves.length > 0 && !outline.adjustCircular) {
+        outline.bezierCurves[outline.bezierCurves.length - 1]
+          .getEndPoint()
+          .scale(verticalScaleFactor, { x: curve.getEndPoint().x, y: scaleAnchor.y });
+      }
+
+      outline.updateArcLengths();
+    };
+
+    // @param {number} widthAmount
+    var changePathWidthBy = function (widthAmount) {
+      var bounds = outline.getBounds();
+      var scaleAnchor = bounds.max;
+      var verticalScaleFactor = (bounds.width + widthAmount) / bounds.width;
+
+      // TODO: this should be a function BezierPath.scaleX or scaleHeight
+      for (var i = 0; i < outline.bezierCurves.length; i++) {
+        var curve = outline.bezierCurves[i];
+        curve.getStartPoint().scale(verticalScaleFactor, { x: scaleAnchor.x, y: curve.getStartPoint().y });
+        curve.getStartControlPoint().scale(verticalScaleFactor, { x: scaleAnchor.x, y: curve.getStartControlPoint().y });
+        curve.getEndControlPoint().scale(verticalScaleFactor, { x: scaleAnchor.x, y: curve.getEndControlPoint().y });
+        // Do NOT scale the end point here!
+        // Don't forget that the curves are connected and on curve's end point
+        // the the successor's start point (same instance)!
+      }
+
+      // Finally move the last end point (was not scaled yet)
+      if (outline.bezierCurves.length > 0 && !outline.adjustCircular) {
+        outline.bezierCurves[outline.bezierCurves.length - 1]
+          .getEndPoint()
+          .scale(verticalScaleFactor, { x: scaleAnchor.x, y: curve.getEndPoint().y });
+      }
+
+      outline.updateArcLengths();
+    };
 
     // +---------------------------------------------------------------------------------
     // | Create the outline: a Bézier path.
