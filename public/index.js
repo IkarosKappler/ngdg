@@ -328,7 +328,7 @@
       var color = "rgba(0,128,192,0.5)";
       var mmPerUnit = 0.5;
       var stepSize = 20; // pixels
-      var fontSize = 9;
+      var fontSize = 7;
       // Draw vertical ruler
       pb.draw.line({ x: bounds.max.x + 10, y: bounds.min.y }, { x: bounds.max.x + 10, y: bounds.max.y }, color, 0.5);
       var verticalStepCount = bounds.height / stepSize;
@@ -342,10 +342,10 @@
         // Draw label?
         if (i % 2 === 0) {
           pb.fill.text(
-            Number(i * stepSize * mmPerUnit).toFixed(1) + "mm",
+            Number(i * stepSize * mmPerUnit).toFixed(0) + "mm",
             bounds.max.x + 16,
             bounds.max.y - i * stepSize + fontSize * 0.25,
-            { color: color }
+            { color: color, fontSize: fontSize }
           );
         }
       }
@@ -361,23 +361,14 @@
         );
         // Draw label?
         if (i % 2 === 0) {
-          // TODO: implement rotation as feature
-          pb.fill.ctx.rotate(Math.PI / 2); // This only works in CANVAS context
-          if (i == 0) console.log("i", i);
-          // pb.fill.text(
-          //   Number(i * stepSize * mmPerUnit).toFixed(1) + "mm",
-          //   bounds.max.y - i * stepSize + fontSize * 0.25,
-          //   -bounds.max.x + 16,
-          //   { color: color }
-          // );
-          pb.fill.ctx.fillStyle = color;
-          var x = bounds.max.x - i * stepSize - fontSize * 0.25;
+          var x = bounds.max.x - i * stepSize; //  - fontSize * 0.25;
           var y = bounds.max.y + 16;
-          var x = pb.fill.offset.x + x * pb.fill.scale.x;
-          var y = pb.fill.offset.y + y * pb.fill.scale.y;
-          pb.fill.ctx.fillText(Number(i * stepSize * mmPerUnit).toFixed(1) + "mm", y, -x);
-          // pb.fill.ctx.restore();
-          pb.fill.ctx.rotate(-Math.PI / 2);
+          pb.fill.text(Number(i * stepSize * mmPerUnit).toFixed(0) + "mm", x, y, {
+            color: color,
+            fontSize: fontSize,
+            textAlign: "right",
+            rotation: -Math.PI / 4
+          });
         }
       }
     };
