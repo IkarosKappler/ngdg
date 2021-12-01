@@ -124,6 +124,10 @@
         },
         acquireOptimalPathView: function () {
           acquireOptimalPathView();
+        },
+        setDefaultPathJSON: function () {
+          setDefaultPathInstance();
+          rebuild();
         }
       },
       GUP
@@ -134,11 +138,7 @@
         return new THREE.OrbitControls(camera, domElement);
       }
     });
-    var configIO = new ngdg.ConfigIO(document.getElementsByTagName("body")[0]);
-    configIO.onPathDropped(function (jsonString) {
-      console.log("json string loaded", jsonString);
-      loadPathJSON(jsonString);
-    });
+
     var modal = new Modal();
 
     // +---------------------------------------------------------------------------------
@@ -287,25 +287,10 @@
       rebuild();
     };
     var addPathListeners = function (path) {
-      console.log("addPathListeners");
       BezierPathInteractionHelper.addPathVertexDragEndListeners(path, dragListener);
-      // if (bezierResizer) {
-      //   console.log("before remove", pb.drawables);
-      //   // pb.remove([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
-      //   pb.remove(bezierResizer.verticalResizeHandle);
-      //   pb.remove(bezierResizer.horizontalResizeHandle);
-      //   console.log("after remove", pb.drawables);
-      //   bezierResizer.destroy();
-      //   bezierResizer = null;
-      // }
-      // bezierResizer = new BezierResizeHelper(pb, outline, rebuild);
-      // pb.add([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
     };
     var removePathListeners = function (path) {
       BezierPathInteractionHelper.removePathVertexDragEndListeners(path, dragListener);
-      // if (bezierResizer) {
-      //   bezierResizer.destroy();
-      // }
     };
 
     // +---------------------------------------------------------------------------------
@@ -352,7 +337,6 @@
 
     var drawHorizontalRuler = function () {
       // Draw the ruler.
-      // console.log("Post draw");
       var bounds = outline.getBounds();
       var color = "rgba(0,128,192,0.5)";
       var mmPerUnit = 0.5;
@@ -540,10 +524,13 @@
       });
     }; // END setPathInstance
 
+    var setDefaultPathInstance = function () {
+      setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
+    };
+
     // +---------------------------------------------------------------------------------
-    // | Create two resize handles and add some nice logic.
+    // | Create the bezier resize helper.
     // +-------------------------------
-    var outline = null;
     var bezierResizer = null;
 
     // +---------------------------------------------------------------------------------
@@ -569,8 +556,30 @@
         modal.open();
       }
     } else {
-      setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
+      // setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
+      setDefaultPathInstance();
     }
+
+    // +---------------------------------------------------------------------------------
+    // | Load the config from the local storage.
+    // | Handle file drop.
+    // +-------------------------------
+    var configIO = new ngdg.ConfigIO(document.getElementsByTagName("body")[0]);
+    configIO.onPathDropped(function (jsonString) {
+      console.log("json string loaded by drop", jsonString);
+      loadPathJSON(jsonString);
+    });
+    configIO.onPathRestored(
+      function (jsonString) {
+        console.log("json string loaded from storage", jsonString);
+        if (!GUP.rbdata) {
+          loadPathJSON(jsonString);
+        }
+      },
+      function () {
+        return outline ? outline.toJSON() : null;
+      }
+    );
 
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
@@ -667,6 +676,8 @@
       var fold6 = gui.addFolder("Import");
       // prettier-ignore
       fold6.add(config, "insertPathJSON").name('Insert Path JSON ...').title('Insert path data as JSON.');
+      // prettier-ignore
+      fold6.add(config, "setDefaultPathJSON").name('Load default Path JSON ...').title('Load the pre-configured default path JSON.');
 
       fold2.open();
       if (!GUP.openGui) {

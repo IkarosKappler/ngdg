@@ -8,6 +8,7 @@
  * @date    2021-09-27
  */
 import { DildoGeneration } from "./DildoGeneration";
+import { ConfigIO } from "./ConfigIO";
 export declare const ngdg: {
     DEFAULT_BEZIER_JSON: string;
     DildoGeneration: typeof DildoGeneration;
@@ -15,4 +16,5 @@ export declare const ngdg: {
         getImage: (path: string, onComplete: (completeImage: HTMLImageElement) => void) => HTMLImageElement;
         isImageLoaded: (image: HTMLImageElement) => boolean;
     };
+    ConfigIO: typeof ConfigIO;
 };

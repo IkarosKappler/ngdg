@@ -68,13 +68,6 @@ export declare class DildoGeneration implements IDildoGeneration {
      */
     __performPlaneSlice(latheMesh: THREE.Mesh, latheUnbufferedGeometry: IDildoGeometry, wireframe: boolean, useTextureImage: boolean, textureImagePath: string, options: DildoOptions): void;
     /**
-     * NOT CURRENTLY IN USE (too unstable?)
-     *
-     * @param {*} latheMesh
-     * @param {*} latheUnbufferedGeometry
-     * @param {*} material
-     */
-    /**
      * Add a mesh to the underlying scene.
      *
      * The function will make some modifications to the rotation of the meshes.

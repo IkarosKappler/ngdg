@@ -5,6 +5,7 @@
  */
 
 type PathDroppedCallback = (jsonData: string) => void;
+type PathRequestJSONCallback = () => string;
 
 export class ConfigIO {
   /**
@@ -28,6 +29,20 @@ export class ConfigIO {
 
   onPathDropped(callback: PathDroppedCallback) {
     this.pathDroppedCallback = callback;
+  }
+
+  onPathRestored(handlePathRestored: PathDroppedCallback, requestPath: PathRequestJSONCallback) {
+    const bezierJSON = localStorage.getItem("bezier_path");
+    if (bezierJSON) {
+      handlePathRestored(bezierJSON);
+    }
+    setInterval(() => {
+      const newBezierJSON = requestPath();
+      console.log("localstorage store", newBezierJSON);
+      if (newBezierJSON) {
+        localStorage.setItem("bezier_path", newBezierJSON);
+      }
+    }, 10000);
   }
 
   private handleDropEvent = (event: DragEvent) => {

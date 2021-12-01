@@ -378,35 +378,6 @@ var DildoGeneration = /** @class */ (function () {
     //     return trianglesGeometry;
     //   };
     /**
-     * NOT CURRENTLY IN USE (too unstable?)
-     *
-     * @param {*} latheMesh
-     * @param {*} latheUnbufferedGeometry
-     * @param {*} material
-     */
-    //   __performCsgSlice(latheMesh, latheUnbufferedGeometry, material) {
-    //     latheMesh.updateMatrix();
-    //     var bbox = new THREE.Box3().setFromObject(latheMesh);
-    //     // console.log(bbox);
-    //     var box_material = new THREE.MeshBasicMaterial({ wireframe: true });
-    //     var cube_geometry = new THREE.BoxGeometry( // new THREE.CubeGeometry(
-    //       ((bbox.max.x - bbox.min.x) / 2) * 1.2 + 0.01,
-    //       (bbox.max.y - bbox.min.y) * 1.1,
-    //       (bbox.max.z - bbox.min.z) * 1.2
-    //     );
-    //     var cube_mesh = new THREE.Mesh(cube_geometry, box_material);
-    //     cube_mesh.updateMatrix();
-    //     cube_mesh.position.x = latheMesh.position.x + (bbox.max.x - bbox.min.x) / 4;
-    //     cube_mesh.position.y = bbox.min.y + (bbox.max.y - bbox.min.y) / 2 + -30;
-    //     cube_mesh.position.z = bbox.min.z + (bbox.max.z - bbox.min.z) / 2;
-    //     this.addMesh(cube_mesh);
-    //     var cube_bsp = new ThreeBSP(cube_mesh);
-    //     var mesh_bsp = new ThreeBSP(new THREE.Mesh(latheUnbufferedGeometry, material));
-    //     var subtract_bsp = cube_bsp.subtract(mesh_bsp);
-    //     var result = subtract_bsp.toMesh(material);
-    //     this.addMesh(result);
-    //   };
-    /**
      * Add a mesh to the underlying scene.
      *
      * The function will make some modifications to the rotation of the meshes.

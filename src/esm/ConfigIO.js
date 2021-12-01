@@ -1,19 +1,15 @@
-"use strict";
 /**
  * @author  Ikaros Kappler
  * @date    2021-10-13
  * @version 1.0.0
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConfigIO = void 0;
-var ConfigIO = /** @class */ (function () {
-    function ConfigIO(element) {
-        var _this = this;
-        this.handleDropEvent = function (event) {
+export class ConfigIO {
+    constructor(element) {
+        this.handleDropEvent = (event) => {
             event.preventDefault();
             event.stopPropagation();
             console.log("File dropped", event);
-            _this.element.style.opacity = "1.0";
+            this.element.style.opacity = "1.0";
             if (!event.dataTransfer.files || event.dataTransfer.files.length === 0) {
                 // No files were dropped
                 return;
@@ -22,35 +18,35 @@ var ConfigIO = /** @class */ (function () {
                 // Multiple file drop is not nupported
                 return;
             }
-            if (!_this.pathDroppedCallback) {
+            if (!this.pathDroppedCallback) {
                 // No handling callback defined.
                 return;
             }
             if (event.dataTransfer.files[0]) {
-                var file = event.dataTransfer.files[0];
+                const file = event.dataTransfer.files[0];
                 console.log("file", file);
                 if (file.type.match(/json.*/)) {
                     var reader = new FileReader();
-                    reader.onload = function (readEvent) {
+                    reader.onload = (readEvent) => {
                         // Finished reading file data.
                         //   console.log(readEvent.target.result);
-                        _this.pathDroppedCallback(readEvent.target.result);
+                        this.pathDroppedCallback(readEvent.target.result);
                     };
                     reader.readAsText(file); // start reading the file data.
                 }
             }
         };
-        this.handleDragOverEvent = function (event) {
+        this.handleDragOverEvent = (event) => {
             event.preventDefault();
             event.stopPropagation();
             console.log("Drag over", event);
-            _this.element.style.opacity = "0.5";
+            this.element.style.opacity = "0.5";
         };
-        this.handleDragLeaveEvent = function (event) {
+        this.handleDragLeaveEvent = (event) => {
             event.preventDefault();
             event.stopPropagation();
             console.log("Drag out", event);
-            _this.element.style.opacity = "1.0";
+            this.element.style.opacity = "1.0";
         };
         this.element = element;
         // Init
@@ -58,28 +54,26 @@ var ConfigIO = /** @class */ (function () {
         element.addEventListener("dragover", this.handleDragOverEvent.bind(this));
         element.addEventListener("dragleave", this.handleDragLeaveEvent.bind(this));
     }
-    ConfigIO.prototype.onPathDropped = function (callback) {
+    onPathDropped(callback) {
         this.pathDroppedCallback = callback;
-    };
-    ConfigIO.prototype.onPathRestored = function (handlePathRestored, requestPath) {
-        var bezierJSON = localStorage.getItem("bezier_path");
+    }
+    onPathRestored(handlePathRestored, requestPath) {
+        const bezierJSON = localStorage.getItem("bezier_path");
         if (bezierJSON) {
             handlePathRestored(bezierJSON);
         }
-        setInterval(function () {
-            var newBezierJSON = requestPath();
+        setInterval(() => {
+            const newBezierJSON = requestPath();
             console.log("localstorage store", newBezierJSON);
             if (newBezierJSON) {
                 localStorage.setItem("bezier_path", newBezierJSON);
             }
         }, 10000);
-    };
-    ConfigIO.prototype.destroy = function () {
+    }
+    destroy() {
         this.element.removeEventListener("drop", this.handleDropEvent);
         this.element.removeEventListener("dragover", this.handleDragOverEvent);
         this.element.removeEventListener("dragleave", this.handleDragLeaveEvent);
-    };
-    return ConfigIO;
-}());
-exports.ConfigIO = ConfigIO;
+    }
+}
 //# sourceMappingURL=ConfigIO.js.map
