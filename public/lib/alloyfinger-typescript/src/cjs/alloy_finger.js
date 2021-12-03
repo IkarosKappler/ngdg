@@ -7,10 +7,9 @@
  * @date    2021-02-10 (Typescript port)
  * @version 0.1.18
  */
-// Object.defineProperty(exports, "__esModule", { value: true });
-// exports.AlloyFinger = void 0;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AlloyFinger = void 0;
 ;
-(function() {
 /**
  * Tiny math function to calculate the length of a vector in euclidean space.
  *
@@ -394,10 +393,7 @@ var AlloyFinger = /** @class */ (function () {
     ; // END destroy
     return AlloyFinger;
 }());
-// exports.AlloyFinger = AlloyFinger;
+exports.AlloyFinger = AlloyFinger;
 ;
-// exports.default = AlloyFinger;
-// window.AlloyFinger = AlloyFinger;
-window.createAlloyFinger = function(elem,opts) { return new AlloyFinger(elem,opts); };
-})();
+exports.default = AlloyFinger;
 //# sourceMappingURL=alloy_finger.js.map
