@@ -83,6 +83,8 @@ exports.BumpMapper = {
 
 
 /**
+ * A basic IO interface for storing and retrieving json data from dropped files and local storage.
+ *
  * @author  Ikaros Kappler
  * @date    2021-10-13
  * @version 1.0.0
@@ -90,12 +92,15 @@ exports.BumpMapper = {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigIO = void 0;
 var ConfigIO = /** @class */ (function () {
+    /**
+     *
+     * @param {HTMLElement} element - The element you wish to operate as the drop zone (like <body/>).
+     */
     function ConfigIO(element) {
         var _this = this;
         this.handleDropEvent = function (event) {
             event.preventDefault();
             event.stopPropagation();
-            console.log("File dropped", event);
             _this.element.style.opacity = "1.0";
             if (!event.dataTransfer.files || event.dataTransfer.files.length === 0) {
                 // No files were dropped
@@ -116,7 +121,6 @@ var ConfigIO = /** @class */ (function () {
                     var reader = new FileReader();
                     reader.onload = function (readEvent) {
                         // Finished reading file data.
-                        //   console.log(readEvent.target.result);
                         _this.pathDroppedCallback(readEvent.target.result);
                     };
                     reader.readAsText(file); // start reading the file data.
@@ -126,24 +130,37 @@ var ConfigIO = /** @class */ (function () {
         this.handleDragOverEvent = function (event) {
             event.preventDefault();
             event.stopPropagation();
-            console.log("Drag over", event);
             _this.element.style.opacity = "0.5";
         };
         this.handleDragLeaveEvent = function (event) {
             event.preventDefault();
             event.stopPropagation();
-            console.log("Drag out", event);
             _this.element.style.opacity = "1.0";
         };
         this.element = element;
-        // Init
+        // Init the drop listeners
         element.addEventListener("drop", this.handleDropEvent.bind(this));
         element.addEventListener("dragover", this.handleDragOverEvent.bind(this));
         element.addEventListener("dragleave", this.handleDragLeaveEvent.bind(this));
     }
+    /**
+     * Install the drop callback. Note than only one callback can be installed in this
+     * implementation. Calling this method multiple times will overwrite previously
+     * installed listeners.
+     *
+     * The callback will receive the dropped files as a string.
+     *
+     * @param {(data:string)=>void} callback
+     */
     ConfigIO.prototype.onPathDropped = function (callback) {
         this.pathDroppedCallback = callback;
     };
+    /**
+     * Install a callback for retrieving the `bezier_path` string from the localstorage.
+     *
+     * @param {(data:string)=>void} handlePathRestored - The callback to handle the retrieved storage value. Will be called immediately.
+     * @param {()=>string} requestPath - Requests the `bezier_path` string value to store; will be called on a 10 second timer interval.
+     */
     ConfigIO.prototype.onPathRestored = function (handlePathRestored, requestPath) {
         var bezierJSON = localStorage.getItem("bezier_path");
         if (bezierJSON) {
@@ -151,7 +168,6 @@ var ConfigIO = /** @class */ (function () {
         }
         setInterval(function () {
             var newBezierJSON = requestPath();
-            console.log("localstorage store", newBezierJSON);
             if (newBezierJSON) {
                 localStorage.setItem("bezier_path", newBezierJSON);
             }
@@ -2820,9 +2836,7 @@ exports.KEY_SPLIT_TRIANGULATION_GEOMETRIES = "KEY_SPLIT_TRIANGULATION_GEOMETRIES
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DEFAULT_BEZIER_JSON = void 0;
 // Refactored from dildo-generator
-exports.DEFAULT_BEZIER_JSON = 
-//'[ { "startPoint" : [-122,77.80736634304651], "endPoint" : [-65.59022229786551,21.46778533702511], "startControlPoint": [-121.62058129515852,25.08908859418696], "endControlPoint" : [-79.33419353770395,48.71529293460728] }, { "startPoint" : [-65.59022229786551,21.46778533702511], "endPoint" : [-65.66917273472913,-149.23537680826058], "startControlPoint": [-52.448492057756646,-4.585775770903305], "endControlPoint" : [-86.1618869001374,-62.11613821618976] }, { "startPoint" : [-65.66917273472913,-149.23537680826058], "endPoint" : [-61.86203591980055,-243.8368165606738], "startControlPoint": [-53.701578771473564,-200.1123697454778], "endControlPoint" : [-69.80704300441666,-205.36451303641783] }, { "startPoint" : [-61.86203591980055,-243.8368165606738], "endPoint" : [-21.108966092052256,-323], "startControlPoint": [-54.08681426887413,-281.486963896856], "endControlPoint" : [-53.05779349623559,-323] } ]';
-"\n  [\n    {\n       \"startPoint\":[\n          -122,\n          77.80736634304651\n       ],\n       \"endPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"startControlPoint\":[\n          -121.62058129515852,\n          25.08908859418696\n       ],\n       \"endControlPoint\":[\n          -79.33419353770395,\n          48.71529293460728\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"endPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"startControlPoint\":[\n          -52.448492057756646,\n          -4.585775770903305\n       ],\n       \"endControlPoint\":[\n          -86.1618869001374,\n          -62.11613821618976\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"endPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"startControlPoint\":[\n          -53.701578771473564,\n          -200.1123697454778\n       ],\n       \"endControlPoint\":[\n          -69.80704300441666,\n          -205.36451303641783\n       ]\n    },\n    {\n       \"startPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"endPoint\":[\n          -21.108966092052256,\n          -323\n       ],\n       \"startControlPoint\":[\n          -54.08681426887413,\n          -281.486963896856\n       ],\n       \"endControlPoint\":[\n          -53.05779349623559,\n          -323\n       ]\n    }\n ]\n  ";
+exports.DEFAULT_BEZIER_JSON = "\n  [\n    {\n       \"startPoint\":[\n          -122,\n          77.80736634304651\n       ],\n       \"endPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"startControlPoint\":[\n          -121.62058129515852,\n          25.08908859418696\n       ],\n       \"endControlPoint\":[\n          -79.33419353770395,\n          48.71529293460728\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"endPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"startControlPoint\":[\n          -52.448492057756646,\n          -4.585775770903305\n       ],\n       \"endControlPoint\":[\n          -86.1618869001374,\n          -62.11613821618976\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"endPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"startControlPoint\":[\n          -53.701578771473564,\n          -200.1123697454778\n       ],\n       \"endControlPoint\":[\n          -69.80704300441666,\n          -205.36451303641783\n       ]\n    },\n    {\n       \"startPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"endPoint\":[\n          -21.108966092052256,\n          -323\n       ],\n       \"startControlPoint\":[\n          -54.08681426887413,\n          -281.486963896856\n       ],\n       \"endControlPoint\":[\n          -53.05779349623559,\n          -323\n       ]\n    }\n ]\n  ";
 //# sourceMappingURL=defaults.js.map
 
 /***/ }),

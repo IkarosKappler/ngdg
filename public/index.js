@@ -126,8 +126,7 @@
           acquireOptimalPathView();
         },
         setDefaultPathJSON: function () {
-          setDefaultPathInstance();
-          rebuild();
+          setDefaultPathInstance(true);
         }
       },
       GUP
@@ -233,11 +232,16 @@
     // +-------------------------------
     var buildId = null;
     var rebuild = function () {
+      // if (typeof outline === "undefined" || typeof dildoGeneration === "undefined") {
+      //   // Not yet fully initialized.
+      //   console.log("Not yet fully initialized.");
+      //   return;
+      // }
       buildId = new Date().getTime();
       window.setTimeout(
         (function (bId) {
           return function () {
-            if (bId == buildId) {
+            if (bId === buildId) {
               if (config.useBumpmap && ImageStore.isImageLoaded(bumpmapRasterImage)) {
                 // Resize the bumpmap to satisfy the mesh resolution.
                 bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.shapeSegmentCount, config.outlineSegmentCount);
@@ -320,7 +324,7 @@
     var postDraw = function () {
       drawBezierDistanceLine();
       drawRulers();
-      drawResizeHandleLines();
+      drawResizeHandleLines(pb, outline, bezierResizer);
     };
 
     var drawBezierDistanceLine = function () {
@@ -331,91 +335,8 @@
     };
 
     var drawRulers = function () {
-      drawVerticalRuler();
-      drawHorizontalRuler();
-    };
-
-    var drawHorizontalRuler = function () {
-      // Draw the ruler.
-      var bounds = outline.getBounds();
-      var color = "rgba(0,128,192,0.5)";
-      var mmPerUnit = 0.5;
-      var stepSize = 20; // pixels
-      var fontSize = 7;
-      // Draw horizontal ruler
-      pb.draw.line({ x: bounds.min.x, y: bounds.max.y + 10 }, { x: bounds.max.x, y: bounds.max.y + 10 }, color, 0.5);
-      var horizontalStepCount = bounds.width / stepSize;
-      for (var i = 0; i < horizontalStepCount; i++) {
-        pb.draw.line(
-          { x: bounds.max.x - i * stepSize, y: bounds.max.y + 10 - 3 },
-          { x: bounds.max.x - i * stepSize, y: bounds.max.y + 10 + 3 },
-          color,
-          0.5
-        );
-        // Draw label?
-        if (i % 2 === 0) {
-          var x = bounds.max.x - i * stepSize; //  - fontSize * 0.25;
-          var y = bounds.max.y + 16;
-          pb.fill.text(Number(i * stepSize * mmPerUnit).toFixed(0) + "mm", x, y, {
-            color: color,
-            fontSize: fontSize,
-            textAlign: "right",
-            rotation: -Math.PI / 4
-          });
-        }
-      }
-    };
-
-    var drawVerticalRuler = function () {
-      // Draw the ruler.
-      // console.log("Post draw");
-      var bounds = outline.getBounds();
-      var color = "rgba(0,128,192,0.5)";
-      var mmPerUnit = 0.5;
-      var stepSize = 20; // pixels
-      var fontSize = 7;
-      // Draw vertical ruler
-      pb.draw.line({ x: bounds.max.x + 10, y: bounds.min.y }, { x: bounds.max.x + 10, y: bounds.max.y }, color, 0.5);
-      var verticalStepCount = bounds.height / stepSize;
-      for (var i = 0; i < verticalStepCount; i++) {
-        pb.draw.line(
-          { x: bounds.max.x + 10 - 3, y: bounds.max.y - i * stepSize },
-          { x: bounds.max.x + 10 + 3, y: bounds.max.y - i * stepSize },
-          color,
-          0.5
-        );
-        // Draw label?
-        if (i % 2 === 0) {
-          pb.fill.text(
-            Number(i * stepSize * mmPerUnit).toFixed(0) + "mm",
-            bounds.max.x + 16,
-            bounds.max.y - i * stepSize + fontSize * 0.25,
-            { color: color, fontSize: fontSize }
-          );
-        }
-      }
-    };
-
-    var drawResizeHandleLines = function () {
-      var bounds = outline.getBounds();
-      if (bezierResizer.verticalResizeHandleDragStartPosition) {
-        // TODO: draw a dashed line? : )
-        pb.draw.line(
-          { x: bounds.min.x, y: bezierResizer.verticalResizeHandle.y },
-          { x: bounds.max.x, y: bezierResizer.verticalResizeHandle.y },
-          "rgba(128,128,128,0.5)",
-          1.0
-        );
-      }
-      if (bezierResizer.horizontalResizeHandleDragStartPosition) {
-        // TODO: draw a dashed line? : )
-        pb.draw.line(
-          { x: bezierResizer.horizontalResizeHandle.x, y: bounds.min.y },
-          { x: bezierResizer.horizontalResizeHandle.x, y: bounds.max.y },
-          "rgba(128,128,128,0.5)",
-          1.0
-        );
-      }
+      Rulers.drawVerticalRuler(pb, outline);
+      Rulers.drawHorizontalRuler(pb, outline);
     };
 
     // +---------------------------------------------------------------------------------
@@ -482,14 +403,14 @@
     // | Set the new path instance and install a Bézier interaction helper.
     // +-------------------------------
     var setPathInstance = function (newOutline) {
-      console.log("Set path instance");
-      if (typeof outline != "undefined") {
+      if (outline && typeof outline !== "undefined") {
+        removePathListeners(outline);
         pb.removeAll(false); // Do not keep vertices
       }
       outline = newOutline;
       updatePathResizer();
       addPathListeners(outline);
-      pb.add(newOutline);
+      pb.add(newOutline, false);
 
       // Install a Bézier interaction helper.
       new BezierPathInteractionHelper(pb, [outline], {
@@ -505,27 +426,24 @@
           }
         },
         onVertexInserted: function (pathIndex, insertAfterIndex, newPath, oldPath) {
-          console.log("[pathIndex=" + pathIndex + "] Vertex inserted after " + insertAfterIndex);
-          console.log("oldPath", oldPath, "newPath", newPath);
-          removePathListeners(outline);
-          outline = newPath;
-          updatePathResizer();
-          addPathListeners(outline);
+          // console.log("[pathIndex=" + pathIndex + "] Vertex inserted after " + insertAfterIndex);
+          // console.log("oldPath", oldPath, "newPath", newPath);
+          setPathInstance(newPath);
           rebuild();
         },
         onVerticesDeleted: function (pathIndex, deletedVertIndices, newPath, oldPath) {
-          console.log("[pathIndex=" + pathIndex + "] vertices deleted", deletedVertIndices);
-          removePathListeners(outline);
-          outline = newPath;
-          updatePathResizer();
-          addPathListeners(outline);
+          // console.log("[pathIndex=" + pathIndex + "] vertices deleted", deletedVertIndices);
+          setPathInstance(newPath);
           rebuild();
         }
       });
     }; // END setPathInstance
 
-    var setDefaultPathInstance = function () {
+    var setDefaultPathInstance = function (doRebuild) {
       setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
+      if (doRebuild) {
+        rebuild();
+      }
     };
 
     // +---------------------------------------------------------------------------------
@@ -557,7 +475,7 @@
       }
     } else {
       // setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
-      setDefaultPathInstance();
+      setDefaultPathInstance(false);
     }
 
     // +---------------------------------------------------------------------------------
@@ -566,12 +484,12 @@
     // +-------------------------------
     var configIO = new ngdg.ConfigIO(document.getElementsByTagName("body")[0]);
     configIO.onPathDropped(function (jsonString) {
-      console.log("json string loaded by drop", jsonString);
+      // console.log("json string loaded by drop", jsonString);
       loadPathJSON(jsonString);
     });
     configIO.onPathRestored(
       function (jsonString) {
-        console.log("json string loaded from storage", jsonString);
+        // console.log("json string loaded from storage", jsonString);
         if (!GUP.rbdata) {
           loadPathJSON(jsonString);
         }
@@ -694,5 +612,11 @@
       var scaledBounds = scaleBounds(outline.getBounds(), 1.6);
       pb.fitToView(scaledBounds);
     });
+
+    // Add action buttons
+    // prettier-ignore
+    ActionButtons.addNewButton(function() { setDefaultPathInstance(true); acquireOptimalPathView() });
+    // prettier-ignore
+    ActionButtons.addFitToViewButton( acquireOptimalPathView );
   });
 })(window);

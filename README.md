@@ -38,6 +38,17 @@ Because 3d printing, web 3d, and dildos are fun.
 
 ### Changelog
 
+- 2021-12-03
+  - Refactored the code for resizing the path.
+  - Upadted to plotboilerplate@1.14.0.
+  - Refactored the code to draw rulers into a separate file.
+  - Added action buttons for quickly start over with a new model, and to scale the view to best screen fit.
+  - Can restore older models from localstorage now. Models are saved in a 10 second interval.
+- 2021-12-01 (World AIDS day)
+  - Refactored the resize handles into a new helper class: BezierResizeHelper.
+  - Added basic localstorage support to the ConfigIO class.
+- 2021-11-30
+  - Added resize handles to vertically and horizontally resize the model (path).
 - 2012-11-12
   - Added basic rulers to the 2d canvas.
   - Fixed the broken scale-to-best-fit function.
