@@ -52,6 +52,13 @@
         GUP
       )
     );
+    pb.drawConfig.bezier.color = "#000000";
+    pb.drawConfig.bezier.lineWidth = 2.0;
+    pb.drawConfig.bezier.handleLine.color = "rgba(0,0,0,0.35)";
+    pb.drawConfig.bezier.pathVertex.color = "#B400FF";
+    pb.drawConfig.bezier.pathVertex.fill = true;
+    pb.drawConfig.bezier.controlVertex.color = "#B8D438";
+    pb.drawConfig.bezier.controlVertex.fill = true;
 
     var bezierDistanceT = 0;
     var bezierDistanceLine = null;
@@ -104,6 +111,7 @@
         addPrecalculatedHollowFaces: false,
         addRawIntersectionTriangleMesh: false,
         addPrecalculatedShapeOutlines: false,
+        bezierFillColor: "rgba(0,0,0,0.15)",
         // Functions
         exportSTL: function () {
           exportSTL();
@@ -113,6 +121,12 @@
         },
         insertPathJSON: function () {
           insertPathJSON();
+        },
+        acquireOptimalPathView: function () {
+          acquireOptimalPathView();
+        },
+        setDefaultPathJSON: function () {
+          setDefaultPathInstance(true);
         }
       },
       GUP
@@ -120,10 +134,10 @@
 
     var dildoGeneration = new ngdg.DildoGeneration("dildo-canvas", {
       makeOrbitControls: function (camera, domElement) {
-        // console.l
         return new THREE.OrbitControls(camera, domElement);
       }
     });
+
     var modal = new Modal();
 
     // +---------------------------------------------------------------------------------
@@ -164,6 +178,7 @@
         console.error(e);
         modal.setBody("Error: " + e);
         modal.setActions([Modal.ACTION_CLOSE]);
+        modal.open();
       }
     };
 
@@ -197,9 +212,18 @@
     };
 
     var loadPathJSON = function (jsonData) {
-      var newOutline = BezierPath.fromJSON(jsonData);
-      setPathInstance(newOutline);
-      rebuild();
+      var newOutline = null;
+      try {
+        newOutline = BezierPath.fromJSON(jsonData);
+      } catch (e) {
+        console.log("Error parsing JSON path:", e.getMessage());
+      } finally {
+        if (newOutline) {
+          setPathInstance(newOutline);
+          acquireOptimalPathView();
+          rebuild();
+        }
+      }
     };
 
     // +---------------------------------------------------------------------------------
@@ -208,11 +232,16 @@
     // +-------------------------------
     var buildId = null;
     var rebuild = function () {
+      // if (typeof outline === "undefined" || typeof dildoGeneration === "undefined") {
+      //   // Not yet fully initialized.
+      //   console.log("Not yet fully initialized.");
+      //   return;
+      // }
       buildId = new Date().getTime();
       window.setTimeout(
         (function (bId) {
           return function () {
-            if (bId == buildId) {
+            if (bId === buildId) {
               if (config.useBumpmap && ImageStore.isImageLoaded(bumpmapRasterImage)) {
                 // Resize the bumpmap to satisfy the mesh resolution.
                 bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.shapeSegmentCount, config.outlineSegmentCount);
@@ -286,17 +315,28 @@
       for (var i = 0; i < pathSteps; i++) {
         polyline.push(outline.getPointAt(i / pathSteps));
       }
-      pb.fill.polyline(polyline, false, "rgba(0,0,0,0.25)");
+      pb.fill.polyline(polyline, false, config.bezierFillColor);
     };
 
     // +---------------------------------------------------------------------------------
     // | Draw the split-indicator (if split position ready).
     // +-------------------------------
     var postDraw = function () {
+      drawBezierDistanceLine();
+      drawRulers();
+      drawResizeHandleLines(pb, outline, bezierResizer);
+    };
+
+    var drawBezierDistanceLine = function () {
       if (bezierDistanceLine != null) {
         pb.draw.line(bezierDistanceLine.a, bezierDistanceLine.b, "rgb(255,192,0)", 2);
         pb.fill.circleHandle(bezierDistanceLine.a, 3.0, "rgb(255,192,0)");
       }
+    };
+
+    var drawRulers = function () {
+      Rulers.drawVerticalRuler(pb, outline);
+      Rulers.drawHorizontalRuler(pb, outline);
     };
 
     // +---------------------------------------------------------------------------------
@@ -318,17 +358,61 @@
       return new Bounds(new Vertex(bounds.min).scale(scaleFactor, center), new Vertex(bounds.max).scale(scaleFactor, center));
     };
 
+    // +---------------------------------------------------------------------------------
+    // | Scale a given Bounds instance to a new size (from its center).
+    // +-------------------------------
+    var acquireOptimalPathView = function () {
+      // var frameSize = new THREE.Vector2(25, 25);
+      // Just keep a 10% frame to stay clear of the canvas limits.
+      var frameSize = new THREE.Vector2(pb.canvasSize.width * 0.1, pb.canvasSize.height * 0.1);
+
+      // Compute the applicable canvas size, which leaves the passed frame untouched
+      var applicableCanvasWidth = pb.canvasSize.width - frameSize.x * 2;
+      var applicableCanvasHeight = pb.canvasSize.height - frameSize.y * 2;
+
+      // Move center of bezier polygon to (0,0)
+      var bounds = outline.getBounds();
+      var ratioX = bounds.width / applicableCanvasWidth;
+      var ratioY = bounds.height / applicableCanvasHeight;
+
+      // The minimal match (width or height) is our choice.
+      var newZoomFactor = Math.min(1.0 / ratioX, 1.0 / ratioY);
+      pb.setZoom(newZoomFactor, newZoomFactor, { x: 0, y: 0 });
+
+      // Set the draw offset position
+      var drawOffsetX = frameSize.x + applicableCanvasWidth / 2.0 - (bounds.min.x + bounds.width / 2) * newZoomFactor;
+      var drawOffsetY = frameSize.y + applicableCanvasHeight / 2.0 - (bounds.min.y + bounds.height / 2) * newZoomFactor;
+
+      pb.setOffset({ x: drawOffsetX, y: drawOffsetY });
+
+      // Don't forget to redraw
+      pb.redraw();
+    };
+
+    var updatePathResizer = function () {
+      if (bezierResizer) {
+        pb.remove([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
+        bezierResizer.destroy();
+        bezierResizer = null;
+      }
+      bezierResizer = new BezierResizeHelper(pb, outline, rebuild);
+      pb.add([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
+    };
+
+    // +---------------------------------------------------------------------------------
+    // | Set the new path instance and install a Bézier interaction helper.
+    // +-------------------------------
     var setPathInstance = function (newOutline) {
-      if (typeof outline != "undefined") {
+      if (outline && typeof outline !== "undefined") {
+        removePathListeners(outline);
         pb.removeAll(false); // Do not keep vertices
       }
       outline = newOutline;
+      updatePathResizer();
       addPathListeners(outline);
-      pb.add(newOutline);
+      pb.add(newOutline, false);
 
-      // +---------------------------------------------------------------------------------
-      // | Install a Bézier interaction helper.
-      // +-------------------------------
+      // Install a Bézier interaction helper.
       new BezierPathInteractionHelper(pb, [outline], {
         maxDetectDistance: 32.0,
         autoAdjustPaths: true,
@@ -342,30 +426,78 @@
           }
         },
         onVertexInserted: function (pathIndex, insertAfterIndex, newPath, oldPath) {
-          console.log("[pathIndex=" + pathIndex + "] Vertex inserted after " + insertAfterIndex);
-          console.log("oldPath", oldPath, "newPath", newPath);
-          removePathListeners(outline);
-          outline = newPath;
-          addPathListeners(outline);
+          // console.log("[pathIndex=" + pathIndex + "] Vertex inserted after " + insertAfterIndex);
+          // console.log("oldPath", oldPath, "newPath", newPath);
+          setPathInstance(newPath);
           rebuild();
         },
         onVerticesDeleted: function (pathIndex, deletedVertIndices, newPath, oldPath) {
-          console.log("[pathIndex=" + pathIndex + "] vertices deleted", deletedVertIndices);
-          removePathListeners(outline);
-          outline = newPath;
-          addPathListeners(outline);
+          // console.log("[pathIndex=" + pathIndex + "] vertices deleted", deletedVertIndices);
+          setPathInstance(newPath);
           rebuild();
         }
       });
     }; // END setPathInstance
+
+    var setDefaultPathInstance = function (doRebuild) {
+      setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
+      if (doRebuild) {
+        rebuild();
+      }
+    };
+
+    // +---------------------------------------------------------------------------------
+    // | Create the bezier resize helper.
+    // +-------------------------------
+    var bezierResizer = null;
 
     // +---------------------------------------------------------------------------------
     // | Create the outline: a Bézier path.
     // +-------------------------------
     var outline = null;
     // This will trigger the first initial postDraw/draw/redraw call
-    // console.log("DEFAULT_BEZIER_JSON", window.ngdg, ngdg.DEFAULT_BEZIER_JSON);
-    setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
+    // setPathInstance(BezierPath.fromJSON(initialPathJSON));
+    if (GUP.rbdata) {
+      // If you need some test data:
+      //    this seems to be the most favourite dildo shape regarding the ranking on Google (2021-10-12)
+      //    (plus bendAngle=23.0)
+      // [-58.5,243,-59.2,200,-12,217,6.3,196,23.3,176.6,38.7,113,-4.6,76.2,-69.8,20.9,6.2,-65.1,-5.7,-112.6,-30.8,-213,35.4,-243,58.5,-243]
+      if (!GUP.rbdata.endsWith("]")) {
+        GUP.rbdata += "]"; // Twitter hack
+      }
+      try {
+        setPathInstance(BezierPath.fromReducedListRepresentation(GUP.rbdata));
+      } catch (e) {
+        console.error(e);
+        modal.setBody("Your Bézier path data could not be parsed: <pre>" + GUP.rbdata + "</pre>");
+        modal.setActions([Modal.ACTION_CLOSE]);
+        modal.open();
+      }
+    } else {
+      // setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
+      setDefaultPathInstance(false);
+    }
+
+    // +---------------------------------------------------------------------------------
+    // | Load the config from the local storage.
+    // | Handle file drop.
+    // +-------------------------------
+    var configIO = new ngdg.ConfigIO(document.getElementsByTagName("body")[0]);
+    configIO.onPathDropped(function (jsonString) {
+      // console.log("json string loaded by drop", jsonString);
+      loadPathJSON(jsonString);
+    });
+    configIO.onPathRestored(
+      function (jsonString) {
+        // console.log("json string loaded from storage", jsonString);
+        if (!GUP.rbdata) {
+          loadPathJSON(jsonString);
+        }
+      },
+      function () {
+        return outline ? outline.toJSON() : null;
+      }
+    );
 
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
@@ -376,90 +508,99 @@
       var gui = pb.createGUI(); // { autoPlace: false });
       gui.domElement.id = "gui";
 
-      var fold0 = gui.addFolder("Mesh");
+      var fold0 = gui.addFolder("Path");
       // prettier-ignore
-      fold0.add(config, "outlineSegmentCount").min(3).max(512).onChange( function() { rebuild() } ).name('outlineSegmentCount').title('The number of segments on the outline.');
-      // prettier-ignore
-      fold0.add(config, "shapeSegmentCount").min(3).max(256).onChange( function() { rebuild() } ).name('shapeSegmentCount').title('The number of segments on the shape.');
-      // prettier-ignore
-      fold0.add(config, "bendAngle").min(0).max(180).onChange( function() { rebuild() } ).name('bendAngle').title('The bending angle in degrees.');
-      // prettier-ignore
-      fold0.add(config, "twistAngle").min(-360.0*3).max(360.0*3).onChange( function() { rebuild() } ).name('twistAngle').title('Twist the mesh along its spine.');
-      // prettier-ignore
-      fold0.add(config, "baseShapeExcentricity").min(0.1).max(2.0).onChange( function() { rebuild() } ).name('baseShapeExcentricity').title('Make the base shape more elliptic.');
-      // prettier-ignore
-      fold0.add(config, "closeTop").onChange( function() { rebuild() } ).name('closeTop').title('Close the geometry at the top point (recommended).');
-      // prettier-ignore
-      fold0.add(config, "closeBottom").onChange( function() { rebuild() } ).name('closeBottom').title('Close the geometry at the bottom point.');
-      // prettier-ignore
-      fold0.add(config, "useBumpmap").onChange( function() { rebuild() } ).name('useBumpmap').title('Check wether the mesh should use a bumpmap.');
-      // prettier-ignore
-      fold0.add(config, "bumpmapStrength").min(0.0).max(20.0).onChange( function() { rebuild() } ).name('bumpmapStrength').title('How strong should the bumpmap be applied.');
+      fold0.add( config, "acquireOptimalPathView" );
 
-      var fold1 = gui.addFolder("Hollow");
+      var fold1 = gui.addFolder("Mesh");
       // prettier-ignore
-      fold1.add(config, "makeHollow").onChange( function() { rebuild() } ).name('makeHollow').title('Make a hollow mold?');
+      fold1.add(config, "outlineSegmentCount").min(3).max(512).onChange( function() { rebuild() } ).name('outlineSegmentCount').title('The number of segments on the outline.');
       // prettier-ignore
-      fold1.add(config, "normalsLength").min(1.0).max(50.0).onChange( function() { rebuild() } ).name('normalsLength').title('The length of rendered normals.');
+      fold1.add(config, "shapeSegmentCount").min(3).max(256).onChange( function() { rebuild() } ).name('shapeSegmentCount').title('The number of segments on the shape.');
       // prettier-ignore
-      fold1.add(config, "hollowStrengthX").min(0.0).max(50.0).onChange( function() { rebuild() } ).name('hollowStrengthX').title('How thick make the walls?');
+      fold1.add(config, "bendAngle").min(0).max(180).onChange( function() { rebuild() } ).name('bendAngle').title('The bending angle in degrees.');
       // prettier-ignore
-      fold1.add(config, "normalizePerpendiculars").onChange( function() { rebuild() } ).name('normalizePerpendiculars').title('Normalize the XZ perpendiculars (recommended).');
+      fold1.add(config, "twistAngle").min(-360.0*3).max(360.0*3).onChange( function() { rebuild() } ).name('twistAngle').title('Twist the mesh along its spine.');
+      // prettier-ignore
+      fold1.add(config, "baseShapeExcentricity").min(0.1).max(2.0).onChange( function() { rebuild() } ).name('baseShapeExcentricity').title('Make the base shape more elliptic.');
+      // prettier-ignore
+      fold1.add(config, "closeTop").onChange( function() { rebuild() } ).name('closeTop').title('Close the geometry at the top point (recommended).');
+      // prettier-ignore
+      fold1.add(config, "closeBottom").onChange( function() { rebuild() } ).name('closeBottom').title('Close the geometry at the bottom point.');
+      // prettier-ignore
+      // fold0.add(config, "useBumpmap").onChange( function() { rebuild() } ).name('useBumpmap').title('Check wether the mesh should use a bumpmap.');
+      // prettier-ignore
+      // fold0.add(config, "bumpmapStrength").min(0.0).max(20.0).onChange( function() { rebuild() } ).name('bumpmapStrength').title('How strong should the bumpmap be applied.');
 
-      var fold2 = gui.addFolder("Slice");
+      var fold2 = gui.addFolder("Hollow");
       // prettier-ignore
-      fold2.add(config, "performSlice").onChange( function() { rebuild() } ).name('performSlice').title('Slice the model along the x axis?');
+      fold2.add(config, "makeHollow").onChange( function() { rebuild() } ).name('makeHollow').title('Make a hollow mold?');
       // prettier-ignore
-      fold2.add(config, "closeCutAreas").onChange( function() { rebuild() } ).name('closeCutAreas').title('Close the open cut areas on the split.');
+      fold2.add(config, "normalsLength").min(1.0).max(50.0).onChange( function() { rebuild() } ).name('normalsLength').title('The length of rendered normals.');
+      // prettier-ignore
+      fold2.add(config, "hollowStrengthX").min(0.0).max(50.0).onChange( function() { rebuild() } ).name('hollowStrengthX').title('How thick make the walls?');
+      // prettier-ignore
+      fold2.add(config, "normalizePerpendiculars").onChange( function() { rebuild() } ).name('normalizePerpendiculars').title('Normalize the XZ perpendiculars (recommended).');
 
-      var fold3 = gui.addFolder("Render Settings");
+      var fold3 = gui.addFolder("Slice");
       // prettier-ignore
-      fold3.add(config, "wireframe").onChange( function() { rebuild() } ).name('wireframe').title('Display the mesh as a wireframe model?');
+      fold3.add(config, "performSlice").onChange( function() { rebuild() } ).name('performSlice').title('Slice the model along the x axis?');
       // prettier-ignore
-      fold3.add(config, "useTextureImage").onChange( function() { rebuild() } ).name('useTextureImage').title('Use a texture image?');
+      fold3.add(config, "closeCutAreas").onChange( function() { rebuild() } ).name('closeCutAreas').title('Close the open cut areas on the split.');
+
+      var fold4 = gui.addFolder("Render Settings");
+      // prettier-ignore
+      fold4.add(config, "wireframe").onChange( function() { rebuild() } ).name('wireframe').title('Display the mesh as a wireframe model?');
+      // prettier-ignore
+      fold4.add(config, "useTextureImage").onChange( function() { rebuild() } ).name('useTextureImage').title('Use a texture image?');
       // TODO: implement this in a proper next step (bumpmapping is still buggy)
       // // prettier-ignore
       // fold3.add(config, "showBumpmapTargets").onChange( function() { rebuild() } ).name('showBumpmapTargets').title('Show the bumpmap maximal lerping hull.');
       // // prettier-ignore
       // fold3.add(config, "showBumpmapImage").onChange( function() { rebuild() } ).name('showBumpmapImage').title('Check if you want to see a preview of the bumpmap image.');
       // prettier-ignore
-      fold3.add(config, "renderFaces", ["double","front","back"]).onChange( function() { rebuild() } ).name('renderFaces').title('Render mesh faces double or single sided?');
+      fold4.add(config, "renderFaces", ["double","front","back"]).onChange( function() { rebuild() } ).name('renderFaces').title('Render mesh faces double or single sided?');
       // prettier-ignore
-      fold3.add(config, "showNormals").onChange( function() { rebuild() } ).name('showNormals').title('Show the vertex normals.');
+      fold4.add(config, "showNormals").onChange( function() { rebuild() } ).name('showNormals').title('Show the vertex normals.');
       // prettier-ignore
-      fold3.add(config, "showBasicPerpendiculars").onChange( function() { rebuild() } ).name('showBasicPerpendiculars').title('Show the meshes perpendicular on the XZ plane.');
+      fold4.add(config, "showBasicPerpendiculars").onChange( function() { rebuild() } ).name('showBasicPerpendiculars').title('Show the meshes perpendicular on the XZ plane.');
       // prettier-ignore
-      fold3.add(config, "addSpine").onChange( function() { rebuild() } ).name('addSpine').title("Add the model's spine?");
+      fold4.add(config, "addSpine").onChange( function() { rebuild() } ).name('addSpine').title("Add the model's spine?");
       // prettier-ignore
-      fold3.add(config, "addPrecalculatedMassiveFaces").onChange( function() { rebuild() } ).name('addPrecalculatedMassiveFaces').title("Add a pre-calculated massive intersection fill?");
+      fold4.add(config, "addPrecalculatedMassiveFaces").onChange( function() { rebuild() } ).name('addPrecalculatedMassiveFaces').title("Add a pre-calculated massive intersection fill?");
       // prettier-ignore
-      fold3.add(config, "addPrecalculatedHollowFaces").onChange( function() { rebuild() } ).name('addPrecalculatedHollowFaces').title("Add a pre-calculated hollow intersection fill?");
+      fold4.add(config, "addPrecalculatedHollowFaces").onChange( function() { rebuild() } ).name('addPrecalculatedHollowFaces').title("Add a pre-calculated hollow intersection fill?");
       // prettier-ignore
-      fold3.add(config, "showSplitPane").onChange( function() { rebuild() } ).name('showSplitPane').title('Show split pane.');
+      fold4.add(config, "showSplitPane").onChange( function() { rebuild() } ).name('showSplitPane').title('Show split pane.');
       // prettier-ignore
-      fold3.add(config, "showLeftSplit").onChange( function() { rebuild() } ).name('showLeftSplit').title('Show left split.');
+      fold4.add(config, "showLeftSplit").onChange( function() { rebuild() } ).name('showLeftSplit').title('Show left split.');
       // prettier-ignore
-      fold3.add(config, "showRightSplit").onChange( function() { rebuild() } ).name('showRightSplit').title('Show right split.');
+      fold4.add(config, "showRightSplit").onChange( function() { rebuild() } ).name('showRightSplit').title('Show right split.');
       // prettier-ignore
-      fold3.add(config, "showSplitShape").onChange( function() { rebuild() } ).name('showSplitShape').title('Show split shape.');
+      fold4.add(config, "showSplitShape").onChange( function() { rebuild() } ).name('showSplitShape').title('Show split shape.');
       // prettier-ignore
-      fold3.add(config, "showSplitShapeTriangulation").onChange( function() { rebuild() } ).name('showSplitShapeTriangulation').title('Show split shape triangulation?');
+      fold4.add(config, "showSplitShapeTriangulation").onChange( function() { rebuild() } ).name('showSplitShapeTriangulation').title('Show split shape triangulation?');
       // prettier-ignore
-      fold3.add(config, "addRawIntersectionTriangleMesh").onChange( function() { rebuild() } ).name('addRawIntersectionTriangleMesh').title('Show raw unoptimized split face triangulation?');
+      fold4.add(config, "addRawIntersectionTriangleMesh").onChange( function() { rebuild() } ).name('addRawIntersectionTriangleMesh').title('Show raw unoptimized split face triangulation?');
       // prettier-ignore
-      fold3.add(config, "addPrecalculatedShapeOutlines").onChange( function() { rebuild() } ).name('addPrecalculatedShapeOutlines').title('Show raw unoptimized split shape outline(s)?');
+      fold4.add(config, "addPrecalculatedShapeOutlines").onChange( function() { rebuild() } ).name('addPrecalculatedShapeOutlines').title('Show raw unoptimized split shape outline(s)?');
 
-      var fold4 = gui.addFolder("Export");
+      var fold5 = gui.addFolder("Export");
       // prettier-ignore
-      fold4.add(config, "exportSTL").name('STL').title('Export an STL file.');
+      fold5.add(config, "exportSTL").name('STL').title('Export an STL file.');
       // prettier-ignore
-      fold4.add(config, "showPathJSON").name('Show Path JSON ...').title('Show the path data.');
+      fold5.add(config, "showPathJSON").name('Show Path JSON ...').title('Show the path data.');
 
-      var fold5 = gui.addFolder("Import");
+      var fold6 = gui.addFolder("Import");
       // prettier-ignore
-      fold5.add(config, "insertPathJSON").name('Insert Path JSON ...').title('Insert path data as JSON.');
+      fold6.add(config, "insertPathJSON").name('Insert Path JSON ...').title('Insert path data as JSON.');
+      // prettier-ignore
+      fold6.add(config, "setDefaultPathJSON").name('Load default Path JSON ...').title('Load the pre-configured default path JSON.');
 
       fold2.open();
+      if (!GUP.openGui) {
+        gui.close();
+      }
     }
 
     pb.config.preDraw = preDraw;
@@ -471,5 +612,11 @@
       var scaledBounds = scaleBounds(outline.getBounds(), 1.6);
       pb.fitToView(scaledBounds);
     });
+
+    // Add action buttons
+    // prettier-ignore
+    ActionButtons.addNewButton(function() { setDefaultPathInstance(true); acquireOptimalPathView() });
+    // prettier-ignore
+    ActionButtons.addFitToViewButton( acquireOptimalPathView );
   });
 })(window);

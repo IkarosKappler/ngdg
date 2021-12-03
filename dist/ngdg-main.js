@@ -2,613 +2,6 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "../earcut-typescript/src/cjs/earcut.js":
-/*!**********************************************!*\
-  !*** ../earcut-typescript/src/cjs/earcut.js ***!
-  \**********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-
-// Original algorithm by https://github.com/mapbox/earcut
-//
-// Ported to TypeScript by Ikaros Kappler
-// @date 2020-12-08
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.earcut = void 0;
-;
-exports.earcut = (function () {
-    /**
-     * Nodes of a linked list, each node representing a vertex of a ring (a polygon).
-     */
-    var Node = /** @class */ (function () {
-        function Node(i, x, y) {
-            // vertex index in coordinates array
-            this.i = i;
-            // vertex coordinates
-            this.x = x;
-            this.y = y;
-            // previous and next vertex nodes in a polygon ring
-            this.prev = null;
-            this.next = null;
-            // z-order curve value
-            this.z = null;
-            // previous and next nodes in z-order
-            this.prevZ = null;
-            this.nextZ = null;
-            // indicates whether this is a steiner point
-            this.steiner = false;
-        }
-        return Node;
-    }());
-    ;
-    var earcut = function (data, holeIndices, dim) {
-        if (dim === void 0) { dim = 2; }
-        dim = dim || 2;
-        var hasHoles = holeIndices && holeIndices.length > 0;
-        var outerLen = hasHoles ? holeIndices[0] * dim : data.length;
-        var outerNode = linkedList(data, 0, outerLen, dim, true);
-        var triangles = []; // [t0a, t0b, t0c,  t1a, t2a, t3a, ... ]
-        if (!outerNode || outerNode.next === outerNode.prev)
-            return triangles;
-        var minX;
-        var minY;
-        var maxX;
-        var maxY;
-        var x;
-        var y;
-        var invSize;
-        if (hasHoles) {
-            outerNode = eliminateHoles(data, holeIndices, outerNode, dim);
-        }
-        // if the shape is not too simple, we'll use z-order curve hash later; calculate polygon bbox
-        // TODO: use Bounds class for calculation?
-        if (data.length > 80 * dim) {
-            minX = maxX = data[0];
-            minY = maxY = data[1];
-            for (var i = dim; i < outerLen; i += dim) {
-                x = data[i];
-                y = data[i + 1];
-                if (x < minX)
-                    minX = x;
-                if (y < minY)
-                    minY = y;
-                if (x > maxX)
-                    maxX = x;
-                if (y > maxY)
-                    maxY = y;
-            }
-            // minX, minY and invSize are later used to transform coords into integers for z-order calculation
-            invSize = Math.max(maxX - minX, maxY - minY);
-            invSize = invSize !== 0 ? 1 / invSize : 0;
-        }
-        earcutLinked(outerNode, triangles, dim, minX, minY, invSize);
-        return triangles;
-    };
-    // create a circular doubly linked list from polygon points in the specified winding order
-    var linkedList = function (data, start, end, dim, clockwise) {
-        var i;
-        var last;
-        if (clockwise === (signedArea(data, start, end, dim) > 0)) {
-            for (i = start; i < end; i += dim) {
-                last = insertNode(i, data[i], data[i + 1], last);
-            }
-        }
-        else {
-            for (i = end - dim; i >= start; i -= dim) {
-                last = insertNode(i, data[i], data[i + 1], last);
-            }
-        }
-        if (last && equals(last, last.next)) {
-            removeNode(last);
-            last = last.next;
-        }
-        return last;
-    };
-    // eliminate colinear or duplicate points
-    var filterPoints = function (start, end) {
-        if (!start)
-            return start;
-        if (!end)
-            end = start;
-        // Remember starting node
-        var p = start;
-        var again = false;
-        do {
-            // TODO: move into 'else' branch?
-            again = false;
-            if (!p.steiner && (equals(p, p.next) || area(p.prev, p, p.next) === 0)) {
-                removeNode(p);
-                p = end = p.prev;
-                if (p === p.next)
-                    break;
-                again = true;
-            }
-            else {
-                p = p.next;
-            }
-        } while (again || p !== end);
-        return end;
-    };
-    // main ear slicing loop which triangulates a polygon (given as a linked list)
-    var earcutLinked = function (ear, triangles, dim, minX, minY, invSize, pass) {
-        if (!ear)
-            return;
-        // interlink polygon nodes in z-order
-        if (!pass && invSize) {
-            indexCurve(ear, minX, minY, invSize);
-        }
-        var stop = ear;
-        var prev;
-        var next;
-        // iterate through ears, slicing them one by one
-        while (ear.prev !== ear.next) {
-            prev = ear.prev;
-            next = ear.next;
-            if (invSize ? isEarHashed(ear, minX, minY, invSize) : isEar(ear)) {
-                // cut off the triangle
-                triangles.push(prev.i / dim);
-                triangles.push(ear.i / dim);
-                triangles.push(next.i / dim);
-                removeNode(ear);
-                // skipping the next vertex leads to less sliver triangles
-                ear = next.next;
-                stop = next.next;
-                continue;
-            }
-            ear = next;
-            // if we looped through the whole remaining polygon and can't find any more ears
-            if (ear === stop) {
-                // try filtering points and slicing again
-                if (!pass) {
-                    earcutLinked(filterPoints(ear), triangles, dim, minX, minY, invSize, 1);
-                    // if this didn't work, try curing all small self-intersections locally
-                }
-                else if (pass === 1) {
-                    ear = cureLocalIntersections(filterPoints(ear), triangles, dim);
-                    earcutLinked(ear, triangles, dim, minX, minY, invSize, 2);
-                    // as a last resort, try splitting the remaining polygon into two
-                }
-                else if (pass === 2) {
-                    splitEarcut(ear, triangles, dim, minX, minY, invSize);
-                }
-                break;
-            }
-        }
-    }; // END earcutLinked
-    // check whether a polygon node forms a valid ear with adjacent nodes
-    var isEar = function (ear) {
-        var a = ear.prev;
-        var b = ear;
-        var c = ear.next;
-        if (area(a, b, c) >= 0)
-            return false; // reflex, can't be an ear
-        // now make sure we don't have other points inside the potential ear
-        var p = ear.next.next;
-        while (p !== ear.prev) {
-            if (pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
-                area(p.prev, p, p.next) >= 0)
-                return false;
-            p = p.next;
-        }
-        return true;
-    };
-    var isEarHashed = function (ear, minX, minY, invSize) {
-        var a = ear.prev;
-        var b = ear;
-        var c = ear.next;
-        if (area(a, b, c) >= 0)
-            return false; // reflex, can't be an ear
-        // triangle bbox; min & max are calculated like this for speed
-        // TODO: use Triangle.bounds
-        var minTX = a.x < b.x ? (a.x < c.x ? a.x : c.x) : (b.x < c.x ? b.x : c.x), minTY = a.y < b.y ? (a.y < c.y ? a.y : c.y) : (b.y < c.y ? b.y : c.y), maxTX = a.x > b.x ? (a.x > c.x ? a.x : c.x) : (b.x > c.x ? b.x : c.x), maxTY = a.y > b.y ? (a.y > c.y ? a.y : c.y) : (b.y > c.y ? b.y : c.y);
-        // z-order range for the current triangle bbox;
-        var minZ = zOrder(minTX, minTY, minX, minY, invSize), maxZ = zOrder(maxTX, maxTY, minX, minY, invSize);
-        var p = ear.prevZ, n = ear.nextZ;
-        // look for points inside the triangle in both directions
-        while (p && p.z >= minZ && n && n.z <= maxZ) {
-            if (p !== ear.prev && p !== ear.next &&
-                // TODO: use Triangle.utils.pointIsInTriangle
-                pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
-                area(p.prev, p, p.next) >= 0)
-                return false;
-            p = p.prevZ;
-            if (n !== ear.prev && n !== ear.next &&
-                // TODO: use Triangle.utils.pointIsInTriangle
-                pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) &&
-                area(n.prev, n, n.next) >= 0)
-                return false;
-            n = n.nextZ;
-        }
-        // look for remaining points in decreasing z-order
-        while (p && p.z >= minZ) {
-            if (p !== ear.prev && p !== ear.next &&
-                // TODO: use Triangle.utils.pointIsInTriangle
-                pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
-                area(p.prev, p, p.next) >= 0)
-                return false;
-            p = p.prevZ;
-        }
-        // look for remaining points in increasing z-order
-        while (n && n.z <= maxZ) {
-            if (n !== ear.prev && n !== ear.next &&
-                // TODO: use Triangle.utils.pointIsInTriangle
-                pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) &&
-                area(n.prev, n, n.next) >= 0)
-                return false;
-            n = n.nextZ;
-        }
-        return true;
-    };
-    // go through all polygon nodes and cure small local self-intersections
-    var cureLocalIntersections = function (start, triangles, dim) {
-        var p = start;
-        do {
-            var a = p.prev;
-            var b = p.next.next;
-            if (!equals(a, b) && intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
-                triangles.push(a.i / dim);
-                triangles.push(p.i / dim);
-                triangles.push(b.i / dim);
-                // remove two nodes involved
-                removeNode(p);
-                removeNode(p.next);
-                p = start = b;
-            }
-            p = p.next;
-        } while (p !== start);
-        return filterPoints(p);
-    };
-    // try splitting polygon into two and triangulate them independently
-    var splitEarcut = function (start, triangles, dim, minX, minY, invSize) {
-        // look for a valid diagonal that divides the polygon into two
-        var a = start;
-        do {
-            var b = a.next.next;
-            while (b !== a.prev) {
-                if (a.i !== b.i && isValidDiagonal(a, b)) {
-                    // split the polygon in two by the diagonal
-                    var c = splitPolygon(a, b);
-                    // filter colinear points around the cuts
-                    a = filterPoints(a, a.next);
-                    c = filterPoints(c, c.next);
-                    // run earcut on each half
-                    earcutLinked(a, triangles, dim, minX, minY, invSize);
-                    earcutLinked(c, triangles, dim, minX, minY, invSize);
-                    return;
-                }
-                b = b.next;
-            }
-            a = a.next;
-        } while (a !== start);
-    };
-    // link every hole into the outer loop, producing a single-ring polygon without holes
-    var eliminateHoles = function (data, holeIndices, outerNode, dim) {
-        var queue = [];
-        var i;
-        var len = holeIndices.length;
-        var start;
-        var end;
-        var list;
-        for (i = 0; i < len; i++) {
-            start = holeIndices[i] * dim;
-            end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
-            list = linkedList(data, start, end, dim, false);
-            if (list === list.next)
-                list.steiner = true;
-            queue.push(getLeftmost(list));
-        }
-        queue.sort(compareX);
-        // process holes from left to right
-        for (i = 0; i < queue.length; i++) {
-            eliminateHole(queue[i], outerNode);
-            outerNode = filterPoints(outerNode, outerNode.next);
-        }
-        return outerNode;
-    };
-    var compareX = function (a, b) {
-        return a.x - b.x;
-    };
-    // find a bridge between vertices that connects hole with an outer ring and and link it
-    var eliminateHole = function (hole, outerNode) {
-        var bridge = findHoleBridge(hole, outerNode);
-        if (!bridge) {
-            return outerNode;
-        }
-        var bridgeReverse = splitPolygon(bridge, hole);
-        // filter collinear points around the cuts
-        var filteredBridge = filterPoints(bridge, bridge.next);
-        filterPoints(bridgeReverse, bridgeReverse.next);
-        // Check if input node was removed by the filtering
-        return outerNode === bridge ? filteredBridge : outerNode;
-        // }
-    };
-    // David Eberly's algorithm for finding a bridge between hole and outer polygon
-    var findHoleBridge = function (hole, outerNode) {
-        var p = outerNode;
-        var hx = hole.x;
-        var hy = hole.y;
-        var qx = -Infinity;
-        var m;
-        // find a segment intersected by a ray from the hole's leftmost point to the left;
-        // segment's endpoint with lesser x will be potential connection point
-        do {
-            if (hy <= p.y && hy >= p.next.y && p.next.y !== p.y) {
-                var x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
-                if (x <= hx && x > qx) {
-                    qx = x;
-                    if (x === hx) {
-                        if (hy === p.y)
-                            return p;
-                        if (hy === p.next.y)
-                            return p.next;
-                    }
-                    m = p.x < p.next.x ? p : p.next;
-                }
-            }
-            p = p.next;
-        } while (p !== outerNode);
-        if (!m) {
-            return null;
-        }
-        if (hx === qx) {
-            return m; // hole touches outer segment; pick leftmost endpoint
-        }
-        // look for points inside the triangle of hole point, segment intersection and endpoint;
-        // if there are no points found, we have a valid connection;
-        // otherwise choose the point of the minimum angle with the ray as connection point
-        var stop = m;
-        var mx = m.x;
-        var my = m.y;
-        var tanMin = Infinity;
-        var tan;
-        p = m;
-        do {
-            if (hx >= p.x && p.x >= mx && hx !== p.x &&
-                pointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y)) {
-                tan = Math.abs(hy - p.y) / (hx - p.x); // tangential
-                if (locallyInside(p, hole) &&
-                    (tan < tanMin || (tan === tanMin && (p.x > m.x || (p.x === m.x && sectorContainsSector(m, p)))))) {
-                    m = p;
-                    tanMin = tan;
-                }
-            }
-            p = p.next;
-        } while (p !== stop);
-        return m;
-    };
-    // whether sector in vertex m contains sector in vertex p in the same coordinates
-    var sectorContainsSector = function (m, p) {
-        return area(m.prev, m, p.prev) < 0 && area(p.next, m, m.next) < 0;
-    };
-    // interlink polygon nodes in z-order
-    var indexCurve = function (start, minX, minY, invSize) {
-        var p = start;
-        do {
-            if (p.z === null)
-                p.z = zOrder(p.x, p.y, minX, minY, invSize);
-            p.prevZ = p.prev;
-            p.nextZ = p.next;
-            p = p.next;
-        } while (p !== start);
-        p.prevZ.nextZ = null;
-        p.prevZ = null;
-        sortLinked(p);
-    };
-    // Simon Tatham's linked list merge sort algorithm
-    // http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
-    var sortLinked = function (list) {
-        var i;
-        var p;
-        var q;
-        var e;
-        var tail;
-        var numMerges;
-        var pSize;
-        var qSize;
-        var inSize = 1;
-        do {
-            p = list;
-            list = null;
-            tail = null;
-            numMerges = 0;
-            while (p) {
-                numMerges++;
-                q = p;
-                pSize = 0;
-                for (i = 0; i < inSize; i++) {
-                    pSize++;
-                    q = q.nextZ;
-                    if (!q)
-                        break;
-                }
-                qSize = inSize;
-                while (pSize > 0 || (qSize > 0 && q)) {
-                    if (pSize !== 0 && (qSize === 0 || !q || p.z <= q.z)) {
-                        e = p;
-                        p = p.nextZ;
-                        pSize--;
-                    }
-                    else {
-                        e = q;
-                        q = q.nextZ;
-                        qSize--;
-                    }
-                    if (tail)
-                        tail.nextZ = e;
-                    else
-                        list = e;
-                    e.prevZ = tail;
-                    tail = e;
-                }
-                p = q;
-            }
-            tail.nextZ = null;
-            inSize *= 2;
-        } while (numMerges > 1);
-        return list;
-    };
-    // z-order of a point given coords and inverse of the longer side of data bbox
-    var zOrder = function (x, y, minX, minY, invSize) {
-        // coords are transformed into non-negative 15-bit integer range
-        x = 32767 * (x - minX) * invSize;
-        y = 32767 * (y - minY) * invSize;
-        x = (x | (x << 8)) & 0x00FF00FF;
-        x = (x | (x << 4)) & 0x0F0F0F0F;
-        x = (x | (x << 2)) & 0x33333333;
-        x = (x | (x << 1)) & 0x55555555;
-        y = (y | (y << 8)) & 0x00FF00FF;
-        y = (y | (y << 4)) & 0x0F0F0F0F;
-        y = (y | (y << 2)) & 0x33333333;
-        y = (y | (y << 1)) & 0x55555555;
-        return x | (y << 1);
-    };
-    // find the leftmost node of a polygon ring
-    var getLeftmost = function (start) {
-        var p = start;
-        var leftmost = start;
-        do {
-            if (p.x < leftmost.x || (p.x === leftmost.x && p.y < leftmost.y)) {
-                leftmost = p;
-            }
-            p = p.next;
-        } while (p !== start);
-        return leftmost;
-    };
-    // check if a point lies within a convex triangle
-    // TODO: use Triangle.containsPoint
-    var pointInTriangle = function (ax, ay, bx, by, cx, cy, px, py) {
-        return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
-            (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
-            (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0;
-    };
-    // check if a diagonal between two polygon nodes is valid (lies in polygon interior)
-    var isValidDiagonal = function (a, b) {
-        return a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) && // dones't intersect other edges
-            (locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b) && // locally visible
-                (area(a.prev, a, b.prev) != 0 || area(a, b.prev, b)) != 0 || // does not create opposite-facing sectors
-                equals(a, b) && area(a.prev, a, a.next) > 0 && area(b.prev, b, b.next) > 0); // special zero-length case
-    };
-    // signed area of a triangle
-    var area = function (p, q, r) {
-        return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-    };
-    // check if two points are equal
-    // TODO: as member function of vertex
-    var equals = function (p1, p2) {
-        return p1.x === p2.x && p1.y === p2.y;
-    };
-    // check if two segments intersect
-    // TODO: use Line.intersects
-    var intersects = function (p1, q1, p2, q2) {
-        var o1 = sign(area(p1, q1, p2));
-        var o2 = sign(area(p1, q1, q2));
-        var o3 = sign(area(p2, q2, p1));
-        var o4 = sign(area(p2, q2, q1));
-        if (o1 !== o2 && o3 !== o4)
-            return true; // general case
-        if (o1 === 0 && onSegment(p1, p2, q1))
-            return true; // p1, q1 and p2 are collinear and p2 lies on p1q1
-        if (o2 === 0 && onSegment(p1, q2, q1))
-            return true; // p1, q1 and q2 are collinear and q2 lies on p1q1
-        if (o3 === 0 && onSegment(p2, p1, q2))
-            return true; // p2, q2 and p1 are collinear and p1 lies on p2q2
-        if (o4 === 0 && onSegment(p2, q1, q2))
-            return true; // p2, q2 and q1 are collinear and q1 lies on p2q2
-        return false;
-    };
-    // for collinear points p, q, r, check if point q lies on segment pr
-    var onSegment = function (p, q, r) {
-        return q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y);
-    };
-    var sign = function (num) {
-        return num > 0 ? 1 : num < 0 ? -1 : 0;
-    };
-    // check if a polygon diagonal intersects any polygon segments
-    var intersectsPolygon = function (a, b) {
-        var p = a;
-        do {
-            if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i && intersects(p, p.next, a, b)) {
-                return true;
-            }
-            p = p.next;
-        } while (p !== a);
-        return false;
-    };
-    // check if a polygon diagonal is locally inside the polygon
-    var locallyInside = function (a, b) {
-        return area(a.prev, a, a.next) < 0 ?
-            area(a, b, a.next) >= 0 && area(a, a.prev, b) >= 0 :
-            area(a, b, a.prev) < 0 || area(a, a.next, b) < 0;
-    };
-    // check if the middle point of a polygon diagonal is inside the polygon
-    var middleInside = function (a, b) {
-        var p = a;
-        var inside = false;
-        var px = (a.x + b.x) / 2;
-        var py = (a.y + b.y) / 2;
-        // TODO: call Polygon.contains here?
-        do {
-            if (((p.y > py) !== (p.next.y > py)) && p.next.y !== p.y &&
-                (px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x))
-                inside = !inside;
-            p = p.next;
-        } while (p !== a);
-        return inside;
-    };
-    // link two polygon vertices with a bridge; if the vertices belong to the same ring, it splits polygon into two;
-    // if one belongs to the outer ring and another to a hole, it merges it into a single ring
-    var splitPolygon = function (a, b) {
-        var a2 = new Node(a.i, a.x, a.y);
-        var b2 = new Node(b.i, b.x, b.y);
-        var an = a.next;
-        var bp = b.prev;
-        a.next = b;
-        b.prev = a;
-        a2.next = an;
-        an.prev = a2;
-        b2.next = a2;
-        a2.prev = b2;
-        bp.next = b2;
-        b2.prev = bp;
-        return b2;
-    };
-    // create a node and optionally link it with previous one (in a circular doubly linked list)
-    var insertNode = function (i, x, y, last) {
-        var p = new Node(i, x, y);
-        if (!last) {
-            p.prev = p;
-            p.next = p;
-        }
-        else {
-            p.next = last.next;
-            p.prev = last;
-            last.next.prev = p;
-            last.next = p;
-        }
-        return p;
-    };
-    var removeNode = function (p) {
-        p.next.prev = p.prev;
-        p.prev.next = p.next;
-        if (p.prevZ)
-            p.prevZ.nextZ = p.nextZ;
-        if (p.nextZ)
-            p.nextZ.prevZ = p.prevZ;
-    };
-    var signedArea = function (data, start, end, dim) {
-        var sum = 0;
-        for (var i = start, j = end - dim; i < end; i += dim) {
-            sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1]);
-            j = i;
-        }
-        return sum;
-    };
-    return earcut;
-})();
-//# sourceMappingURL=earcut.js.map
-
-/***/ }),
-
 /***/ "./src/cjs/BumpMapper.js":
 /*!*******************************!*\
   !*** ./src/cjs/BumpMapper.js ***!
@@ -679,6 +72,116 @@ exports.BumpMapper = {
     }
 };
 //# sourceMappingURL=BumpMapper.js.map
+
+/***/ }),
+
+/***/ "./src/cjs/ConfigIO.js":
+/*!*****************************!*\
+  !*** ./src/cjs/ConfigIO.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+/**
+ * A basic IO interface for storing and retrieving json data from dropped files and local storage.
+ *
+ * @author  Ikaros Kappler
+ * @date    2021-10-13
+ * @version 1.0.0
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigIO = void 0;
+var ConfigIO = /** @class */ (function () {
+    /**
+     *
+     * @param {HTMLElement} element - The element you wish to operate as the drop zone (like <body/>).
+     */
+    function ConfigIO(element) {
+        var _this = this;
+        this.handleDropEvent = function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            _this.element.style.opacity = "1.0";
+            if (!event.dataTransfer.files || event.dataTransfer.files.length === 0) {
+                // No files were dropped
+                return;
+            }
+            if (event.dataTransfer.files.length > 1) {
+                // Multiple file drop is not nupported
+                return;
+            }
+            if (!_this.pathDroppedCallback) {
+                // No handling callback defined.
+                return;
+            }
+            if (event.dataTransfer.files[0]) {
+                var file = event.dataTransfer.files[0];
+                console.log("file", file);
+                if (file.type.match(/json.*/)) {
+                    var reader = new FileReader();
+                    reader.onload = function (readEvent) {
+                        // Finished reading file data.
+                        _this.pathDroppedCallback(readEvent.target.result);
+                    };
+                    reader.readAsText(file); // start reading the file data.
+                }
+            }
+        };
+        this.handleDragOverEvent = function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            _this.element.style.opacity = "0.5";
+        };
+        this.handleDragLeaveEvent = function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            _this.element.style.opacity = "1.0";
+        };
+        this.element = element;
+        // Init the drop listeners
+        element.addEventListener("drop", this.handleDropEvent.bind(this));
+        element.addEventListener("dragover", this.handleDragOverEvent.bind(this));
+        element.addEventListener("dragleave", this.handleDragLeaveEvent.bind(this));
+    }
+    /**
+     * Install the drop callback. Note than only one callback can be installed in this
+     * implementation. Calling this method multiple times will overwrite previously
+     * installed listeners.
+     *
+     * The callback will receive the dropped files as a string.
+     *
+     * @param {(data:string)=>void} callback
+     */
+    ConfigIO.prototype.onPathDropped = function (callback) {
+        this.pathDroppedCallback = callback;
+    };
+    /**
+     * Install a callback for retrieving the `bezier_path` string from the localstorage.
+     *
+     * @param {(data:string)=>void} handlePathRestored - The callback to handle the retrieved storage value. Will be called immediately.
+     * @param {()=>string} requestPath - Requests the `bezier_path` string value to store; will be called on a 10 second timer interval.
+     */
+    ConfigIO.prototype.onPathRestored = function (handlePathRestored, requestPath) {
+        var bezierJSON = localStorage.getItem("bezier_path");
+        if (bezierJSON) {
+            handlePathRestored(bezierJSON);
+        }
+        setInterval(function () {
+            var newBezierJSON = requestPath();
+            if (newBezierJSON) {
+                localStorage.setItem("bezier_path", newBezierJSON);
+            }
+        }, 10000);
+    };
+    ConfigIO.prototype.destroy = function () {
+        this.element.removeEventListener("drop", this.handleDropEvent);
+        this.element.removeEventListener("dragover", this.handleDragOverEvent);
+        this.element.removeEventListener("dragleave", this.handleDragLeaveEvent);
+    };
+    return ConfigIO;
+}());
+exports.ConfigIO = ConfigIO;
+//# sourceMappingURL=ConfigIO.js.map
 
 /***/ }),
 
@@ -1068,35 +571,6 @@ var DildoGeneration = /** @class */ (function () {
     //     return trianglesGeometry;
     //   };
     /**
-     * NOT CURRENTLY IN USE (too unstable?)
-     *
-     * @param {*} latheMesh
-     * @param {*} latheUnbufferedGeometry
-     * @param {*} material
-     */
-    //   __performCsgSlice(latheMesh, latheUnbufferedGeometry, material) {
-    //     latheMesh.updateMatrix();
-    //     var bbox = new THREE.Box3().setFromObject(latheMesh);
-    //     // console.log(bbox);
-    //     var box_material = new THREE.MeshBasicMaterial({ wireframe: true });
-    //     var cube_geometry = new THREE.BoxGeometry( // new THREE.CubeGeometry(
-    //       ((bbox.max.x - bbox.min.x) / 2) * 1.2 + 0.01,
-    //       (bbox.max.y - bbox.min.y) * 1.1,
-    //       (bbox.max.z - bbox.min.z) * 1.2
-    //     );
-    //     var cube_mesh = new THREE.Mesh(cube_geometry, box_material);
-    //     cube_mesh.updateMatrix();
-    //     cube_mesh.position.x = latheMesh.position.x + (bbox.max.x - bbox.min.x) / 4;
-    //     cube_mesh.position.y = bbox.min.y + (bbox.max.y - bbox.min.y) / 2 + -30;
-    //     cube_mesh.position.z = bbox.min.z + (bbox.max.z - bbox.min.z) / 2;
-    //     this.addMesh(cube_mesh);
-    //     var cube_bsp = new ThreeBSP(cube_mesh);
-    //     var mesh_bsp = new ThreeBSP(new THREE.Mesh(latheUnbufferedGeometry, material));
-    //     var subtract_bsp = cube_bsp.subtract(mesh_bsp);
-    //     var result = subtract_bsp.toMesh(material);
-    //     this.addMesh(result);
-    //   };
-    /**
      * Add a mesh to the underlying scene.
      *
      * The function will make some modifications to the rotation of the meshes.
@@ -1194,7 +668,7 @@ var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modul
 var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
 // import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types
-var earcut_typescript_1 = __webpack_require__(/*! earcut-typescript */ "../earcut-typescript/src/cjs/earcut.js"); // TODO: fix earcut types
+var earcut_typescript_1 = __webpack_require__(/*! earcut-typescript */ "./node_modules/earcut-typescript/src/cjs/earcut.js"); // TODO: fix earcut types
 var UVHelpers_1 = __webpack_require__(/*! ./UVHelpers */ "./src/cjs/UVHelpers.js");
 var DEG_TO_RAD = Math.PI / 180.0;
 // import { DEG_TO_RAD } from "./constants";
@@ -2228,10 +1702,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GeometryGenerationHelpers = void 0;
 var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 // import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types, convert to custum library
-var earcut_typescript_1 = __webpack_require__(/*! earcut-typescript */ "../earcut-typescript/src/cjs/earcut.js");
+var earcut_typescript_1 = __webpack_require__(/*! earcut-typescript */ "./node_modules/earcut-typescript/src/cjs/earcut.js");
 var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
 // import { sliceGeometry } from "./thirdparty-ported/threejs-slice-geometry"; // TODO: convert to custom library
-var threejs_slice_geometry_typescript_1 = __webpack_require__(/*! threejs-slice-geometry-typescript */ "../threejs-slice-geometry-typescript/src/cjs/slice.js"); // TODO: convert to custom library
+var threejs_slice_geometry_typescript_1 = __webpack_require__(/*! threejs-slice-geometry-typescript */ "./node_modules/threejs-slice-geometry-typescript/src/cjs/slice.js"); // TODO: convert to custom library
 var PlaneMeshIntersection_1 = __webpack_require__(/*! ./PlaneMeshIntersection */ "./src/cjs/PlaneMeshIntersection.js");
 var clearDuplicateVertices3_1 = __webpack_require__(/*! ./clearDuplicateVertices3 */ "./src/cjs/clearDuplicateVertices3.js");
 var UVHelpers_1 = __webpack_require__(/*! ./UVHelpers */ "./src/cjs/UVHelpers.js");
@@ -3362,9 +2836,7 @@ exports.KEY_SPLIT_TRIANGULATION_GEOMETRIES = "KEY_SPLIT_TRIANGULATION_GEOMETRIES
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DEFAULT_BEZIER_JSON = void 0;
 // Refactored from dildo-generator
-exports.DEFAULT_BEZIER_JSON = 
-//'[ { "startPoint" : [-122,77.80736634304651], "endPoint" : [-65.59022229786551,21.46778533702511], "startControlPoint": [-121.62058129515852,25.08908859418696], "endControlPoint" : [-79.33419353770395,48.71529293460728] }, { "startPoint" : [-65.59022229786551,21.46778533702511], "endPoint" : [-65.66917273472913,-149.23537680826058], "startControlPoint": [-52.448492057756646,-4.585775770903305], "endControlPoint" : [-86.1618869001374,-62.11613821618976] }, { "startPoint" : [-65.66917273472913,-149.23537680826058], "endPoint" : [-61.86203591980055,-243.8368165606738], "startControlPoint": [-53.701578771473564,-200.1123697454778], "endControlPoint" : [-69.80704300441666,-205.36451303641783] }, { "startPoint" : [-61.86203591980055,-243.8368165606738], "endPoint" : [-21.108966092052256,-323], "startControlPoint": [-54.08681426887413,-281.486963896856], "endControlPoint" : [-53.05779349623559,-323] } ]';
-"\n  [\n    {\n       \"startPoint\":[\n          -122,\n          77.80736634304651\n       ],\n       \"endPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"startControlPoint\":[\n          -121.62058129515852,\n          25.08908859418696\n       ],\n       \"endControlPoint\":[\n          -79.33419353770395,\n          48.71529293460728\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"endPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"startControlPoint\":[\n          -52.448492057756646,\n          -4.585775770903305\n       ],\n       \"endControlPoint\":[\n          -86.1618869001374,\n          -62.11613821618976\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"endPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"startControlPoint\":[\n          -53.701578771473564,\n          -200.1123697454778\n       ],\n       \"endControlPoint\":[\n          -69.80704300441666,\n          -205.36451303641783\n       ]\n    },\n    {\n       \"startPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"endPoint\":[\n          -21.108966092052256,\n          -323\n       ],\n       \"startControlPoint\":[\n          -54.08681426887413,\n          -281.486963896856\n       ],\n       \"endControlPoint\":[\n          -53.05779349623559,\n          -323\n       ]\n    }\n ]\n  ";
+exports.DEFAULT_BEZIER_JSON = "\n  [\n    {\n       \"startPoint\":[\n          -122,\n          77.80736634304651\n       ],\n       \"endPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"startControlPoint\":[\n          -121.62058129515852,\n          25.08908859418696\n       ],\n       \"endControlPoint\":[\n          -79.33419353770395,\n          48.71529293460728\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"endPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"startControlPoint\":[\n          -52.448492057756646,\n          -4.585775770903305\n       ],\n       \"endControlPoint\":[\n          -86.1618869001374,\n          -62.11613821618976\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"endPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"startControlPoint\":[\n          -53.701578771473564,\n          -200.1123697454778\n       ],\n       \"endControlPoint\":[\n          -69.80704300441666,\n          -205.36451303641783\n       ]\n    },\n    {\n       \"startPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"endPoint\":[\n          -21.108966092052256,\n          -323\n       ],\n       \"startControlPoint\":[\n          -54.08681426887413,\n          -281.486963896856\n       ],\n       \"endControlPoint\":[\n          -53.05779349623559,\n          -323\n       ]\n    }\n ]\n  ";
 //# sourceMappingURL=defaults.js.map
 
 /***/ }),
@@ -3540,10 +3012,12 @@ exports.ngdg = void 0;
 var defaults_1 = __webpack_require__(/*! ./defaults */ "./src/cjs/defaults.js");
 var ImageStore_1 = __webpack_require__(/*! ./ImageStore */ "./src/cjs/ImageStore.js");
 var DildoGeneration_1 = __webpack_require__(/*! ./DildoGeneration */ "./src/cjs/DildoGeneration.js");
+var ConfigIO_1 = __webpack_require__(/*! ./ConfigIO */ "./src/cjs/ConfigIO.js");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
-    ImageStore: ImageStore_1.ImageStore
+    ImageStore: ImageStore_1.ImageStore,
+    ConfigIO: ConfigIO_1.ConfigIO
 };
 //# sourceMappingURL=ngdg.js.map
 
@@ -3608,439 +3082,6 @@ var randomWebColor = function (index, colorSet) {
 };
 exports.randomWebColor = randomWebColor;
 //# sourceMappingURL=randomWebColor.js.map
-
-/***/ }),
-
-/***/ "../threejs-slice-geometry-typescript/src/cjs/GeometryBuilder.js":
-/*!***********************************************************************!*\
-  !*** ../threejs-slice-geometry-typescript/src/cjs/GeometryBuilder.js ***!
-  \***********************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-/**
- * Ported to TypeScript from vanilla-js by Ikaros Kappler.
- *
- * @date 2021-09-28
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GeometryBuilder = void 0;
-// Note: THREE.Geometry is only available until version 0.124.0
-var THREE = __webpack_require__(/*! three */ "../threejs-slice-geometry-typescript/node_modules/three/build/three.module.js");
-var faces_from_edges_1 = __webpack_require__(/*! ./faces-from-edges */ "../threejs-slice-geometry-typescript/src/cjs/faces-from-edges.js");
-var constants_1 = __webpack_require__(/*! ./constants */ "../threejs-slice-geometry-typescript/src/cjs/constants.js");
-var GeometryBuilder = /** @class */ (function () {
-    function GeometryBuilder(sourceGeometry, targetGeometry, slicePlane) {
-        this.sourceGeometry = sourceGeometry;
-        this.targetGeometry = targetGeometry;
-        this.slicePlane = slicePlane;
-        this.addedVertices = [];
-        this.addedIntersections = [];
-        this.newEdges = [[]];
-    }
-    ;
-    // TODO: check undfined?
-    // This is called without params in line ---67 but param used here as an index??
-    GeometryBuilder.prototype.startFace = function (sourceFaceIndex) {
-        this.sourceFaceIndex = sourceFaceIndex;
-        this.sourceFace = this.sourceGeometry.faces[sourceFaceIndex];
-        this.sourceFaceUvs = this.sourceGeometry.faceVertexUvs[0][sourceFaceIndex];
-        this.faceIndices = [];
-        this.faceNormals = [];
-        this.faceUvs = [];
-    };
-    ;
-    GeometryBuilder.prototype.endFace = function () {
-        var indices = this.faceIndices.map(function (index, i) {
-            return i;
-        });
-        this.addFace(indices);
-    };
-    ;
-    GeometryBuilder.prototype.closeHoles = function () {
-        var _this = this;
-        if (!this.newEdges[0].length) {
-            return;
-        }
-        (0, faces_from_edges_1.facesFromEdges)(this.newEdges)
-            .forEach(function (faceIndices) {
-            var normal = _this.faceNormal(faceIndices);
-            if (normal.dot(_this.slicePlane.normal) > .5) {
-                faceIndices.reverse();
-            }
-            _this.startFace();
-            _this.faceIndices = faceIndices;
-            _this.endFace();
-        }, this);
-    };
-    ;
-    GeometryBuilder.prototype.addVertex = function (key) {
-        this.addUv(key);
-        this.addNormal(key);
-        var index = this.sourceFace[key];
-        var newIndex;
-        if (this.addedVertices.hasOwnProperty(index)) {
-            newIndex = this.addedVertices[index];
-        }
-        else {
-            var vertex = this.sourceGeometry.vertices[index];
-            this.targetGeometry.vertices.push(vertex);
-            newIndex = this.targetGeometry.vertices.length - 1;
-            this.addedVertices[index] = newIndex;
-        }
-        this.faceIndices.push(newIndex);
-    };
-    ;
-    GeometryBuilder.prototype.addIntersection = function (keyA, keyB, distanceA, distanceB) {
-        var t = Math.abs(distanceA) / (Math.abs(distanceA) + Math.abs(distanceB));
-        this.addIntersectionUv(keyA, keyB, t);
-        this.addIntersectionNormal(keyA, keyB, t);
-        var indexA = this.sourceFace[keyA];
-        var indexB = this.sourceFace[keyB];
-        var id = this.intersectionId(indexA, indexB);
-        var index;
-        if (this.addedIntersections.hasOwnProperty(id)) {
-            index = this.addedIntersections[id];
-        }
-        else {
-            var vertexA = this.sourceGeometry.vertices[indexA];
-            var vertexB = this.sourceGeometry.vertices[indexB];
-            var newVertex = vertexA.clone().lerp(vertexB, t);
-            this.targetGeometry.vertices.push(newVertex);
-            index = this.targetGeometry.vertices.length - 1;
-            this.addedIntersections[id] = index;
-        }
-        this.faceIndices.push(index);
-        this.updateNewEdges(index);
-    };
-    ;
-    GeometryBuilder.prototype.addUv = function (key) {
-        if (!this.sourceFaceUvs) {
-            return;
-        }
-        var index = this.keyIndex(key);
-        var uv = this.sourceFaceUvs[index];
-        this.faceUvs.push(uv);
-    };
-    ;
-    GeometryBuilder.prototype.addIntersectionUv = function (keyA, keyB, t) {
-        if (!this.sourceFaceUvs) {
-            return;
-        }
-        var indexA = this.keyIndex(keyA);
-        var indexB = this.keyIndex(keyB);
-        var uvA = this.sourceFaceUvs[indexA];
-        var uvB = this.sourceFaceUvs[indexB];
-        var uv = uvA.clone().lerp(uvB, t);
-        this.faceUvs.push(uv);
-    };
-    ;
-    GeometryBuilder.prototype.addNormal = function (key) {
-        if (!this.sourceFace.vertexNormals.length) {
-            return;
-        }
-        var index = this.keyIndex(key);
-        var normal = this.sourceFace.vertexNormals[index];
-        this.faceNormals.push(normal);
-    };
-    ;
-    GeometryBuilder.prototype.addIntersectionNormal = function (keyA, keyB, t) {
-        if (!this.sourceFace.vertexNormals.length) {
-            return;
-        }
-        var indexA = this.keyIndex(keyA);
-        var indexB = this.keyIndex(keyB);
-        var normalA = this.sourceFace.vertexNormals[indexA];
-        var normalB = this.sourceFace.vertexNormals[indexB];
-        var normal = normalA.clone().lerp(normalB, t).normalize();
-        this.faceNormals.push(normal);
-    };
-    ;
-    GeometryBuilder.prototype.addFace = function (indices) {
-        var _this = this;
-        if (indices.length === 3) {
-            this.addFacePart(indices[0], indices[1], indices[2]);
-            return;
-        }
-        var pairs = [];
-        for (var i = 0; i < indices.length; i++) {
-            for (var j = i + 1; j < indices.length; j++) {
-                var diff = Math.abs(i - j);
-                if (diff > 1 && diff < indices.length - 1) {
-                    pairs.push([indices[i], indices[j]]);
-                }
-            }
-        }
-        pairs.sort((function (pairA, pairB) {
-            var lengthA = _this.faceEdgeLength(pairA[0], pairA[1]);
-            var lengthB = _this.faceEdgeLength(pairB[0], pairB[1]);
-            return lengthA - lengthB;
-        }).bind(this));
-        var a = indices.indexOf(pairs[0][0]);
-        indices = indices.slice(a).concat(indices.slice(0, a));
-        var b = indices.indexOf(pairs[0][1]);
-        var indicesA = indices.slice(0, b + 1);
-        var indicesB = indices.slice(b).concat(indices.slice(0, 1));
-        this.addFace(indicesA);
-        this.addFace(indicesB);
-    };
-    ;
-    GeometryBuilder.prototype.addFacePart = function (a, b, c) {
-        var normals = null;
-        if (this.faceNormals.length) {
-            normals = [
-                this.faceNormals[a],
-                this.faceNormals[b],
-                this.faceNormals[c],
-            ];
-        }
-        var face = new THREE.Face3(this.faceIndices[a], this.faceIndices[b], this.faceIndices[c], normals);
-        this.targetGeometry.faces.push(face);
-        if (!this.sourceFaceUvs) {
-            return;
-        }
-        this.targetGeometry.faceVertexUvs[0].push([
-            this.faceUvs[a],
-            this.faceUvs[b],
-            this.faceUvs[c]
-        ]);
-    };
-    ;
-    GeometryBuilder.prototype.faceEdgeLength = function (a, b) {
-        var indexA = this.faceIndices[a];
-        var indexB = this.faceIndices[b];
-        var vertexA = this.targetGeometry.vertices[indexA];
-        var vertexB = this.targetGeometry.vertices[indexB];
-        return vertexA.distanceToSquared(vertexB);
-    };
-    ;
-    GeometryBuilder.prototype.intersectionId = function (indexA, indexB) {
-        return [indexA, indexB].sort().join(',');
-    };
-    ;
-    GeometryBuilder.prototype.keyIndex = function (key) {
-        return constants_1.FACE_KEYS.indexOf(key);
-    };
-    ;
-    GeometryBuilder.prototype.updateNewEdges = function (index) {
-        var edgeIndex = this.newEdges.length - 1;
-        var edge = this.newEdges[edgeIndex];
-        if (edge.length < 2) {
-            edge.push(index);
-        }
-        else {
-            this.newEdges.push([index]);
-        }
-    };
-    ;
-    GeometryBuilder.prototype.faceNormal = function (faceIndices) {
-        var _this = this;
-        var vertices = faceIndices.map((function (index) {
-            return _this.targetGeometry.vertices[index];
-        }).bind(this));
-        var edgeA = vertices[0].clone().sub(vertices[1]);
-        var edgeB = vertices[0].clone().sub(vertices[2]);
-        return edgeA.cross(edgeB).normalize();
-    };
-    ;
-    return GeometryBuilder;
-}());
-exports.GeometryBuilder = GeometryBuilder;
-//# sourceMappingURL=GeometryBuilder.js.map
-
-/***/ }),
-
-/***/ "../threejs-slice-geometry-typescript/src/cjs/constants.js":
-/*!*****************************************************************!*\
-  !*** ../threejs-slice-geometry-typescript/src/cjs/constants.js ***!
-  \*****************************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.FACE_KEYS = exports.ON = exports.BACK = exports.FRONT = void 0;
-exports.FRONT = 'front';
-exports.BACK = 'back';
-exports.ON = 'on';
-exports.FACE_KEYS = ['a', 'b', 'c'];
-//# sourceMappingURL=constants.js.map
-
-/***/ }),
-
-/***/ "../threejs-slice-geometry-typescript/src/cjs/faces-from-edges.js":
-/*!************************************************************************!*\
-  !*** ../threejs-slice-geometry-typescript/src/cjs/faces-from-edges.js ***!
-  \************************************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-
-/**
- * Ported to TypeScript from vanilla-js by Ikaros Kappler.
- *
- * @date 2021-09-28
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.facesFromEdges = void 0;
-var facesFromEdges = function (edges) {
-    var chains = joinEdges(edges).filter(validFace);
-    var faces = chains.map(function (chain) {
-        return chain.map(function (edge) {
-            return edge[0];
-        });
-    });
-    return faces;
-};
-exports.facesFromEdges = facesFromEdges;
-var joinEdges = function (edges) {
-    var changes = true;
-    var chains = edges.map(function (edge) {
-        return [edge];
-    });
-    while (changes) {
-        changes = connectChains(chains);
-    }
-    chains = chains.filter(function (chain) {
-        return chain.length;
-    });
-    return chains;
-};
-var connectChains = function (chains) {
-    chains.forEach(function (chainA, i) {
-        chains.forEach(function (chainB, j) {
-            var merged = mergeChains(chainA, chainB);
-            if (merged) {
-                delete chains[j];
-                return true;
-            }
-        });
-    });
-    return false;
-};
-var mergeChains = function (chainA, chainB) {
-    if (chainA === chainB) {
-        return false;
-    }
-    if (chainStart(chainA) === chainEnd(chainB)) {
-        chainA.unshift.apply(chainA, chainB);
-        return true;
-    }
-    if (chainStart(chainA) === chainStart(chainB)) {
-        reverseChain(chainB);
-        chainA.unshift.apply(chainA, chainB);
-        return true;
-    }
-    if (chainEnd(chainA) === chainStart(chainB)) {
-        chainA.push.apply(chainA, chainB);
-        return true;
-    }
-    if (chainEnd(chainA) === chainEnd(chainB)) {
-        reverseChain(chainB);
-        chainA.push.apply(chainA, chainB);
-        return true;
-    }
-    return false;
-};
-var chainStart = function (chain) {
-    return chain[0][0];
-};
-var chainEnd = function (chain) {
-    return chain[chain.length - 1][1];
-};
-var reverseChain = function (chain) {
-    chain.reverse();
-    chain.forEach(function (edge) {
-        edge.reverse();
-    });
-};
-var validFace = function (chain) {
-    return chainStart(chain) === chainEnd(chain) ? 1 : 0;
-};
-//# sourceMappingURL=faces-from-edges.js.map
-
-/***/ }),
-
-/***/ "../threejs-slice-geometry-typescript/src/cjs/slice.js":
-/*!*************************************************************!*\
-  !*** ../threejs-slice-geometry-typescript/src/cjs/slice.js ***!
-  \*************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.sliceGeometry = void 0;
-// Note: THREE.Geometry is only available until version 0.124.0
-var THREE = __webpack_require__(/*! three */ "../threejs-slice-geometry-typescript/node_modules/three/build/three.module.js");
-var GeometryBuilder_1 = __webpack_require__(/*! ./GeometryBuilder */ "../threejs-slice-geometry-typescript/src/cjs/GeometryBuilder.js");
-var constants_1 = __webpack_require__(/*! ./constants */ "../threejs-slice-geometry-typescript/src/cjs/constants.js");
-var sliceGeometry = function (geometry, plane, closeHoles) {
-    var sliced = new THREE.Geometry();
-    var builder = new GeometryBuilder_1.GeometryBuilder(geometry, sliced, plane);
-    var distances = [];
-    var positions = [];
-    geometry.vertices.forEach(function (vertex) {
-        var distance = findDistance(vertex, plane);
-        var position = distanceAsPosition(distance);
-        distances.push(distance);
-        positions.push(position);
-    });
-    geometry.faces.forEach(function (face, faceIndex) {
-        var facePositions = constants_1.FACE_KEYS.map(function (key) {
-            return positions[face[key]];
-        });
-        if (facePositions.indexOf(constants_1.FRONT) === -1 &&
-            facePositions.indexOf(constants_1.BACK) !== -1) {
-            return;
-        }
-        builder.startFace(faceIndex);
-        var lastKey = constants_1.FACE_KEYS[constants_1.FACE_KEYS.length - 1];
-        var lastIndex = face[lastKey];
-        var lastDistance = distances[lastIndex];
-        var lastPosition = positions[lastIndex];
-        constants_1.FACE_KEYS.map(function (key) {
-            var index = face[key];
-            var distance = distances[index];
-            var position = positions[index];
-            if (position === constants_1.FRONT) {
-                if (lastPosition === constants_1.BACK) {
-                    builder.addIntersection(lastKey, key, lastDistance, distance);
-                    builder.addVertex(key);
-                }
-                else {
-                    builder.addVertex(key);
-                }
-            }
-            if (position === constants_1.ON) {
-                builder.addVertex(key);
-            }
-            if (position === constants_1.BACK && lastPosition === constants_1.FRONT) {
-                builder.addIntersection(lastKey, key, lastDistance, distance);
-            }
-            lastKey = key;
-            lastIndex = index;
-            lastPosition = position;
-            lastDistance = distance;
-        });
-        builder.endFace();
-    });
-    if (closeHoles) {
-        builder.closeHoles();
-    }
-    return sliced;
-};
-exports.sliceGeometry = sliceGeometry;
-var distanceAsPosition = function (distance) {
-    if (distance < 0) {
-        return constants_1.BACK;
-    }
-    if (distance > 0) {
-        return constants_1.FRONT;
-    }
-    return constants_1.ON;
-};
-var findDistance = function (vertex, plane) {
-    return plane.distanceToPoint(vertex);
-};
-//# sourceMappingURL=slice.js.map
 
 /***/ })
 

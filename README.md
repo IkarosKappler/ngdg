@@ -30,10 +30,28 @@ Because 3d printing, web 3d, and dildos are fun.
 - [ ] Add a 'Material' switch/tab.
 - [ ] Update the package.json's copy scripts (using OS dependent `cp` command). Better use an npm compatible copy here.
 - [x] Define one global library export to avoid environment pollution.
-- [ ] Remove unused build libraries: babel.
+- [x] Remove unused build libraries: babel, rollup.
+- [x] Remove old alloyfinger library. Replace by alloyfinger-typescript.
+- [ ] Add a session storage for the current settings, especially the Bézier curve and bend.
+- [ ] Make the Bézier curve more look like in the old version.
+- [ ] Add horizonal and vertical scale like in the old version.
 
 ### Changelog
 
+- 2021-12-03
+  - Refactored the code for resizing the path.
+  - Upadted to plotboilerplate@1.14.0.
+  - Refactored the code to draw rulers into a separate file.
+  - Added action buttons for quickly start over with a new model, and to scale the view to best screen fit.
+  - Can restore older models from localstorage now. Models are saved in a 10 second interval.
+- 2021-12-01 (World AIDS day)
+  - Refactored the resize handles into a new helper class: BezierResizeHelper.
+  - Added basic localstorage support to the ConfigIO class.
+- 2021-11-30
+  - Added resize handles to vertically and horizontally resize the model (path).
+- 2012-11-12
+  - Added basic rulers to the 2d canvas.
+  - Fixed the broken scale-to-best-fit function.
 - 2021-09-27
   - Replaced in internal earcut implementation by an node module (https://www.npmjs.com/package/earcut-typescript).
 - 2021-09-26

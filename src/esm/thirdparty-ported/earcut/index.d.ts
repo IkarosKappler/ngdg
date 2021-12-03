@@ -1,1 +1,0 @@
-export { earcut } from "./earcut";
