@@ -88,3 +88,7 @@ body.fullscreen {
 od-bl {
 }
 /* --- END --- Dialog classes --- */
+
+.action-button:hover {
+  background-color: white;
+}

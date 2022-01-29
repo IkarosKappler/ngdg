@@ -17,11 +17,8 @@ globalThis.ActionButtons =
      * @param {function} actionCallback - The function to be triggered when the button is clicked.
      */
     AB.addNewButton = function (actionCallback) {
-      var buttonNew = createStyledButton();
+      var buttonNew = createStyledButton("icons/empty_document.png", "Start with a new model", actionCallback);
       buttonNew.style.transform = "translateX(0px)";
-      buttonNew.innerHTML = '<img src="icons/empty_document.png" />';
-      buttonNew.setAttribute("title", "Start with a new model");
-      buttonNew.addEventListener("click", actionCallback);
       document.querySelector("body").appendChild(buttonNew);
     };
 
@@ -31,15 +28,12 @@ globalThis.ActionButtons =
      * @param {function} actionCallback - The function to be triggered when the button is clicked.
      */
     AB.addFitToViewButton = function (actionCallback) {
-      var buttonFit = createStyledButton();
+      var buttonFit = createStyledButton("icons/fit_view.png", "Zoom to best fit", actionCallback);
       buttonFit.style.transform = "translateX(26px)";
-      buttonFit.innerHTML = '<img src="icons/fit_view.png" />';
-      buttonFit.setAttribute("title", "Zoom to best fit");
-      buttonFit.addEventListener("click", actionCallback);
       document.querySelector("body").appendChild(buttonFit);
     };
 
-    var createStyledButton = function (button) {
+    var createStyledButton = function (iconPath, title, actionCallback) {
       var button = document.createElement("button");
       button.style.position = "absolute";
       button.style.left = "10px";
@@ -48,8 +42,22 @@ globalThis.ActionButtons =
       button.style.height = "24px";
       button.style.borderRadius = "12px";
       button.style.display = "flex";
-      button.style["justify-content"] = "center";
+      button.style["justify-content"] = "space-around";
+      button.style["align-items"] = "center";
       button.style.padding = "4px";
+      button.style["outline"] = "none";
+      button.style["border-width"] = "1px";
+      button.style["border-style"] = "solid";
+
+      button.style["background-image"] = "url('" + iconPath + "')";
+      button.style["background-size"] = "60% 60%";
+      button.style["background-position"] = "center center";
+      button.style["background-repeat"] = "no-repeat";
+
+      button.classList.add("action-button");
+      button.setAttribute("title", title);
+      button.addEventListener("click", actionCallback);
+
       return button;
     };
 

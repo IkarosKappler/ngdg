@@ -67,7 +67,7 @@
     var bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
     var bumpmap = null;
     var bumpmapRasterImage = ngdg.ImageStore.getImage(bumpmapPath, function (completeImage) {
-      rebuild();
+      rebuild && rebuild();
     });
 
     // +---------------------------------------------------------------------------------
