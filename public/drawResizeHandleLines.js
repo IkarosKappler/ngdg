@@ -8,14 +8,14 @@
  * @version 1.0.0
  */
 
-var drawResizeHandleLines = function (pb, outline, bezierResizer) {
+var drawResizeHandleLines = function (pb, outline, bezierResizer, lineColor) {
   var bounds = outline.getBounds();
   if (bezierResizer.verticalResizeHandleDragStartPosition) {
     // TODO: draw a dashed line? : )
     pb.draw.line(
       { x: bounds.min.x, y: bezierResizer.verticalResizeHandle.y },
       { x: bounds.max.x, y: bezierResizer.verticalResizeHandle.y },
-      "rgba(128,128,128,0.5)",
+      lineColor,
       1.0
     );
   }
@@ -24,7 +24,7 @@ var drawResizeHandleLines = function (pb, outline, bezierResizer) {
     pb.draw.line(
       { x: bezierResizer.horizontalResizeHandle.x, y: bounds.min.y },
       { x: bezierResizer.horizontalResizeHandle.x, y: bounds.max.y },
-      "rgba(128,128,128,0.5)",
+      lineColor,
       1.0
     );
   }

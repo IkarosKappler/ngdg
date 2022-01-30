@@ -16,10 +16,11 @@
 (function (_context) {
   "use strict";
 
-  // Fetch the GET params
-  let GUP = gup();
-
   window.addEventListener("load", function () {
+    // Fetch the GET params
+    var GUP = gup();
+    var isDarkmode = detectDarkMode(GUP);
+
     // All config params are optional.
     var pb = new PlotBoilerplate(
       PlotBoilerplate.utils.safeMergeByKeys(
@@ -43,7 +44,7 @@
           autoAdjustOffset: true,
           offsetAdjustXPercent: 50,
           offsetAdjustYPercent: 50,
-          backgroundColor: "#ffffff",
+          backgroundColor: isDarkmode ? "rgb(09, 12, 23)" : "#ffffff",
           enableMouse: true,
           enableKeys: true,
           enableTouch: true,
@@ -52,9 +53,9 @@
         GUP
       )
     );
-    pb.drawConfig.bezier.color = "#000000";
+    pb.drawConfig.bezier.color = isDarkmode ? "rgba(128,128,128, 0.8)" : "#000000";
     pb.drawConfig.bezier.lineWidth = 2.0;
-    pb.drawConfig.bezier.handleLine.color = "rgba(0,0,0,0.35)";
+    pb.drawConfig.bezier.handleLine.color = isDarkmode ? "rgba(92,92,92,0.8)" : "rgba(0,0,0,0.35)";
     pb.drawConfig.bezier.pathVertex.color = "#B400FF";
     pb.drawConfig.bezier.pathVertex.fill = true;
     pb.drawConfig.bezier.controlVertex.color = "#B8D438";
@@ -111,7 +112,10 @@
         addPrecalculatedHollowFaces: false,
         addRawIntersectionTriangleMesh: false,
         addPrecalculatedShapeOutlines: false,
-        bezierFillColor: "rgba(0,0,0,0.15)",
+        bezierFillColor: isDarkmode ? "rgba(64,64,64,.35)" : "rgba(0,0,0,0.15)",
+        pathBoundsColor: isDarkmode ? "rgba(64,64,64,.5)" : "rgba(0,0,0,0.5)",
+        resizeHandleLineColor: isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
+        rulerColor: isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)",
         // Functions
         exportSTL: function () {
           exportSTL();
@@ -303,7 +307,7 @@
     var preDraw = function () {
       // Draw bounds
       var pathBounds = outline.getBounds();
-      pb.draw.rect(pathBounds.min, pathBounds.width, pathBounds.height, "rgba(0,0,0,0.5)", 1);
+      pb.draw.rect(pathBounds.min, pathBounds.width, pathBounds.height, config.pathBoundsColor, 1);
 
       // Fill inner area
       var polyline = [
@@ -324,7 +328,7 @@
     var postDraw = function () {
       drawBezierDistanceLine();
       drawRulers();
-      drawResizeHandleLines(pb, outline, bezierResizer);
+      drawResizeHandleLines(pb, outline, bezierResizer, config.resizeHandleLineColor);
     };
 
     var drawBezierDistanceLine = function () {
@@ -335,8 +339,8 @@
     };
 
     var drawRulers = function () {
-      Rulers.drawVerticalRuler(pb, outline);
-      Rulers.drawHorizontalRuler(pb, outline);
+      Rulers.drawVerticalRuler(pb, outline, config.rulerColor);
+      Rulers.drawHorizontalRuler(pb, outline, config.rulerColor);
     };
 
     // +---------------------------------------------------------------------------------

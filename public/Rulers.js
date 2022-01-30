@@ -16,10 +16,9 @@ globalThis.Rulers =
 
     var R = {};
 
-    R.drawHorizontalRuler = function (pb, outline) {
+    R.drawHorizontalRuler = function (pb, outline, color) {
       // Draw the ruler.
       var bounds = outline.getBounds();
-      var color = "rgba(0,128,192,0.5)";
       // Draw horizontal ruler
       pb.draw.line({ x: bounds.min.x, y: bounds.max.y + 10 }, { x: bounds.max.x, y: bounds.max.y + 10 }, color, 0.5);
       var horizontalStepCount = bounds.width / stepSize;
@@ -44,11 +43,10 @@ globalThis.Rulers =
       }
     };
 
-    R.drawVerticalRuler = function (pb, outline) {
+    R.drawVerticalRuler = function (pb, outline, color) {
       // Draw the ruler.
       // console.log("Post draw");
       var bounds = outline.getBounds();
-      var color = "rgba(0,128,192,0.5)";
       //   var mmPerUnit = 0.5;
       //   var stepSize = 20; // pixels
       //   var fontSize = 7;

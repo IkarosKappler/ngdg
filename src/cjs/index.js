@@ -22,6 +22,7 @@ __exportStar(require("./DildoMaterials"), exports);
 __exportStar(require("./GeometryGenerationHelpers"), exports);
 __exportStar(require("./ImageStore"), exports);
 __exportStar(require("./interfaces"), exports);
+__exportStar(require("./isMobileDevice"), exports);
 __exportStar(require("./locateVertexInArray"), exports);
 __exportStar(require("./mergeGeometries"), exports);
 __exportStar(require("./PathFinder"), exports);

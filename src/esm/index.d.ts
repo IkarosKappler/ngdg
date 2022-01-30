@@ -10,6 +10,7 @@ export * from "./DildoMaterials";
 export * from "./GeometryGenerationHelpers";
 export * from "./ImageStore";
 export * from "./interfaces";
+export * from "./isMobileDevice";
 export * from "./locateVertexInArray";
 export * from "./mergeGeometries";
 export * from "./PathFinder";
