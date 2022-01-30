@@ -9,33 +9,32 @@
 globalThis.Rulers =
   globalThis.Rulers ||
   (function () {
-    // TODO: as constants
-    var mmPerUnit = 0.5;
-    var stepSize = 20; // pixels
-    var fontSize = 10;
-
-    var R = {};
+    var R = {
+      mmPerUnit: 0.5,
+      stepSize: 20, // pixels
+      fontSize: 10
+    };
 
     R.drawHorizontalRuler = function (pb, outline, color) {
       // Draw the ruler.
       var bounds = outline.getBounds();
       // Draw horizontal ruler
       pb.draw.line({ x: bounds.min.x, y: bounds.max.y + 10 }, { x: bounds.max.x, y: bounds.max.y + 10 }, color, 0.5);
-      var horizontalStepCount = bounds.width / stepSize;
+      var horizontalStepCount = bounds.width / R.stepSize;
       for (var i = 0; i < horizontalStepCount; i++) {
         pb.draw.line(
-          { x: bounds.max.x - i * stepSize, y: bounds.max.y + 10 - 3 },
-          { x: bounds.max.x - i * stepSize, y: bounds.max.y + 10 + 3 },
+          { x: bounds.max.x - i * R.stepSize, y: bounds.max.y + 10 - 3 },
+          { x: bounds.max.x - i * R.stepSize, y: bounds.max.y + 10 + 3 },
           color,
           0.5
         );
         // Draw label?
         if (i % 2 === 0) {
-          var x = bounds.max.x - i * stepSize; //  - fontSize * 0.25;
+          var x = bounds.max.x - i * R.stepSize; //  - fontSize * 0.25;
           var y = bounds.max.y + 16;
-          pb.fill.text(Number(i * stepSize * mmPerUnit).toFixed(0) + "mm", x, y, {
+          pb.fill.text(Number(i * R.stepSize * R.mmPerUnit).toFixed(0) + "mm", x, y, {
             color: color,
-            fontSize: fontSize / pb.fill.scale.x,
+            fontSize: R.fontSize / pb.fill.scale.x,
             textAlign: "right",
             rotation: -Math.PI / 4
           });
@@ -45,28 +44,24 @@ globalThis.Rulers =
 
     R.drawVerticalRuler = function (pb, outline, color) {
       // Draw the ruler.
-      // console.log("Post draw");
       var bounds = outline.getBounds();
-      //   var mmPerUnit = 0.5;
-      //   var stepSize = 20; // pixels
-      //   var fontSize = 7;
       // Draw vertical ruler
       pb.draw.line({ x: bounds.max.x + 10, y: bounds.min.y }, { x: bounds.max.x + 10, y: bounds.max.y }, color, 0.5);
-      var verticalStepCount = bounds.height / stepSize;
+      var verticalStepCount = bounds.height / R.stepSize;
       for (var i = 0; i < verticalStepCount; i++) {
         pb.draw.line(
-          { x: bounds.max.x + 10 - 3, y: bounds.max.y - i * stepSize },
-          { x: bounds.max.x + 10 + 3, y: bounds.max.y - i * stepSize },
+          { x: bounds.max.x + 10 - 3, y: bounds.max.y - i * R.stepSize },
+          { x: bounds.max.x + 10 + 3, y: bounds.max.y - i * R.stepSize },
           color,
           0.5
         );
         // Draw label?
         if (i % 2 === 0) {
           pb.fill.text(
-            Number(i * stepSize * mmPerUnit).toFixed(0) + "mm",
+            Number(i * R.stepSize * R.mmPerUnit).toFixed(0) + "mm",
             bounds.max.x + 16,
-            bounds.max.y - i * stepSize + fontSize * 0.25,
-            { color: color, fontSize: fontSize / pb.fill.scale.x }
+            bounds.max.y - i * R.stepSize + R.fontSize * 0.25,
+            { color: color, fontSize: R.fontSize / pb.fill.scale.x }
           );
         }
       }

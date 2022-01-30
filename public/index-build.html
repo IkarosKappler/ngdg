@@ -49,12 +49,15 @@
     <script src="lib/ngdg/dist/ngdg-vendor.js"></script>
     <script src="lib/ngdg/dist/ngdg-main.js"></script>
     
-    <!-- <script src="lib/plotboilerplate/dist/plotboilerplate.min.js"></script> -->
+
     <script src="lib/plotboilerplate/dist/plotboilerplate.min.js"></script>
-    <script src="lib/alloy_finger.js"></script>
-    <!-- <script src="lib/ngdg/src/cjs/thirdparty-ported/threejs-slice-geometry/faces-from-edges.js"></script>
-    <script src="lib/ngdg/src/cjs/thirdparty-ported/threejs-slice-geometry/slice.js"></script>
-    <script src="lib/ngdg/src/cjs/thirdparty-ported/earcut/earcut.js"></script> -->
+    <script src="lib/alloyfinger-typescript/src/cjs/alloy_finger.js"></script>
+    <script src="lib/earcut-typescript/dist/earcut.min.js"></script>
+    <script src="lib/uistats-typescript/uistats.min.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/datastructures/Color.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/WebColors.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/WebColorsContrast.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/datastructures/Color.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/WebColors.js"></script>
@@ -83,9 +86,6 @@
       <canvas id="my-canvas" width="1024" height="768" title="Drag the curve points around.
       Click onto the curve to add new points.
       Press [Shift]+Click to select points, press [Delete] to delete them.">Your browser does not support the canvas tag.</canvas>
-      <div class="info monospace">
-	[<span id="cx">-</span>,<span id="cy">-</span>]
-      </div>
     </div>
     <div class="w-50 right">
       <canvas id="dildo-canvas" width="1024" height="768" title="Drag and rotate here.">Your browser does not support the canvas tag.</canvas>

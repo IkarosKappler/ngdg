@@ -236,11 +236,6 @@
     // +-------------------------------
     var buildId = null;
     var rebuild = function () {
-      // if (typeof outline === "undefined" || typeof dildoGeneration === "undefined") {
-      //   // Not yet fully initialized.
-      //   console.log("Not yet fully initialized.");
-      //   return;
-      // }
       buildId = new Date().getTime();
       window.setTimeout(
         (function (bId) {
@@ -292,6 +287,7 @@
     // +-------------------------------
     var dragListener = function (dragEvent) {
       // Uhm, well, some curve point moved.
+      updateOutlineStats();
       rebuild();
     };
     var addPathListeners = function (path) {
@@ -325,10 +321,11 @@
     // +---------------------------------------------------------------------------------
     // | Draw the split-indicator (if split position ready).
     // +-------------------------------
-    var postDraw = function () {
+    var postDraw = function (draw, fill) {
       drawBezierDistanceLine();
       drawRulers();
       drawResizeHandleLines(pb, outline, bezierResizer, config.resizeHandleLineColor);
+      drawOutlineToPolygon(draw, fill);
     };
 
     var drawBezierDistanceLine = function () {
@@ -344,17 +341,6 @@
     };
 
     // +---------------------------------------------------------------------------------
-    // | Add a mouse listener to track the mouse position.
-    // +-------------------------------
-    new MouseHandler(pb.canvas).move(function (e) {
-      var relPos = pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
-      var cx = document.getElementById("cx");
-      var cy = document.getElementById("cy");
-      if (cx) cx.innerHTML = relPos.x.toFixed(2);
-      if (cy) cy.innerHTML = relPos.y.toFixed(2);
-    });
-
-    // +---------------------------------------------------------------------------------
     // | Scale a given Bounds instance to a new size (from its center).
     // +-------------------------------
     var scaleBounds = function (bounds, scaleFactor) {
@@ -368,7 +354,11 @@
         bezierResizer.destroy();
         bezierResizer = null;
       }
-      bezierResizer = new BezierResizeHelper(pb, outline, rebuild);
+      var onUpdate = function () {
+        updateOutlineStats();
+        rebuild();
+      };
+      bezierResizer = new BezierResizeHelper(pb, outline, onUpdate);
       pb.add([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
     };
 
@@ -384,6 +374,7 @@
       updatePathResizer();
       addPathListeners(outline);
       pb.add(newOutline, false);
+      updateOutlineStats();
 
       // Install a Bézier interaction helper.
       new BezierPathInteractionHelper(pb, [outline], {
@@ -413,6 +404,50 @@
       setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
       if (doRebuild) {
         rebuild();
+      }
+    };
+
+    // +---------------------------------------------------------------------------------
+    // | Add stats.
+    // +-------------------------------
+    var stats = {
+      mouseX: 0,
+      mouseY: 0,
+      width: 0,
+      height: 0,
+      diameter: 0,
+      area: 0
+    };
+    var uiStats = new UIStats(stats);
+    stats = uiStats.proxy;
+    uiStats.add("mouseX").precision(1);
+    uiStats.add("mouseY").precision(1);
+    uiStats.add("width").precision(1).suffix(" mm");
+    uiStats.add("height").precision(1).suffix(" mm");
+    uiStats.add("diameter").precision(1).suffix(" mm");
+    uiStats.add("area").precision(1).suffix(" mm²");
+
+    // Add a mouse listener to track the mouse position.-
+    new MouseHandler(pb.canvas).move(function (e) {
+      var relPos = pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
+      stats.mouseX = relPos.x;
+      stats.mouseY = relPos.y;
+    });
+
+    var updateOutlineStats = function () {
+      var pathBounds = outline.getBounds();
+      stats.width = pathBounds.width * Rulers.mmPerUnit;
+      stats.height = pathBounds.height * Rulers.mmPerUnit;
+      stats.diameter = 2 * pathBounds.height * Rulers.mmPerUnit;
+      // stats.area = outline.toPolygon();
+    };
+
+    // THIS IS JUST EXPERIMENTAL
+    var drawOutlineToPolygon = function (draw, fill) {
+      var vertices = bezier2polygon(outline, 50);
+      // console.log("drawOutlineToPolygon vertices", vertices);
+      for (var i = 0; i < vertices.length; i++) {
+        draw.circleHandle(vertices[i], 3, "rgba(0,192,128,0.5)");
       }
     };
 

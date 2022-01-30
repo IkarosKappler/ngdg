@@ -3,7 +3,7 @@
  * @date    2021-11-07
  * @version 1.0.0
  *
- * @param {Object} GUP
+ * @param {Record<string,string>} GUP
  * @returns {boolean}
  */
 
@@ -18,6 +18,6 @@ function detectDarkMode(GUP) {
     }
   }
   var hours = new Date().getHours();
-  var isDayTime = hours > 6 && hours < 20;
+  var isDayTime = hours > 6 && hours < 18;
   return !isDayTime;
 }

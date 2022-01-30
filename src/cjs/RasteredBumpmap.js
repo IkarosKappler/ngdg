@@ -17,8 +17,8 @@ var RasteredBumpmap = /** @class */ (function () {
             rasterWidth = image.naturalHeight;
         }
         this.canvas = document.createElement("canvas");
-        this.canvas.setAttribute("width", rasterWidth + "px");
-        this.canvas.setAttribute("height", rasterHeight + "px");
+        this.canvas.setAttribute("width", "".concat(rasterWidth, "px"));
+        this.canvas.setAttribute("height", "".concat(rasterHeight, "px"));
         this.context = this.canvas.getContext("2d");
         this.context.drawImage(image, 0, 0, rasterWidth, rasterHeight);
         this.imageData = this.context.getImageData(0, 0, rasterWidth, rasterHeight).data;
@@ -60,8 +60,8 @@ var RasteredBumpmap = /** @class */ (function () {
     RasteredBumpmap.prototype.createPreviewImage = function () {
         var imageElem = document.createElement("img");
         imageElem.setAttribute("src", this.canvas.toDataURL("image/png"));
-        imageElem.setAttribute("width", "" + this.width);
-        imageElem.setAttribute("height", "" + this.height);
+        imageElem.setAttribute("width", "".concat(this.width));
+        imageElem.setAttribute("height", "".concat(this.height));
         return imageElem;
     };
     /**

@@ -10,7 +10,8 @@
 function initGUI(pb, config, GUP, rebuildCallback) {
   // TODO: remove the DatGuiProps again from PB? Not Used? Not Working?
   // See https://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-dat-gui-dropdown
-  var gui = pb.createGUI(); // { autoPlace: false });
+  var gui = pb.createGUI({ autoPlace: false });
+  document.getElementsByTagName("body")[0].appendChild(gui.domElement);
   gui.domElement.id = "gui";
 
   var fold0 = gui.addFolder("Path");

@@ -2850,7 +2850,7 @@ exports.DEFAULT_BEZIER_JSON = "\n  [\n    {\n       \"startPoint\":[\n          
 
 
 // Export the library to the global scope:
-globalThis.ngdg = __webpack_require__(/*! ./ngdg */ "./src/cjs/ngdg.js").ngdg;
+globalThis.ngdg = (__webpack_require__(/*! ./ngdg */ "./src/cjs/ngdg.js").ngdg);
 
 
 /***/ }),
@@ -3243,7 +3243,7 @@ exports.randomWebColor = randomWebColor;
 /******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
 /******/ 					installedChunks[chunkId][0]();
 /******/ 				}
-/******/ 				installedChunks[chunkIds[i]] = 0;
+/******/ 				installedChunks[chunkId] = 0;
 /******/ 			}
 /******/ 			return __webpack_require__.O(result);
 /******/ 		}
