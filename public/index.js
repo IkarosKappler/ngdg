@@ -398,14 +398,11 @@
             bezierDistanceT = newT;
           }
         },
-        onVertexInserted: function (pathIndex, insertAfterIndex, newPath, oldPath) {
-          // console.log("[pathIndex=" + pathIndex + "] Vertex inserted after " + insertAfterIndex);
-          // console.log("oldPath", oldPath, "newPath", newPath);
+        onVertexInserted: function (_pathIndex, _insertAfterIndex, newPath, _oldPath) {
           setPathInstance(newPath);
           rebuild();
         },
-        onVerticesDeleted: function (pathIndex, deletedVertIndices, newPath, oldPath) {
-          // console.log("[pathIndex=" + pathIndex + "] vertices deleted", deletedVertIndices);
+        onVerticesDeleted: function (_pathIndex, _deletedVertIndices, newPath, _oldPath) {
           setPathInstance(newPath);
           rebuild();
         }
