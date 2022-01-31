@@ -56,6 +56,8 @@ function initGUI(pb, config, GUP, rebuildCallback) {
 
   var fold4 = gui.addFolder("Render Settings");
   // prettier-ignore
+  fold4.add(config, "showDiscreteOutlinePoints").onChange( function() { pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
+  // prettier-ignore
   fold4.add(config, "wireframe").onChange( function() { rebuildCallback() } ).name('wireframe').title('Display the mesh as a wireframe model?');
   // prettier-ignore
   fold4.add(config, "useTextureImage").onChange( function() { rebuildCallback() } ).name('useTextureImage').title('Use a texture image?');

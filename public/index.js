@@ -116,6 +116,7 @@
         pathBoundsColor: isDarkmode ? "rgba(64,64,64,.5)" : "rgba(0,0,0,0.5)",
         resizeHandleLineColor: isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
         rulerColor: isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)",
+        showDiscreteOutlinePoints: false,
         // Functions
         exportSTL: function () {
           exportSTL();
@@ -325,7 +326,9 @@
       drawBezierDistanceLine();
       drawRulers();
       drawResizeHandleLines(pb, outline, bezierResizer, config.resizeHandleLineColor);
-      drawOutlineToPolygon(draw, fill);
+      if (config.showDiscreteOutlinePoints) {
+        drawOutlineToPolygon(draw, fill);
+      }
     };
 
     var drawBezierDistanceLine = function () {
@@ -444,6 +447,7 @@
 
     // THIS IS JUST EXPERIMENTAL
     var drawOutlineToPolygon = function (draw, fill) {
+      outline.updateArcLengths();
       var vertices = bezier2polygon(outline, 50);
       // console.log("drawOutlineToPolygon vertices", vertices);
       for (var i = 0; i < vertices.length; i++) {
@@ -520,7 +524,7 @@
 
     // Add action buttons
     // prettier-ignore
-    ActionButtons.addNewButton(function() { setDefaultPathInstance(true); acquireOptimalPathView() });
+    ActionButtons.addNewButton(function() { setDefaultPathInstance(true); acquireOptimalPathView(pb,outline ) });
     // prettier-ignore
     ActionButtons.addFitToViewButton( function() { acquireOptimalPathView(pb, outline); } );
   });
