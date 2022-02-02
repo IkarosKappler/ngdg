@@ -38,6 +38,12 @@ Because 3d printing, web 3d, and dildos are fun.
 
 ### Changelog
 
+- 2022-02-02
+  - Fixed the localstorage loading issue.
+  - Fixed the replace-path issue (destroying all installed event handlers and listeners first).
+  - Added an option for double-size dat.gui.
+  - Fixed a split-path issue (double installed event listeners after the action).
+  - Added FileDrop for dropping JSON files (path files containing a Bézier path).
 - 2021-12-03
   - Refactored the code for resizing the path.
   - Upadted to plotboilerplate@1.14.0.

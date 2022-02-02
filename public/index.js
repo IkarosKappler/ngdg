@@ -387,8 +387,6 @@
 
       // Install a Bézier interaction helper.
       if (!bezierPathInteractionHelper || !keepOldInteractionHelper) {
-        console.log("Re-init bezier path interaction helper");
-
         if (bezierPathInteractionHelper) {
           bezierPathInteractionHelper.destroy();
         }
@@ -506,13 +504,25 @@
     // | Load the config from the local storage.
     // | Handle file drop.
     // +-------------------------------
-    var configIO = new ngdg.ConfigIO(document.getElementsByTagName("body")[0]);
-    configIO.onPathDropped(function (jsonString) {
-      // This is called when a json string was loaded by drop (from a file)
-      loadPathJSON(jsonString);
+    var localstorageIO = new ngdg.LocalstorageIO(document.getElementsByTagName("body")[0]);
+    var fileDrop = new FileDrop(pb.eventCatcher);
+    fileDrop.onFileJSONDropped(function (jsonObject) {
+      // console.log("jsonObject", jsonObject);
+      // setVertexData(jsonObject);
+      try {
+        setPathInstance(BezierPath.fromArray(jsonObject));
+        rebuild();
+      } catch (e) {
+        console.error("Failed to retrieve Bézier path from localstorage", jsonObject);
+        console.log(e);
+      }
     });
+    // configIO.onPathDropped(function (jsonString) {
+    //   // This is called when a json string was loaded by drop (from a file)
+    //   loadPathJSON(jsonString);
+    // });
     // TODO: restore!!!
-    configIO.onPathRestored(
+    localstorageIO.onPathRestored(
       function (jsonString) {
         // This is called when json string was loaded from storage
         if (!GUP.rbdata) {

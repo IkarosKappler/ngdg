@@ -75,116 +75,6 @@ exports.BumpMapper = {
 
 /***/ }),
 
-/***/ "./src/cjs/ConfigIO.js":
-/*!*****************************!*\
-  !*** ./src/cjs/ConfigIO.js ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-
-/**
- * A basic IO interface for storing and retrieving json data from dropped files and local storage.
- *
- * @author  Ikaros Kappler
- * @date    2021-10-13
- * @version 1.0.0
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfigIO = void 0;
-var ConfigIO = /** @class */ (function () {
-    /**
-     *
-     * @param {HTMLElement} element - The element you wish to operate as the drop zone (like <body/>).
-     */
-    function ConfigIO(element) {
-        var _this = this;
-        this.handleDropEvent = function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            _this.element.style.opacity = "1.0";
-            if (!event.dataTransfer.files || event.dataTransfer.files.length === 0) {
-                // No files were dropped
-                return;
-            }
-            if (event.dataTransfer.files.length > 1) {
-                // Multiple file drop is not nupported
-                return;
-            }
-            if (!_this.pathDroppedCallback) {
-                // No handling callback defined.
-                return;
-            }
-            if (event.dataTransfer.files[0]) {
-                var file = event.dataTransfer.files[0];
-                console.log("file", file);
-                if (file.type.match(/json.*/)) {
-                    var reader = new FileReader();
-                    reader.onload = function (readEvent) {
-                        // Finished reading file data.
-                        _this.pathDroppedCallback(readEvent.target.result);
-                    };
-                    reader.readAsText(file); // start reading the file data.
-                }
-            }
-        };
-        this.handleDragOverEvent = function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            _this.element.style.opacity = "0.5";
-        };
-        this.handleDragLeaveEvent = function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            _this.element.style.opacity = "1.0";
-        };
-        this.element = element;
-        // Init the drop listeners
-        element.addEventListener("drop", this.handleDropEvent.bind(this));
-        element.addEventListener("dragover", this.handleDragOverEvent.bind(this));
-        element.addEventListener("dragleave", this.handleDragLeaveEvent.bind(this));
-    }
-    /**
-     * Install the drop callback. Note than only one callback can be installed in this
-     * implementation. Calling this method multiple times will overwrite previously
-     * installed listeners.
-     *
-     * The callback will receive the dropped files as a string.
-     *
-     * @param {(data:string)=>void} callback
-     */
-    ConfigIO.prototype.onPathDropped = function (callback) {
-        this.pathDroppedCallback = callback;
-    };
-    /**
-     * Install a callback for retrieving the `bezier_path` string from the localstorage.
-     *
-     * @param {(data:string)=>void} handlePathRestored - The callback to handle the retrieved storage value. Will be called immediately.
-     * @param {()=>string} requestPath - Requests the `bezier_path` string value to store; will be called on a 10 second timer interval.
-     */
-    ConfigIO.prototype.onPathRestored = function (handlePathRestored, requestPath) {
-        var bezierJSON = localStorage.getItem("bezier_path");
-        if (bezierJSON) {
-            handlePathRestored(bezierJSON);
-        }
-        setInterval(function () {
-            var newBezierJSON = requestPath();
-            if (newBezierJSON) {
-                localStorage.setItem("bezier_path", newBezierJSON);
-            }
-        }, 10000);
-    };
-    ConfigIO.prototype.destroy = function () {
-        this.element.removeEventListener("drop", this.handleDropEvent);
-        this.element.removeEventListener("dragover", this.handleDragOverEvent);
-        this.element.removeEventListener("dragleave", this.handleDragLeaveEvent);
-    };
-    return ConfigIO;
-}());
-exports.ConfigIO = ConfigIO;
-//# sourceMappingURL=ConfigIO.js.map
-
-/***/ }),
-
 /***/ "./src/cjs/DildoGeneration.js":
 /*!************************************!*\
   !*** ./src/cjs/DildoGeneration.js ***!
@@ -2203,6 +2093,55 @@ exports.ImageStore = (function () {
 
 /***/ }),
 
+/***/ "./src/cjs/LocalstorageIO.js":
+/*!***********************************!*\
+  !*** ./src/cjs/LocalstorageIO.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+/**
+ * A basic IO interface for storing and retrieving json data from local storage.
+ *
+ * @author   Ikaros Kappler
+ * @date     2021-10-13
+ * @modified 2022-02-02 Removed the dnd IO (using FileDrop.js instead).
+ * @version  1.1.0
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LocalstorageIO = void 0;
+var LocalstorageIO = /** @class */ (function () {
+    /**
+     *
+     * @param {HTMLElement} element - The element you wish to operate as the drop zone (like <body/>).
+     */
+    function LocalstorageIO() {
+    }
+    /**
+     * Install a callback for retrieving the `bezier_path` string from the localstorage.
+     *
+     * @param {(data:string)=>void} handlePathRestored - The callback to handle the retrieved storage value. Will be called immediately.
+     * @param {()=>string} requestPath - Requests the `bezier_path` string value to store; will be called on a 10 second timer interval.
+     */
+    LocalstorageIO.prototype.onPathRestored = function (handlePathRestored, requestPath) {
+        var bezierJSON = localStorage.getItem("bezier_path");
+        if (bezierJSON) {
+            handlePathRestored(bezierJSON);
+        }
+        setInterval(function () {
+            var newBezierJSON = requestPath();
+            if (newBezierJSON) {
+                localStorage.setItem("bezier_path", newBezierJSON);
+            }
+        }, 10000);
+    };
+    return LocalstorageIO;
+}());
+exports.LocalstorageIO = LocalstorageIO;
+//# sourceMappingURL=LocalstorageIO.js.map
+
+/***/ }),
+
 /***/ "./src/cjs/PathFinder.js":
 /*!*******************************!*\
   !*** ./src/cjs/PathFinder.js ***!
@@ -3035,11 +2974,11 @@ exports.ngdg = void 0;
 var defaults_1 = __webpack_require__(/*! ./defaults */ "./src/cjs/defaults.js");
 var ImageStore_1 = __webpack_require__(/*! ./ImageStore */ "./src/cjs/ImageStore.js");
 var DildoGeneration_1 = __webpack_require__(/*! ./DildoGeneration */ "./src/cjs/DildoGeneration.js");
-var ConfigIO_1 = __webpack_require__(/*! ./ConfigIO */ "./src/cjs/ConfigIO.js");
+var LocalstorageIO_1 = __webpack_require__(/*! ./LocalstorageIO */ "./src/cjs/LocalstorageIO.js");
 var isMobileDevice_1 = __webpack_require__(/*! ./isMobileDevice */ "./src/cjs/isMobileDevice.js");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
-    ConfigIO: ConfigIO_1.ConfigIO,
+    LocalstorageIO: LocalstorageIO_1.LocalstorageIO,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
     ImageStore: ImageStore_1.ImageStore,
     isMobileDevice: isMobileDevice_1.isMobileDevice

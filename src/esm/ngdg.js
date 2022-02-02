@@ -11,11 +11,11 @@
 import { DEFAULT_BEZIER_JSON } from "./defaults";
 import { ImageStore } from "./ImageStore";
 import { DildoGeneration } from "./DildoGeneration";
-import { ConfigIO } from "./ConfigIO";
+import { LocalstorageIO } from "./LocalstorageIO";
 import { isMobileDevice } from "./isMobileDevice";
 export const ngdg = {
     DEFAULT_BEZIER_JSON,
-    ConfigIO,
+    LocalstorageIO,
     DildoGeneration,
     ImageStore,
     isMobileDevice

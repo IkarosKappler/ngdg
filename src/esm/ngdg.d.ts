@@ -9,10 +9,10 @@
  * @modified 2022-01-29
  */
 import { DildoGeneration } from "./DildoGeneration";
-import { ConfigIO } from "./ConfigIO";
+import { LocalstorageIO } from "./LocalstorageIO";
 export declare const ngdg: {
     DEFAULT_BEZIER_JSON: string;
-    ConfigIO: typeof ConfigIO;
+    LocalstorageIO: typeof LocalstorageIO;
     DildoGeneration: typeof DildoGeneration;
     ImageStore: {
         getImage: (path: string, onComplete: (completeImage: HTMLImageElement) => void) => HTMLImageElement;

@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./BumpMapper"), exports);
 __exportStar(require("./clearDuplicateVertices3"), exports);
 __exportStar(require("./computeVertexNormals"), exports);
-__exportStar(require("./ConfigIO"), exports);
+__exportStar(require("./LocalstorageIO"), exports);
 __exportStar(require("./constants"), exports);
 __exportStar(require("./defaults"), exports);
 __exportStar(require("./DildoGeneration"), exports);

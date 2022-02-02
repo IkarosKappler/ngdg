@@ -1073,7 +1073,10 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-07-24 Added the getClosestT(Vertex) function.
  * @modified 2020-12-29 Constructor is now private (no explicit use intended).
  * @modified 2021-05-25 Added BezierPath.fromReducedList( Array<number> ).
- * @version 2.3.1
+ * @modified 2022-01-31 Added `BezierPath.getEvenDistributionVertices(number)`.
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @modified 2022-02-02 Cleared the `toSVGString` function (deprecated). Use `drawutilssvg` instead.
+ * @version 2.5.0
  *
  * @file BezierPath
  * @public
@@ -1969,6 +1972,59 @@ class BezierPath {
         return new _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds(min, max);
     }
     /**
+     * Get n 'equally' distributed vertices along this Bézier path.
+     *
+     * As the changing curvature of the B slines makes prediction of distances difficult, the
+     * returned vertices' distances are only relatively equal:
+     *  - the distance grows where curvature is large.
+     *  - the distance shrinks where curvature is small.
+     *
+     * Only the distance mean of all consecutive is 1/n-th of the total arc length.
+     *
+     * Usually this approximation is good enough for most use cases.
+     *
+     * @param {number} pointCount - (must be at least 2) The number of desired points (start and end point included).
+     * @return {Array<Vertex>}
+     */
+    getEvenDistributionVertices(pointCount) {
+        if (pointCount < 2) {
+            throw new Error("pointCount must be larger than one; is " + pointCount + ".");
+        }
+        const result = [];
+        if (this.bezierCurves.length === 0) {
+            return result;
+        }
+        // Fetch and add the start point from the source polygon
+        var polygonPoint = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(this.bezierCurves[0].startPoint);
+        result.push(polygonPoint);
+        // if (this.bezierCurves.length === 1) {
+        //   return result;
+        // }
+        const perimeter = this.totalArcLength;
+        const stepSize = perimeter / (pointCount - 1);
+        const n = this.bezierCurves.length;
+        let curveIndex = 0;
+        let segmentLength = this.bezierCurves[0].arcLength;
+        let curSegmentU = stepSize;
+        let i = 1;
+        while (i < pointCount && curveIndex < n) {
+            // Check if next eq point is inside this segment
+            if (curSegmentU < segmentLength) {
+                var newPoint = this.bezierCurves[curveIndex].getPoint(curSegmentU);
+                result.push(newPoint);
+                curSegmentU += stepSize;
+                i++;
+            }
+            else {
+                curveIndex++;
+                curSegmentU = curSegmentU - segmentLength;
+                segmentLength = curveIndex < n ? this.bezierCurves[curveIndex].arcLength : 0;
+            }
+        }
+        result.push(new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(this.bezierCurves[n - 1].endPoint));
+        return result;
+    }
+    /**
      * Clone this BezierPath (deep clone).
      *
      * @method clone
@@ -2025,19 +2081,30 @@ class BezierPath {
      * @return {string} The SVG string.
      **/
     toSVGString(options) {
-        options = options || {};
-        var buffer = [];
-        buffer.push("<path");
-        if (options.className)
-            buffer.push(' class="' + options.className + '"');
-        buffer.push(' d="');
-        for (var c = 0; c < this.bezierCurves.length; c++) {
-            if (c > 0)
-                buffer.push(" ");
-            buffer.push(this.bezierCurves[c].toSVGPathData());
+        // options = options || {};
+        // var buffer: Array<string> = [];
+        // buffer.push("<path");
+        // if (options.className) buffer.push(' class="' + options.className + '"');
+        // buffer.push(' d="');
+        // for (var c = 0; c < this.bezierCurves.length; c++) {
+        //   if (c > 0) buffer.push(" ");
+        //   buffer.push(this.bezierCurves[c].toSVGPathData());
+        // }
+        // buffer.push('" />');
+        // return buffer.join("");
+        console.warn("[Deprecation] Warning: the BezierPath.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
+        return "";
+    }
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        for (var i = 0; i < this.bezierCurves.length; i++) {
+            this.bezierCurves[i].destroy();
         }
-        buffer.push('" />');
-        return buffer.join("");
+        this.isDestroyed = true;
     }
     /**
      * Create a JSON string representation of this bézier curve.
@@ -2368,7 +2435,9 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-09-07 Changed the vertAt function by switching sin and cos! The old version did not return the correct vertex (by angle) accoring to the assumed circle math.
  * @modified 2020-10-16 Added the containsCircle(...) function.
  * @modified 2021-01-20 Added UID.
- * @version  1.2.0
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @modified 2022-02-02 Cleared the `toSVGString` function (deprecated). Use `drawutilssvg` instead.
+ * @version  1.3.0
  **/
 
 
@@ -2403,7 +2472,6 @@ class Circle {
         this.center = center;
         this.radius = radius;
     }
-    ;
     /**
      * Check if the given circle is fully contained inside this circle.
      *
@@ -2416,7 +2484,6 @@ class Circle {
     containsCircle(circle) {
         return this.center.distance(circle.center) + circle.radius < this.radius;
     }
-    ;
     /**
      * Calculate the distance from this circle to the given line.
      *
@@ -2435,7 +2502,6 @@ class Circle {
         const closestPointOnLine = line.getClosestPoint(this.center);
         return closestPointOnLine.distance(this.center) - this.radius;
     }
-    ;
     /**
      * Get the vertex on the this circle for the given angle.
      *
@@ -2449,7 +2515,6 @@ class Circle {
         // Find the point on the circle respective the angle. Then move relative to center.
         return Circle.circleUtils.vertAt(angle, this.radius).add(this.center);
     }
-    ;
     /**
      * Get a tangent line of this circle for a given angle.
      *
@@ -2466,7 +2531,6 @@ class Circle {
         // Construct the perpendicular of the line in point a. Then move relative to center.
         return new _Vector__WEBPACK_IMPORTED_MODULE_2__.Vector(pointA, new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(0, 0)).add(this.center).perp();
     }
-    ;
     /**
      * Calculate the intersection points (if exists) with the given circle.
      *
@@ -2506,48 +2570,56 @@ class Circle {
         //    x4 = P2.x - h*(P1.y - P0.y)/d;
         //    y4 = P2.y + h*(P1.x - P0.x)/d;
         //    return pair<Point, Point>(Point(x3, y3), Point(x4, y4));
-        // } 
+        // }
         var p0 = this.center;
         var p1 = circle.center;
         var d = p0.distance(p1);
         var a = (this.radius * this.radius - circle.radius * circle.radius + d * d) / (2 * d);
         var h = Math.sqrt(this.radius * this.radius - a * a);
         var p2 = p1.clone().scale(a / d, p0);
-        var x3 = p2.x + h * (p1.y - p0.y) / d;
-        var y3 = p2.y - h * (p1.x - p0.x) / d;
-        var x4 = p2.x - h * (p1.y - p0.y) / d;
-        var y4 = p2.y + h * (p1.x - p0.x) / d;
+        var x3 = p2.x + (h * (p1.y - p0.y)) / d;
+        var y3 = p2.y - (h * (p1.x - p0.x)) / d;
+        var x4 = p2.x - (h * (p1.y - p0.y)) / d;
+        var y4 = p2.y + (h * (p1.x - p0.x)) / d;
         return new _Line__WEBPACK_IMPORTED_MODULE_0__.Line(new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(x3, y3), new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(x4, y4));
     }
-    ;
     /**
-      * Create an SVG representation of this circle.
-      *
-      * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-      * @method toSVGString
-      * @param {object=} options - An optional set of options, like 'className'.
-      * @return {string} A string representing the SVG code for this vertex.
-      * @instance
-      * @memberof Circle
-      */
+     * Create an SVG representation of this circle.
+     *
+     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
+     * @method toSVGString
+     * @param {object=} options - An optional set of options, like 'className'.
+     * @return {string} A string representing the SVG code for this vertex.
+     * @instance
+     * @memberof Circle
+     */
     toSVGString(options) {
-        options = options || {};
-        var buffer = [];
-        buffer.push('<circle');
-        if (options.className)
-            buffer.push(' class="' + options.className + '"');
-        buffer.push(' cx="' + this.center.x + '"');
-        buffer.push(' cy="' + this.center.y + '"');
-        buffer.push(' r="' + this.radius + '"');
-        buffer.push(' />');
-        return buffer.join('');
+        // options = options || {};
+        // var buffer: Array<string> = [];
+        // buffer.push("<circle");
+        // if (options.className) buffer.push(' class="' + options.className + '"');
+        // buffer.push(' cx="' + this.center.x + '"');
+        // buffer.push(' cy="' + this.center.y + '"');
+        // buffer.push(' r="' + this.radius + '"');
+        // buffer.push(" />");
+        // return buffer.join("");
+        console.warn("[Deprecation] Warning: the Circle.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
+        return "";
     }
-    ;
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        this.center.destroy();
+        this.isDestroyed = true;
+    }
 } // END class
 Circle.circleUtils = {
     vertAt: (angle, radius) => {
         /* return new Vertex( Math.sin(angle) * radius,
-                   Math.cos(angle) * radius ); */
+                     Math.cos(angle) * radius ); */
         return new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(Math.cos(angle) * radius, Math.sin(angle) * radius);
     }
 };
@@ -2603,27 +2675,42 @@ class CircleSector {
         this.startAngle = startAngle;
         this.endAngle = endAngle;
     }
-    ;
     /**
-      * Create an SVG representation of this circle.
-      *
-      * @method toSVGString
-      * @param {object=} options - An optional set of options, like 'className'.
-      * @return {string} A string representing the SVG code for this vertex.
-      * @instance
-      * @memberof Circle
-      */
+     * Create an SVG representation of this circle.
+     *
+     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
+     * @method toSVGString
+     * @param {object=} options - An optional set of options, like 'className'.
+     * @return {string} A string representing the SVG code for this vertex.
+     * @instance
+     * @memberof Circle
+     */
     toSVGString(options) {
-        options = options || {};
-        var buffer = [];
-        buffer.push('<path ');
-        if (options.className)
-            buffer.push(' class="' + options.className + '"');
-        const data = CircleSector.circleSectorUtils.describeSVGArc(this.circle.center.x, this.circle.center.y, this.circle.radius, this.startAngle, this.endAngle);
-        buffer.push(' d="' + data.join(" ") + '" />');
-        return buffer.join('');
+        // options = options || {};
+        // var buffer: Array<string> = [];
+        // buffer.push("<path ");
+        // if (options.className) buffer.push(' class="' + options.className + '"');
+        // const data: SVGPathParams = CircleSector.circleSectorUtils.describeSVGArc(
+        //   this.circle.center.x,
+        //   this.circle.center.y,
+        //   this.circle.radius,
+        //   this.startAngle,
+        //   this.endAngle
+        // );
+        // buffer.push(' d="' + data.join(" ") + '" />');
+        // return buffer.join("");
+        console.warn("[Deprecation] Warning: the CircleSector.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
+        return "";
     }
-    ;
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        this.circle.destroy();
+        this.isDestroyed = true;
+    }
 } // END class
 CircleSector.circleSectorUtils = {
     /**
@@ -2632,11 +2719,11 @@ CircleSector.circleSectorUtils = {
      * TODO: generalize for ellipses (two radii).
      *
      * @param {number} angle - The angle in radians.
-    */
+     */
     polarToCartesian: (centerX, centerY, radius, angle) => {
         return {
-            x: centerX + (radius * Math.cos(angle)),
-            y: centerY + (radius * Math.sin(angle))
+            x: centerX + radius * Math.cos(angle),
+            y: centerY + radius * Math.sin(angle)
         };
     },
     /**
@@ -2649,7 +2736,7 @@ CircleSector.circleSectorUtils = {
      * @return [ 'A', radiusx, radiusy, rotation=0, largeArcFlag=1|0, sweepFlag=0, endx, endy ]
      */
     describeSVGArc: (x, y, radius, startAngle, endAngle, options) => {
-        if (typeof options === 'undefined')
+        if (typeof options === "undefined")
             options = { moveToStart: true };
         const end = CircleSector.circleSectorUtils.polarToCartesian(x, y, radius, endAngle);
         const start = CircleSector.circleSectorUtils.polarToCartesian(x, y, radius, startAngle);
@@ -2674,7 +2761,7 @@ CircleSector.circleSectorUtils = {
         }
         const pathData = [];
         if (options.moveToStart) {
-            pathData.push('M', start.x, start.y);
+            pathData.push("M", start.x, start.y);
         }
         pathData.push("A", radius, radius, 0, largeArcFlag, sweepFlag, end.x, end.y);
         return pathData;
@@ -2718,7 +2805,9 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-07-14 Changed the moveCurvePoint(...,Vertex) to moveCurvePoint(...,XYCoords), which is more generic.
  * @modified 2020-07-24 Added the getClosestT function and the helper function locateIntervalByDistance(...).
  * @modified 2021-01-20 Added UID.
- * @version 2.5.0
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @modified 2022-02-02 Cleared the `toSVGPathData` function (deprecated). Use `drawutilssvg` instead.
+ * @version 2.6.0
  *
  * @file CubicBezierCurve
  * @public
@@ -2771,7 +2860,6 @@ class CubicBezierCurve {
         this.arcLength = null;
         this.updateArcLengths();
     }
-    ;
     /**
      * Move the given curve point (the start point, end point or one of the two
      * control points).
@@ -2808,7 +2896,6 @@ class CubicBezierCurve {
         if (updateArcLengths)
             this.updateArcLengths();
     }
-    ;
     /**
      * Translate the whole curve by the given {x,y} amount: moves all four points.
      *
@@ -2825,7 +2912,6 @@ class CubicBezierCurve {
         this.endPoint.add(amount);
         return this;
     }
-    ;
     /**
      * Reverse this curve, means swapping start- and end-point and swapping
      * start-control- and end-control-point.
@@ -2844,7 +2930,6 @@ class CubicBezierCurve {
         this.endControlPoint = tmp;
         return this;
     }
-    ;
     /**
      * Get the total curve length.<br>
      * <br>
@@ -2863,7 +2948,6 @@ class CubicBezierCurve {
     getLength() {
         return this.arcLength;
     }
-    ;
     /**
      * Uptate the internal arc segment buffer and their lengths.<br>
      * <br>
@@ -2901,7 +2985,6 @@ class CubicBezierCurve {
         }
         this.arcLength = newLength;
     }
-    ;
     /**
      * Get a 't' (relative position on curve) with the closest distance to point 'p'.
      *
@@ -2924,7 +3007,6 @@ class CubicBezierCurve {
         } while (iteration < 4 && this.getPointAt(result.tPrev).distance(this.getPointAt(result.tNext)) > desiredEpsilon);
         return result.t;
     }
-    ;
     /**
      * This helper function locates the 't' on a fixed step interval with the minimal distance
      * between the curve (at 't') and the given point.
@@ -2953,12 +3035,12 @@ class CubicBezierCurve {
                 minDist = dist;
             }
         }
-        return { t: tStart + tDiff * (minIndex / stepCount),
+        return {
+            t: tStart + tDiff * (minIndex / stepCount),
             tPrev: tStart + tDiff * (Math.max(0, minIndex - 1) / stepCount),
             tNext: tStart + tDiff * (Math.min(stepCount, minIndex + 1) / stepCount)
         };
     }
-    ;
     /**
      * Get the bounds of this bezier curve.
      *
@@ -2980,7 +3062,6 @@ class CubicBezierCurve {
         }
         return new _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds(min, max);
     }
-    ;
     /**
      * Get the start point of the curve.<br>
      * <br>
@@ -2994,7 +3075,6 @@ class CubicBezierCurve {
     getStartPoint() {
         return this.startPoint;
     }
-    ;
     /**
      * Get the end point of the curve.<br>
      * <br>
@@ -3008,7 +3088,6 @@ class CubicBezierCurve {
     getEndPoint() {
         return this.endPoint;
     }
-    ;
     /**
      * Get the start control point of the curve.<br>
      * <br>
@@ -3022,7 +3101,6 @@ class CubicBezierCurve {
     getStartControlPoint() {
         return this.startControlPoint;
     }
-    ;
     /**
      * Get the end control point of the curve.<br>
      * <br>
@@ -3036,7 +3114,6 @@ class CubicBezierCurve {
     getEndControlPoint() {
         return this.endControlPoint;
     }
-    ;
     /**
      * Get one of the four curve points specified by the passt point ID.
      *
@@ -3057,7 +3134,6 @@ class CubicBezierCurve {
             return this.endControlPoint;
         throw new Error(`Invalid point ID '${id}'.`);
     }
-    ;
     /**
      * Get the curve point at a given position t, where t is in [0,1].<br>
      * <br>
@@ -3072,13 +3148,16 @@ class CubicBezierCurve {
      **/
     getPointAt(t) {
         // Perform some powerful math magic
-        const x = this.startPoint.x * Math.pow(1.0 - t, 3) + this.startControlPoint.x * 3 * t * Math.pow(1.0 - t, 2)
-            + this.endControlPoint.x * 3 * Math.pow(t, 2) * (1.0 - t) + this.endPoint.x * Math.pow(t, 3);
-        const y = this.startPoint.y * Math.pow(1.0 - t, 3) + this.startControlPoint.y * 3 * t * Math.pow(1.0 - t, 2)
-            + this.endControlPoint.y * 3 * Math.pow(t, 2) * (1.0 - t) + this.endPoint.y * Math.pow(t, 3);
+        const x = this.startPoint.x * Math.pow(1.0 - t, 3) +
+            this.startControlPoint.x * 3 * t * Math.pow(1.0 - t, 2) +
+            this.endControlPoint.x * 3 * Math.pow(t, 2) * (1.0 - t) +
+            this.endPoint.x * Math.pow(t, 3);
+        const y = this.startPoint.y * Math.pow(1.0 - t, 3) +
+            this.startControlPoint.y * 3 * t * Math.pow(1.0 - t, 2) +
+            this.endControlPoint.y * 3 * Math.pow(t, 2) * (1.0 - t) +
+            this.endPoint.y * Math.pow(t, 3);
         return new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(x, y);
     }
-    ;
     /**
      * Get the curve point at a given position u, where u is in [0,arcLength].<br>
      * <br>
@@ -3094,7 +3173,6 @@ class CubicBezierCurve {
     getPoint(u) {
         return this.getPointAt(u / this.arcLength);
     }
-    ;
     /**
      * Get the curve tangent vector at a given absolute curve position t in [0,1].<br>
      * <br>
@@ -3115,18 +3193,11 @@ class CubicBezierCurve {
         const t2 = t * t;
         // (1 - t)^2 = (1-t)*(1-t) = 1 - t - t + t^2 = 1 - 2*t + t^2
         const nt2 = 1 - 2 * t + t2;
-        const tX = -3 * a.x * nt2 +
-            b.x * (3 * nt2 - 6 * (t - t2)) +
-            c.x * (6 * (t - t2) - 3 * t2) +
-            3 * d.x * t2;
-        const tY = -3 * a.y * nt2 +
-            b.y * (3 * nt2 - 6 * (t - t2)) +
-            c.y * (6 * (t - t2) - 3 * t2) +
-            3 * d.y * t2;
+        const tX = -3 * a.x * nt2 + b.x * (3 * nt2 - 6 * (t - t2)) + c.x * (6 * (t - t2) - 3 * t2) + 3 * d.x * t2;
+        const tY = -3 * a.y * nt2 + b.y * (3 * nt2 - 6 * (t - t2)) + c.y * (6 * (t - t2) - 3 * t2) + 3 * d.y * t2;
         // Note: my implementation does NOT normalize tangent vectors!
         return new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(tX, tY);
     }
-    ;
     /**
      * Get a sub curve at the given start end end offsets (values between 0.0 and 1.0).
      *
@@ -3152,7 +3223,6 @@ class CubicBezierCurve {
         // pb.draw.cubicBezier( startVec.a, endVec.a, startVec.b, endVec.b, '#8800ff', 2 );
         return new CubicBezierCurve(startVec.a, endVec.a, startVec.b, endVec.b);
     }
-    ;
     /**
      * Convert a relative curve position u to the absolute curve position t.
      *
@@ -3163,9 +3233,8 @@ class CubicBezierCurve {
      * @return {number}
      **/
     convertU2T(u) {
-        return Math.max(0.0, Math.min(1.0, (u / this.arcLength)));
+        return Math.max(0.0, Math.min(1.0, u / this.arcLength));
     }
-    ;
     /**
      * Get the curve tangent vector at a given relative position u in [0,arcLength].<br>
      * <br>
@@ -3180,7 +3249,6 @@ class CubicBezierCurve {
     getTangent(u) {
         return this.getTangentAt(this.convertU2T(u));
     }
-    ;
     /**
      * Get the curve perpendicular at a given relative position u in [0,arcLength] as a vector.<br>
      * <br>
@@ -3195,7 +3263,6 @@ class CubicBezierCurve {
     getPerpendicular(u) {
         return this.getPerpendicularAt(this.convertU2T(u));
     }
-    ;
     /**
      * Get the curve perpendicular at a given absolute position t in [0,1] as a vector.<br>
      * <br>
@@ -3211,7 +3278,6 @@ class CubicBezierCurve {
         const tangentVector = this.getTangentAt(t);
         return new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(tangentVector.y, -tangentVector.x);
     }
-    ;
     /**
      * Clone this Bézier curve (deep clone).
      *
@@ -3223,7 +3289,6 @@ class CubicBezierCurve {
     clone() {
         return new CubicBezierCurve(this.getStartPoint().clone(), this.getEndPoint().clone(), this.getStartControlPoint().clone(), this.getEndControlPoint().clone());
     }
-    ;
     /**
      * Check if this and the specified curve are equal.<br>
      * <br>
@@ -3242,17 +3307,25 @@ class CubicBezierCurve {
         //       Let's see if this restricted version works out.
         if (!curve)
             return false;
-        if (!curve.startPoint ||
-            !curve.endPoint ||
-            !curve.startControlPoint ||
-            !curve.endControlPoint)
+        if (!curve.startPoint || !curve.endPoint || !curve.startControlPoint || !curve.endControlPoint)
             return false;
-        return this.startPoint.equals(curve.startPoint)
-            && this.endPoint.equals(curve.endPoint)
-            && this.startControlPoint.equals(curve.startControlPoint)
-            && this.endControlPoint.equals(curve.endControlPoint);
+        return (this.startPoint.equals(curve.startPoint) &&
+            this.endPoint.equals(curve.endPoint) &&
+            this.startControlPoint.equals(curve.startControlPoint) &&
+            this.endControlPoint.equals(curve.endControlPoint));
     }
-    ;
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        this.startPoint.destroy();
+        this.endPoint.destroy();
+        this.startControlPoint.destroy();
+        this.endControlPoint.destroy();
+        this.isDestroyed = true;
+    }
     /**
      * Quick check for class instance.
      * Is there a better way?
@@ -3278,7 +3351,6 @@ class CubicBezierCurve {
         */
         return obj instanceof CubicBezierCurve;
     }
-    ;
     /**
      * Create an SVG path data representation of this bézier curve.
      *
@@ -3287,32 +3359,34 @@ class CubicBezierCurve {
      * or in other words<br>
      *   <pre>'M startoint.x startPoint.y C startControlPoint.x startControlPoint.y endControlPoint.x endControlPoint.y endPoint.x endPoint.y'</pre>
      *
+     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
      * @method toSVGPathData
      * @instance
      * @memberof CubicBezierCurve
      * @return {string}  The SVG path data string.
      **/
     toSVGPathData() {
-        var buffer = [];
-        buffer.push('M ');
-        buffer.push(this.startPoint.x.toString());
-        buffer.push(' ');
-        buffer.push(this.startPoint.y.toString());
-        buffer.push(' C ');
-        buffer.push(this.startControlPoint.x.toString());
-        buffer.push(' ');
-        buffer.push(this.startControlPoint.y.toString());
-        buffer.push(' ');
-        buffer.push(this.endControlPoint.x.toString());
-        buffer.push(' ');
-        buffer.push(this.endControlPoint.y.toString());
-        buffer.push(' ');
-        buffer.push(this.endPoint.x.toString());
-        buffer.push(' ');
-        buffer.push(this.endPoint.y.toString());
-        return buffer.join('');
+        // var buffer: Array<string> = [];
+        // buffer.push("M ");
+        // buffer.push(this.startPoint.x.toString());
+        // buffer.push(" ");
+        // buffer.push(this.startPoint.y.toString());
+        // buffer.push(" C ");
+        // buffer.push(this.startControlPoint.x.toString());
+        // buffer.push(" ");
+        // buffer.push(this.startControlPoint.y.toString());
+        // buffer.push(" ");
+        // buffer.push(this.endControlPoint.x.toString());
+        // buffer.push(" ");
+        // buffer.push(this.endControlPoint.y.toString());
+        // buffer.push(" ");
+        // buffer.push(this.endPoint.x.toString());
+        // buffer.push(" ");
+        // buffer.push(this.endPoint.y.toString());
+        // return buffer.join("");
+        console.warn("[Deprecation] Warning: the CubicBezierCurve.toSVGPathData method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
+        return "";
     }
-    ;
     /**
      * Convert this curve to a JSON string.
      *
@@ -3325,18 +3399,33 @@ class CubicBezierCurve {
     toJSON(prettyFormat) {
         var jsonString = "{ " + // begin object
             (prettyFormat ? "\n\t" : "") +
-            "\"startPoint\" : [" + this.getStartPoint().x + "," + this.getStartPoint().y + "], " +
+            '"startPoint" : [' +
+            this.getStartPoint().x +
+            "," +
+            this.getStartPoint().y +
+            "], " +
             (prettyFormat ? "\n\t" : "") +
-            "\"endPoint\" : [" + this.getEndPoint().x + "," + this.getEndPoint().y + "], " +
+            '"endPoint" : [' +
+            this.getEndPoint().x +
+            "," +
+            this.getEndPoint().y +
+            "], " +
             (prettyFormat ? "\n\t" : "") +
-            "\"startControlPoint\": [" + this.getStartControlPoint().x + "," + this.getStartControlPoint().y + "], " +
+            '"startControlPoint": [' +
+            this.getStartControlPoint().x +
+            "," +
+            this.getStartControlPoint().y +
+            "], " +
             (prettyFormat ? "\n\t" : "") +
-            "\"endControlPoint\" : [" + this.getEndControlPoint().x + "," + this.getEndControlPoint().y + "]" +
+            '"endControlPoint" : [' +
+            this.getEndControlPoint().x +
+            "," +
+            this.getEndControlPoint().y +
+            "]" +
             (prettyFormat ? "\n\t" : "") +
             " }"; // end object
         return jsonString;
     }
-    ;
     /**
      * Parse a Bézier curve from the given JSON string.
      *
@@ -3351,7 +3440,6 @@ class CubicBezierCurve {
         var obj = JSON.parse(jsonString);
         return CubicBezierCurve.fromObject(obj);
     }
-    ;
     /**
      * Try to convert the passed object to a CubicBezierCurve.
      *
@@ -3366,16 +3454,15 @@ class CubicBezierCurve {
         if (typeof obj !== "object")
             throw "Can only build from object.";
         if (!obj.startPoint)
-            throw "Object member \"startPoint\" missing.";
+            throw 'Object member "startPoint" missing.';
         if (!obj.endPoint)
-            throw "Object member \"endPoint\" missing.";
+            throw 'Object member "endPoint" missing.';
         if (!obj.startControlPoint)
-            throw "Object member \"startControlPoint\" missing.";
+            throw 'Object member "startControlPoint" missing.';
         if (!obj.endControlPoint)
-            throw "Object member \"endControlPoint\" missing.";
+            throw 'Object member "endControlPoint" missing.';
         return new CubicBezierCurve(new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(obj.startPoint[0], obj.startPoint[1]), new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(obj.endPoint[0], obj.endPoint[1]), new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(obj.startControlPoint[0], obj.startControlPoint[1]), new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(obj.endControlPoint[0], obj.endControlPoint[1]));
     }
-    ;
     /**
      * Convert a 4-element array of vertices to a cubic bézier curve.
      *
@@ -3392,7 +3479,6 @@ class CubicBezierCurve {
             throw "Can only build from array with four elements.";
         return new CubicBezierCurve(arr[0], arr[1], arr[2], arr[3]);
     }
-    ;
 }
 /** @constant {number} */
 CubicBezierCurve.START_POINT = 0;
@@ -3521,7 +3607,8 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-07-28 Changed the `delete` key code from 8 to 46.
  * @modified 2020-10-04 Changed `window` to `globalThis`.
  * @modified 2020-10-04 Added extended JSDoc.
- * @version  1.0.4
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @version  1.1.0
  *
  * @file KeyHandler
  * @public
@@ -3552,7 +3639,7 @@ class KeyHandler {
      * @memberof KeyHandler
      * @param {HTMLElement} options.element (optional) The HTML element to listen on; if null then 'window' will be used.
      * @param {boolean} options.trackAll (optional) Set to true if you want to keep track of _all_ keys (keyStatus).
-    **/
+     **/
     constructor(options) {
         this.downListeners = [];
         this.pressListeners = [];
@@ -3571,7 +3658,6 @@ class KeyHandler {
         // Install the listeners
         this.installListeners();
     }
-    ;
     /**
      * A helper function to fire key events from this KeyHandler.
      *
@@ -3589,7 +3675,6 @@ class KeyHandler {
         }
         return hasListener;
     }
-    ;
     /**
      * Internal function to fire a new keydown event to all listeners.
      * You should not call this function on your own unless you know what you do.
@@ -3605,10 +3690,9 @@ class KeyHandler {
     fireDownEvent(e, handler) {
         if (handler.fireEvent(e, handler.downListeners) || handler.trackAllKeys) {
             // Down event has listeners. Update key state.
-            handler.keyStates[e.keyCode] = 'down';
+            handler.keyStates[e.keyCode] = "down";
         }
     }
-    ;
     /**
      * Internal function to fire a new keypress event to all listeners.
      * You should not call this function on your own unless you know what you do.
@@ -3624,7 +3708,6 @@ class KeyHandler {
     firePressEvent(e, handler) {
         handler.fireEvent(e, handler.pressListeners);
     }
-    ;
     /**
      * Internal function to fire a new keyup event to all listeners.
      * You should not call this function on your own unless you know what you do.
@@ -3643,20 +3726,18 @@ class KeyHandler {
             delete handler.keyStates[e.keyCode];
         }
     }
-    ;
     /**
      * Resolve the key/name code.
      */
     static key2code(key) {
-        if (typeof key == 'number')
+        if (typeof key == "number")
             return key;
-        if (typeof key != 'string')
+        if (typeof key != "string")
             throw "Unknown key name or key type (should be a string or integer): " + key;
         if (KeyHandler.KEY_CODES[key])
             return KeyHandler.KEY_CODES[key];
         throw "Unknown key (cannot resolve key code): " + key;
     }
-    ;
     /**
      * Install the required listeners into the initially passed element.
      *
@@ -3665,20 +3746,24 @@ class KeyHandler {
      */
     installListeners() {
         var _self = this;
-        this.element.addEventListener('keydown', this._keyDownListener = (e) => { _self.fireDownEvent(e, _self); });
-        this.element.addEventListener('keypress', this._keyPressListener = (e) => { _self.firePressEvent(e, _self); });
-        this.element.addEventListener('keyup', this._keyUpListener = (e) => { _self.fireUpEvent(e, _self); });
+        this.element.addEventListener("keydown", (this._keyDownListener = (e) => {
+            _self.fireDownEvent(e, _self);
+        }));
+        this.element.addEventListener("keypress", (this._keyPressListener = (e) => {
+            _self.firePressEvent(e, _self);
+        }));
+        this.element.addEventListener("keyup", (this._keyUpListener = (e) => {
+            _self.fireUpEvent(e, _self);
+        }));
     }
-    ;
     /**
      *  Remove all installed event listeners from the underlying element.
      */
     releaseListeners() {
-        this.element.removeEventListener('keydown', this._keyDownListener);
-        this.element.removeEventListener('keypress', this._keyPressListener);
-        this.element.removeEventListener('keyup', this._keyUpListener);
+        this.element.removeEventListener("keydown", this._keyDownListener);
+        this.element.removeEventListener("keypress", this._keyPressListener);
+        this.element.removeEventListener("keyup", this._keyUpListener);
     }
-    ;
     /**
      * Listen for key down. This function allows chaining.
      *
@@ -3695,7 +3780,6 @@ class KeyHandler {
         this.downListeners.push({ key: key, keyCode: KeyHandler.key2code(key), listener: listener });
         return this;
     }
-    ;
     /**
      * Listen for key press.
      *
@@ -3712,7 +3796,6 @@ class KeyHandler {
         this.pressListeners.push({ key: key, keyCode: KeyHandler.key2code(key), listener: listener });
         return this;
     }
-    ;
     /**
      * Listen for key up.
      *
@@ -3729,23 +3812,31 @@ class KeyHandler {
         this.upListeners.push({ key: key, keyCode: KeyHandler.key2code(key), listener: listener });
         return this;
     }
-    ;
     /**
      * Check if a specific key is currently held pressed.
      *
      * @param {string|number} key - Any key identifier, key code or one from the KEY_CODES list.
      */
     isDown(key) {
-        if (typeof key == 'number')
+        if (typeof key == "number")
             return this.keyStates[key] ? true : false;
         else
             return this.keyStates[KeyHandler.key2code(key)] ? true : false;
+    }
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used any more.
+     */
+    destroy() {
+        this.releaseListeners();
     }
 }
 /**
  * Source:
  * https://keycode.info/
  */
+// prettier-ignore
 KeyHandler.KEY_CODES = {
     'break': 3,
     'backspace': 8,
@@ -3968,7 +4059,8 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-03-16 The Line.angle(Line) parameter is now optional. The baseline (x-axis) will be used if not defined.
  * @modified 2020-03-23 Ported to Typescript from JS.
  * @modified 2020-12-04 The `intersection` function returns undefined if both lines are parallel.
- * @version  2.1.3
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @version  2.2.0
  *
  * @file Line
  * @public
@@ -4015,20 +4107,19 @@ class Line extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
             return null;
         let a = this.a.y - line.a.y;
         let b = this.a.x - line.a.x;
-        const numerator1 = ((line.b.x - line.a.x) * a) - ((line.b.y - line.a.y) * b);
-        const numerator2 = ((this.b.x - this.a.x) * a) - ((this.b.y - this.a.y) * b);
+        const numerator1 = (line.b.x - line.a.x) * a - (line.b.y - line.a.y) * b;
+        const numerator2 = (this.b.x - this.a.x) * a - (this.b.y - this.a.y) * b;
         a = numerator1 / denominator; // NaN if parallel lines
         b = numerator2 / denominator;
         // Catch NaN?
-        const x = this.a.x + (a * (this.b.x - this.a.x));
-        const y = this.a.y + (a * (this.b.y - this.a.y));
+        const x = this.a.x + a * (this.b.x - this.a.x);
+        const y = this.a.y + a * (this.b.y - this.a.y);
         if (isNaN(a) || isNaN(x) || isNaN(y)) {
             return undefined;
         }
         // if we cast these lines infinitely in both directions, they intersect here:
         return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(x, y);
     }
-    ;
     /**
      * Create an SVG representation of this line.
      *
@@ -4041,19 +4132,20 @@ class Line extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
      * @memberof Line
      **/
     toSVGString(options) {
-        options = options || {};
-        var buffer = [];
-        buffer.push('<line');
-        if (options.className)
-            buffer.push(' class="' + options.className + '"');
-        buffer.push(' x1="' + this.a.x + '"');
-        buffer.push(' y1="' + this.a.y + '"');
-        buffer.push(' x2="' + this.b.x + '"');
-        buffer.push(' y2="' + this.b.y + '"');
-        buffer.push(' />');
-        return buffer.join('');
+        // options = options || {};
+        // var buffer = [];
+        // buffer.push( '<line' );
+        // if( options.className )
+        // buffer.push( ' class="' + options.className + '"' );
+        // buffer.push( ' x1="' + this.a.x + '"' );
+        // buffer.push( ' y1="' + this.a.y + '"' );
+        // buffer.push( ' x2="' + this.b.x + '"' );
+        // buffer.push( ' y2="' + this.b.y + '"' );
+        // buffer.push( ' />' );
+        // return buffer.join('');
+        console.warn("[Deprecation] Warning: the Line.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
+        return "";
     }
-    ;
 }
 //# sourceMappingURL=Line.js.map
 
@@ -4194,41 +4286,41 @@ class MouseHandler {
         // | drag offset, ...) to the callbacks.
         // +-------------------------------------------------
         const _self = this;
-        this.handlers['mousemove'] = (e) => {
+        this.handlers["mousemove"] = (e) => {
             if (_self.listeners.mousemove)
-                _self.listeners.mousemove(_self.mkParams(e, 'mousemove'));
+                _self.listeners.mousemove(_self.mkParams(e, "mousemove"));
             if (_self.mouseDragPos && _self.listeners.drag)
-                _self.listeners.drag(_self.mkParams(e, 'drag'));
+                _self.listeners.drag(_self.mkParams(e, "drag"));
             if (_self.mouseDownPos)
                 _self.mouseDragPos = _self.relPos(e);
         };
-        this.handlers['mouseup'] = (e) => {
+        this.handlers["mouseup"] = (e) => {
             if (_self.listeners.mouseup)
-                _self.listeners.mouseup(_self.mkParams(e, 'mouseup'));
+                _self.listeners.mouseup(_self.mkParams(e, "mouseup"));
             _self.mouseDragPos = undefined;
             _self.mouseDownPos = undefined;
             _self.mouseButton = -1;
         };
-        this.handlers['mousedown'] = (e) => {
+        this.handlers["mousedown"] = (e) => {
             _self.mouseDragPos = _self.relPos(e);
             _self.mouseDownPos = _self.relPos(e);
             _self.mouseButton = e.button;
             if (_self.listeners.mousedown)
-                _self.listeners.mousedown(_self.mkParams(e, 'mousedown'));
+                _self.listeners.mousedown(_self.mkParams(e, "mousedown"));
         };
-        this.handlers['click'] = (e) => {
+        this.handlers["click"] = (e) => {
             if (_self.listeners.click)
-                _self.listeners.click(_self.mkParams(e, 'click'));
+                _self.listeners.click(_self.mkParams(e, "click"));
         };
-        this.handlers['wheel'] = (e) => {
+        this.handlers["wheel"] = (e) => {
             if (_self.listeners.wheel)
-                _self.listeners.wheel(_self.mkParams(e, 'wheel'));
+                _self.listeners.wheel(_self.mkParams(e, "wheel"));
         };
-        this.element.addEventListener('mousemove', this.handlers['mousemove']);
-        this.element.addEventListener('mouseup', this.handlers['mouseup']);
-        this.element.addEventListener('mousedown', this.handlers['mousedown']);
-        this.element.addEventListener('click', this.handlers['click']);
-        this.element.addEventListener('wheel', this.handlers['wheel']);
+        this.element.addEventListener("mousemove", this.handlers["mousemove"]);
+        this.element.addEventListener("mouseup", this.handlers["mouseup"]);
+        this.element.addEventListener("mousedown", this.handlers["mousedown"]);
+        this.element.addEventListener("click", this.handlers["click"]);
+        this.element.addEventListener("wheel", this.handlers["wheel"]);
     }
     /**
      * Get relative position from the given MouseEvent.
@@ -4241,11 +4333,8 @@ class MouseHandler {
      * @return {XYCoords} The relative mouse coordinates.
      */
     relPos(e) {
-        return { x: e.offsetX,
-            y: e.offsetY
-        };
+        return { x: e.offsetX, y: e.offsetY };
     }
-    ;
     /**
      * Build the extended event params.
      *
@@ -4271,8 +4360,8 @@ class MouseHandler {
             rightButton: this.mouseButton == 2,
             mouseDownPos: this.mouseDownPos,
             draggedFrom: this.mouseDragPos,
-            wasDragged: (this.mouseDownPos != null && (this.mouseDownPos.x != rel.x || this.mouseDownPos.y != rel.y)),
-            dragAmount: (this.mouseDownPos != null ? { x: rel.x - this.mouseDragPos.x, y: rel.y - this.mouseDragPos.y } : { x: 0, y: 0 })
+            wasDragged: this.mouseDownPos != null && (this.mouseDownPos.x != rel.x || this.mouseDownPos.y != rel.y),
+            dragAmount: this.mouseDownPos != null ? { x: rel.x - this.mouseDragPos.x, y: rel.y - this.mouseDragPos.y } : { x: 0, y: 0 }
         };
         return xEvent;
     }
@@ -4323,14 +4412,13 @@ class MouseHandler {
      */
     drag(callback) {
         if (this.listeners.drag)
-            this.throwAlreadyInstalled('drag');
+            this.throwAlreadyInstalled("drag");
         this.listeners.drag = callback;
-        this.listenFor('mousedown');
-        this.listenFor('mousemove');
-        this.listenFor('mouseup');
+        this.listenFor("mousedown");
+        this.listenFor("mousemove");
+        this.listenFor("mouseup");
         return this;
     }
-    ;
     /**
      * Installer function to listen for a specific event: mouse-move.
      * Pass your callbacks here.
@@ -4345,12 +4433,11 @@ class MouseHandler {
      */
     move(callback) {
         if (this.listeners.mousemove)
-            this.throwAlreadyInstalled('mousemove');
-        this.listenFor('mousemove');
+            this.throwAlreadyInstalled("mousemove");
+        this.listenFor("mousemove");
         this.listeners.mousemove = callback;
         return this;
     }
-    ;
     /**
      * Installer function to listen for a specific event: mouse-up.
      * Pass your callbacks here.
@@ -4365,12 +4452,11 @@ class MouseHandler {
      */
     up(callback) {
         if (this.listeners.mouseup)
-            this.throwAlreadyInstalled('mouseup');
-        this.listenFor('mouseup');
+            this.throwAlreadyInstalled("mouseup");
+        this.listenFor("mouseup");
         this.listeners.mouseup = callback;
         return this;
     }
-    ;
     /**
      * Installer function to listen for a specific event: mouse-down.
      * Pass your callbacks here.
@@ -4385,12 +4471,11 @@ class MouseHandler {
      */
     down(callback) {
         if (this.listeners.mousedown)
-            this.throwAlreadyInstalled('mousedown');
-        this.listenFor('mousedown');
+            this.throwAlreadyInstalled("mousedown");
+        this.listenFor("mousedown");
         this.listeners.mousedown = callback;
         return this;
     }
-    ;
     /**
      * Installer function to listen for a specific event: mouse-click.
      * Pass your callbacks here.
@@ -4405,12 +4490,11 @@ class MouseHandler {
      */
     click(callback) {
         if (this.listeners.click)
-            this.throwAlreadyInstalled('click');
-        this.listenFor('click');
+            this.throwAlreadyInstalled("click");
+        this.listenFor("click");
         this.listeners.click = callback;
         return this;
     }
-    ;
     /**
      * Installer function to listen for a specific event: mouse-wheel.
      * Pass your callbacks here.
@@ -4425,12 +4509,11 @@ class MouseHandler {
      */
     wheel(callback) {
         if (this.listeners.wheel)
-            this.throwAlreadyInstalled('wheel');
-        this.listenFor('wheel');
+            this.throwAlreadyInstalled("wheel");
+        this.listenFor("wheel");
         this.listeners.wheel = callback;
         return this;
     }
-    ;
     /**
      * An internal function to throw events.
      *
@@ -4444,7 +4527,6 @@ class MouseHandler {
     throwAlreadyInstalled(name) {
         throw `This MouseHandler already has a '${name}' callback. To keep the code simple there is only room for one.`;
     }
-    ;
     /**
      * Call this when your work is done.
      *
@@ -4457,16 +4539,16 @@ class MouseHandler {
      * @return {void}
      */
     destroy() {
-        this.unlistenFor('mousedown');
-        this.unlistenFor('mousemove');
-        this.unlistenFor('moseup');
-        this.unlistenFor('click');
-        this.unlistenFor('wheel');
-        this.element.removeEventListener('mousemove', this.handlers['mousemove']);
-        this.element.removeEventListener('mouseup', this.handlers['mousedown']);
-        this.element.removeEventListener('mousedown', this.handlers['mousedown']);
-        this.element.removeEventListener('click', this.handlers['click']);
-        this.element.removeEventListener('wheel', this.handlers['wheel']);
+        this.unlistenFor("mousedown");
+        this.unlistenFor("mousemove");
+        this.unlistenFor("moseup");
+        this.unlistenFor("click");
+        this.unlistenFor("wheel");
+        this.element.removeEventListener("mousemove", this.handlers["mousemove"]);
+        this.element.removeEventListener("mouseup", this.handlers["mousedown"]);
+        this.element.removeEventListener("mousedown", this.handlers["mousedown"]);
+        this.element.removeEventListener("click", this.handlers["click"]);
+        this.element.removeEventListener("wheel", this.handlers["wheel"]);
     }
 }
 //# sourceMappingURL=MouseHandler.js.map
@@ -4490,7 +4572,9 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2019-03-23 Added JSDoc tags.
  * @modified 2020-03-25 Ported this class from vanilla-JS to Typescript.
  * @modified 2021-01-20 Added UID.
- * @version 1.1.0
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @modified 2022-02-02 Cleared the `PBImage.toSVGString` function (deprecated). Use `drawutilssvg` instead.
+ * @version 1.2.0
  *
  * @file PBImage
  * @fileoverview As native Image objects have only a position and with
@@ -4526,7 +4610,6 @@ class PBImage {
         this.upperLeft = upperLeft;
         this.lowerRight = lowerRight;
     }
-    ;
     /**
      * Convert this vertex to SVG code.
      *
@@ -4541,7 +4624,16 @@ class PBImage {
         console.warn("PBImage is not yet SVG serializable. Returning empty SVG string.");
         return "";
     }
-    ;
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        this.upperLeft.destroy();
+        this.lowerRight.destroy();
+        this.isDestroyed = true;
+    }
 }
 //# sourceMappingURL=PBImage.js.map
 
@@ -4562,7 +4654,8 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * @author   Ikaros Kappler
  * @date     2021-11-16
- * @version  1.0.0
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @version  1.1.0
  **/
 
 
@@ -4617,6 +4710,15 @@ class PBText {
     toSVGString(options) {
         console.warn("[PBText.toSVGString()] This function is not implemented as it defines a deprecated method. Use the 'drawutilssvg.text()' method instead.");
         return "";
+    }
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        this.anchor.destroy();
+        this.isDestroyed = true;
     }
 } // END class
 //# sourceMappingURL=PBText.js.map
@@ -5362,7 +5464,7 @@ class PlotBoilerplate {
             }
         }
         for (var i = 0; i < this.drawables.length; i++) {
-            if (this.drawables[i] === drawable) {
+            if (this.drawables[i] === drawable || this.drawables[i].uid === drawable.uid) {
                 this.drawables.splice(i, 1);
                 if (removeWithVertices) {
                     // Check if some listeners need to be removed
@@ -6783,7 +6885,9 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-01-29 Changed the param type for `containsVert` from Vertex to XYCoords.
  * @modified 2021-12-14 Added the `perimeter()` function.
  * @modified 2021-12-16 Added the `getEvenDistributionPolygon()` function.
- * @version 1.8.0
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @modified 2022-02-02 Cleared the `Polygon.toSVGString` function (deprecated). Use `drawutilssvg` instead.
+ * @version 1.9.0
  *
  * @file Polygon
  * @public
@@ -7193,29 +7297,41 @@ class Polygon {
      * @memberof Polygon
      **/
     toSVGString(options) {
-        options = options || {};
-        var buffer = [];
-        buffer.push("<path");
-        if (options.className)
-            buffer.push(' class="' + options.className + '"');
-        buffer.push(' d="');
-        if (this.vertices.length > 0) {
-            buffer.push("M ");
-            buffer.push(this.vertices[0].x.toString());
-            buffer.push(" ");
-            buffer.push(this.vertices[0].y.toString());
-            for (var i = 1; i < this.vertices.length; i++) {
-                buffer.push(" L ");
-                buffer.push(this.vertices[i].x.toString());
-                buffer.push(" ");
-                buffer.push(this.vertices[i].y.toString());
-            }
-            if (!this.isOpen) {
-                buffer.push(" Z");
-            }
+        // options = options || {};
+        // var buffer: Array<string> = [];
+        // buffer.push("<path");
+        // if (options.className) buffer.push(' class="' + options.className + '"');
+        // buffer.push(' d="');
+        // if (this.vertices.length > 0) {
+        //   buffer.push("M ");
+        //   buffer.push(this.vertices[0].x.toString());
+        //   buffer.push(" ");
+        //   buffer.push(this.vertices[0].y.toString());
+        //   for (var i = 1; i < this.vertices.length; i++) {
+        //     buffer.push(" L ");
+        //     buffer.push(this.vertices[i].x.toString());
+        //     buffer.push(" ");
+        //     buffer.push(this.vertices[i].y.toString());
+        //   }
+        //   if (!this.isOpen) {
+        //     buffer.push(" Z");
+        //   }
+        // }
+        // buffer.push('" />');
+        // return buffer.join("");
+        console.warn("[Deprecation] Warning: the Polygon.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
+        return "";
+    }
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        for (var i = 0; i < this.vertices.length; i++) {
+            this.vertices[i].destroy();
         }
-        buffer.push('" />');
-        return buffer.join("");
+        this.isDestroyed = true;
     }
 }
 Polygon.utils = {
@@ -7408,7 +7524,9 @@ __webpack_require__.r(__webpack_exports__);
  * @modified  2020-12-28 Added the `getArea` function.
  * @modified  2021-01-20 Added UID.
  * @modified  2021-01-22 Always updating circumcircle when retieving it.
- * @version   2.5.1
+ * @modified  2022-02-02 Added the `destroy` method.
+ * @modified  2022-02-02 Cleared the `Triangle.toSVGString` function (deprecated). Use `drawutilssvg` instead.
+ * @version   2.6.0
  *
  * @file Triangle
  * @fileoverview A simple triangle class: three vertices.
@@ -7476,7 +7594,6 @@ class Triangle {
             throw `Cannot create triangle from array with less than three vertices (${arr.length})`;
         return new Triangle(arr[0], arr[1], arr[2]);
     }
-    ;
     /**
      * Get the area of this triangle. The returned area is never negative.
      *
@@ -7492,7 +7609,6 @@ class Triangle {
     getArea() {
         return Math.abs(Triangle.utils.signedArea(this.a.x, this.a.y, this.b.x, this.b.y, this.c.x, this.c.y));
     }
-    ;
     /**
      * Get the centroid of this triangle.
      *
@@ -7506,7 +7622,6 @@ class Triangle {
     getCentroid() {
         return new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex((this.a.x + this.b.x + this.c.x) / 3, (this.a.y + this.b.y + this.c.y) / 3);
     }
-    ;
     /**
      * Scale the triangle towards its centroid.
      *
@@ -7523,7 +7638,6 @@ class Triangle {
         this.c.scale(factor, centroid);
         return this;
     }
-    ;
     /**
      * Get the circumcircle of this triangle.
      *
@@ -7540,11 +7654,10 @@ class Triangle {
      * @memberof Triangle
      */
     getCircumcircle() {
-        // if( !this.center || !this.radius ) 
+        // if( !this.center || !this.radius )
         this.calcCircumcircle();
         return new _Circle__WEBPACK_IMPORTED_MODULE_1__.Circle(this.center.clone(), this.radius);
     }
-    ;
     /**
      * Check if this triangle and the passed triangle share an
      * adjacent edge.
@@ -7564,7 +7677,6 @@ class Triangle {
         var c = this.c.equals(tri.a) || this.c.equals(tri.b) || this.c.equals(tri.c);
         return (a && b) || (a && c) || (b && c);
     }
-    ;
     /**
      * Get that vertex of this triangle (a,b,c) that is not vert1 nor vert2 of
      * the passed two.
@@ -7577,14 +7689,13 @@ class Triangle {
      * @memberof Triangle
      */
     getThirdVertex(vert1, vert2) {
-        if (this.a.equals(vert1) && this.b.equals(vert2) || this.a.equals(vert2) && this.b.equals(vert1))
+        if ((this.a.equals(vert1) && this.b.equals(vert2)) || (this.a.equals(vert2) && this.b.equals(vert1)))
             return this.c;
-        if (this.b.equals(vert1) && this.c.equals(vert2) || this.b.equals(vert2) && this.c.equals(vert1))
+        if ((this.b.equals(vert1) && this.c.equals(vert2)) || (this.b.equals(vert2) && this.c.equals(vert1)))
             return this.a;
         //if( this.c.equals(vert1) && this.a.equals(vert2) || this.c.equals(vert2) && this.a.equals(vert1) )
         return this.b;
     }
-    ;
     /**
      * Re-compute the circumcircle of this triangle (if the vertices
      * have changed).
@@ -7624,8 +7735,7 @@ class Triangle {
         }
         this.radius_squared = dx * dx + dy * dy;
         this.radius = Math.sqrt(this.radius_squared);
-    }
-    ; // END calcCircumcircle
+    } // END calcCircumcircle
     /**
      * Check if the passed vertex is inside this triangle's
      * circumcircle.
@@ -7640,9 +7750,8 @@ class Triangle {
         const dx = this.center.x - v.x;
         const dy = this.center.y - v.y;
         const dist_squared = dx * dx + dy * dy;
-        return (dist_squared <= this.radius_squared);
+        return dist_squared <= this.radius_squared;
     }
-    ;
     /**
      * Get the rectangular bounds for this triangle.
      *
@@ -7654,7 +7763,6 @@ class Triangle {
     bounds() {
         return new _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds(new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex(Triangle.utils.min3(this.a.x, this.b.x, this.c.x), Triangle.utils.min3(this.a.y, this.b.y, this.c.y)), new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex(Triangle.utils.max3(this.a.x, this.b.x, this.c.x), Triangle.utils.max3(this.a.y, this.b.y, this.c.y)));
     }
-    ;
     /**
      * Convert this triangle to a polygon instance.
      *
@@ -7668,7 +7776,6 @@ class Triangle {
     toPolygon() {
         return new _Polygon__WEBPACK_IMPORTED_MODULE_3__.Polygon([this.a, this.b, this.c]);
     }
-    ;
     /**
      * Get the determinant of this triangle.
      *
@@ -7681,7 +7788,6 @@ class Triangle {
         // (b.y - a.y)*(c.x - b.x) - (c.y - b.y)*(b.x - a.x);
         return (this.b.y - this.a.y) * (this.c.x - this.b.x) - (this.c.y - this.b.y) * (this.b.x - this.a.x);
     }
-    ;
     /**
      * Checks if the passed vertex (p) is inside this triangle.
      *
@@ -7696,7 +7802,6 @@ class Triangle {
     containsPoint(p) {
         return Triangle.utils.pointIsInTriangle(p.x, p.y, this.a.x, this.a.y, this.b.x, this.b.y, this.c.x, this.c.y);
     }
-    ;
     /**
      * Get that inner triangle which defines the maximal incircle.
      *
@@ -7715,7 +7820,6 @@ class Triangle {
         const circleIntersC = lineC.getClosestPoint(intersection);
         return new Triangle(circleIntersA, circleIntersB, circleIntersC);
     }
-    ;
     /**
      * Get the incircle of this triangle. That is the circle that touches each side
      * of this triangle in exactly one point.
@@ -7727,7 +7831,6 @@ class Triangle {
     getIncircle() {
         return this.getIncircularTriangle().getCircumcircle();
     }
-    ;
     /**
      * Get the incenter of this triangle (which is the center of the circumcircle).
      *
@@ -7741,7 +7844,6 @@ class Triangle {
             this.calcCircumcircle();
         return this.center.clone();
     }
-    ;
     /**
      * Converts this triangle into a human-readable string.
      *
@@ -7751,9 +7853,8 @@ class Triangle {
      * @memberof Triangle
      */
     toString() {
-        return '{ a : ' + this.a.toString() + ', b : ' + this.b.toString() + ', c : ' + this.c.toString() + '}';
+        return "{ a : " + this.a.toString() + ", b : " + this.b.toString() + ", c : " + this.c.toString() + "}";
     }
-    ;
     /**
      * Create an SVG representation of this triangle.
      *
@@ -7765,32 +7866,43 @@ class Triangle {
      * @memberof Triangle
      **/
     toSVGString(options) {
-        options = options || {};
-        var buffer = [];
-        buffer.push('<path');
-        if (options.className)
-            buffer.push(' class="' + options.className + '"');
-        buffer.push(' d="');
-        var vertices = [this.a, this.b, this.c];
-        if (vertices.length > 0) {
-            buffer.push('M ');
-            buffer.push(vertices[0].x);
-            buffer.push(' ');
-            buffer.push(vertices[0].y);
-            for (var i = 1; i < vertices.length; i++) {
-                buffer.push(' L ');
-                buffer.push(vertices[i].x);
-                buffer.push(' ');
-                buffer.push(vertices[i].y);
-            }
-            //if( !this.isOpen ) {
-            buffer.push(' Z');
-            //}
-        }
-        buffer.push('" />');
-        return buffer.join('');
+        // options = options || {};
+        // var buffer = [];
+        // buffer.push("<path");
+        // if (options.className) buffer.push(' class="' + options.className + '"');
+        // buffer.push(' d="');
+        // var vertices = [this.a, this.b, this.c];
+        // if (vertices.length > 0) {
+        //   buffer.push("M ");
+        //   buffer.push(vertices[0].x);
+        //   buffer.push(" ");
+        //   buffer.push(vertices[0].y);
+        //   for (var i = 1; i < vertices.length; i++) {
+        //     buffer.push(" L ");
+        //     buffer.push(vertices[i].x);
+        //     buffer.push(" ");
+        //     buffer.push(vertices[i].y);
+        //   }
+        //   //if( !this.isOpen ) {
+        //   buffer.push(" Z");
+        //   //}
+        // }
+        // buffer.push('" />');
+        // return buffer.join("");
+        console.warn("[Deprecation] Warning: the Triangle.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
+        return "";
     }
-    ;
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        this.a.destroy();
+        this.b.destroy();
+        this.c.destroy();
+        this.isDestroyed = true;
+    }
 }
 /**
  * An epsilon for comparison.
@@ -7802,10 +7914,10 @@ Triangle.EPSILON = 1.0e-6;
 Triangle.utils = {
     // Used in the bounds() function.
     max3(a, b, c) {
-        return (a >= b && a >= c) ? a : (b >= a && b >= c) ? b : c;
+        return a >= b && a >= c ? a : b >= a && b >= c ? b : c;
     },
     min3(a, b, c) {
-        return (a <= b && a <= c) ? a : (b <= a && b <= c) ? b : c;
+        return a <= b && a <= c ? a : b <= a && b <= c ? b : c;
     },
     signedArea(p0x, p0y, p1x, p1y, p2x, p2y) {
         return 0.5 * (-p1y * p2x + p0y * (-p1x + p2x) + p0x * (p1y - p2y) + p1x * p2y);
@@ -7821,9 +7933,9 @@ Triangle.utils = {
         //   http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-2d-triangle
         // var area : number = 1/2*(-p1y*p2x + p0y*(-p1x + p2x) + p0x*(p1y - p2y) + p1x*p2y);
         var area = Triangle.utils.signedArea(p0x, p0y, p1x, p1y, p2x, p2y);
-        var s = 1 / (2 * area) * (p0y * p2x - p0x * p2y + (p2y - p0y) * px + (p0x - p2x) * py);
-        var t = 1 / (2 * area) * (p0x * p1y - p0y * p1x + (p0y - p1y) * px + (p1x - p0x) * py);
-        return s > 0 && t > 0 && (1 - s - t) > 0;
+        var s = (1 / (2 * area)) * (p0y * p2x - p0x * p2y + (p2y - p0y) * px + (p0x - p2x) * py);
+        var t = (1 / (2 * area)) * (p0x * p1y - p0y * p1x + (p0y - p1y) * px + (p1x - p0x) * py);
+        return s > 0 && t > 0 && 1 - s - t > 0;
     }
 };
 //# sourceMappingURL=Triangle.js.map
@@ -7887,7 +7999,9 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-03-10 Added the `toCubicBezier` method.
  * @modified 2021-03-15 Added `VEllipse.quarterSegmentCount` and `VEllipse.scale` functions.
  * @modified 2021-03-19 Added the `VEllipse.rotate` function.
- * @version  1.2.2
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @modified 2022-02-02 Cleared the `VEllipse.toSVGString` function (deprecated). Use `drawutilssvg` instead.
+ * @version  1.3.0
  *
  * @file VEllipse
  * @fileoverview Ellipses with a center and an x- and a y-axis (stored as a vertex).
@@ -8218,17 +8332,28 @@ class VEllipse {
      * @return string The SVG string
      */
     toSVGString(options) {
-        options = options || {};
-        var buffer = [];
-        buffer.push("<ellipse");
-        if (options.className)
-            buffer.push(' class="' + options.className + '"');
-        buffer.push(' cx="' + this.center.x + '"');
-        buffer.push(' cy="' + this.center.y + '"');
-        buffer.push(' rx="' + this.axis.x + '"');
-        buffer.push(' ry="' + this.axis.y + '"');
-        buffer.push(" />");
-        return buffer.join("");
+        // options = options || {};
+        // var buffer: Array<string> = [];
+        // buffer.push("<ellipse");
+        // if (options.className) buffer.push(' class="' + options.className + '"');
+        // buffer.push(' cx="' + this.center.x + '"');
+        // buffer.push(' cy="' + this.center.y + '"');
+        // buffer.push(' rx="' + this.axis.x + '"');
+        // buffer.push(' ry="' + this.axis.y + '"');
+        // buffer.push(" />");
+        // return buffer.join("");
+        console.warn("[Deprecation] Warning: the VEllipse.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
+        return "";
+    }
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        this.center.destroy();
+        this.axis.destroy();
+        this.isDestroyed = true;
     }
 }
 /**
@@ -8314,7 +8439,8 @@ __webpack_require__.r(__webpack_exports__);
  *
  * @author  Ikaros Kappler
  * @date    2021-02-26
- * @version 1.0.0
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @version 1.1.0
  */
 
 
@@ -8405,6 +8531,15 @@ class VEllipseSector {
             curAngle = nextAngle;
         }
         return curves;
+    }
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        this.ellipse.destroy();
+        this.isDestroyed = true;
     }
 }
 VEllipseSector.ellipseSectorUtils = {
@@ -8596,7 +8731,9 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2019-12-04 Added the Vector.inv() function.
  * @modified 2020-03-23 Ported to Typescript from JS.
  * @modified 2021-01-20 Added UID.
- * @version  1.3.0
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @modified 2022-02-02 Cleared the `Vector.toSVGString` function (deprecated). Use `drawutilssvg` instead.
+ * @version  1.4.0
  *
  * @file Vector
  * @public
@@ -8629,7 +8766,6 @@ class Vector extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
          **/
         this.className = "Vector";
     }
-    ;
     /**
      * Get the perpendicular of this vector which is located at a.
      *
@@ -8644,7 +8780,6 @@ class Vector extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
         v.b.add(this.a);
         return v;
     }
-    ;
     /**
      * The inverse of a vector is a vector witht the same magnitude but oppose direction.
      *
@@ -8658,7 +8793,6 @@ class Vector extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
         this.b = tmp;
         return this;
     }
-    ;
     /**
      * This function computes the inverse of the vector, which means 'a' stays untouched.
      *
@@ -8669,7 +8803,6 @@ class Vector extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
         this.b.y = this.a.y - (this.b.y - this.a.y);
         return this;
     }
-    ;
     /**
      * Get the intersection if this vector and the specified vector.
      *
@@ -8685,16 +8818,15 @@ class Vector extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
             return null;
         var a = this.a.y - line.a.y;
         var b = this.a.x - line.a.x;
-        var numerator1 = ((line.b.x - line.a.x) * a) - ((line.b.y - line.a.y) * b);
-        var numerator2 = ((this.b.x - this.a.x) * a) - ((this.b.y - this.a.y) * b);
+        var numerator1 = (line.b.x - line.a.x) * a - (line.b.y - line.a.y) * b;
+        var numerator2 = (this.b.x - this.a.x) * a - (this.b.y - this.a.y) * b;
         a = numerator1 / denominator; // NaN if parallel lines
         b = numerator2 / denominator;
         // TODO:
         // FOR A VECTOR THE LINE-INTERSECTION MUST BE ON BOTH VECTORS
         // if we cast these lines infinitely in both directions, they intersect here:
-        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.a.x + (a * (this.b.x - this.a.x)), this.a.y + (a * (this.b.y - this.a.y)));
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.a.x + a * (this.b.x - this.a.x), this.a.y + a * (this.b.y - this.a.y));
     }
-    ;
     /**
      * Create an SVG representation of this line.
      *
@@ -8707,31 +8839,30 @@ class Vector extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
      * @memberof Vector
      **/
     toSVGString(options) {
-        options = options || {};
-        var buffer = [];
-        var vertices = Vector.utils.buildArrowHead(this.a, this.b, 8, 1.0, 1.0);
-        buffer.push('<g');
-        if (options.className)
-            buffer.push(' class="' + options.className + '"');
-        buffer.push('>');
-        buffer.push('   <line');
-        buffer.push(' x1="' + this.a.x + '"');
-        buffer.push(' y1="' + this.a.y + '"');
-        buffer.push(' x2="' + vertices[0].x + '"');
-        buffer.push(' y2="' + vertices[0].y + '"');
-        buffer.push(' />');
-        // Add arrow head
-        buffer.push('   <polygon points="');
-        for (var i = 0; i < vertices.length; i++) {
-            if (i > 0)
-                buffer.push(' ');
-            buffer.push('' + vertices[i].x + ',' + vertices[i].y);
-        }
-        buffer.push('"/>');
-        buffer.push('</g>');
-        return buffer.join('');
+        // options = options || {};
+        // var buffer = [];
+        // var vertices = Vector.utils.buildArrowHead(this.a, this.b, 8, 1.0, 1.0);
+        // buffer.push("<g");
+        // if (options.className) buffer.push(' class="' + options.className + '"');
+        // buffer.push(">");
+        // buffer.push("   <line");
+        // buffer.push(' x1="' + this.a.x + '"');
+        // buffer.push(' y1="' + this.a.y + '"');
+        // buffer.push(' x2="' + vertices[0].x + '"');
+        // buffer.push(' y2="' + vertices[0].y + '"');
+        // buffer.push(" />");
+        // // Add arrow head
+        // buffer.push('   <polygon points="');
+        // for (var i = 0; i < vertices.length; i++) {
+        //   if (i > 0) buffer.push(" ");
+        //   buffer.push("" + vertices[i].x + "," + vertices[i].y);
+        // }
+        // buffer.push('"/>');
+        // buffer.push("</g>");
+        // return buffer.join("");
+        console.warn("[Deprecation] Warning: the Vector.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
+        return "";
     }
-    ;
 }
 Vector.utils = {
     /**
@@ -8762,10 +8893,10 @@ Vector.utils = {
     buildArrowHead: (zA, zB, headlen, scaleX, scaleY) => {
         var angle = Math.atan2((zB.y - zA.y) * scaleY, (zB.x - zA.x) * scaleX);
         var vertices = [];
-        vertices.push(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(zB.x * scaleX - (headlen) * Math.cos(angle), zB.y * scaleY - (headlen) * Math.sin(angle)));
-        vertices.push(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(zB.x * scaleX - (headlen * 1.35) * Math.cos(angle - Math.PI / 8), zB.y * scaleY - (headlen * 1.35) * Math.sin(angle - Math.PI / 8)));
+        vertices.push(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(zB.x * scaleX - headlen * Math.cos(angle), zB.y * scaleY - headlen * Math.sin(angle)));
+        vertices.push(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(zB.x * scaleX - headlen * 1.35 * Math.cos(angle - Math.PI / 8), zB.y * scaleY - headlen * 1.35 * Math.sin(angle - Math.PI / 8)));
         vertices.push(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(zB.x * scaleX, zB.y * scaleY));
-        vertices.push(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(zB.x * scaleX - (headlen * 1.35) * Math.cos(angle + Math.PI / 8), zB.y * scaleY - (headlen * 1.35) * Math.sin(angle + Math.PI / 8)));
+        vertices.push(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(zB.x * scaleX - headlen * 1.35 * Math.cos(angle + Math.PI / 8), zB.y * scaleY - headlen * 1.35 * Math.sin(angle + Math.PI / 8)));
         return vertices;
     }
 };
@@ -8795,7 +8926,8 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-12-04 Changed `getClosestT` param from `Vertex` to `XYCoords` (generalized).
  * @modified 2020-12-04 Added the `hasPoint(XYCoords)` function.
  * @modified 2021-01-20 Added UID.
- * @version 1.1.0
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @version 1.2.0
  */
 
 
@@ -8831,7 +8963,6 @@ class VertTuple {
     length() {
         return Math.sqrt(Math.pow(this.b.x - this.a.x, 2) + Math.pow(this.b.y - this.a.y, 2));
     }
-    ;
     /**
      * Set the length of this vector to the given amount. This only works if this
      * vector is not a null vector.
@@ -8844,7 +8975,6 @@ class VertTuple {
     setLength(length) {
         return this.scale(length / this.length());
     }
-    ;
     /**
      * Substract the given vertex from this line's end points.
      *
@@ -8859,7 +8989,6 @@ class VertTuple {
         this.b.sub(amount);
         return this;
     }
-    ;
     /**
      * Add the given vertex to this line's end points.
      *
@@ -8874,7 +9003,6 @@ class VertTuple {
         this.b.add(amount);
         return this;
     }
-    ;
     /**
      * Normalize this line (set to length 1).
      *
@@ -8887,7 +9015,6 @@ class VertTuple {
         this.b.set(this.a.x + (this.b.x - this.a.x) / this.length(), this.a.y + (this.b.y - this.a.y) / this.length());
         return this;
     }
-    ;
     /**
      * Scale this line by the given factor.
      *
@@ -8901,7 +9028,6 @@ class VertTuple {
         this.b.set(this.a.x + (this.b.x - this.a.x) * factor, this.a.y + (this.b.y - this.a.y) * factor);
         return this;
     }
-    ;
     /**
      * Move this line to a new location.
      *
@@ -8917,7 +9043,6 @@ class VertTuple {
         this.b.add(diff);
         return this;
     }
-    ;
     /**
      * Get the angle between this and the passed line (in radians).
      *
@@ -8928,7 +9053,7 @@ class VertTuple {
      * @memberof VertTuple
      **/
     angle(line) {
-        if (line == null || typeof line == 'undefined') {
+        if (line == null || typeof line == "undefined") {
             line = this.factory(new _Vertex__WEBPACK_IMPORTED_MODULE_0__.Vertex(0, 0), new _Vertex__WEBPACK_IMPORTED_MODULE_0__.Vertex(100, 0));
         }
         // Compute the angle from x axis and the return the difference :)
@@ -8938,7 +9063,6 @@ class VertTuple {
         // The result might be negative, but isn't it usually nicer to determine angles in positive values only?
         return Math.atan2(v1.x, v1.y) - Math.atan2(v0.x, v0.y);
     }
-    ;
     /**
      * Get line point at position t in [0 ... 1]:<br>
      * <pre>[P(0)]=[A]--------------------[P(t)]------[B]=[P(1)]</pre><br>
@@ -8954,7 +9078,6 @@ class VertTuple {
     vertAt(t) {
         return new _Vertex__WEBPACK_IMPORTED_MODULE_0__.Vertex(this.a.x + (this.b.x - this.a.x) * t, this.a.y + (this.b.y - this.a.y) * t);
     }
-    ;
     /**
      * Get the denominator of this and the given line.
      *
@@ -8968,9 +9091,8 @@ class VertTuple {
      **/
     denominator(line) {
         // http://jsfiddle.net/justin_c_rounds/Gd2S2/
-        return ((line.b.y - line.a.y) * (this.b.x - this.a.x)) - ((line.b.x - line.a.x) * (this.b.y - this.a.y));
+        return (line.b.y - line.a.y) * (this.b.x - this.a.x) - (line.b.x - line.a.x) * (this.b.y - this.a.y);
     }
-    ;
     /**
      * Checks if this and the given line are co-linear.
      *
@@ -8985,7 +9107,6 @@ class VertTuple {
     colinear(line) {
         return Math.abs(this.denominator(line)) < _Vertex__WEBPACK_IMPORTED_MODULE_0__.Vertex.EPSILON;
     }
-    ;
     /**
      * Get the closest position T from this line to the specified point.
      *
@@ -9008,7 +9129,6 @@ class VertTuple {
         // t = Math.max(0, Math.min(1, t));
         return t;
     }
-    ;
     /**
      * Check if the given point is located on this line. Optionally also check if
      * that point is located between point `a` and `b`.
@@ -9044,7 +9164,6 @@ class VertTuple {
         var t = this.getClosestT(p);
         return this.vertAt(t);
     }
-    ;
     /**
      * The the minimal distance between this line and the specified point.
      *
@@ -9059,7 +9178,6 @@ class VertTuple {
         // https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
         return Math.sqrt(VertTuple.vtutils.dist2(p, this.vertAt(this.getClosestT(p))));
     }
-    ;
     /**
      * Create a deep clone of this instance.
      *
@@ -9071,7 +9189,6 @@ class VertTuple {
     clone() {
         return this.factory(this.a.clone(), this.b.clone());
     }
-    ;
     /**
      * Create a string representation of this line.
      *
@@ -9083,7 +9200,16 @@ class VertTuple {
     toString() {
         return "{ a : " + this.a.toString() + ", b : " + this.b.toString() + " }";
     }
-    ;
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        this.a.destroy();
+        this.b.destroy();
+        this.isDestroyed = true;
+    }
 }
 /**
  * @private
@@ -9137,7 +9263,10 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-12-01 Changed the type of param of `scale` to XYCoords.
  * @modified 2021-12-01 Added function `scaleXY` for non uniform scaling.
  * @modified 2021-12-17 Added the functions `lerp` and `lerpAbs` for linear interpolations.
- * @version  2.6.0
+ * @modified 2022-01-31 Added `Vertex.utils.arrayToJSON`.
+ * @modified 2022-02-02 Added the `destroy` method.
+ * @modified 2022-02-02 Cleared the `Vertex.toSVGString` function (deprecated). Use `drawutilssvg` instead.
+ * @version  2.7.0
  *
  * @file Vertex
  * @public
@@ -9635,20 +9764,31 @@ class Vertex {
      * @return {string} A string representing the SVG code for this vertex.
      * @instance
      * @memberof Vertex
+     * @deprecated
      **/
     toSVGString(options) {
-        options = options || {};
-        var buffer = [];
-        buffer.push("<circle");
-        if (options.className)
-            buffer.push(' class="' + options.className + '"');
-        buffer.push(' cx="' + this.x + '"');
-        buffer.push(' cy="' + this.y + '"');
-        buffer.push(' r="2"');
-        buffer.push(" />");
-        return buffer.join("");
+        // options = options || {};
+        // var buffer = [];
+        // buffer.push("<circle");
+        // if (options.className) buffer.push(' class="' + options.className + '"');
+        // buffer.push(' cx="' + this.x + '"');
+        // buffer.push(' cy="' + this.y + '"');
+        // buffer.push(' r="2"');
+        // buffer.push(" />");
+        // return buffer.join("");
+        console.warn("[Deprecation] Warning: the Vertex.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
+        return "";
     }
     // END Vertex
+    /**
+     * This function should invalidate any installed listeners and invalidate this object.
+     * After calling this function the object might not hold valid data any more and
+     * should not be used.
+     */
+    destroy() {
+        this.listeners.removeAllListeners();
+        this.isDestroyed = true;
+    }
     /**
      * Create a new random vertex inside the given viewport.
      *
@@ -9703,6 +9843,19 @@ Vertex.utils = {
         vertices.push(new Vertex(zB.x * scaleX, zB.y * scaleY));
         vertices.push(new Vertex(zB.x * scaleX - headlen * 1.35 * Math.cos(angle + Math.PI / 8), zB.y * scaleY - headlen * 1.35 * Math.sin(angle + Math.PI / 8)));
         return vertices;
+    },
+    /**
+     * Convert the given vertices (array) to a JSON string.
+     *
+     * @param {number?} precision - (optional) The numeric precision to be used (number of precision digits).
+     * @returns {string}
+     */
+    arrayToJSON(vertices, precision) {
+        return JSON.stringify(vertices.map(function (vert) {
+            return typeof precision === undefined
+                ? { x: vert.x, y: vert.y }
+                : { x: Number(vert.x.toFixed(precision)), y: Number(vert.y.toFixed(precision)) };
+        }));
     }
 };
 //# sourceMappingURL=Vertex.js.map
@@ -9819,7 +9972,6 @@ class VertexListeners {
         this.dragEnd = [];
         this.vertex = vertex;
     }
-    ;
     /**
      * Add a click listener.
      *
@@ -9833,7 +9985,6 @@ class VertexListeners {
         VertexListeners._addListener(this.click, listener);
         return this;
     }
-    ;
     /**
      * The click listener is a function with a single drag event param.
      * @callback VertexListeners~clickListener
@@ -9852,7 +10003,6 @@ class VertexListeners {
         this.click = VertexListeners._removeListener(this.click, listener);
         return this;
     }
-    ;
     /**
      * The click listener is a function with a single drag event param.
      * @callback VertexListeners~clickListener
@@ -9871,7 +10021,6 @@ class VertexListeners {
         VertexListeners._addListener(this.drag, listener);
         return this;
     }
-    ;
     /**
      * The drag listener is a function with a single drag event param.
      * @callback VertexListeners~dragListener
@@ -9890,7 +10039,6 @@ class VertexListeners {
         this.drag = VertexListeners._removeListener(this.drag, listener);
         return this;
     }
-    ;
     /**
      * Add a dragStart listener.
      *
@@ -9904,7 +10052,6 @@ class VertexListeners {
         VertexListeners._addListener(this.dragStart, listener);
         return this;
     }
-    ;
     /**
      * The drag-start listener is a function with a single drag event param.
      * @callback VertexListeners~dragStartListener
@@ -9923,7 +10070,6 @@ class VertexListeners {
         this.dragStart = VertexListeners._removeListener(this.dragStart, listener);
         return this;
     }
-    ;
     /**
      * Add a dragEnd listener.
      *
@@ -9938,27 +10084,25 @@ class VertexListeners {
         VertexListeners._addListener(this.dragEnd, listener);
         return this;
     }
-    ;
     /**
      * The drag-end listener is a function with a single drag event param.
      * @callback VertexListeners~dragEndListener
      * @param {Event} e - The (extended) drag event.
      */
     /**
-    * Remove a drag listener.
-    *
-    * @method removeDragEndListener
-    * @param {VertexListeners~clickListener} listener - The drag listener to remove (a callback).
-    * @return {VertexListeners} this (for chaining)
-    * @instance
-    * @memberof VertexListeners
-    **/
+     * Remove a drag listener.
+     *
+     * @method removeDragEndListener
+     * @param {VertexListeners~clickListener} listener - The drag listener to remove (a callback).
+     * @return {VertexListeners} this (for chaining)
+     * @instance
+     * @memberof VertexListeners
+     **/
     removeDragEndListener(listener) {
         // this.drag.push( listener );
         this.dragEnd = VertexListeners._removeListener(this.dragEnd, listener);
         return this;
     }
-    ;
     /**
      * Fire a click event with the given event instance to all
      * installed click listeners.
@@ -9972,7 +10116,6 @@ class VertexListeners {
     fireClickEvent(e) {
         VertexListeners._fireEvent(this, this.click, e);
     }
-    ;
     /**
      * Fire a drag event with the given event instance to all
      * installed drag listeners.
@@ -9986,7 +10129,6 @@ class VertexListeners {
     fireDragEvent(e) {
         VertexListeners._fireEvent(this, this.drag, e);
     }
-    ;
     /**
      * Fire a dragStart event with the given event instance to all
      * installed drag-start listeners.
@@ -10000,7 +10142,6 @@ class VertexListeners {
     fireDragStartEvent(e) {
         VertexListeners._fireEvent(this, this.dragStart, e);
     }
-    ;
     /**
      * Fire a dragEnd event with the given event instance to all
      * installed drag-end listeners.
@@ -10014,13 +10155,21 @@ class VertexListeners {
     fireDragEndEvent(e) {
         VertexListeners._fireEvent(this, this.dragEnd, e);
     }
-    ;
+    /**
+     * Removes all listeners from this listeners object.
+     */
+    removeAllListeners() {
+        this.click = [];
+        this.drag = [];
+        this.dragStart = [];
+        this.dragEnd = [];
+    }
     /**
      * @private
      **/
     static _fireEvent(_self, listeners, e) {
         const ve = e;
-        if (typeof ve.params == 'undefined')
+        if (typeof ve.params == "undefined")
             ve.params = { vertex: _self.vertex };
         else
             ve.params.vertex = _self.vertex;
@@ -10028,7 +10177,6 @@ class VertexListeners {
             listeners[i](ve);
         }
     }
-    ;
     /**
      * @private
      */
@@ -10040,7 +10188,6 @@ class VertexListeners {
         listeners.push(newListener);
         return true;
     }
-    ;
     /**
      * @private
      */
@@ -10051,7 +10198,6 @@ class VertexListeners {
         }
         return listeners;
     }
-    ;
 }
 //# sourceMappingURL=VertexListeners.js.map
 
