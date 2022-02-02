@@ -10,7 +10,6 @@
  */
 import { DildoGeneration } from "./DildoGeneration";
 import { ConfigIO } from "./ConfigIO";
-import { isMobileDevice } from "./isMobileDevice";
 export declare const ngdg: {
     DEFAULT_BEZIER_JSON: string;
     ConfigIO: typeof ConfigIO;
@@ -19,5 +18,5 @@ export declare const ngdg: {
         getImage: (path: string, onComplete: (completeImage: HTMLImageElement) => void) => HTMLImageElement;
         isImageLoaded: (image: HTMLImageElement) => boolean;
     };
-    isMobileDevice: typeof isMobileDevice;
+    isMobileDevice: () => boolean;
 };

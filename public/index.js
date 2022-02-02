@@ -70,6 +70,7 @@
     var bumpmapRasterImage = ngdg.ImageStore.getImage(bumpmapPath, function (completeImage) {
       rebuild && rebuild();
     });
+    var bezierPathInteractionHelper = null;
 
     // +---------------------------------------------------------------------------------
     // | A global config that's attached to the dat.gui control interface.
@@ -368,39 +369,54 @@
     // +---------------------------------------------------------------------------------
     // | Set the new path instance and install a Bézier interaction helper.
     // +-------------------------------
-    var setPathInstance = function (newOutline) {
+    var setPathInstance = function (newOutline, keepOldInteractionHelper) {
       if (outline && typeof outline !== "undefined") {
         removePathListeners(outline);
-        pb.removeAll(false); // Do not keep vertices
       }
+
+      if (outline && !keepOldInteractionHelper) {
+        // pb.removeAll(false); // Do not keep vertices
+        pb.remove(outline, false, true);
+        pb.add(newOutline); //, false);
+      }
+
       outline = newOutline;
       updatePathResizer();
       addPathListeners(outline);
-      pb.add(newOutline, false);
       updateOutlineStats();
 
       // Install a Bézier interaction helper.
-      new BezierPathInteractionHelper(pb, [outline], {
-        maxDetectDistance: 32.0,
-        autoAdjustPaths: true,
-        allowPathRemoval: false, // It is not alowed to remove the outline path
-        onPointerMoved: function (pathIndex, newA, newB, newT) {
-          if (pathIndex == -1) {
-            bezierDistanceLine = null;
-          } else {
-            bezierDistanceLine = new Line(newA, newB);
-            bezierDistanceT = newT;
-          }
-        },
-        onVertexInserted: function (_pathIndex, _insertAfterIndex, newPath, _oldPath) {
-          setPathInstance(newPath);
-          rebuild();
-        },
-        onVerticesDeleted: function (_pathIndex, _deletedVertIndices, newPath, _oldPath) {
-          setPathInstance(newPath);
-          rebuild();
+      if (!bezierPathInteractionHelper || !keepOldInteractionHelper) {
+        console.log("Re-init bezier path interaction helper");
+
+        if (bezierPathInteractionHelper) {
+          bezierPathInteractionHelper.destroy();
         }
-      });
+
+        bezierPathInteractionHelper = new BezierPathInteractionHelper(pb, [outline], {
+          maxDetectDistance: 32.0,
+          autoAdjustPaths: true,
+          allowPathRemoval: false, // It is not alowed to remove the outline path
+          onPointerMoved: function (pathIndex, newA, newB, newT) {
+            if (pathIndex == -1) {
+              bezierDistanceLine = null;
+            } else {
+              bezierDistanceLine = new Line(newA, newB);
+              bezierDistanceT = newT;
+            }
+          },
+          onVertexInserted: function (_pathIndex, _insertAfterIndex, newPath, _oldPath) {
+            removePathListeners(outline);
+            setPathInstance(newPath, true);
+            rebuild();
+          },
+          onVerticesDeleted: function (_pathIndex, _deletedVertIndices, newPath, _oldPath) {
+            removePathListeners(outline);
+            setPathInstance(newPath, true);
+            rebuild();
+          }
+        });
+      }
     }; // END setPathInstance
 
     var setDefaultPathInstance = function (doRebuild) {
@@ -495,6 +511,7 @@
       // This is called when a json string was loaded by drop (from a file)
       loadPathJSON(jsonString);
     });
+    // TODO: restore!!!
     configIO.onPathRestored(
       function (jsonString) {
         // This is called when json string was loaded from storage

@@ -1,1 +1,1 @@
-export declare function isMobileDevice(): boolean;
+export declare const isMobileDevice: () => boolean;

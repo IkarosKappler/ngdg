@@ -48,10 +48,11 @@
     "copy-lib-alloyfinger": "mkdir public/lib/alloyfinger-typescript && cp -R node_modules/alloyfinger-typescript/src public/lib/alloyfinger-typescript/src",
     "copy-lib-earcut": "cp -R node_modules/earcut-typescript/dist public/lib/earcut-typescript",
     "copy-lib-ngdg": "mkdir public/lib/ngdg/ && cp -R ./src/ public/lib/ngdg/src/ && cp -R ./dist/ public/lib/ngdg/dist/",
-    "copy-lib-plotboilerplate": "mkdir public/lib/plotboilerplate/ && cp -R node_modules/plotboilerplate/src public/lib/plotboilerplate/src && cp -R node_modules/plotboilerplate/dist public/lib/plotboilerplate/dist",
+    "copy-lib-plotboilerplate": "mkdir public/lib/plotboilerplate/ && cp -R node_modules/plotboilerplate/src public/lib/plotboilerplate/ && cp -R node_modules/plotboilerplate/dist public/lib/plotboilerplate/",
     "copy-lib-threejs": "mkdir public/lib/three/ && mkdir public/lib/three/build/ && cp node_modules/three/build/three.min.js public/lib/three/build/three.min.js",
     "copy-lib-thee-slice": "cp -R node_modules/threejs-slice-geometry-typescript/build public/lib/threejs-slice-geometry-typescript",
     "copy-lib-uistats": "cp -R node_modules/uistats-typescript/dist public/lib/uistats-typescript",
+    "copy-lib-plotboilerplate-dev": "mkdir -p public/lib/plotboilerplate/ && cp -R ../plotboilerplate/src public/lib/plotboilerplate/ && cp -R ../plotboilerplate/dist public/lib/plotboilerplate/",
     "server": "npx http-server ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tslint": "npx eslint ./src/ts/"

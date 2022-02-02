@@ -78,7 +78,5 @@ od-bl {
 }
 
 #gui {
-  /* display: block; */
   left: 50% !important;
-  transform: translate(-50%, 0);
 }

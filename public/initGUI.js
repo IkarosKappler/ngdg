@@ -2,6 +2,8 @@
  * It turned out that the initialization of dat.gui grew really large. Let's put it into a
  * separate file.
  *
+ * @requires guiSizeToggler
+ *
  * @author  Ikaros Kappler
  * @date    2021-12-03
  * @version 1.0.0
@@ -13,6 +15,17 @@ function initGUI(pb, config, GUP, rebuildCallback) {
   var gui = pb.createGUI({ autoPlace: false });
   document.getElementsByTagName("body")[0].appendChild(gui.domElement);
   gui.domElement.id = "gui";
+
+  // console.log("ngdg", ngdg);
+  var guiSize = guiSizeToggler(gui, config, { transformOrigin: "top center", transform: "translate(-50%,0%)" });
+  if (ngdg.isMobileDevice()) {
+    config.guiDoubleSize = true;
+    guiSize.update();
+  } else {
+    config.guiDoubleSize = false;
+  }
+  gui.add(config, "guiDoubleSize").title("Double size GUI?").onChange(guiSize.update);
+  guiSize.update();
 
   var fold0 = gui.addFolder("Path");
   // prettier-ignore
