@@ -366,6 +366,7 @@ var DildoGeneration = /** @class */ (function () {
                 (0, mergeGeometries_1.mergeGeometries)(rightSliceGeometry, triangulationGeometry, constants_1.EPS);
             }
         }
+        var arrangeSplitsOnPlane = true;
         if (options.showLeftSplit) {
             leftSliceGeometry.uvsNeedUpdate = true;
             // TODO: check if this is still required
@@ -374,6 +375,11 @@ var DildoGeneration = /** @class */ (function () {
             var slicedMeshLeft = new THREE.Mesh(leftSliceGeometry, sliceMaterial);
             slicedMeshLeft.position.y = -100;
             slicedMeshLeft.position.z = -50;
+            if (arrangeSplitsOnPlane) {
+                // slicedMeshLeft.rotation.x = Math.PI / 2.0;
+                slicedMeshLeft.rotation.y = Math.PI / 2.0;
+                // slicedMeshLeft.rotation.z = Math.PI / 2.0;
+            }
             slicedMeshLeft.userData["isExportable"] = true;
             this.addMesh(slicedMeshLeft);
             if (options.showNormals) {

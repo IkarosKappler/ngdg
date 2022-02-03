@@ -12,6 +12,9 @@ import { DildoGeneration } from "./DildoGeneration";
 import { LocalstorageIO } from "./LocalstorageIO";
 export declare const ngdg: {
     DEFAULT_BEZIER_JSON: string;
+    DEG_TO_RAD: number;
+    KEY_SLICED_MESH_RIGHT: string;
+    KEY_SLICED_MESH_LEFT: string;
     LocalstorageIO: typeof LocalstorageIO;
     DildoGeneration: typeof DildoGeneration;
     ImageStore: {

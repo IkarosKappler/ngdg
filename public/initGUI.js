@@ -4,12 +4,13 @@
  *
  * @requires guiSizeToggler
  *
- * @author  Ikaros Kappler
- * @date    2021-12-03
- * @version 1.0.0
+ * @author   Ikaros Kappler
+ * @date     2021-12-03
+ * @modified 2022-02-03 Added modifiers folder.
+ * @version  1.1.0
  */
 
-function initGUI(pb, config, GUP, rebuildCallback) {
+function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback) {
   // TODO: remove the DatGuiProps again from PB? Not Used? Not Working?
   // See https://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-dat-gui-dropdown
   var gui = pb.createGUI({ autoPlace: false });
@@ -67,56 +68,72 @@ function initGUI(pb, config, GUP, rebuildCallback) {
   // prettier-ignore
   fold3.add(config, "closeCutAreas").onChange( function() { rebuildCallback() } ).name('closeCutAreas').title('Close the open cut areas on the split.');
 
-  var fold4 = gui.addFolder("Render Settings");
+  var fold4 = gui.addFolder("Modifiers");
   // prettier-ignore
-  fold4.add(config, "showDiscreteOutlinePoints").onChange( function() { pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
+  fold4.add(config, "leftSplitMeshRotationX").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshRotationX').title('The x rotation of the left split.');
   // prettier-ignore
-  fold4.add(config, "wireframe").onChange( function() { rebuildCallback() } ).name('wireframe').title('Display the mesh as a wireframe model?');
+  fold4.add(config, "leftSplitMeshRotationY").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshRotationY').title('The y rotation of the left split.');
   // prettier-ignore
-  fold4.add(config, "useTextureImage").onChange( function() { rebuildCallback() } ).name('useTextureImage').title('Use a texture image?');
+  fold4.add(config, "leftSplitMeshRotationZ").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshRotationZ').title('The z rotation of the left split.');
+  // prettier-ignore
+  fold4.add(config, "rightSplitMeshRotationX").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshRotationX').title('The x rotation of the right split.');
+  // prettier-ignore
+  fold4.add(config, "rightSplitMeshRotationY").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshRotationY').title('The y rotation of the right split.');
+  // prettier-ignore
+  fold4.add(config, "rightSplitMeshRotationZ").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshRotationZ').title('The z rotation of the right split.');
+  // prettier-ignore
+  fold4.add(config, "alignSplitsOnPlane").name('alignSplitsOnPlane').title('Align splits on plane.');
+
+  var fold5 = gui.addFolder("Render Settings");
+  // prettier-ignore
+  fold5.add(config, "showDiscreteOutlinePoints").onChange( function() { pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
+  // prettier-ignore
+  fold5.add(config, "wireframe").onChange( function() { rebuildCallback() } ).name('wireframe').title('Display the mesh as a wireframe model?');
+  // prettier-ignore
+  fold5.add(config, "useTextureImage").onChange( function() { rebuildCallback() } ).name('useTextureImage').title('Use a texture image?');
   // TODO: implement this in a proper next step (bumpmapping is still buggy)
   // // prettier-ignore
   // fold3.add(config, "showBumpmapTargets").onChange( function() { rebuild() } ).name('showBumpmapTargets').title('Show the bumpmap maximal lerping hull.');
   // // prettier-ignore
   // fold3.add(config, "showBumpmapImage").onChange( function() { rebuild() } ).name('showBumpmapImage').title('Check if you want to see a preview of the bumpmap image.');
   // prettier-ignore
-  fold4.add(config, "renderFaces", ["double","front","back"]).onChange( function() { rebuildCallback() } ).name('renderFaces').title('Render mesh faces double or single sided?');
+  fold5.add(config, "renderFaces", ["double","front","back"]).onChange( function() { rebuildCallback() } ).name('renderFaces').title('Render mesh faces double or single sided?');
   // prettier-ignore
-  fold4.add(config, "showNormals").onChange( function() { rebuildCallback() } ).name('showNormals').title('Show the vertex normals.');
+  fold5.add(config, "showNormals").onChange( function() { rebuildCallback() } ).name('showNormals').title('Show the vertex normals.');
   // prettier-ignore
-  fold4.add(config, "showBasicPerpendiculars").onChange( function() { rebuildCallback() } ).name('showBasicPerpendiculars').title('Show the meshes perpendicular on the XZ plane.');
+  fold5.add(config, "showBasicPerpendiculars").onChange( function() { rebuildCallback() } ).name('showBasicPerpendiculars').title('Show the meshes perpendicular on the XZ plane.');
   // prettier-ignore
-  fold4.add(config, "addSpine").onChange( function() { rebuildCallback() } ).name('addSpine').title("Add the model's spine?");
+  fold5.add(config, "addSpine").onChange( function() { rebuildCallback() } ).name('addSpine').title("Add the model's spine?");
   // prettier-ignore
-  fold4.add(config, "addPrecalculatedMassiveFaces").onChange( function() { rebuildCallback() } ).name('addPrecalculatedMassiveFaces').title("Add a pre-calculated massive intersection fill?");
+  fold5.add(config, "addPrecalculatedMassiveFaces").onChange( function() { rebuildCallback() } ).name('addPrecalculatedMassiveFaces').title("Add a pre-calculated massive intersection fill?");
   // prettier-ignore
-  fold4.add(config, "addPrecalculatedHollowFaces").onChange( function() { rebuildCallback() } ).name('addPrecalculatedHollowFaces').title("Add a pre-calculated hollow intersection fill?");
+  fold5.add(config, "addPrecalculatedHollowFaces").onChange( function() { rebuildCallback() } ).name('addPrecalculatedHollowFaces').title("Add a pre-calculated hollow intersection fill?");
   // prettier-ignore
-  fold4.add(config, "showSplitPane").onChange( function() { rebuildCallback() } ).name('showSplitPane').title('Show split pane.');
+  fold5.add(config, "showSplitPane").onChange( function() { rebuildCallback() } ).name('showSplitPane').title('Show split pane.');
   // prettier-ignore
-  fold4.add(config, "showLeftSplit").onChange( function() { rebuildCallback() } ).name('showLeftSplit').title('Show left split.');
+  fold5.add(config, "showLeftSplit").onChange( function() { rebuildCallback() } ).name('showLeftSplit').title('Show left split.');
   // prettier-ignore
-  fold4.add(config, "showRightSplit").onChange( function() { rebuildCallback() } ).name('showRightSplit').title('Show right split.');
+  fold5.add(config, "showRightSplit").onChange( function() { rebuildCallback() } ).name('showRightSplit').title('Show right split.');
   // prettier-ignore
-  fold4.add(config, "showSplitShape").onChange( function() { rebuildCallback() } ).name('showSplitShape').title('Show split shape.');
+  fold5.add(config, "showSplitShape").onChange( function() { rebuildCallback() } ).name('showSplitShape').title('Show split shape.');
   // prettier-ignore
-  fold4.add(config, "showSplitShapeTriangulation").onChange( function() { rebuildCallback() } ).name('showSplitShapeTriangulation').title('Show split shape triangulation?');
+  fold5.add(config, "showSplitShapeTriangulation").onChange( function() { rebuildCallback() } ).name('showSplitShapeTriangulation').title('Show split shape triangulation?');
   // prettier-ignore
-  fold4.add(config, "addRawIntersectionTriangleMesh").onChange( function() { rebuildCallback() } ).name('addRawIntersectionTriangleMesh').title('Show raw unoptimized split face triangulation?');
+  fold5.add(config, "addRawIntersectionTriangleMesh").onChange( function() { rebuildCallback() } ).name('addRawIntersectionTriangleMesh').title('Show raw unoptimized split face triangulation?');
   // prettier-ignore
-  fold4.add(config, "addPrecalculatedShapeOutlines").onChange( function() { rebuildCallback() } ).name('addPrecalculatedShapeOutlines').title('Show raw unoptimized split shape outline(s)?');
+  fold5.add(config, "addPrecalculatedShapeOutlines").onChange( function() { rebuildCallback() } ).name('addPrecalculatedShapeOutlines').title('Show raw unoptimized split shape outline(s)?');
 
-  var fold5 = gui.addFolder("Export");
+  var fold6 = gui.addFolder("Export");
   // prettier-ignore
-  fold5.add(config, "exportSTL").name('STL').title('Export an STL file.');
+  fold6.add(config, "exportSTL").name('STL').title('Export an STL file.');
   // prettier-ignore
-  fold5.add(config, "showPathJSON").name('Show Path JSON ...').title('Show the path data.');
+  fold6.add(config, "showPathJSON").name('Show Path JSON ...').title('Show the path data.');
 
-  var fold6 = gui.addFolder("Import");
+  var fold7 = gui.addFolder("Import");
   // prettier-ignore
-  fold6.add(config, "insertPathJSON").name('Insert Path JSON ...').title('Insert path data as JSON.');
+  fold7.add(config, "insertPathJSON").name('Insert Path JSON ...').title('Insert path data as JSON.');
   // prettier-ignore
-  fold6.add(config, "setDefaultPathJSON").name('Load default Path JSON ...').title('Load the pre-configured default path JSON.');
+  fold7.add(config, "setDefaultPathJSON").name('Load default Path JSON ...').title('Load the pre-configured default path JSON.');
 
   fold2.open();
   if (!GUP.openGui) {

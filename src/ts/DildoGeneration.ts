@@ -6,7 +6,8 @@
  * @modified 2020-09-11 Added proper texture loading.
  * @modified 2021-06-07 Fixing `removeCachedGeometries`. Adding bending of model.
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
- * @version  1.2.1
+ * @modified 2022-02-03 Added `clearResults` function.
+ * @version  1.2.2
  **/
 
 import * as THREE from "three";
@@ -36,7 +37,9 @@ import {
   KEY_RIGHT_SLICE_GEOMETRY,
   KEY_RIGHT_SLICE_PLANE,
   KEY_SPLIT_PANE_MESH,
-  KEY_SPLIT_TRIANGULATION_GEOMETRIES
+  KEY_SPLIT_TRIANGULATION_GEOMETRIES,
+  KEY_SLICED_MESH_RIGHT,
+  KEY_SLICED_MESH_LEFT
 } from "./constants";
 import { Polygon } from "plotboilerplate";
 import { computeVertexNormals } from "./computeVertexNormals";
@@ -67,6 +70,7 @@ export class DildoGeneration implements IDildoGeneration {
 
   // Remember partial results
   partialResults: Record<string, object>;
+  splitResults: Record<string, THREE.Mesh>;
 
   constructor(canvasId: string, options: DildoGenerationOptions) {
     this.canvas = document.getElementById(canvasId) as unknown as HTMLCanvasElement;
@@ -114,6 +118,7 @@ export class DildoGeneration implements IDildoGeneration {
     // Remember partial results
     // Record<string,object>
     this.partialResults = {};
+    this.splitResults = {};
 
     const _self = this;
     window.addEventListener("resize", () => {
@@ -162,6 +167,7 @@ export class DildoGeneration implements IDildoGeneration {
    **/
   rebuild(options: ExtendedDildoOptions) {
     this.removeCachedGeometries();
+    this.clearResults();
 
     const baseRadius: number = options.outline.getBounds().width;
     const baseShape: Polygon = GeometryGenerationHelpers.mkCircularPolygon(
@@ -407,6 +413,8 @@ export class DildoGeneration implements IDildoGeneration {
       }
     }
 
+    // const arrangeSplitsOnPlane = true;
+
     if (options.showLeftSplit) {
       leftSliceGeometry.uvsNeedUpdate = true;
       // TODO: check if this is still required
@@ -415,8 +423,14 @@ export class DildoGeneration implements IDildoGeneration {
       const slicedMeshLeft: THREE.Mesh = new THREE.Mesh(leftSliceGeometry, sliceMaterial);
       slicedMeshLeft.position.y = -100;
       slicedMeshLeft.position.z = -50;
+      // if (arrangeSplitsOnPlane) {
+      //   // slicedMeshLeft.rotation.x = -Math.PI / 2;
+      //   slicedMeshLeft.rotation.y = -Math.PI / 2.0;
+      //   slicedMeshLeft.rotation.z = Math.PI / 2.0;
+      // }
       slicedMeshLeft.userData["isExportable"] = true;
       this.addMesh(slicedMeshLeft);
+      this.splitResults[KEY_SLICED_MESH_LEFT] = slicedMeshLeft;
 
       if (options.showNormals) {
         var vnHelper = new VertexNormalsHelper(slicedMeshLeft, options.normalsLength, 0x00ff00);
@@ -434,6 +448,7 @@ export class DildoGeneration implements IDildoGeneration {
       slicedMeshRight.position.z = 50;
       slicedMeshRight.userData["isExportable"] = true;
       this.addMesh(slicedMeshRight);
+      this.splitResults[KEY_SLICED_MESH_RIGHT] = slicedMeshRight;
 
       if (options.showNormals) {
         var vnHelper = new VertexNormalsHelper(slicedMeshRight, options.normalsLength, 0x00ff00);
@@ -534,6 +549,18 @@ export class DildoGeneration implements IDildoGeneration {
       }
     }
     this.geometries = [];
+  }
+
+  clearResults() {
+    this.splitResults[KEY_SLICED_MESH_RIGHT] = null;
+    this.splitResults[KEY_SLICED_MESH_LEFT] = null;
+
+    this.partialResults[KEY_LEFT_SLICE_PLANE] = null;
+    this.partialResults[KEY_LEFT_SLICE_GEOMETRY] = null;
+    this.partialResults[KEY_RIGHT_SLICE_PLANE] = null;
+    this.partialResults[KEY_RIGHT_SLICE_GEOMETRY] = null;
+    this.partialResults[KEY_PLANE_INTERSECTION_POINTS] = null;
+    this.partialResults[KEY_SPLIT_TRIANGULATION_GEOMETRIES] = null;
   }
 
   /**

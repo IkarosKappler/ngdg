@@ -7,7 +7,8 @@
  * @modified 2020-09-11 Added proper texture loading.
  * @modified 2021-06-07 Fixing `removeCachedGeometries`. Adding bending of model.
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
- * @version  1.2.1
+ * @modified 2022-02-03 Added `clearResults` function.
+ * @version  1.2.2
  **/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DildoGeneration = void 0;
@@ -60,6 +61,7 @@ var DildoGeneration = /** @class */ (function () {
         // Remember partial results
         // Record<string,object>
         this.partialResults = {};
+        this.splitResults = {};
         var _self = this;
         window.addEventListener("resize", function () {
             _self.resizeCanvas();
@@ -104,6 +106,7 @@ var DildoGeneration = /** @class */ (function () {
      **/
     DildoGeneration.prototype.rebuild = function (options) {
         this.removeCachedGeometries();
+        this.clearResults();
         var baseRadius = options.outline.getBounds().width;
         var baseShape = GeometryGenerationHelpers_1.GeometryGenerationHelpers.mkCircularPolygon(baseRadius, options.shapeSegmentCount, options.baseShapeExcentricity);
         var useBumpmap = typeof options.useBumpmap !== "undefined" ? options.useBumpmap : false;
@@ -283,6 +286,7 @@ var DildoGeneration = /** @class */ (function () {
                 (0, mergeGeometries_1.mergeGeometries)(rightSliceGeometry, triangulationGeometry, constants_1.EPS);
             }
         }
+        // const arrangeSplitsOnPlane = true;
         if (options.showLeftSplit) {
             leftSliceGeometry.uvsNeedUpdate = true;
             // TODO: check if this is still required
@@ -291,8 +295,14 @@ var DildoGeneration = /** @class */ (function () {
             var slicedMeshLeft = new THREE.Mesh(leftSliceGeometry, sliceMaterial);
             slicedMeshLeft.position.y = -100;
             slicedMeshLeft.position.z = -50;
+            // if (arrangeSplitsOnPlane) {
+            //   // slicedMeshLeft.rotation.x = -Math.PI / 2;
+            //   slicedMeshLeft.rotation.y = -Math.PI / 2.0;
+            //   slicedMeshLeft.rotation.z = Math.PI / 2.0;
+            // }
             slicedMeshLeft.userData["isExportable"] = true;
             this.addMesh(slicedMeshLeft);
+            this.splitResults[constants_1.KEY_SLICED_MESH_LEFT] = slicedMeshLeft;
             if (options.showNormals) {
                 var vnHelper = new VertexNormalsHelper_1.VertexNormalsHelper(slicedMeshLeft, options.normalsLength, 0x00ff00);
                 this.scene.add(vnHelper);
@@ -309,6 +319,7 @@ var DildoGeneration = /** @class */ (function () {
             slicedMeshRight.position.z = 50;
             slicedMeshRight.userData["isExportable"] = true;
             this.addMesh(slicedMeshRight);
+            this.splitResults[constants_1.KEY_SLICED_MESH_RIGHT] = slicedMeshRight;
             if (options.showNormals) {
                 var vnHelper = new VertexNormalsHelper_1.VertexNormalsHelper(slicedMeshRight, options.normalsLength, 0x00ff00);
                 this.scene.add(vnHelper);
@@ -402,6 +413,16 @@ var DildoGeneration = /** @class */ (function () {
             }
         }
         this.geometries = [];
+    };
+    DildoGeneration.prototype.clearResults = function () {
+        this.splitResults[constants_1.KEY_SLICED_MESH_RIGHT] = null;
+        this.splitResults[constants_1.KEY_SLICED_MESH_LEFT] = null;
+        this.partialResults[constants_1.KEY_LEFT_SLICE_PLANE] = null;
+        this.partialResults[constants_1.KEY_LEFT_SLICE_GEOMETRY] = null;
+        this.partialResults[constants_1.KEY_RIGHT_SLICE_PLANE] = null;
+        this.partialResults[constants_1.KEY_RIGHT_SLICE_GEOMETRY] = null;
+        this.partialResults[constants_1.KEY_PLANE_INTERSECTION_POINTS] = null;
+        this.partialResults[constants_1.KEY_SPLIT_TRIANGULATION_GEOMETRIES] = null;
     };
     /**
      * Generate an STL string from the (exportable) meshes that are currently stored inside this generator.

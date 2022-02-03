@@ -16,8 +16,12 @@ var ImageStore_1 = require("./ImageStore");
 var DildoGeneration_1 = require("./DildoGeneration");
 var LocalstorageIO_1 = require("./LocalstorageIO");
 var isMobileDevice_1 = require("./isMobileDevice");
+var constants_1 = require("./constants");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
+    DEG_TO_RAD: constants_1.DEG_TO_RAD,
+    KEY_SLICED_MESH_RIGHT: constants_1.KEY_SLICED_MESH_RIGHT,
+    KEY_SLICED_MESH_LEFT: constants_1.KEY_SLICED_MESH_LEFT,
     LocalstorageIO: LocalstorageIO_1.LocalstorageIO,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
     ImageStore: ImageStore_1.ImageStore,

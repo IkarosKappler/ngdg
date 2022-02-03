@@ -280,6 +280,7 @@ export class DildoGeneration {
                 mergeGeometries(rightSliceGeometry, triangulationGeometry, EPS);
             }
         }
+        const arrangeSplitsOnPlane = true;
         if (options.showLeftSplit) {
             leftSliceGeometry.uvsNeedUpdate = true;
             // TODO: check if this is still required
@@ -288,6 +289,11 @@ export class DildoGeneration {
             const slicedMeshLeft = new THREE.Mesh(leftSliceGeometry, sliceMaterial);
             slicedMeshLeft.position.y = -100;
             slicedMeshLeft.position.z = -50;
+            if (arrangeSplitsOnPlane) {
+                // slicedMeshLeft.rotation.x = Math.PI / 2.0;
+                slicedMeshLeft.rotation.y = Math.PI / 2.0;
+                // slicedMeshLeft.rotation.z = Math.PI / 2.0;
+            }
             slicedMeshLeft.userData["isExportable"] = true;
             this.addMesh(slicedMeshLeft);
             if (options.showNormals) {

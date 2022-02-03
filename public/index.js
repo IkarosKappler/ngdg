@@ -118,6 +118,28 @@
         resizeHandleLineColor: isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
         rulerColor: isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)",
         showDiscreteOutlinePoints: false,
+        // Modifiers
+        leftSplitMeshRotationX: 180.0, // align properly according to split algorithm
+        leftSplitMeshRotationY: 0.0,
+        leftSplitMeshRotationZ: 0.0,
+        rightSplitMeshRotationX: 180.0, // align properly according to split algorithm
+        rightSplitMeshRotationY: 0.0,
+        rightSplitMeshRotationZ: 0.0,
+        // leftSplitMeshTranslationX: 180.0, // align properly according to split algorithm
+        // leftSplitMeshTranslationY: 0.0,
+        // leftSplitMeshTranslationZ: 0.0,
+        // rightSplitMeshTranslationX: 180.0, // align properly according to split algorithm
+        // rightSplitMeshTranslationY: 0.0,
+        // rightSplitMeshTranslationZ: 0.0,
+        alignSplitsOnPlane: function () {
+          config.leftSplitMeshRotationX = 90;
+          config.leftSplitMeshRotationY = 0;
+          config.leftSplitMeshRotationZ = 90;
+          config.rightSplitMeshRotationX = 90;
+          config.rightSplitMeshRotationY = 180;
+          config.rightSplitMeshRotationZ = 90;
+          updateModifiers();
+        },
         // Functions
         exportSTL: function () {
           exportSTL();
@@ -252,11 +274,35 @@
               dildoGeneration.rebuild(
                 Object.assign(config, { outline: outline, isBending: config.bendAngle !== 0, bumpmap: bumpmap })
               );
+              updateModifiers();
             }
           };
         })(buildId),
         50
       );
+    };
+
+    // +---------------------------------------------------------------------------------
+    // | Whenever the modifier settings change (post built and post split) apply
+    // | them here: rotation and translation.
+    // +-------------------------------
+    var updateModifiers = function () {
+      // Fetch the sliced result (if options tell it was created)
+      // and apply some modifiers.
+      if (config.performSlice) {
+        if (dildoGeneration.splitResults[ngdg.KEY_SLICED_MESH_RIGHT]) {
+          var rightSliceMesh = dildoGeneration.splitResults[ngdg.KEY_SLICED_MESH_RIGHT];
+          rightSliceMesh.rotation.x = config.leftSplitMeshRotationX * ngdg.DEG_TO_RAD;
+          rightSliceMesh.rotation.y = config.leftSplitMeshRotationY * ngdg.DEG_TO_RAD;
+          rightSliceMesh.rotation.z = config.leftSplitMeshRotationZ * ngdg.DEG_TO_RAD;
+        }
+        if (dildoGeneration.splitResults[ngdg.KEY_SLICED_MESH_LEFT]) {
+          var leftSliceMesh = dildoGeneration.splitResults[ngdg.KEY_SLICED_MESH_LEFT];
+          leftSliceMesh.rotation.x = config.rightSplitMeshRotationX * ngdg.DEG_TO_RAD;
+          leftSliceMesh.rotation.y = config.rightSplitMeshRotationY * ngdg.DEG_TO_RAD;
+          leftSliceMesh.rotation.z = config.rightSplitMeshRotationZ * ngdg.DEG_TO_RAD;
+        }
+      }
     };
 
     /**
@@ -266,6 +312,7 @@
      * @param {boolean} isPreviewVisible
      */
     var updateBumpmapPreview = function (bumpmap, isPreviewVisible) {
+      // Note: this is currently not in use
       var previewWrapper = document.getElementById("bumpmap-preview");
       if (bumpmap && isPreviewVisible) {
         var previewImageElem = bumpmap.createPreviewImage();
@@ -284,11 +331,12 @@
     };
 
     // +---------------------------------------------------------------------------------
-    // | Each outline vertex requires a drag (end) listener. Wee need this to update
-    // | the 3d mesh on changes.
+    // | Each outline vertex requires a drag (end) listener. We need this to update
+    // | the 3d mesh on changes, update stats, and resize handle positions.
     // +-------------------------------
     var dragListener = function (dragEvent) {
       // Uhm, well, some curve point moved.
+      updatePathResizer();
       updateOutlineStats();
       rebuild();
     };
@@ -334,9 +382,16 @@
 
     var drawBezierDistanceLine = function () {
       if (bezierDistanceLine != null) {
-        pb.draw.line(bezierDistanceLine.a, bezierDistanceLine.b, "rgb(255,192,0)", 2);
-        pb.fill.circleHandle(bezierDistanceLine.a, 3.0, "rgb(255,192,0)");
+        pb.draw.line(bezierDistanceLine.a, bezierDistanceLine.b, "rgba(255,192,0,0.25)", 1);
+        // pb.fill.circleHandle(bezierDistanceLine.a, 3.0, "rgb(255,192,0)");
+        drawCross(bezierDistanceLine.a, "rgb(255,192,0)", 1.0);
       }
+    };
+
+    // TODO: in plotboilerplate@1.17.0 there will be a function for this.
+    var drawCross = function (position, color, lineWidth) {
+      pb.draw.line({ x: position.x - 3, y: position.y - 3 }, { x: position.x + 3, y: position.y + 3 }, color, lineWidth);
+      pb.draw.line({ x: position.x + 3, y: position.y - 3 }, { x: position.x - 3, y: position.y + 3 }, color, lineWidth);
     };
 
     var drawRulers = function () {
@@ -507,8 +562,6 @@
     var localstorageIO = new ngdg.LocalstorageIO(document.getElementsByTagName("body")[0]);
     var fileDrop = new FileDrop(pb.eventCatcher);
     fileDrop.onFileJSONDropped(function (jsonObject) {
-      // console.log("jsonObject", jsonObject);
-      // setVertexData(jsonObject);
       try {
         setPathInstance(BezierPath.fromArray(jsonObject));
         rebuild();
@@ -517,11 +570,6 @@
         console.log(e);
       }
     });
-    // configIO.onPathDropped(function (jsonString) {
-    //   // This is called when a json string was loaded by drop (from a file)
-    //   loadPathJSON(jsonString);
-    // });
-    // TODO: restore!!!
     localstorageIO.onPathRestored(
       function (jsonString) {
         // This is called when json string was loaded from storage
@@ -537,7 +585,7 @@
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
     // +-------------------------------
-    initGUI(pb, config, GUP, rebuild);
+    initGUI(pb, config, GUP, rebuild, updateModifiers);
 
     pb.config.preDraw = preDraw;
     pb.config.postDraw = postDraw;
