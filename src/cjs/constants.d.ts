@@ -5,6 +5,11 @@
  */
 export declare const EPS = 0.000001;
 export declare const DEG_TO_RAD: number;
+export declare const SPLIT_MESH_OFFSET: {
+    x: number;
+    y: number;
+    z: number;
+};
 export declare const KEY_LEFT_SLICE_GEOMETRY = "KEY_LEFT_SLICE_GEOMETRY";
 export declare const KEY_RIGHT_SLICE_GEOMETRY = "KEY_RIGHT_SLICE_GEOMETRY";
 export declare const KEY_LEFT_SLICE_PLANE = "KEY_LEFT_SLICE_PLANE";

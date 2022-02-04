@@ -8,6 +8,9 @@ export const EPS = 0.000001;
 
 export const DEG_TO_RAD = Math.PI / 180.0;
 
+// Note: z and -z will be used for left and right split.
+export const SPLIT_MESH_OFFSET = { x: 0, y: -100, z: -50 };
+
 export const KEY_LEFT_SLICE_GEOMETRY = "KEY_LEFT_SLICE_GEOMETRY"; // THREE.Geometry
 export const KEY_RIGHT_SLICE_GEOMETRY = "KEY_RIGHT_SLICE_GEOMETRY"; // THREE.Geometry
 export const KEY_LEFT_SLICE_PLANE = "KEY_LEFT_SLICE_PLANE"; // THREE.Plane

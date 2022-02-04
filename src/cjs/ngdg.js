@@ -20,6 +20,7 @@ var constants_1 = require("./constants");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
+    SPLIT_MESH_OFFSET: constants_1.SPLIT_MESH_OFFSET,
     KEY_SLICED_MESH_RIGHT: constants_1.KEY_SLICED_MESH_RIGHT,
     KEY_SLICED_MESH_LEFT: constants_1.KEY_SLICED_MESH_LEFT,
     LocalstorageIO: LocalstorageIO_1.LocalstorageIO,

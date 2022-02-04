@@ -82,7 +82,21 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback) {
   // prettier-ignore
   fold4.add(config, "rightSplitMeshRotationZ").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshRotationZ').title('The z rotation of the right split.');
   // prettier-ignore
+  fold4.add(config, "leftSplitMeshTranslationX").step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshTranslationX').title('The x translation of the left split.');
+  // prettier-ignore
+  fold4.add(config, "leftSplitMeshTranslationY").step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshTranslationY').title('The y translation of the left split.');
+  // prettier-ignore
+  fold4.add(config, "leftSplitMeshTranslationZ").step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshTranslationZ').title('The z translation of the left split.');
+  // prettier-ignore
+  fold4.add(config, "rightSplitMeshTranslationX").step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshTranslationX').title('The x translation of the right split.');
+  // prettier-ignore
+  fold4.add(config, "rightSplitMeshTranslationY").step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshTranslationY').title('The y translation of the right split.');
+  // prettier-ignore
+  fold4.add(config, "rightSplitMeshTranslationZ").step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshTranslationZ').title('The z translation of the right split.');
+  // prettier-ignore
   fold4.add(config, "alignSplitsOnPlane").name('alignSplitsOnPlane').title('Align splits on plane.');
+  // prettier-ignore
+  fold4.add(config, "restoreSplitAlignment").name('restoreSplitAlignment').title('Restore original split alignment.');
 
   var fold5 = gui.addFolder("Render Settings");
   // prettier-ignore

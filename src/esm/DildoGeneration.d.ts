@@ -6,7 +6,8 @@
  * @modified 2020-09-11 Added proper texture loading.
  * @modified 2021-06-07 Fixing `removeCachedGeometries`. Adding bending of model.
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
- * @version  1.2.1
+ * @modified 2022-02-03 Added `clearResults` function.
+ * @version  1.2.2
  **/
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -30,6 +31,7 @@ export declare class DildoGeneration implements IDildoGeneration {
     controls: OrbitControls;
     geometries: Array<THREE.Object3D>;
     partialResults: Record<string, object>;
+    splitResults: Record<string, THREE.Mesh>;
     constructor(canvasId: string, options: DildoGenerationOptions);
     /**
      * Resize the 3d canvas to fit its container.
@@ -75,6 +77,7 @@ export declare class DildoGeneration implements IDildoGeneration {
      */
     addMesh(mesh: any): void;
     removeCachedGeometries(): void;
+    clearResults(): void;
     /**
      * Generate an STL string from the (exportable) meshes that are currently stored inside this generator.
      *

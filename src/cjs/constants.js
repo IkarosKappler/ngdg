@@ -5,9 +5,11 @@
  * @date    2021-08-30
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KEY_SLICED_MESH_LEFT = exports.KEY_SLICED_MESH_RIGHT = exports.KEY_SPLIT_TRIANGULATION_GEOMETRIES = exports.KEY_PLANE_INTERSECTION_TRIANGULATION = exports.KEY_PLANE_INTERSECTION_POINTS = exports.KEY_SPLIT_PANE_MESH = exports.KEY_RIGHT_SLICE_PLANE = exports.KEY_LEFT_SLICE_PLANE = exports.KEY_RIGHT_SLICE_GEOMETRY = exports.KEY_LEFT_SLICE_GEOMETRY = exports.DEG_TO_RAD = exports.EPS = void 0;
+exports.KEY_SLICED_MESH_LEFT = exports.KEY_SLICED_MESH_RIGHT = exports.KEY_SPLIT_TRIANGULATION_GEOMETRIES = exports.KEY_PLANE_INTERSECTION_TRIANGULATION = exports.KEY_PLANE_INTERSECTION_POINTS = exports.KEY_SPLIT_PANE_MESH = exports.KEY_RIGHT_SLICE_PLANE = exports.KEY_LEFT_SLICE_PLANE = exports.KEY_RIGHT_SLICE_GEOMETRY = exports.KEY_LEFT_SLICE_GEOMETRY = exports.SPLIT_MESH_OFFSET = exports.DEG_TO_RAD = exports.EPS = void 0;
 exports.EPS = 0.000001;
 exports.DEG_TO_RAD = Math.PI / 180.0;
+// Note: z and -z will be used for left and right split.
+exports.SPLIT_MESH_OFFSET = { x: 0, y: -100, z: -50 };
 exports.KEY_LEFT_SLICE_GEOMETRY = "KEY_LEFT_SLICE_GEOMETRY"; // THREE.Geometry
 exports.KEY_RIGHT_SLICE_GEOMETRY = "KEY_RIGHT_SLICE_GEOMETRY"; // THREE.Geometry
 exports.KEY_LEFT_SLICE_PLANE = "KEY_LEFT_SLICE_PLANE"; // THREE.Plane

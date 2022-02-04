@@ -13,6 +13,11 @@ import { LocalstorageIO } from "./LocalstorageIO";
 export declare const ngdg: {
     DEFAULT_BEZIER_JSON: string;
     DEG_TO_RAD: number;
+    SPLIT_MESH_OFFSET: {
+        x: number;
+        y: number;
+        z: number;
+    };
     KEY_SLICED_MESH_RIGHT: string;
     KEY_SLICED_MESH_LEFT: string;
     LocalstorageIO: typeof LocalstorageIO;

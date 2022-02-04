@@ -61,6 +61,7 @@ var DildoGeneration = /** @class */ (function () {
         // Remember partial results
         // Record<string,object>
         this.partialResults = {};
+        // Record<string.THREE.Mesh>
         this.splitResults = {};
         var _self = this;
         window.addEventListener("resize", function () {
@@ -185,7 +186,8 @@ var DildoGeneration = /** @class */ (function () {
             var _a = BumpMapper_1.BumpMapper.applyBumpmap(dildoGeometry, bufferedGeometry, bumpmap, material, options), bumpmappedDildoMesh = _a.dildoMesh, dildoNormalsMesh = _a.dildoNormalsMesh;
             dildoMesh = bumpmappedDildoMesh;
             if (options.showBumpmapTargets) {
-                dildoNormalsMesh.position.y = -100;
+                // dildoNormalsMesh.position.y = -100;
+                dildoNormalsMesh.position.y = constants_1.SPLIT_MESH_OFFSET.y;
                 this.addMesh(dildoNormalsMesh);
             }
         }
@@ -195,7 +197,8 @@ var DildoGeneration = /** @class */ (function () {
             // this.__performCsgSlice(latheMesh, geometry, material);
         }
         else {
-            dildoMesh.position.y = -100;
+            // dildoMesh.position.y = -100;
+            dildoMesh.position.y = constants_1.SPLIT_MESH_OFFSET.y;
             dildoMesh.userData["isExportable"] = true;
             this.addMesh(dildoMesh);
             if (options.showNormals) {
@@ -259,7 +262,8 @@ var DildoGeneration = /** @class */ (function () {
             var linesMesh_1 = new THREE.Line(geometry, new THREE.LineBasicMaterial({
                 color: (0, randomWebColor_1.randomWebColor)(i, "Mixed") // 0x8800a8
             }));
-            linesMesh_1.position.y = -100;
+            // linesMesh.position.y = -100;
+            linesMesh_1.position.y = constants_1.SPLIT_MESH_OFFSET.y;
             // linesMesh.position.z = -50;
             this.addMesh(linesMesh_1);
         }
@@ -270,8 +274,10 @@ var DildoGeneration = /** @class */ (function () {
             var linesMesh = new THREE.Line(pointGeometry, new THREE.LineBasicMaterial({
                 color: 0x8800a8
             }));
-            linesMesh.position.y = -100;
-            linesMesh.position.z = -50;
+            // linesMesh.position.y = -100;
+            // linesMesh.position.z = -50;
+            linesMesh.position.y = constants_1.SPLIT_MESH_OFFSET.y;
+            linesMesh.position.z = constants_1.SPLIT_MESH_OFFSET.z;
             this.addMesh(linesMesh);
         }
         // Triangulate connected paths
@@ -293,8 +299,10 @@ var DildoGeneration = /** @class */ (function () {
             leftSliceGeometry.buffersNeedUpdate = true;
             leftSliceGeometry.computeVertexNormals();
             var slicedMeshLeft = new THREE.Mesh(leftSliceGeometry, sliceMaterial);
-            slicedMeshLeft.position.y = -100;
-            slicedMeshLeft.position.z = -50;
+            // slicedMeshLeft.position.y = -100;
+            // slicedMeshLeft.position.z = -50;
+            slicedMeshLeft.position.y = constants_1.SPLIT_MESH_OFFSET.y;
+            slicedMeshLeft.position.z = constants_1.SPLIT_MESH_OFFSET.z;
             // if (arrangeSplitsOnPlane) {
             //   // slicedMeshLeft.rotation.x = -Math.PI / 2;
             //   slicedMeshLeft.rotation.y = -Math.PI / 2.0;
@@ -315,8 +323,10 @@ var DildoGeneration = /** @class */ (function () {
             rightSliceGeometry.buffersNeedUpdate = true;
             rightSliceGeometry.computeVertexNormals();
             var slicedMeshRight = new THREE.Mesh(rightSliceGeometry, sliceMaterial);
-            slicedMeshRight.position.y = -100;
-            slicedMeshRight.position.z = 50;
+            // slicedMeshRight.position.y = -100;
+            // slicedMeshRight.position.z = 50;
+            slicedMeshRight.position.y = constants_1.SPLIT_MESH_OFFSET.y;
+            slicedMeshRight.position.z = -constants_1.SPLIT_MESH_OFFSET.z; // Important: use inverse value here!
             slicedMeshRight.userData["isExportable"] = true;
             this.addMesh(slicedMeshRight);
             this.splitResults[constants_1.KEY_SLICED_MESH_RIGHT] = slicedMeshRight;

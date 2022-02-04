@@ -31,6 +31,7 @@ import { PathFinder } from "./PathFinder";
 import { randomWebColor } from "./randomWebColor";
 import {
   EPS,
+  SPLIT_MESH_OFFSET,
   KEY_LEFT_SLICE_GEOMETRY,
   KEY_LEFT_SLICE_PLANE,
   KEY_PLANE_INTERSECTION_POINTS,
@@ -118,6 +119,7 @@ export class DildoGeneration implements IDildoGeneration {
     // Remember partial results
     // Record<string,object>
     this.partialResults = {};
+    // Record<string.THREE.Mesh>
     this.splitResults = {};
 
     const _self = this;
@@ -276,7 +278,8 @@ export class DildoGeneration implements IDildoGeneration {
       );
       dildoMesh = bumpmappedDildoMesh;
       if (options.showBumpmapTargets) {
-        dildoNormalsMesh.position.y = -100;
+        // dildoNormalsMesh.position.y = -100;
+        dildoNormalsMesh.position.y = SPLIT_MESH_OFFSET.y;
         this.addMesh(dildoNormalsMesh);
       }
     }
@@ -286,7 +289,8 @@ export class DildoGeneration implements IDildoGeneration {
       // The CSG operations are not reliable.
       // this.__performCsgSlice(latheMesh, geometry, material);
     } else {
-      dildoMesh.position.y = -100;
+      // dildoMesh.position.y = -100;
+      dildoMesh.position.y = SPLIT_MESH_OFFSET.y;
       dildoMesh.userData["isExportable"] = true;
       this.addMesh(dildoMesh);
 
@@ -375,7 +379,8 @@ export class DildoGeneration implements IDildoGeneration {
           color: randomWebColor(i, "Mixed") // 0x8800a8
         })
       );
-      linesMesh.position.y = -100;
+      // linesMesh.position.y = -100;
+      linesMesh.position.y = SPLIT_MESH_OFFSET.y;
       // linesMesh.position.z = -50;
       this.addMesh(linesMesh);
     }
@@ -390,8 +395,10 @@ export class DildoGeneration implements IDildoGeneration {
           color: 0x8800a8
         })
       );
-      linesMesh.position.y = -100;
-      linesMesh.position.z = -50;
+      // linesMesh.position.y = -100;
+      // linesMesh.position.z = -50;
+      linesMesh.position.y = SPLIT_MESH_OFFSET.y;
+      linesMesh.position.z = SPLIT_MESH_OFFSET.z;
       this.addMesh(linesMesh);
     }
 
@@ -421,8 +428,10 @@ export class DildoGeneration implements IDildoGeneration {
       (leftSliceGeometry as unknown as DildoBaseClass).buffersNeedUpdate = true;
       leftSliceGeometry.computeVertexNormals();
       const slicedMeshLeft: THREE.Mesh = new THREE.Mesh(leftSliceGeometry, sliceMaterial);
-      slicedMeshLeft.position.y = -100;
-      slicedMeshLeft.position.z = -50;
+      // slicedMeshLeft.position.y = -100;
+      // slicedMeshLeft.position.z = -50;
+      slicedMeshLeft.position.y = SPLIT_MESH_OFFSET.y;
+      slicedMeshLeft.position.z = SPLIT_MESH_OFFSET.z;
       // if (arrangeSplitsOnPlane) {
       //   // slicedMeshLeft.rotation.x = -Math.PI / 2;
       //   slicedMeshLeft.rotation.y = -Math.PI / 2.0;
@@ -444,8 +453,10 @@ export class DildoGeneration implements IDildoGeneration {
       (rightSliceGeometry as unknown as DildoBaseClass).buffersNeedUpdate = true;
       rightSliceGeometry.computeVertexNormals();
       const slicedMeshRight: THREE.Mesh = new THREE.Mesh(rightSliceGeometry, sliceMaterial);
-      slicedMeshRight.position.y = -100;
-      slicedMeshRight.position.z = 50;
+      // slicedMeshRight.position.y = -100;
+      // slicedMeshRight.position.z = 50;
+      slicedMeshRight.position.y = SPLIT_MESH_OFFSET.y;
+      slicedMeshRight.position.z = -SPLIT_MESH_OFFSET.z; // Important: use inverse value here!
       slicedMeshRight.userData["isExportable"] = true;
       this.addMesh(slicedMeshRight);
       this.splitResults[KEY_SLICED_MESH_RIGHT] = slicedMeshRight;

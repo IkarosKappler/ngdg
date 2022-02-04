@@ -125,12 +125,12 @@
         rightSplitMeshRotationX: 180.0, // align properly according to split algorithm
         rightSplitMeshRotationY: 0.0,
         rightSplitMeshRotationZ: 0.0,
-        // leftSplitMeshTranslationX: 180.0, // align properly according to split algorithm
-        // leftSplitMeshTranslationY: 0.0,
-        // leftSplitMeshTranslationZ: 0.0,
-        // rightSplitMeshTranslationX: 180.0, // align properly according to split algorithm
-        // rightSplitMeshTranslationY: 0.0,
-        // rightSplitMeshTranslationZ: 0.0,
+        leftSplitMeshTranslationX: ngdg.SPLIT_MESH_OFFSET.x,
+        leftSplitMeshTranslationY: ngdg.SPLIT_MESH_OFFSET.y,
+        leftSplitMeshTranslationZ: -ngdg.SPLIT_MESH_OFFSET.z, // Important: invert this (as in the algorithm)
+        rightSplitMeshTranslationX: ngdg.SPLIT_MESH_OFFSET.x,
+        rightSplitMeshTranslationY: ngdg.SPLIT_MESH_OFFSET.y,
+        rightSplitMeshTranslationZ: ngdg.SPLIT_MESH_OFFSET.z,
         alignSplitsOnPlane: function () {
           config.leftSplitMeshRotationX = 90;
           config.leftSplitMeshRotationY = 0;
@@ -138,6 +138,27 @@
           config.rightSplitMeshRotationX = 90;
           config.rightSplitMeshRotationY = 180;
           config.rightSplitMeshRotationZ = 90;
+          config.leftSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
+          config.leftSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
+          config.leftSplitMeshTranslationZ = -ngdg.SPLIT_MESH_OFFSET.z * 2; // Important: invert this (as in the algorithm)
+          config.rightSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
+          config.rightSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
+          config.rightSplitMeshTranslationZ = ngdg.SPLIT_MESH_OFFSET.z * 2;
+          updateModifiers();
+        },
+        restoreSplitAlignment: function () {
+          config.leftSplitMeshRotationX = 180;
+          config.leftSplitMeshRotationY = 0;
+          config.leftSplitMeshRotationZ = 0;
+          config.rightSplitMeshRotationX = 180;
+          config.rightSplitMeshRotationY = 0;
+          config.rightSplitMeshRotationZ = 0;
+          config.leftSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
+          config.leftSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
+          config.leftSplitMeshTranslationZ = -ngdg.SPLIT_MESH_OFFSET.z; // Important: invert this (as in the algorithm)
+          config.rightSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
+          config.rightSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
+          config.rightSplitMeshTranslationZ = ngdg.SPLIT_MESH_OFFSET.z;
           updateModifiers();
         },
         // Functions
@@ -295,12 +316,18 @@
           rightSliceMesh.rotation.x = config.leftSplitMeshRotationX * ngdg.DEG_TO_RAD;
           rightSliceMesh.rotation.y = config.leftSplitMeshRotationY * ngdg.DEG_TO_RAD;
           rightSliceMesh.rotation.z = config.leftSplitMeshRotationZ * ngdg.DEG_TO_RAD;
+          rightSliceMesh.position.x = config.leftSplitMeshTranslationX;
+          rightSliceMesh.position.y = config.leftSplitMeshTranslationY;
+          rightSliceMesh.position.z = config.leftSplitMeshTranslationZ;
         }
         if (dildoGeneration.splitResults[ngdg.KEY_SLICED_MESH_LEFT]) {
           var leftSliceMesh = dildoGeneration.splitResults[ngdg.KEY_SLICED_MESH_LEFT];
           leftSliceMesh.rotation.x = config.rightSplitMeshRotationX * ngdg.DEG_TO_RAD;
           leftSliceMesh.rotation.y = config.rightSplitMeshRotationY * ngdg.DEG_TO_RAD;
           leftSliceMesh.rotation.z = config.rightSplitMeshRotationZ * ngdg.DEG_TO_RAD;
+          leftSliceMesh.position.x = config.rightSplitMeshTranslationX;
+          leftSliceMesh.position.y = config.rightSplitMeshTranslationY;
+          leftSliceMesh.position.z = config.rightSplitMeshTranslationZ;
         }
       }
     };

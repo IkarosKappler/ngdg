@@ -6,7 +6,8 @@
  * @modified 2020-09-11 Added proper texture loading.
  * @modified 2021-06-07 Fixing `removeCachedGeometries`. Adding bending of model.
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
- * @version  1.2.1
+ * @modified 2022-02-03 Added `clearResults` function.
+ * @version  1.2.2
  **/
 import * as THREE from "three";
 import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper";
@@ -16,7 +17,7 @@ import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { mergeGeometries } from "./mergeGeometries";
 import { PathFinder } from "./PathFinder";
 import { randomWebColor } from "./randomWebColor";
-import { EPS, KEY_LEFT_SLICE_GEOMETRY, KEY_LEFT_SLICE_PLANE, KEY_PLANE_INTERSECTION_POINTS, KEY_RIGHT_SLICE_GEOMETRY, KEY_RIGHT_SLICE_PLANE, KEY_SPLIT_PANE_MESH, KEY_SPLIT_TRIANGULATION_GEOMETRIES } from "./constants";
+import { EPS, SPLIT_MESH_OFFSET, KEY_LEFT_SLICE_GEOMETRY, KEY_LEFT_SLICE_PLANE, KEY_PLANE_INTERSECTION_POINTS, KEY_RIGHT_SLICE_GEOMETRY, KEY_RIGHT_SLICE_PLANE, KEY_SPLIT_PANE_MESH, KEY_SPLIT_TRIANGULATION_GEOMETRIES, KEY_SLICED_MESH_RIGHT, KEY_SLICED_MESH_LEFT } from "./constants";
 import { BumpMapper } from "./BumpMapper";
 export class DildoGeneration {
     constructor(canvasId, options) {
@@ -57,6 +58,8 @@ export class DildoGeneration {
         // Remember partial results
         // Record<string,object>
         this.partialResults = {};
+        // Record<string.THREE.Mesh>
+        this.splitResults = {};
         const _self = this;
         window.addEventListener("resize", () => {
             _self.resizeCanvas();
@@ -101,6 +104,7 @@ export class DildoGeneration {
      **/
     rebuild(options) {
         this.removeCachedGeometries();
+        this.clearResults();
         const baseRadius = options.outline.getBounds().width;
         const baseShape = GeometryGenerationHelpers.mkCircularPolygon(baseRadius, options.shapeSegmentCount, options.baseShapeExcentricity);
         const useBumpmap = typeof options.useBumpmap !== "undefined" ? options.useBumpmap : false;
@@ -179,7 +183,8 @@ export class DildoGeneration {
             const { dildoMesh: bumpmappedDildoMesh, dildoNormalsMesh } = BumpMapper.applyBumpmap(dildoGeometry, bufferedGeometry, bumpmap, material, options);
             dildoMesh = bumpmappedDildoMesh;
             if (options.showBumpmapTargets) {
-                dildoNormalsMesh.position.y = -100;
+                // dildoNormalsMesh.position.y = -100;
+                dildoNormalsMesh.position.y = SPLIT_MESH_OFFSET.y;
                 this.addMesh(dildoNormalsMesh);
             }
         }
@@ -189,7 +194,8 @@ export class DildoGeneration {
             // this.__performCsgSlice(latheMesh, geometry, material);
         }
         else {
-            dildoMesh.position.y = -100;
+            // dildoMesh.position.y = -100;
+            dildoMesh.position.y = SPLIT_MESH_OFFSET.y;
             dildoMesh.userData["isExportable"] = true;
             this.addMesh(dildoMesh);
             if (options.showNormals) {
@@ -253,7 +259,8 @@ export class DildoGeneration {
             const linesMesh = new THREE.Line(geometry, new THREE.LineBasicMaterial({
                 color: randomWebColor(i, "Mixed") // 0x8800a8
             }));
-            linesMesh.position.y = -100;
+            // linesMesh.position.y = -100;
+            linesMesh.position.y = SPLIT_MESH_OFFSET.y;
             // linesMesh.position.z = -50;
             this.addMesh(linesMesh);
         }
@@ -264,8 +271,10 @@ export class DildoGeneration {
             var linesMesh = new THREE.Line(pointGeometry, new THREE.LineBasicMaterial({
                 color: 0x8800a8
             }));
-            linesMesh.position.y = -100;
-            linesMesh.position.z = -50;
+            // linesMesh.position.y = -100;
+            // linesMesh.position.z = -50;
+            linesMesh.position.y = SPLIT_MESH_OFFSET.y;
+            linesMesh.position.z = SPLIT_MESH_OFFSET.z;
             this.addMesh(linesMesh);
         }
         // Triangulate connected paths
@@ -280,22 +289,25 @@ export class DildoGeneration {
                 mergeGeometries(rightSliceGeometry, triangulationGeometry, EPS);
             }
         }
-        const arrangeSplitsOnPlane = true;
+        // const arrangeSplitsOnPlane = true;
         if (options.showLeftSplit) {
             leftSliceGeometry.uvsNeedUpdate = true;
             // TODO: check if this is still required
             leftSliceGeometry.buffersNeedUpdate = true;
             leftSliceGeometry.computeVertexNormals();
             const slicedMeshLeft = new THREE.Mesh(leftSliceGeometry, sliceMaterial);
-            slicedMeshLeft.position.y = -100;
-            slicedMeshLeft.position.z = -50;
-            if (arrangeSplitsOnPlane) {
-                // slicedMeshLeft.rotation.x = Math.PI / 2.0;
-                slicedMeshLeft.rotation.y = Math.PI / 2.0;
-                // slicedMeshLeft.rotation.z = Math.PI / 2.0;
-            }
+            // slicedMeshLeft.position.y = -100;
+            // slicedMeshLeft.position.z = -50;
+            slicedMeshLeft.position.y = SPLIT_MESH_OFFSET.y;
+            slicedMeshLeft.position.z = SPLIT_MESH_OFFSET.z;
+            // if (arrangeSplitsOnPlane) {
+            //   // slicedMeshLeft.rotation.x = -Math.PI / 2;
+            //   slicedMeshLeft.rotation.y = -Math.PI / 2.0;
+            //   slicedMeshLeft.rotation.z = Math.PI / 2.0;
+            // }
             slicedMeshLeft.userData["isExportable"] = true;
             this.addMesh(slicedMeshLeft);
+            this.splitResults[KEY_SLICED_MESH_LEFT] = slicedMeshLeft;
             if (options.showNormals) {
                 var vnHelper = new VertexNormalsHelper(slicedMeshLeft, options.normalsLength, 0x00ff00);
                 this.scene.add(vnHelper);
@@ -308,10 +320,13 @@ export class DildoGeneration {
             rightSliceGeometry.buffersNeedUpdate = true;
             rightSliceGeometry.computeVertexNormals();
             const slicedMeshRight = new THREE.Mesh(rightSliceGeometry, sliceMaterial);
-            slicedMeshRight.position.y = -100;
-            slicedMeshRight.position.z = 50;
+            // slicedMeshRight.position.y = -100;
+            // slicedMeshRight.position.z = 50;
+            slicedMeshRight.position.y = SPLIT_MESH_OFFSET.y;
+            slicedMeshRight.position.z = -SPLIT_MESH_OFFSET.z; // Important: use inverse value here!
             slicedMeshRight.userData["isExportable"] = true;
             this.addMesh(slicedMeshRight);
+            this.splitResults[KEY_SLICED_MESH_RIGHT] = slicedMeshRight;
             if (options.showNormals) {
                 var vnHelper = new VertexNormalsHelper(slicedMeshRight, options.normalsLength, 0x00ff00);
                 this.scene.add(vnHelper);
@@ -405,6 +420,16 @@ export class DildoGeneration {
             }
         }
         this.geometries = [];
+    }
+    clearResults() {
+        this.splitResults[KEY_SLICED_MESH_RIGHT] = null;
+        this.splitResults[KEY_SLICED_MESH_LEFT] = null;
+        this.partialResults[KEY_LEFT_SLICE_PLANE] = null;
+        this.partialResults[KEY_LEFT_SLICE_GEOMETRY] = null;
+        this.partialResults[KEY_RIGHT_SLICE_PLANE] = null;
+        this.partialResults[KEY_RIGHT_SLICE_GEOMETRY] = null;
+        this.partialResults[KEY_PLANE_INTERSECTION_POINTS] = null;
+        this.partialResults[KEY_SPLIT_TRIANGULATION_GEOMETRIES] = null;
     }
     /**
      * Generate an STL string from the (exportable) meshes that are currently stored inside this generator.

@@ -13,8 +13,13 @@ import { ImageStore } from "./ImageStore";
 import { DildoGeneration } from "./DildoGeneration";
 import { LocalstorageIO } from "./LocalstorageIO";
 import { isMobileDevice } from "./isMobileDevice";
+import { DEG_TO_RAD, KEY_SLICED_MESH_LEFT, KEY_SLICED_MESH_RIGHT, SPLIT_MESH_OFFSET } from "./constants";
 export const ngdg = {
     DEFAULT_BEZIER_JSON,
+    DEG_TO_RAD,
+    SPLIT_MESH_OFFSET,
+    KEY_SLICED_MESH_RIGHT,
+    KEY_SLICED_MESH_LEFT,
     LocalstorageIO,
     DildoGeneration,
     ImageStore,
