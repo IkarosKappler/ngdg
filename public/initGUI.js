@@ -70,29 +70,29 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback) {
 
   var fold4 = gui.addFolder("Modifiers");
   // prettier-ignore
-  fold4.add(config, "leftSplitMeshRotationX").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshRotationX').title('The x rotation of the left split.');
+  fold4.add(config, "leftSplitMeshRotationX").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('left.rot.x').title('(leftSplitMeshRotationX) The x rotation of the left split.');
   // prettier-ignore
-  fold4.add(config, "leftSplitMeshRotationY").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshRotationY').title('The y rotation of the left split.');
+  fold4.add(config, "leftSplitMeshRotationY").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('left.rot.y').title('(leftSplitMeshRotationY) The y rotation of the left split.');
   // prettier-ignore
-  fold4.add(config, "leftSplitMeshRotationZ").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshRotationZ').title('The z rotation of the left split.');
+  fold4.add(config, "leftSplitMeshRotationZ").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('left.rot.z').title('(leftSplitMeshRotationZ) The z rotation of the left split.');
   // prettier-ignore
-  fold4.add(config, "rightSplitMeshRotationX").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshRotationX').title('The x rotation of the right split.');
+  fold4.add(config, "rightSplitMeshRotationX").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('right.rot.x').title('(rightSplitMeshRotationX) The x rotation of the right split.');
   // prettier-ignore
-  fold4.add(config, "rightSplitMeshRotationY").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshRotationY').title('The y rotation of the right split.');
+  fold4.add(config, "rightSplitMeshRotationY").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('right.rot.y').title('(rightSplitMeshRotationY) The y rotation of the right split.');
   // prettier-ignore
-  fold4.add(config, "rightSplitMeshRotationZ").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshRotationZ').title('The z rotation of the right split.');
+  fold4.add(config, "rightSplitMeshRotationZ").min(0).max(360).step(1.0).onChange( function() { updateModifiersCallback() } ).name('right.rot.z').title('(rightSplitMeshRotationZ) The z rotation of the right split.');
   // prettier-ignore
-  fold4.add(config, "leftSplitMeshTranslationX").step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshTranslationX').title('The x translation of the left split.');
+  fold4.add(config, "leftSplitMeshTranslationX").step(1.0).onChange( function() { updateModifiersCallback() } ).name('left.pos.x').title('(leftSplitMeshTranslationX) The x translation of the left split.');
   // prettier-ignore
-  fold4.add(config, "leftSplitMeshTranslationY").step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshTranslationY').title('The y translation of the left split.');
+  fold4.add(config, "leftSplitMeshTranslationY").step(1.0).onChange( function() { updateModifiersCallback() } ).name('left.pos.y').title('(leftSplitMeshTranslationY) The y translation of the left split.');
   // prettier-ignore
-  fold4.add(config, "leftSplitMeshTranslationZ").step(1.0).onChange( function() { updateModifiersCallback() } ).name('leftSplitMeshTranslationZ').title('The z translation of the left split.');
+  fold4.add(config, "leftSplitMeshTranslationZ").step(1.0).onChange( function() { updateModifiersCallback() } ).name('left.pos.y').title('(leftSplitMeshTranslationZ) The z translation of the left split.');
   // prettier-ignore
-  fold4.add(config, "rightSplitMeshTranslationX").step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshTranslationX').title('The x translation of the right split.');
+  fold4.add(config, "rightSplitMeshTranslationX").step(1.0).onChange( function() { updateModifiersCallback() } ).name('right.pos.x').title('(rightSplitMeshTranslationX) The x translation of the right split.');
   // prettier-ignore
-  fold4.add(config, "rightSplitMeshTranslationY").step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshTranslationY').title('The y translation of the right split.');
+  fold4.add(config, "rightSplitMeshTranslationY").step(1.0).onChange( function() { updateModifiersCallback() } ).name('right.pos.y').title('(rightSplitMeshTranslationY) The y translation of the right split.');
   // prettier-ignore
-  fold4.add(config, "rightSplitMeshTranslationZ").step(1.0).onChange( function() { updateModifiersCallback() } ).name('rightSplitMeshTranslationZ').title('The z translation of the right split.');
+  fold4.add(config, "rightSplitMeshTranslationZ").step(1.0).onChange( function() { updateModifiersCallback() } ).name('right.pos.z').title('(rightSplitMeshTranslationZ) The z translation of the right split.');
   // prettier-ignore
   fold4.add(config, "alignSplitsOnPlane").name('alignSplitsOnPlane').title('Align splits on plane.');
   // prettier-ignore
