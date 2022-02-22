@@ -19,9 +19,10 @@ import { clearDuplicateVertices3 } from "./clearDuplicateVertices3";
 import { Face3, Gmetry } from "three-geometry-hellfix";
 
 import { DildoOptions, IDildoGeneration, IDildoGeometry } from "./interfaces";
-import { DildoBaseClass } from "./DildoGeometry";
+import { /* DildoBaseClass, */ DildoGeometry } from "./DildoGeometry";
 import { UVHelpers } from "./UVHelpers";
 import { KEY_PLANE_INTERSECTION_TRIANGULATION } from "./constants";
+import { BufferGeometry } from "three";
 
 export const GeometryGenerationHelpers = {
   /**
@@ -36,7 +37,7 @@ export const GeometryGenerationHelpers = {
    * @param {boolean=false} inverseFaceDirection - If true then the face will have left winding order (instead of right which is the default).
    */
   makeFace3: (
-    geometry: Gmetry | DildoBaseClass,
+    geometry: Gmetry | DildoGeometry,
     vertIndexA: number,
     vertIndexB: number,
     vertIndexC: number,
@@ -69,7 +70,7 @@ export const GeometryGenerationHelpers = {
    * @param {boolean=false} inverseFaceDirection - If true then the face will have left winding order (instead of right which is the default).
    */
   makeFace4: (
-    geometry: Gmetry | DildoBaseClass,
+    geometry: Gmetry | DildoGeometry,
     vertIndexA: number,
     vertIndexB: number,
     vertIndexC: number,
@@ -99,7 +100,7 @@ export const GeometryGenerationHelpers = {
    * @param {boolean=false} inverseFaceDirection - If true then the UV mapping is applied in left winding order (instead of right which is the default).
    */
   addCylindricUV4: (
-    geometry: Gmetry | DildoBaseClass,
+    geometry: Gmetry | DildoGeometry,
     a: number,
     b: number,
     c: number,
@@ -142,7 +143,7 @@ export const GeometryGenerationHelpers = {
    * @param {number} a - The current base shape segment index, must be inside [0,baseShapeSegmentCount-1].
    * @param {number} baseShapeSegmentCount - The total number of base shape segments.
    */
-  addPyramidalBaseUV3: (geometry: Gmetry | DildoBaseClass, a: number, baseShapeSegmentCount: number): void => {
+  addPyramidalBaseUV3: (geometry: Gmetry | DildoGeometry, a: number, baseShapeSegmentCount: number): void => {
     // Create a mirrored texture to avoid hard visual cuts
     const ratioA: number = 1.0 - Math.abs(0.5 - a / baseShapeSegmentCount) * 2;
     const ratioB: number = 1.0 - Math.abs(0.5 - (a + 1) / baseShapeSegmentCount) * 2;
@@ -198,7 +199,7 @@ export const GeometryGenerationHelpers = {
    * @param {THREE.Plane} plane PlaneGeometry???
    * @return {ThreeGeometryHellfix.Gmetry}
    */
-  makeSlice: (unbufferedGeometry: Gmetry | IDildoGeometry, plane: THREE.Plane): Gmetry => {
+  makeSlice: (unbufferedGeometry: Gmetry | DildoGeometry, plane: THREE.Plane): Gmetry => {
     // Slice mesh into two
     // See https://github.com/tdhooper/threejs-slice-geometry
     const closeHoles: boolean = false; // This might be configurable in a later version.
@@ -230,7 +231,7 @@ export const GeometryGenerationHelpers = {
   makeAndAddPlaneIntersection: (
     thisGenerator: IDildoGeneration,
     mesh: THREE.Mesh,
-    unbufferedGeometry: IDildoGeometry, // Gmetry,
+    unbufferedGeometry: DildoGeometry, // Gmetry,
     planeGeometry: THREE.Mesh, // THREE.Plane, // THREE.PlaneGeometry, // THREE.Plane ???
     planeGeometryReal: THREE.PlaneGeometry,
     // TODO: use a proper global interface here
@@ -248,14 +249,17 @@ export const GeometryGenerationHelpers = {
     const EPS: number = 0.000001;
     const uniqueIntersectionPoints: Array<THREE.Vector3> = clearDuplicateVertices3(intersectionPoints, EPS);
 
-    const pointGeometry: Gmetry = new Gmetry();
-    pointGeometry.vertices = uniqueIntersectionPoints;
+    // TODO: verify
+    // const pointGeometry: Gmetry = new Gmetry();
+    // pointGeometry.vertices = uniqueIntersectionPoints;
+    const pointGeometry = GeometryGenerationHelpers.verticesToBufferGeometry(uniqueIntersectionPoints);
     const pointsMaterial: THREE.Material = new THREE.PointsMaterial({
       size: 1.4,
       color: 0x00ffff
     });
     // TODO: verify
-    const pointsMesh: THREE.Points = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
+    // const pointsMesh: THREE.Points = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
+    const pointsMesh: THREE.Points = new THREE.Points(pointGeometry, pointsMaterial);
 
     if (options.showSplitShape) {
       pointsMesh.position.y = -100;
@@ -307,7 +311,7 @@ export const GeometryGenerationHelpers = {
   },
 
   // CURRENTLY NOT REALLY IN USE. THE UNDERLYING MODEL IS A NON-TWISTED ONE.
-  makeAndAddMassivePlaneIntersection: (thisGenerator: IDildoGeneration, unbufferedGeometry: IDildoGeometry): void => {
+  makeAndAddMassivePlaneIntersection: (thisGenerator: IDildoGeneration, unbufferedGeometry: DildoGeometry): void => {
     const intersectionPoints: Array<THREE.Vector3> = unbufferedGeometry.getPerpendicularPathVertices(true, true); // includeBottom=true, getInner=true
     const pointGeometry: Gmetry = new Gmetry();
     pointGeometry.vertices = intersectionPoints;
@@ -342,7 +346,7 @@ export const GeometryGenerationHelpers = {
   },
 
   // CURRENTLY NOT REALLY IN USE. THE UNDERLYING MODEL IS A NON-TWISTED ONE.
-  makeAndAddHollowPlaneIntersection: (thisGenerator: IDildoGeneration, unbufferedGeometry: IDildoGeometry): void => {
+  makeAndAddHollowPlaneIntersection: (thisGenerator: IDildoGeneration, unbufferedGeometry: DildoGeometry): void => {
     const pointGeometry: Gmetry = new Gmetry();
     const perpLines: Array<THREE.Line3> = unbufferedGeometry.getPerpendicularHullLines();
     for (var i = 0; i < perpLines.length; i++) {
@@ -393,7 +397,7 @@ export const GeometryGenerationHelpers = {
    * @param {DildoGeneration} thisGenerator - The generator to add the new two meshes to.
    * @param {DildoGeometry} unbufferedDildoGeometry - The dildo geometry to retrieve the perpendicular path from.
    */
-  addPerpendicularPaths: (thisGenerator: IDildoGeneration, unbufferedDildoGeometry: IDildoGeometry): void => {
+  addPerpendicularPaths: (thisGenerator: IDildoGeneration, unbufferedDildoGeometry: DildoGeometry): void => {
     GeometryGenerationHelpers.addPerpendicularPath(thisGenerator, unbufferedDildoGeometry.outerPerpLines, 0xff0000);
     GeometryGenerationHelpers.addPerpendicularPath(thisGenerator, unbufferedDildoGeometry.innerPerpLines, 0x00ff00);
   },
@@ -467,7 +471,7 @@ export const GeometryGenerationHelpers = {
     }
     trianglesGeometry.uvsNeedUpdate = true;
     // TODO: check if this is still required
-    (trianglesGeometry as unknown as DildoBaseClass).buffersNeedUpdate = true;
+    (trianglesGeometry as unknown as any).buffersNeedUpdate = true;
     trianglesGeometry.computeVertexNormals();
     var trianglesMesh = new THREE.Mesh(
       trianglesGeometry.toBufferGeometry(),
@@ -542,5 +546,23 @@ export const GeometryGenerationHelpers = {
    */
   clamp: (n: number, min: number, max: number) => {
     return Math.max(Math.min(n, max), min);
+  },
+
+  verticesToBufferGeometry: (vertices: THREE.Vector3[]): THREE.BufferGeometry => {
+    const geometry = new THREE.BufferGeometry();
+
+    // create a simple square shape. We duplicate the top left and bottom right
+    // vertices because each vertex needs to appear once per triangle.
+    const vertexData = new Float32Array(
+      vertices.reduce<number[]>((accu, vert) => {
+        accu.push(vert.x, vert.y, vert.z);
+        return accu;
+      }, [])
+    );
+
+    // itemSize = 3 because there are 3 values (components) per vertex
+    geometry.setAttribute("position", new THREE.BufferAttribute(vertexData, 3));
+
+    return geometry;
   }
 };

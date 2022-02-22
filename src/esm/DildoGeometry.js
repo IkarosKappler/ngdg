@@ -19,21 +19,28 @@ import * as THREE from "three";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { earcut } from "earcut-typescript"; // TODO: fix earcut types
 import { UVHelpers } from "./UVHelpers";
-import { Face3, Gmetry } from "three-geometry-hellfix";
+import { Face3, Gmetry } from "three-geometry-hellfix/src/cjs";
 var DEG_TO_RAD = Math.PI / 180.0;
 // import { DEG_TO_RAD } from "./constants";
 // This is a dirty workaround to
 // avoid direct class extending of THREE.Geometry.
 // I am using `THREE.Geometry.call(this);` instead :/
-export class DildoBaseClass {
-    constructor() {
-        this.vertices = [];
-        this.faces = [];
-        this.faceVertexUvs = [[]];
-    }
-}
+// export class DildoBaseClass {
+//   // implements IDildoGeometry {
+//   vertices: Array<THREE.Vector3>;
+//   faces: Array<Face3>;
+//   faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
+//   uvsNeedUpdate: boolean;
+//   buffersNeedUpdate: boolean;
+//   constructor() {
+//     this.vertices = [];
+//     this.faces = [];
+//     this.faceVertexUvs = [[]];
+//   }
+// }
 // export class DildoGeometry { // extends globalThis.THREE.Geometry {
-export class DildoGeometry extends DildoBaseClass {
+// export class DildoGeometry extends DildoBaseClass {
+export class DildoGeometry extends Gmetry {
     /**
      * Create a new dildo geometry from the passed options..
      *

@@ -38,6 +38,12 @@ Because 3d printing, web 3d, and dildos are fun.
 
 ### Changelog
 
+- 2022-02-22
+  - Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+  - Upgrading all components to work with Gmetry or BufferGeometry.
+  - Upgraded threejs from r124 (with Geometry class) to r137 (without Geometry class).
+  - Renamed `./public/index.html` to `./public/index-dev.html`.
+  - Renamed `./public/index-build.html` to `./public/index.html`.
 - 2022-02-02
   - Fixed the localstorage loading issue.
   - Fixed the replace-path issue (destroying all installed event handlers and listeners first).

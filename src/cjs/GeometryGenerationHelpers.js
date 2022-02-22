@@ -207,14 +207,17 @@ exports.GeometryGenerationHelpers = {
         var intersectionPoints = planeMeshIntersection.getIntersectionPoints(mesh, unbufferedGeometry, planeGeometry, planeGeometryReal);
         var EPS = 0.000001;
         var uniqueIntersectionPoints = (0, clearDuplicateVertices3_1.clearDuplicateVertices3)(intersectionPoints, EPS);
-        var pointGeometry = new three_geometry_hellfix_1.Gmetry();
-        pointGeometry.vertices = uniqueIntersectionPoints;
+        // TODO: verify
+        // const pointGeometry: Gmetry = new Gmetry();
+        // pointGeometry.vertices = uniqueIntersectionPoints;
+        var pointGeometry = exports.GeometryGenerationHelpers.verticesToBufferGeometry(uniqueIntersectionPoints);
         var pointsMaterial = new THREE.PointsMaterial({
             size: 1.4,
             color: 0x00ffff
         });
         // TODO: verify
-        var pointsMesh = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
+        // const pointsMesh: THREE.Points = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
+        var pointsMesh = new THREE.Points(pointGeometry, pointsMaterial);
         if (options.showSplitShape) {
             pointsMesh.position.y = -100;
             pointsMesh.position.z = -50;
@@ -462,6 +465,18 @@ exports.GeometryGenerationHelpers = {
      */
     clamp: function (n, min, max) {
         return Math.max(Math.min(n, max), min);
+    },
+    verticesToBufferGeometry: function (vertices) {
+        var geometry = new THREE.BufferGeometry();
+        // create a simple square shape. We duplicate the top left and bottom right
+        // vertices because each vertex needs to appear once per triangle.
+        var vertexData = new Float32Array(vertices.reduce(function (accu, vert) {
+            accu.push(vert.x, vert.y, vert.z);
+            return accu;
+        }, []));
+        // itemSize = 3 because there are 3 values (components) per vertex
+        geometry.setAttribute("position", new THREE.BufferAttribute(vertexData, 3));
+        return geometry;
     }
 };
 //# sourceMappingURL=GeometryGenerationHelpers.js.map

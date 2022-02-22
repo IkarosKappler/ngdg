@@ -6,8 +6,8 @@
  * @version  1.0.2
  */
 import { Bounds } from "plotboilerplate";
-import { DildoBaseClass } from "./DildoGeometry";
 import { Gmetry } from "three-geometry-hellfix";
+import { DildoGeometry } from "./DildoGeometry";
 export declare const UVHelpers: {
     /**
      * Helper function to create triangular UV Mappings for a triangle.
@@ -18,5 +18,5 @@ export declare const UVHelpers: {
      * @param {number} vertIndexB - ...
      * @param {number} vertIndexC - ...
      */
-    makeFlatTriangleUVs: (thisGeometry: Gmetry | DildoBaseClass, shapeBounds: Bounds, vertIndexA: number, vertIndexB: number, vertIndexC: number) => void;
+    makeFlatTriangleUVs: (thisGeometry: Gmetry | DildoGeometry, shapeBounds: Bounds, vertIndexA: number, vertIndexB: number, vertIndexC: number) => void;
 };

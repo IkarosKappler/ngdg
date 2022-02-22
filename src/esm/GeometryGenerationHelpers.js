@@ -204,14 +204,17 @@ export const GeometryGenerationHelpers = {
         const intersectionPoints = planeMeshIntersection.getIntersectionPoints(mesh, unbufferedGeometry, planeGeometry, planeGeometryReal);
         const EPS = 0.000001;
         const uniqueIntersectionPoints = clearDuplicateVertices3(intersectionPoints, EPS);
-        const pointGeometry = new Gmetry();
-        pointGeometry.vertices = uniqueIntersectionPoints;
+        // TODO: verify
+        // const pointGeometry: Gmetry = new Gmetry();
+        // pointGeometry.vertices = uniqueIntersectionPoints;
+        const pointGeometry = GeometryGenerationHelpers.verticesToBufferGeometry(uniqueIntersectionPoints);
         const pointsMaterial = new THREE.PointsMaterial({
             size: 1.4,
             color: 0x00ffff
         });
         // TODO: verify
-        const pointsMesh = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
+        // const pointsMesh: THREE.Points = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
+        const pointsMesh = new THREE.Points(pointGeometry, pointsMaterial);
         if (options.showSplitShape) {
             pointsMesh.position.y = -100;
             pointsMesh.position.z = -50;
@@ -459,6 +462,18 @@ export const GeometryGenerationHelpers = {
      */
     clamp: (n, min, max) => {
         return Math.max(Math.min(n, max), min);
+    },
+    verticesToBufferGeometry: (vertices) => {
+        const geometry = new THREE.BufferGeometry();
+        // create a simple square shape. We duplicate the top left and bottom right
+        // vertices because each vertex needs to appear once per triangle.
+        const vertexData = new Float32Array(vertices.reduce((accu, vert) => {
+            accu.push(vert.x, vert.y, vert.z);
+            return accu;
+        }, []));
+        // itemSize = 3 because there are 3 values (components) per vertex
+        geometry.setAttribute("position", new THREE.BufferAttribute(vertexData, 3));
+        return geometry;
     }
 };
 //# sourceMappingURL=GeometryGenerationHelpers.js.map

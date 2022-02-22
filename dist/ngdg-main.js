@@ -347,11 +347,17 @@ var DildoGeneration = /** @class */ (function () {
         // TEST what the connected paths look like
         // TODO: add an option and only add to scene if desired.
         for (var p = 0; p < connectedPaths.length; p++) {
-            var geometry = new three_geometry_hellfix_1.Gmetry();
-            geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
+            // TODO: verify
+            // const geometry: Gmetry = new Gmetry();
+            // geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
+            //   return leftSliceGeometry.vertices[geometryVertexIndex];
+            // });
+            var vertices = connectedPaths[p].map(function (geometryVertexIndex) {
                 return leftSliceGeometry.vertices[geometryVertexIndex];
             });
-            var linesMesh_1 = new THREE.Line(geometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+            var geometry = GeometryGenerationHelpers_1.GeometryGenerationHelpers.verticesToBufferGeometry(vertices);
+            var linesMesh_1 = new THREE.Line(geometry, // .toBufferGeometry(),
+            new THREE.LineBasicMaterial({
                 color: (0, randomWebColor_1.randomWebColor)(i, "Mixed") // 0x8800a8
             }));
             // linesMesh.position.y = -100;
@@ -588,7 +594,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DildoGeometry = exports.DildoBaseClass = void 0;
+exports.DildoGeometry = void 0;
 // TODOs
 // + Add cut-plane faces when hollow
 // + Move vertex-creating helper functions out of the class
@@ -600,22 +606,27 @@ var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.c
 var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
 var earcut_typescript_1 = __webpack_require__(/*! earcut-typescript */ "./node_modules/earcut-typescript/src/cjs/earcut.js"); // TODO: fix earcut types
 var UVHelpers_1 = __webpack_require__(/*! ./UVHelpers */ "./src/cjs/UVHelpers.js");
-var three_geometry_hellfix_1 = __webpack_require__(/*! three-geometry-hellfix */ "./node_modules/three-geometry-hellfix/src/esm/index.js");
+var cjs_1 = __webpack_require__(/*! three-geometry-hellfix/src/cjs */ "./node_modules/three-geometry-hellfix/src/cjs/index.js");
 var DEG_TO_RAD = Math.PI / 180.0;
 // import { DEG_TO_RAD } from "./constants";
 // This is a dirty workaround to
 // avoid direct class extending of THREE.Geometry.
 // I am using `THREE.Geometry.call(this);` instead :/
-var DildoBaseClass = /** @class */ (function () {
-    function DildoBaseClass() {
-        this.vertices = [];
-        this.faces = [];
-        this.faceVertexUvs = [[]];
-    }
-    return DildoBaseClass;
-}());
-exports.DildoBaseClass = DildoBaseClass;
+// export class DildoBaseClass {
+//   // implements IDildoGeometry {
+//   vertices: Array<THREE.Vector3>;
+//   faces: Array<Face3>;
+//   faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
+//   uvsNeedUpdate: boolean;
+//   buffersNeedUpdate: boolean;
+//   constructor() {
+//     this.vertices = [];
+//     this.faces = [];
+//     this.faceVertexUvs = [[]];
+//   }
+// }
 // export class DildoGeometry { // extends globalThis.THREE.Geometry {
+// export class DildoGeometry extends DildoBaseClass {
 var DildoGeometry = /** @class */ (function (_super) {
     __extends(DildoGeometry, _super);
     /**
@@ -632,7 +643,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         // TODO: verify
         // THREE.Geometry.call(this);
-        three_geometry_hellfix_1.Gmetry.call(_this);
+        cjs_1.Gmetry.call(_this);
         _this.vertexMatrix = []; // Array<Array<number>>
         _this.topIndex = -1;
         _this.bottomIndex = -1;
@@ -1194,12 +1205,12 @@ var DildoGeometry = /** @class */ (function (_super) {
             var curIndex = findClosestEdgeIndex(this.vertices[this.vertexMatrix[0][i]]);
             // Close gap to last (different shell index)
             triangleIndices = [lastIndex, this.vertexMatrix[0][i == 0 ? n - 1 : i - 1], this.vertexMatrix[0][i]];
-            this.faces.push(new three_geometry_hellfix_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2])); // Same?
+            this.faces.push(new cjs_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2])); // Same?
             this.hollowBottomTriagles.push(triangleIndices);
             if (lastIndex !== curIndex) {
                 // Add normal triangle to same shell index
                 triangleIndices = [curIndex, lastIndex, this.vertexMatrix[0][i]];
-                this.faces.push(new three_geometry_hellfix_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2]));
+                this.faces.push(new cjs_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2]));
                 this.hollowBottomTriagles.push(triangleIndices);
             }
             lastIndex = curIndex;
@@ -1413,7 +1424,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         }
     };
     return DildoGeometry;
-}(DildoBaseClass)); // END class
+}(cjs_1.Gmetry)); // END class
 exports.DildoGeometry = DildoGeometry;
 // TODO: move to helpers
 var rotateVert = function (vert, angle, xCenter, yCenter) {
@@ -1829,14 +1840,17 @@ exports.GeometryGenerationHelpers = {
         var intersectionPoints = planeMeshIntersection.getIntersectionPoints(mesh, unbufferedGeometry, planeGeometry, planeGeometryReal);
         var EPS = 0.000001;
         var uniqueIntersectionPoints = (0, clearDuplicateVertices3_1.clearDuplicateVertices3)(intersectionPoints, EPS);
-        var pointGeometry = new three_geometry_hellfix_1.Gmetry();
-        pointGeometry.vertices = uniqueIntersectionPoints;
+        // TODO: verify
+        // const pointGeometry: Gmetry = new Gmetry();
+        // pointGeometry.vertices = uniqueIntersectionPoints;
+        var pointGeometry = exports.GeometryGenerationHelpers.verticesToBufferGeometry(uniqueIntersectionPoints);
         var pointsMaterial = new THREE.PointsMaterial({
             size: 1.4,
             color: 0x00ffff
         });
         // TODO: verify
-        var pointsMesh = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
+        // const pointsMesh: THREE.Points = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
+        var pointsMesh = new THREE.Points(pointGeometry, pointsMaterial);
         if (options.showSplitShape) {
             pointsMesh.position.y = -100;
             pointsMesh.position.z = -50;
@@ -2084,6 +2098,18 @@ exports.GeometryGenerationHelpers = {
      */
     clamp: function (n, min, max) {
         return Math.max(Math.min(n, max), min);
+    },
+    verticesToBufferGeometry: function (vertices) {
+        var geometry = new THREE.BufferGeometry();
+        // create a simple square shape. We duplicate the top left and bottom right
+        // vertices because each vertex needs to appear once per triangle.
+        var vertexData = new Float32Array(vertices.reduce(function (accu, vert) {
+            accu.push(vert.x, vert.y, vert.z);
+            return accu;
+        }, []));
+        // itemSize = 3 because there are 3 values (components) per vertex
+        geometry.setAttribute("position", new THREE.BufferAttribute(vertexData, 3));
+        return geometry;
     }
 };
 //# sourceMappingURL=GeometryGenerationHelpers.js.map

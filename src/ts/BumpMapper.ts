@@ -12,10 +12,11 @@ import { computeVertexNormals } from "./computeVertexNormals";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { DildoOptions, IBumpmap, IDildoGeometry } from "./interfaces";
 import { Gmetry } from "three-geometry-hellfix";
+import { DildoGeometry } from "./DildoGeometry";
 
 export const BumpMapper = {
   applyBumpmap: (
-    dildoGeometry: IDildoGeometry,
+    dildoGeometry: DildoGeometry,
     bufferedGeometry: THREE.BufferGeometry,
     bumpmap: IBumpmap,
     material: THREE.Material,

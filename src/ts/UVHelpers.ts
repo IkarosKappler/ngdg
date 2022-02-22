@@ -8,8 +8,9 @@
 
 import * as THREE from "three";
 import { Bounds } from "plotboilerplate";
-import { DildoBaseClass } from "./DildoGeometry";
+// import { DildoBaseClass } from "./DildoGeometry";
 import { Gmetry } from "three-geometry-hellfix";
+import { DildoGeometry } from "./DildoGeometry";
 
 export const UVHelpers = {
   /**
@@ -22,7 +23,7 @@ export const UVHelpers = {
    * @param {number} vertIndexC - ...
    */
   makeFlatTriangleUVs: (
-    thisGeometry: Gmetry | DildoBaseClass, // THREE.Geometry does not longer exist since r125 and will be replaced by BufferGeometry
+    thisGeometry: Gmetry | DildoGeometry, // THREE.Geometry does not longer exist since r125 and will be replaced by BufferGeometry
     shapeBounds: Bounds,
     vertIndexA: number,
     vertIndexB: number,

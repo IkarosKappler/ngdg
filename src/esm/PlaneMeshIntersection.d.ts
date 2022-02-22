@@ -12,8 +12,8 @@
  * @version 1.0.1
  */
 import * as THREE from "three";
-import { IDildoGeometry } from "./interfaces";
 import { Gmetry } from "three-geometry-hellfix";
+import { DildoGeometry } from "./DildoGeometry";
 export declare class PlaneMeshIntersection {
     pointsOfIntersection: Array<THREE.Vector3>;
     a: THREE.Vector3;
@@ -37,6 +37,6 @@ export declare class PlaneMeshIntersection {
      * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
      * @returns {Array<THREE.Vector3>}
      */
-    getIntersectionPoints: (mesh: THREE.Mesh, geometry: Gmetry | IDildoGeometry, plane: THREE.Mesh, planeGeometryReal: THREE.PlaneGeometry) => Array<THREE.Vector3>;
+    getIntersectionPoints: (mesh: THREE.Mesh, geometry: Gmetry | DildoGeometry, plane: THREE.Mesh, planeGeometryReal: THREE.PlaneGeometry) => Array<THREE.Vector3>;
     private __setPointOfIntersection;
 }

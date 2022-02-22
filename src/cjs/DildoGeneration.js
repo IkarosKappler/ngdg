@@ -260,11 +260,17 @@ var DildoGeneration = /** @class */ (function () {
         // TEST what the connected paths look like
         // TODO: add an option and only add to scene if desired.
         for (var p = 0; p < connectedPaths.length; p++) {
-            var geometry = new three_geometry_hellfix_1.Gmetry();
-            geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
+            // TODO: verify
+            // const geometry: Gmetry = new Gmetry();
+            // geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
+            //   return leftSliceGeometry.vertices[geometryVertexIndex];
+            // });
+            var vertices = connectedPaths[p].map(function (geometryVertexIndex) {
                 return leftSliceGeometry.vertices[geometryVertexIndex];
             });
-            var linesMesh_1 = new THREE.Line(geometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+            var geometry = GeometryGenerationHelpers_1.GeometryGenerationHelpers.verticesToBufferGeometry(vertices);
+            var linesMesh_1 = new THREE.Line(geometry, // .toBufferGeometry(),
+            new THREE.LineBasicMaterial({
                 color: (0, randomWebColor_1.randomWebColor)(i, "Mixed") // 0x8800a8
             }));
             // linesMesh.position.y = -100;

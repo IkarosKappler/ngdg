@@ -12,7 +12,7 @@
  **/
 import * as THREE from "three";
 import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper";
-import { DildoGeometry } from "./DildoGeometry";
+import { /* DildoBaseClass, */ DildoGeometry } from "./DildoGeometry";
 import { DildoMaterials } from "./DildoMaterials";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { mergeGeometries } from "./mergeGeometries";
@@ -257,11 +257,17 @@ export class DildoGeneration {
         // TEST what the connected paths look like
         // TODO: add an option and only add to scene if desired.
         for (var p = 0; p < connectedPaths.length; p++) {
-            const geometry = new Gmetry();
-            geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
+            // TODO: verify
+            // const geometry: Gmetry = new Gmetry();
+            // geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
+            //   return leftSliceGeometry.vertices[geometryVertexIndex];
+            // });
+            const vertices = connectedPaths[p].map(function (geometryVertexIndex) {
                 return leftSliceGeometry.vertices[geometryVertexIndex];
             });
-            const linesMesh = new THREE.Line(geometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+            const geometry = GeometryGenerationHelpers.verticesToBufferGeometry(vertices);
+            const linesMesh = new THREE.Line(geometry, // .toBufferGeometry(),
+            new THREE.LineBasicMaterial({
                 color: randomWebColor(i, "Mixed") // 0x8800a8
             }));
             // linesMesh.position.y = -100;

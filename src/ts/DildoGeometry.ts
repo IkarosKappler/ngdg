@@ -18,11 +18,11 @@
 
 import { BezierPath, Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
-import { ExtendedDildoOptions } from "./interfaces";
+import { ExtendedDildoOptions, IDildoGeometry } from "./interfaces";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { earcut } from "earcut-typescript"; // TODO: fix earcut types
 import { UVHelpers } from "./UVHelpers";
-import { Face3, Gmetry } from "three-geometry-hellfix";
+import { Face3, Gmetry } from "three-geometry-hellfix/src/cjs";
 
 var DEG_TO_RAD = Math.PI / 180.0;
 // import { DEG_TO_RAD } from "./constants";
@@ -48,6 +48,7 @@ var DEG_TO_RAD = Math.PI / 180.0;
 // export class DildoGeometry { // extends globalThis.THREE.Geometry {
 // export class DildoGeometry extends DildoBaseClass {
 export class DildoGeometry extends Gmetry {
+  // implements IDildoGeometry
   vertexMatrix: Array<Array<number>>;
   topIndex: number;
   bottomIndex: number;

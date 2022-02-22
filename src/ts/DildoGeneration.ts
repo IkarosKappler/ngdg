@@ -15,7 +15,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper";
 import { STLExporter } from "three/examples/jsm/exporters/STLExporter";
-import { DildoBaseClass, DildoGeometry } from "./DildoGeometry";
+import { /* DildoBaseClass, */ DildoGeometry } from "./DildoGeometry";
 import { DildoMaterials } from "./DildoMaterials";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import {
@@ -324,7 +324,7 @@ export class DildoGeneration implements IDildoGeneration {
    */
   __performPlaneSlice(
     latheMesh: THREE.Mesh,
-    latheUnbufferedGeometry: IDildoGeometry,
+    latheUnbufferedGeometry: DildoGeometry,
     wireframe: boolean,
     useTextureImage: boolean,
     textureImagePath: string,
@@ -372,12 +372,17 @@ export class DildoGeneration implements IDildoGeneration {
     // TEST what the connected paths look like
     // TODO: add an option and only add to scene if desired.
     for (var p = 0; p < connectedPaths.length; p++) {
-      const geometry: Gmetry = new Gmetry();
-      geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
+      // TODO: verify
+      // const geometry: Gmetry = new Gmetry();
+      // geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
+      //   return leftSliceGeometry.vertices[geometryVertexIndex];
+      // });
+      const vertices = connectedPaths[p].map(function (geometryVertexIndex) {
         return leftSliceGeometry.vertices[geometryVertexIndex];
       });
+      const geometry = GeometryGenerationHelpers.verticesToBufferGeometry(vertices);
       const linesMesh: THREE.Line = new THREE.Line(
-        geometry.toBufferGeometry(),
+        geometry, // .toBufferGeometry(),
         new THREE.LineBasicMaterial({
           color: randomWebColor(i, "Mixed") // 0x8800a8
         })
@@ -428,7 +433,7 @@ export class DildoGeneration implements IDildoGeneration {
     if (options.showLeftSplit) {
       leftSliceGeometry.uvsNeedUpdate = true;
       // TODO: check if this is still required
-      (leftSliceGeometry as unknown as DildoBaseClass).buffersNeedUpdate = true;
+      (leftSliceGeometry as unknown as any).buffersNeedUpdate = true;
       leftSliceGeometry.computeVertexNormals();
       const slicedMeshLeft: THREE.Mesh = new THREE.Mesh(leftSliceGeometry.toBufferGeometry(), sliceMaterial);
       // slicedMeshLeft.position.y = -100;
@@ -453,7 +458,7 @@ export class DildoGeneration implements IDildoGeneration {
     if (options.showRightSplit) {
       rightSliceGeometry.uvsNeedUpdate = true;
       // TODO: check if this is still required
-      (rightSliceGeometry as unknown as DildoBaseClass).buffersNeedUpdate = true;
+      (rightSliceGeometry as unknown as any).buffersNeedUpdate = true;
       rightSliceGeometry.computeVertexNormals();
       const slicedMeshRight: THREE.Mesh = new THREE.Mesh(rightSliceGeometry.toBufferGeometry(), sliceMaterial);
       // slicedMeshRight.position.y = -100;

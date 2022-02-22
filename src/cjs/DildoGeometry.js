@@ -37,7 +37,7 @@ var THREE = require("three");
 var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
 var earcut_typescript_1 = require("earcut-typescript"); // TODO: fix earcut types
 var UVHelpers_1 = require("./UVHelpers");
-var three_geometry_hellfix_1 = require("three-geometry-hellfix");
+var cjs_1 = require("three-geometry-hellfix/src/cjs");
 var DEG_TO_RAD = Math.PI / 180.0;
 // import { DEG_TO_RAD } from "./constants";
 // This is a dirty workaround to
@@ -74,7 +74,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         // TODO: verify
         // THREE.Geometry.call(this);
-        three_geometry_hellfix_1.Gmetry.call(_this);
+        cjs_1.Gmetry.call(_this);
         _this.vertexMatrix = []; // Array<Array<number>>
         _this.topIndex = -1;
         _this.bottomIndex = -1;
@@ -636,12 +636,12 @@ var DildoGeometry = /** @class */ (function (_super) {
             var curIndex = findClosestEdgeIndex(this.vertices[this.vertexMatrix[0][i]]);
             // Close gap to last (different shell index)
             triangleIndices = [lastIndex, this.vertexMatrix[0][i == 0 ? n - 1 : i - 1], this.vertexMatrix[0][i]];
-            this.faces.push(new three_geometry_hellfix_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2])); // Same?
+            this.faces.push(new cjs_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2])); // Same?
             this.hollowBottomTriagles.push(triangleIndices);
             if (lastIndex !== curIndex) {
                 // Add normal triangle to same shell index
                 triangleIndices = [curIndex, lastIndex, this.vertexMatrix[0][i]];
-                this.faces.push(new three_geometry_hellfix_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2]));
+                this.faces.push(new cjs_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2]));
                 this.hollowBottomTriagles.push(triangleIndices);
             }
             lastIndex = curIndex;
@@ -855,7 +855,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         }
     };
     return DildoGeometry;
-}(three_geometry_hellfix_1.Gmetry)); // END class
+}(cjs_1.Gmetry)); // END class
 exports.DildoGeometry = DildoGeometry;
 // TODO: move to helpers
 var rotateVert = function (vert, angle, xCenter, yCenter) {

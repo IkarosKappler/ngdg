@@ -11,16 +11,8 @@
 import { Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
 import { ExtendedDildoOptions } from "./interfaces";
-import { Face3 } from "three-geometry-hellfix";
-export declare class DildoBaseClass {
-    vertices: Array<THREE.Vector3>;
-    faces: Array<Face3>;
-    faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
-    uvsNeedUpdate: boolean;
-    buffersNeedUpdate: boolean;
-    constructor();
-}
-export declare class DildoGeometry extends DildoBaseClass {
+import { Gmetry } from "three-geometry-hellfix/src/cjs";
+export declare class DildoGeometry extends Gmetry {
     vertexMatrix: Array<Array<number>>;
     topIndex: number;
     bottomIndex: number;
