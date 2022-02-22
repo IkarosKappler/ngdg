@@ -537,7 +537,7 @@
       var pathBounds = outline.getBounds();
       stats.width = pathBounds.width * Rulers.mmPerUnit;
       stats.height = pathBounds.height * Rulers.mmPerUnit;
-      stats.diameter = 2 * pathBounds.height * Rulers.mmPerUnit;
+      stats.diameter = 2 * pathBounds.width * Rulers.mmPerUnit;
       // stats.area = outline.toPolygon();
     };
 

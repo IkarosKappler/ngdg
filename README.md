@@ -20,7 +20,7 @@ Because 3d printing, web 3d, and dildos are fun.
 - [x] Configure webpack to handle type definitions in node_modules correctly.
 - [x] Port all vanilla JS parts to Typescript.
 - [ ] Arrange splits on plane.
-- [ ] Update to THREE >= r125. Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
+- [x] Update to THREE >= r125. Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
       (not supported any more since r125). See https://sbcode.net/threejs/geometry-to-buffergeometry/ for details.
 - [x] Rename base branch to 'main'.
 - [x] Create a Typescript port from mapbox/earcut.
@@ -44,6 +44,7 @@ Because 3d printing, web 3d, and dildos are fun.
   - Upgraded threejs from r124 (with Geometry class) to r137 (without Geometry class).
   - Renamed `./public/index.html` to `./public/index-dev.html`.
   - Renamed `./public/index-build.html` to `./public/index.html`.
+  - Fixed wrong display of `diameter` in stats.
 - 2022-02-02
   - Fixed the localstorage loading issue.
   - Fixed the replace-path issue (destroying all installed event handlers and listeners first).
