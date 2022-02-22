@@ -8,10 +8,12 @@
  * @co-author Ikaros Kappler
  * @date 2021-06-11
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @version 1.0.0
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version 1.0.1
  */
 import * as THREE from "three";
 import { IDildoGeometry } from "./interfaces";
+import { Gmetry } from "three-geometry-hellfix";
 export declare class PlaneMeshIntersection {
     pointsOfIntersection: Array<THREE.Vector3>;
     a: THREE.Vector3;
@@ -31,10 +33,10 @@ export declare class PlaneMeshIntersection {
     /**
      *
      * @param {THREE.Mesh} mesh
-     * @param {THREE.Geometry} geometry
+     * @param {ThreeGeometryHellfix.Gmetry} geometry
      * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
      * @returns {Array<THREE.Vector3>}
      */
-    getIntersectionPoints: (mesh: THREE.Mesh, geometry: THREE.Geometry | IDildoGeometry, plane: THREE.Mesh, planeGeometryReal: THREE.PlaneGeometry) => Array<THREE.Vector3>;
+    getIntersectionPoints: (mesh: THREE.Mesh, geometry: Gmetry | IDildoGeometry, plane: THREE.Mesh, planeGeometryReal: THREE.PlaneGeometry) => Array<THREE.Vector3>;
     private __setPointOfIntersection;
 }

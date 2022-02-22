@@ -2,14 +2,15 @@
  * @author   Ikaros Kappler
  * @date     2021-08-03
  * @modified 2021-08-04 Ported to Typsescript from vanilla JS.
- * @version  1.0.1
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.0.2
  */
 import * as THREE from "three";
 export const UVHelpers = {
     /**
      * Helper function to create triangular UV Mappings for a triangle.
      *
-     * @param {THREE.Geometry} thisGeometry
+     * @param {ThreeGeometryHellfix.Gmetry} thisGeometry
      * @param {Bounds} shapeBounds
      * @param {number} vertIndexA - The index in the geometry's vertices array.
      * @param {number} vertIndexB - ...

@@ -14,23 +14,25 @@
  *
  * @author  Ikaros Kappler
  * @date    2021-09-06
- * @version 1.0.0
+ * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
+ * @version 1.0.1
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BumpMapper = void 0;
-var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 var computeVertexNormals_1 = __webpack_require__(/*! ./computeVertexNormals */ "./src/cjs/computeVertexNormals.js");
 var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
+var three_geometry_hellfix_1 = __webpack_require__(/*! three-geometry-hellfix */ "./node_modules/three-geometry-hellfix/src/esm/index.js");
 exports.BumpMapper = {
     applyBumpmap: function (dildoGeometry, bufferedGeometry, bumpmap, material, options) {
         var collectedVertexNormals = (0, computeVertexNormals_1.computeVertexNormals)(dildoGeometry, bufferedGeometry);
-        var dildoNormalGeometry = new THREE.Geometry();
+        var dildoNormalGeometry = new three_geometry_hellfix_1.Gmetry();
         dildoNormalGeometry.vertices = collectedVertexNormals.map(function (normalLine) {
             var endPoint = normalLine.end.clone();
             GeometryGenerationHelpers_1.GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
             return endPoint;
         });
-        var dildoNormalsMesh = new THREE.Points(dildoNormalGeometry, new THREE.PointsMaterial({
+        var dildoNormalsMesh = new THREE.Points(dildoNormalGeometry.toBufferGeometry(), new THREE.PointsMaterial({
             size: 1.4,
             color: 0x00ffff
         }));
@@ -63,7 +65,9 @@ exports.BumpMapper = {
             //   const lerpTarget: THREE.Vector3 = dildoNormalGeometry.vertices[vertIndex];
             //   vertex.lerp(lerpTarget, lerpFactor);
             // Override the buffered geometry! (bumpmap has been applied)
-            bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry);
+            // TODO: verify correctness with Gmery
+            // bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry as unknown as Gmetry);
+            bufferedGeometry = dildoGeometry.toBufferGeometry();
             bufferedGeometry.computeVertexNormals();
             // Override the mesh! (bumpmap has been applied)
             dildoMesh = new THREE.Mesh(bufferedGeometry, material);
@@ -91,11 +95,12 @@ exports.BumpMapper = {
  * @modified 2021-06-07 Fixing `removeCachedGeometries`. Adding bending of model.
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
  * @modified 2022-02-03 Added `clearResults` function.
- * @version  1.2.2
+ * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.2.3
  **/
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DildoGeneration = void 0;
-var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 var VertexNormalsHelper_1 = __webpack_require__(/*! three/examples/jsm/helpers/VertexNormalsHelper */ "./node_modules/three/examples/jsm/helpers/VertexNormalsHelper.js");
 var DildoGeometry_1 = __webpack_require__(/*! ./DildoGeometry */ "./src/cjs/DildoGeometry.js");
 var DildoMaterials_1 = __webpack_require__(/*! ./DildoMaterials */ "./src/cjs/DildoMaterials.js");
@@ -105,6 +110,7 @@ var PathFinder_1 = __webpack_require__(/*! ./PathFinder */ "./src/cjs/PathFinder
 var randomWebColor_1 = __webpack_require__(/*! ./randomWebColor */ "./src/cjs/randomWebColor.js");
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/cjs/constants.js");
 var BumpMapper_1 = __webpack_require__(/*! ./BumpMapper */ "./src/cjs/BumpMapper.js");
+var three_geometry_hellfix_1 = __webpack_require__(/*! three-geometry-hellfix */ "./node_modules/three-geometry-hellfix/src/esm/index.js");
 var DildoGeneration = /** @class */ (function () {
     function DildoGeneration(canvasId, options) {
         this.canvas = document.getElementById(canvasId);
@@ -202,16 +208,19 @@ var DildoGeneration = /** @class */ (function () {
         var textureImagePath = typeof options.textureImagePath !== "undefined" ? options.textureImagePath : null;
         var doubleSingleSide = options.renderFaces === "double" ? THREE.DoubleSide : options.renderFaces === "back" ? THREE.BackSide : THREE.FrontSide;
         var wireframe = typeof options.wireframe !== "undefined" ? options.wireframe : false;
-        // const isBumpmappingPossible : boolean = (options.useBumpmap && bumpmapTexture);
         var material = DildoMaterials_1.DildoMaterials.createMainMaterial(useTextureImage, wireframe, textureImagePath, doubleSingleSide);
         // This can be overriden in later steps! (after bumpmap was applied)
-        var bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry);
+        // let bufferedGeometry: THREE.BufferGeometry = new THREE.BufferGeometry().fromGeometry(
+        //   dildoGeometry as unknown as Gmetry
+        // );
+        // TODO: verify correctness
+        var bufferedGeometry = dildoGeometry.toBufferGeometry();
         bufferedGeometry.computeVertexNormals();
         // This can be overriden in later steps! (after bumpmap was applied)
         var dildoMesh = new THREE.Mesh(bufferedGeometry, material);
         this.camera.lookAt(new THREE.Vector3(20, 0, 150));
         this.camera.lookAt(dildoMesh.position);
-        var spineGeometry = new THREE.Geometry();
+        var spineGeometry = new three_geometry_hellfix_1.Gmetry();
         dildoGeometry.spineVertices.forEach(function (spineVert) {
             spineGeometry.vertices.push(spineVert.clone());
         });
@@ -226,10 +235,10 @@ var DildoGeneration = /** @class */ (function () {
         // if (options.previewBumpmap || options.useBumpmap) {
         if (options.useBumpmap) {
             // const collectedVertexNormals: Array<THREE.Line3> = computeVertexNormals(
-            //   dildoGeometry as unknown as THREE.Geometry,
+            //   dildoGeometry as unknown as Gmetry,
             //   bufferedGeometry
             // );
-            // const dildoNormalGeometry = new THREE.Geometry();
+            // const dildoNormalGeometry = new Gmetry();
             // dildoNormalGeometry.vertices = collectedVertexNormals.map((normalLine: THREE.Line3) => {
             //   const endPoint: THREE.Vector3 = normalLine.end.clone();
             //   GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
@@ -261,7 +270,7 @@ var DildoGeneration = /** @class */ (function () {
             //     }
             //   }
             //   // Override the buffered geometry! (bumpmap has been applied)
-            //   bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry as unknown as THREE.Geometry);
+            //   bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry as unknown as Gmetry);
             //   bufferedGeometry.computeVertexNormals();
             //   // Override the mesh! (bumpmap has been applied)
             //   dildoMesh = new THREE.Mesh(bufferedGeometry, material);
@@ -304,7 +313,7 @@ var DildoGeneration = /** @class */ (function () {
      * These will always be generated, even if the options tell different; if so then they are set
      * to be invisible.
      *
-     * @param {THREE.Geometry} latheMesh - The buffered dildo geometry (required to perform the slice operation).
+     * @param {ThreeGeometryHellfix.Gmetry} latheMesh - The buffered dildo geometry (required to perform the slice operation).
      * @param {DildoGeometry} latheUnbufferedGeometry - The unbuffered dildo geometry (required to obtain the perpendicular path lines).
      * @param {boolean} wireframe
      */
@@ -338,11 +347,11 @@ var DildoGeneration = /** @class */ (function () {
         // TEST what the connected paths look like
         // TODO: add an option and only add to scene if desired.
         for (var p = 0; p < connectedPaths.length; p++) {
-            var geometry = new THREE.Geometry();
+            var geometry = new three_geometry_hellfix_1.Gmetry();
             geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
                 return leftSliceGeometry.vertices[geometryVertexIndex];
             });
-            var linesMesh_1 = new THREE.Line(geometry, new THREE.LineBasicMaterial({
+            var linesMesh_1 = new THREE.Line(geometry.toBufferGeometry(), new THREE.LineBasicMaterial({
                 color: (0, randomWebColor_1.randomWebColor)(i, "Mixed") // 0x8800a8
             }));
             // linesMesh.position.y = -100;
@@ -352,9 +361,9 @@ var DildoGeneration = /** @class */ (function () {
         }
         if (options.addPrecalculatedShapeOutlines) {
             // TEST what the line mesh looks like
-            var pointGeometry = new THREE.Geometry();
+            var pointGeometry = new three_geometry_hellfix_1.Gmetry();
             pointGeometry.vertices = planeIntersectionPoints;
-            var linesMesh = new THREE.Line(pointGeometry, new THREE.LineBasicMaterial({
+            var linesMesh = new THREE.Line(pointGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
                 color: 0x8800a8
             }));
             // linesMesh.position.y = -100;
@@ -381,7 +390,7 @@ var DildoGeneration = /** @class */ (function () {
             // TODO: check if this is still required
             leftSliceGeometry.buffersNeedUpdate = true;
             leftSliceGeometry.computeVertexNormals();
-            var slicedMeshLeft = new THREE.Mesh(leftSliceGeometry, sliceMaterial);
+            var slicedMeshLeft = new THREE.Mesh(leftSliceGeometry.toBufferGeometry(), sliceMaterial);
             // slicedMeshLeft.position.y = -100;
             // slicedMeshLeft.position.z = -50;
             slicedMeshLeft.position.y = constants_1.SPLIT_MESH_OFFSET.y;
@@ -405,7 +414,7 @@ var DildoGeneration = /** @class */ (function () {
             // TODO: check if this is still required
             rightSliceGeometry.buffersNeedUpdate = true;
             rightSliceGeometry.computeVertexNormals();
-            var slicedMeshRight = new THREE.Mesh(rightSliceGeometry, sliceMaterial);
+            var slicedMeshRight = new THREE.Mesh(rightSliceGeometry.toBufferGeometry(), sliceMaterial);
             // slicedMeshRight.position.y = -100;
             // slicedMeshRight.position.z = 50;
             slicedMeshRight.position.y = constants_1.SPLIT_MESH_OFFSET.y;
@@ -431,7 +440,7 @@ var DildoGeneration = /** @class */ (function () {
     //    * Make a triangulation of the given path specified by the verted indices.
     //    *
     //    * @param {Array<number>} connectedPath - An array of vertex indices.
-    //    * @return {THREE.Geometry} trianglesMesh
+    //    * @return {ThreeGeometryHellfix.Gmetry} trianglesMesh
     //    */
     //   var makePlaneTriangulation = function (generator, sliceGeometry, connectedPath, options) {
     //     // Convert the connected paths indices to [x, y, x, y, x, y, ...] coordinates (requied by earcut)
@@ -443,7 +452,7 @@ var DildoGeneration = /** @class */ (function () {
     //     // Array<number> : triplets of vertex indices in the plain XY array
     //     var triangles = earcut(currentPathXYData);
     //     // Convert triangle indices back to a geometry
-    //     var trianglesGeometry = new THREE.Geometry();
+    //     var trianglesGeometry = new Gmetry();
     //     // We will merge the geometries in the end which will create clones of the vertices.
     //     // No need to clone here.
     //     // trianglesGeometry.vertices = leftSliceGeometry.vertices;
@@ -560,7 +569,8 @@ exports.DildoGeneration = DildoGeneration;
  * @date     2020-07-08
  * @modified 2021-06-11 Fixing top and bottom points; preparing slicing of mesh.
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @version  1.0.2
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry (and Face3).
+ * @version  1.0.3
  **/
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -586,11 +596,11 @@ exports.DildoGeometry = exports.DildoBaseClass = void 0;
 // + Move UV-creating helper functions out of the class
 // + port to typescript
 var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
-var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
-// import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types
 var earcut_typescript_1 = __webpack_require__(/*! earcut-typescript */ "./node_modules/earcut-typescript/src/cjs/earcut.js"); // TODO: fix earcut types
 var UVHelpers_1 = __webpack_require__(/*! ./UVHelpers */ "./src/cjs/UVHelpers.js");
+var three_geometry_hellfix_1 = __webpack_require__(/*! three-geometry-hellfix */ "./node_modules/three-geometry-hellfix/src/esm/index.js");
 var DEG_TO_RAD = Math.PI / 180.0;
 // import { DEG_TO_RAD } from "./constants";
 // This is a dirty workaround to
@@ -620,7 +630,9 @@ var DildoGeometry = /** @class */ (function (_super) {
      **/
     function DildoGeometry(options) {
         var _this = _super.call(this) || this;
-        THREE.Geometry.call(_this);
+        // TODO: verify
+        // THREE.Geometry.call(this);
+        three_geometry_hellfix_1.Gmetry.call(_this);
         _this.vertexMatrix = []; // Array<Array<number>>
         _this.topIndex = -1;
         _this.bottomIndex = -1;
@@ -1182,12 +1194,12 @@ var DildoGeometry = /** @class */ (function (_super) {
             var curIndex = findClosestEdgeIndex(this.vertices[this.vertexMatrix[0][i]]);
             // Close gap to last (different shell index)
             triangleIndices = [lastIndex, this.vertexMatrix[0][i == 0 ? n - 1 : i - 1], this.vertexMatrix[0][i]];
-            this.faces.push(new THREE.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2])); // Same?
+            this.faces.push(new three_geometry_hellfix_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2])); // Same?
             this.hollowBottomTriagles.push(triangleIndices);
             if (lastIndex !== curIndex) {
                 // Add normal triangle to same shell index
                 triangleIndices = [curIndex, lastIndex, this.vertexMatrix[0][i]];
-                this.faces.push(new THREE.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2]));
+                this.faces.push(new three_geometry_hellfix_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2]));
                 this.hollowBottomTriagles.push(triangleIndices);
             }
             lastIndex = curIndex;
@@ -1509,7 +1521,7 @@ var makeHollowBottomUVs = function (thisGeometry, containingPolygonIndices, tria
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DildoMaterials = void 0;
-var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 exports.DildoMaterials = (function () {
     /**
      * Map<string,texture>
@@ -1617,18 +1629,18 @@ exports.DildoMaterials = (function () {
  * @author   Ikaros Kappler
  * @date     2021-06-30
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @version  0.0.1-alpha
+ * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.0.0
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GeometryGenerationHelpers = void 0;
-var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
-// import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types, convert to custum library
+var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 var earcut_typescript_1 = __webpack_require__(/*! earcut-typescript */ "./node_modules/earcut-typescript/src/cjs/earcut.js");
 var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
-// import { sliceGeometry } from "./thirdparty-ported/threejs-slice-geometry"; // TODO: convert to custom library
-var threejs_slice_geometry_typescript_1 = __webpack_require__(/*! threejs-slice-geometry-typescript */ "./node_modules/threejs-slice-geometry-typescript/src/cjs/slice.js"); // TODO: convert to custom library
+var threejs_slice_geometry_typescript_1 = __webpack_require__(/*! threejs-slice-geometry-typescript */ "../threejs-slice-geometry-typescript/src/esm/index.js"); // TODO: convert to custom library
 var PlaneMeshIntersection_1 = __webpack_require__(/*! ./PlaneMeshIntersection */ "./src/cjs/PlaneMeshIntersection.js");
 var clearDuplicateVertices3_1 = __webpack_require__(/*! ./clearDuplicateVertices3 */ "./src/cjs/clearDuplicateVertices3.js");
+var three_geometry_hellfix_1 = __webpack_require__(/*! three-geometry-hellfix */ "./node_modules/three-geometry-hellfix/src/esm/index.js");
 var UVHelpers_1 = __webpack_require__(/*! ./UVHelpers */ "./src/cjs/UVHelpers.js");
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/cjs/constants.js");
 exports.GeometryGenerationHelpers = {
@@ -1637,7 +1649,7 @@ exports.GeometryGenerationHelpers = {
      *
      * The default direction (right) can be changed to left to pass `invsereFaceDirection=true`.
      *
-     * @param {THREE.Geometry} geometry - The geometry to add the face to.
+     * @param {ThreeGeometryHellfix.Gmetry} geometry - The geometry to add the face to.
      * @param {number} vertIndexA
      * @param {number} vertIndexB
      * @param {number} vertIndexC
@@ -1645,10 +1657,10 @@ exports.GeometryGenerationHelpers = {
      */
     makeFace3: function (geometry, vertIndexA, vertIndexB, vertIndexC, inverseFaceDirection) {
         if (inverseFaceDirection) {
-            geometry.faces.push(new THREE.Face3(vertIndexC, vertIndexB, vertIndexA));
+            geometry.faces.push(new three_geometry_hellfix_1.Face3(vertIndexC, vertIndexB, vertIndexA));
         }
         else {
-            geometry.faces.push(new THREE.Face3(vertIndexA, vertIndexB, vertIndexC));
+            geometry.faces.push(new three_geometry_hellfix_1.Face3(vertIndexA, vertIndexB, vertIndexC));
         }
     },
     /**
@@ -1663,7 +1675,7 @@ exports.GeometryGenerationHelpers = {
      *         C-----D
      * </pre>
      *
-     * @param {THREE.Geometry} geometry - The geometry to add the face to.
+     * @param {ThreeGeometryHellfix.Gmetry} geometry - The geometry to add the face to.
      * @param {number} vertIndexA - The first vertex index.
      * @param {number} vertIndexB - The second vertex index.
      * @param {number} vertIndexC - The third vertex index.
@@ -1684,7 +1696,7 @@ exports.GeometryGenerationHelpers = {
     /**
      * Create texture UV coordinates for the rectangular two  triangles at matrix indices a, b, c and d.
      *
-     * @param {THREE.Geometry} geometry - The geometry to add the face to.
+     * @param {ThreeGeometryHellfix.Gmetry} geometry - The geometry to add the face to.
      * @param {number} a - The first face-4 vertex index.
      * @param {number} b - The second face-4 vertex index.
      * @param {number} c - The third face-4 vertex index.
@@ -1724,7 +1736,7 @@ exports.GeometryGenerationHelpers = {
     /**
      * Create texture UV coordinates for the triangle at matrix indices a, b and c.
      *
-     * @param {THREE.Geometry} geometry - The geometry to add the new faces to.
+     * @param {ThreeGeometryHellfix.Gmetry} geometry - The geometry to add the new faces to.
      * @param {number} a - The current base shape segment index, must be inside [0,baseShapeSegmentCount-1].
      * @param {number} baseShapeSegmentCount - The total number of base shape segments.
      */
@@ -1777,17 +1789,16 @@ exports.GeometryGenerationHelpers = {
      *
      * Note also that the mesh is open at the cut plane.
      *
-     * @param {THREE.Geometry} unbufferedGeometry - The geometry to slice.
+     * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The geometry to slice.
      * @param {THREE.Plane} plane PlaneGeometry???
-     * @return {THREE.Geometry}
+     * @return {ThreeGeometryHellfix.Gmetry}
      */
     makeSlice: function (unbufferedGeometry, plane) {
         // Slice mesh into two
         // See https://github.com/tdhooper/threejs-slice-geometry
         var closeHoles = false; // This might be configurable in a later version.
-        // TODO: cc
-        // var sliceMaterial = DildoMaterials.createSliceMaterial(wireframe);
-        // var slicedGeometry = sliceGeometry(unbufferedGeometry, plane, closeHoles);
+        // TODO: resolve typecast here.
+        //       Maybe the whole IDildoGeometry interface can be removed
         var slicedGeometry = (0, threejs_slice_geometry_typescript_1.sliceGeometry)(unbufferedGeometry, plane, closeHoles);
         // Now note that it's possible that the result might contain multiple vertices
         // at the same position, which makes further calculations quite difficult.
@@ -1795,12 +1806,6 @@ exports.GeometryGenerationHelpers = {
         slicedGeometry.mergeVertices();
         // And don't forget to compute the normals.
         slicedGeometry.computeFaceNormals();
-        // var slicedMesh = new THREE.Mesh(slicedGeometry, sliceMaterial);
-        // var slicedMesh = new THREE.Mesh(new THREE.BufferGeometry().fromGeometry(slicedGeometry), sliceMaterial);
-        //   slicedMesh.position.y = -100;
-        //   slicedMesh.position.z = zOffset;
-        //   slicedMesh.userData["isExportable"] = true;
-        //   thisGenerator.addMesh(slicedMesh);
         return slicedGeometry;
     },
     /**
@@ -1812,7 +1817,7 @@ exports.GeometryGenerationHelpers = {
      * @param {THREE.Plane} planeGeometry
      * @returns
      */
-    makeAndAddPlaneIntersection: function (thisGenerator, mesh, unbufferedGeometry, // THREE.Geometry,
+    makeAndAddPlaneIntersection: function (thisGenerator, mesh, unbufferedGeometry, // Gmetry,
     planeGeometry, // THREE.Plane, // THREE.PlaneGeometry, // THREE.Plane ???
     planeGeometryReal, 
     // TODO: use a proper global interface here
@@ -1824,13 +1829,14 @@ exports.GeometryGenerationHelpers = {
         var intersectionPoints = planeMeshIntersection.getIntersectionPoints(mesh, unbufferedGeometry, planeGeometry, planeGeometryReal);
         var EPS = 0.000001;
         var uniqueIntersectionPoints = (0, clearDuplicateVertices3_1.clearDuplicateVertices3)(intersectionPoints, EPS);
-        var pointGeometry = new THREE.Geometry();
+        var pointGeometry = new three_geometry_hellfix_1.Gmetry();
         pointGeometry.vertices = uniqueIntersectionPoints;
         var pointsMaterial = new THREE.PointsMaterial({
             size: 1.4,
             color: 0x00ffff
         });
-        var pointsMesh = new THREE.Points(pointGeometry, pointsMaterial);
+        // TODO: verify
+        var pointsMesh = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
         if (options.showSplitShape) {
             pointsMesh.position.y = -100;
             pointsMesh.position.z = -50;
@@ -1843,7 +1849,7 @@ exports.GeometryGenerationHelpers = {
         var triangleIndices = (0, earcut_typescript_1.earcut)(polygonData);
         // Process the earcut result;
         //         add the retrieved triangles as geometry faces.
-        var triangleGeometry = new THREE.Geometry();
+        var triangleGeometry = new three_geometry_hellfix_1.Gmetry();
         for (var i = 0; i < uniqueIntersectionPoints.length; i++) {
             triangleGeometry.vertices.push(uniqueIntersectionPoints[i].clone());
         }
@@ -1856,7 +1862,7 @@ exports.GeometryGenerationHelpers = {
         if (options.addRawIntersectionTriangleMesh) {
             // This is more a quick experimental preview feature.
             // The data is often faulty and too unprecise.
-            var triangleMesh = new THREE.Mesh(triangleGeometry, new THREE.LineBasicMaterial({
+            var triangleMesh = new THREE.Mesh(triangleGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
                 color: 0xff8800
             }));
             triangleMesh.position.y = -100;
@@ -1876,7 +1882,7 @@ exports.GeometryGenerationHelpers = {
     // CURRENTLY NOT REALLY IN USE. THE UNDERLYING MODEL IS A NON-TWISTED ONE.
     makeAndAddMassivePlaneIntersection: function (thisGenerator, unbufferedGeometry) {
         var intersectionPoints = unbufferedGeometry.getPerpendicularPathVertices(true, true); // includeBottom=true, getInner=true
-        var pointGeometry = new THREE.Geometry();
+        var pointGeometry = new three_geometry_hellfix_1.Gmetry();
         pointGeometry.vertices = intersectionPoints;
         var pointsMaterial = new THREE.MeshBasicMaterial({
             wireframe: false,
@@ -1897,7 +1903,7 @@ exports.GeometryGenerationHelpers = {
             var c = triangleIndices[i + 2];
             exports.GeometryGenerationHelpers.makeFace3(pointGeometry, a, b, c);
         }
-        var pointsMesh = new THREE.Mesh(pointGeometry, pointsMaterial);
+        var pointsMesh = new THREE.Mesh(pointGeometry.toBufferGeometry(), pointsMaterial);
         pointsMesh.position.y = -100;
         pointsMesh.position.z = 50;
         pointsMesh.userData["isExportable"] = false;
@@ -1905,7 +1911,7 @@ exports.GeometryGenerationHelpers = {
     },
     // CURRENTLY NOT REALLY IN USE. THE UNDERLYING MODEL IS A NON-TWISTED ONE.
     makeAndAddHollowPlaneIntersection: function (thisGenerator, unbufferedGeometry) {
-        var pointGeometry = new THREE.Geometry();
+        var pointGeometry = new three_geometry_hellfix_1.Gmetry();
         var perpLines = unbufferedGeometry.getPerpendicularHullLines();
         for (var i = 0; i < perpLines.length; i++) {
             var innerPoint = perpLines[i].start;
@@ -1913,8 +1919,8 @@ exports.GeometryGenerationHelpers = {
             pointGeometry.vertices.push(innerPoint, outerPoint);
             var vertIndex = pointGeometry.vertices.length;
             if (i > 0) {
-                pointGeometry.faces.push(new THREE.Face3(vertIndex - 4, vertIndex - 2, vertIndex - 3));
-                pointGeometry.faces.push(new THREE.Face3(vertIndex - 3, vertIndex - 2, vertIndex - 1));
+                pointGeometry.faces.push(new three_geometry_hellfix_1.Face3(vertIndex - 4, vertIndex - 2, vertIndex - 3));
+                pointGeometry.faces.push(new three_geometry_hellfix_1.Face3(vertIndex - 3, vertIndex - 2, vertIndex - 1));
             }
         }
         var pointsMaterial = new THREE.MeshBasicMaterial({
@@ -1924,7 +1930,7 @@ exports.GeometryGenerationHelpers = {
             side: THREE.DoubleSide,
             transparent: true
         });
-        var pointsMesh = new THREE.Mesh(pointGeometry, pointsMaterial);
+        var pointsMesh = new THREE.Mesh(pointGeometry.toBufferGeometry(), pointsMaterial);
         pointsMesh.position.y = -100;
         pointsMesh.position.z = -50;
         pointsMesh.userData["isExportable"] = false;
@@ -1934,10 +1940,10 @@ exports.GeometryGenerationHelpers = {
      * Add an orange colored line mesh from a spine geometry..
      *
      * @param {DildoGeneration} thisGenerator - The generator to add the new mesh to.
-     * @param {THREE.Geometry} spineGeometry - The spine geometry itself.
+     * @param {ThreeGeometryHellfix.Gmetry} spineGeometry - The spine geometry itself.
      */
     addSpine: function (thisGenerator, spineGeometry) {
-        var spineMesh = new THREE.LineSegments(spineGeometry, new THREE.LineBasicMaterial({
+        var spineMesh = new THREE.LineSegments(spineGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
             color: 0xff8800
         }));
         spineMesh.position.y = -100;
@@ -1963,12 +1969,12 @@ exports.GeometryGenerationHelpers = {
      * @param {number} materialColor - A color for the material to use (like 0xff0000 for red).
      */
     addPerpendicularPath: function (thisGenerator, perpLines, materialColor) {
-        var outerPerpGeometry = new THREE.Geometry();
+        var outerPerpGeometry = new three_geometry_hellfix_1.Gmetry();
         perpLines.forEach(function (perpLine) {
             outerPerpGeometry.vertices.push(perpLine.start.clone());
             outerPerpGeometry.vertices.push(perpLine.end.clone());
         });
-        var outerPerpMesh = new THREE.LineSegments(outerPerpGeometry, new THREE.LineBasicMaterial({
+        var outerPerpMesh = new THREE.LineSegments(outerPerpGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
             color: materialColor
         }));
         outerPerpMesh.position.y = -100;
@@ -1979,7 +1985,7 @@ exports.GeometryGenerationHelpers = {
      * Make a triangulation of the given path specified by the verted indices.
      *
      * @param {Array<number>} connectedPath - An array of vertex indices.
-     * @return {THREE.Geometry} trianglesMesh
+     * @return {ThreeGeometryHellfix.Gmetry} trianglesMesh
      */
     makePlaneTriangulation: function (generator, sliceGeometry, connectedPath, options) {
         // Convert the connected paths indices to [x, y, x, y, x, y, ...] coordinates (requied by earcut)
@@ -1991,7 +1997,7 @@ exports.GeometryGenerationHelpers = {
         // Array<number> : triplets of vertex indices in the plain XY array
         var triangles = (0, earcut_typescript_1.earcut)(currentPathXYData);
         // Convert triangle indices back to a geometry
-        var trianglesGeometry = new THREE.Geometry();
+        var trianglesGeometry = new three_geometry_hellfix_1.Gmetry();
         // We will merge the geometries in the end which will create clones of the vertices.
         // No need to clone here.
         // trianglesGeometry.vertices = leftSliceGeometry.vertices;
@@ -2004,7 +2010,7 @@ exports.GeometryGenerationHelpers = {
             var a = triangles[t];
             var b = triangles[t + 1];
             var c = triangles[t + 2];
-            trianglesGeometry.faces.push(new THREE.Face3(a, b, c));
+            trianglesGeometry.faces.push(new three_geometry_hellfix_1.Face3(a, b, c));
             // Add UVs
             UVHelpers_1.UVHelpers.makeFlatTriangleUVs(trianglesGeometry, flatSideBounds, a, b, c);
         }
@@ -2012,7 +2018,7 @@ exports.GeometryGenerationHelpers = {
         // TODO: check if this is still required
         trianglesGeometry.buffersNeedUpdate = true;
         trianglesGeometry.computeVertexNormals();
-        var trianglesMesh = new THREE.Mesh(trianglesGeometry, new THREE.MeshBasicMaterial({
+        var trianglesMesh = new THREE.Mesh(trianglesGeometry.toBufferGeometry(), new THREE.MeshBasicMaterial({
             color: 0x0048ff,
             transparent: true,
             opacity: 0.55,
@@ -2189,12 +2195,12 @@ exports.LocalstorageIO = LocalstorageIO;
  *
  * @author   Ikaros Kappler
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
  * @date     2021-07-06
- * @version  1.0.0
+ * @version  1.0.1
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PathFinder = void 0;
-// var EPS = 0.000001;
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/cjs/constants.js");
 var PathFinder = /** @class */ (function () {
     /**
@@ -2216,7 +2222,7 @@ var PathFinder = /** @class */ (function () {
      *
      * The pathVertices array must not contain duplicates.
      *
-     * @param {THREE.Geometry} unbufferedGeometry - The geometry itself containing the path vertices.
+     * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The geometry itself containing the path vertices.
      * @param {THREE.Vector3[]} pathVertices - The unsorted vertices (must form a connected path on the geometry).
      * @return {Array<number[]>} An array of paths; each path consists of an array of path vertex indices in the `pathVertices` param.
      */
@@ -2254,7 +2260,7 @@ var PathFinder = /** @class */ (function () {
      * in several paths that can still be connected, if you start with some random vertex
      * index.
      *
-     * @param {THREE.Geometry} unbufferedGeometry - The geometry to use to find connected vertices (use it's faces).
+     * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The geometry to use to find connected vertices (use it's faces).
      * @param {Array<number>} pathVertIndices - The indices of all vertices that form the path(s). Each index must match a vertex in the geometry's `vertices` array.
      * @param {number} unvisitedIndex - The path vertex (index) to start with. This can be picked randomly.
      * @returns {Array<number>} The indices of the found path in an array (index sequence).
@@ -2283,7 +2289,7 @@ var PathFinder = /** @class */ (function () {
      *
      * To find that the geometry's faces will be used.
      *
-     * @param {THREE.Geometry} unbufferedGeometry
+     * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry
      * @param {Array<number>} pathVertIndices
      * @param {number} unvisitedIndex
      * @returns {number} The next adjacent face index or -1 if none can be found.
@@ -2328,7 +2334,7 @@ var PathFinder = /** @class */ (function () {
      * Find adjacent paths and connect them.
      *
      * @param {Array<number[]>} collectedPaths
-     * @param {THREE.Geometry} unbufferedGeometry
+     * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry
      * @param {THREE.Vector3[]} pathVertices
      * @return {Array<number[]>} A new sequence of paths (a path is an array of vertex indices).
      */
@@ -2366,7 +2372,7 @@ exports.PathFinder = PathFinder;
  * A simple check to determine if a face of the geometry (given by the face index)
  * is adjacent to the given vertex index (a vertex index in the geometry.).
  *
- * @param {THREE.Geometry} unbufferedGeometry
+ * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry
  * @param {number} faceIndex
  * @param {number} geometryVertexIndex
  * @returns
@@ -2382,7 +2388,7 @@ var faceHasVertIndex = function (unbufferedGeometry, faceIndex, geometryVertexIn
  * will be skipped.
  * So the returned array might be shorter than the path – and thus, have gaps.
  *
- * @param {THREE.Geometry} unbufferedGeometry - The Three.js geometry to use.
+ * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The Three.js geometry to use.
  * @param {Array<THREE.Vector3>} pathVertices - The acual mesh vertices of the current path.
  * @param {number} epsilon - Is required here (just pass through).
  * @returns
@@ -2434,7 +2440,7 @@ var mapVerticesToGeometryIndices = function (unbufferedGeometry, pathVertices, e
  * @param {Array<number[]>} collectedPaths - The array of paths (array of array)
  * @param {number} currentVertIndex - The vertex index in the geometry to find the next adjacent path for.
  * @param {Set<number>} unvisitedPathIndexSet - A set to keep track of unvisited vertex indices. Will be updated.
- * @param {THREE.Geometry} unbufferedGeometry - The geometry to find the path on.
+ * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The geometry to find the path on.
  * @returns
  */
 var findAdjacentPath = function (collectedPaths, currentVertIndex, unvisitedPathIndexSet, unbufferedGeometry) {
@@ -2482,11 +2488,12 @@ var findAdjacentPath = function (collectedPaths, currentVertIndex, unvisitedPath
  * @co-author Ikaros Kappler
  * @date 2021-06-11
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @version 1.0.0
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version 1.0.1
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PlaneMeshIntersection = void 0;
-var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 var PlaneMeshIntersection = /** @class */ (function () {
     /**
      * Constructor.
@@ -2496,7 +2503,7 @@ var PlaneMeshIntersection = /** @class */ (function () {
         /**
          *
          * @param {THREE.Mesh} mesh
-         * @param {THREE.Geometry} geometry
+         * @param {ThreeGeometryHellfix.Gmetry} geometry
          * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
          * @returns {Array<THREE.Vector3>}
          */
@@ -2509,9 +2516,14 @@ var PlaneMeshIntersection = /** @class */ (function () {
             // plane.localToWorld(this.planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
             // plane.localToWorld(this.planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
             // plane.localToWorld(this.planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
-            plane.localToWorld(_this.planePointA.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].a]));
-            plane.localToWorld(_this.planePointB.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].b]));
-            plane.localToWorld(_this.planePointC.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].c]));
+            // TODO: https://discourse.threejs.org/t/three-geometry-will-be-removed-from-core-with-r125/22401/13
+            // plane.localToWorld(this.planePointA.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].a]));
+            // plane.localToWorld(this.planePointB.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].b]));
+            // plane.localToWorld(this.planePointC.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].c]));
+            var _a = getThreePlanePoints(planeGeometryReal), a = _a[0], b = _a[1], c = _a[2];
+            plane.localToWorld(_this.planePointA.copy(a));
+            plane.localToWorld(_this.planePointB.copy(b));
+            plane.localToWorld(_this.planePointC.copy(c));
             mathPlane.setFromCoplanarPoints(_this.planePointA, _this.planePointB, _this.planePointC);
             var _self = _this;
             geometry.faces.forEach(function (face) {
@@ -2549,6 +2561,33 @@ var PlaneMeshIntersection = /** @class */ (function () {
     return PlaneMeshIntersection;
 }());
 exports.PlaneMeshIntersection = PlaneMeshIntersection;
+// https://discourse.threejs.org/t/three-geometry-will-be-removed-from-core-with-r125/22401/13
+//
+// Due to Mugen87 accessing vertices in the BufferGeometry (replacing Geomtry) works like this:
+//
+// const positionAttribute = MovingCube.geometry.getAttribute( 'position' );
+// const localVertex = new THREE.Vector3();
+// const globalVertex = new THREE.Vector3();
+// for ( let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex ++ ) {
+// 	localVertex.fromBufferAttribute( positionAttribute, vertexIndex );
+// 	globalVertex.copy( localVertex ).applyMatrix4( MovingCube.matrixWorld );
+// }
+var getThreePlanePoints = function (planeGeometryReal) {
+    var positionAttribute = planeGeometryReal.getAttribute("position");
+    var localVertex = new THREE.Vector3();
+    // const globalVertex = new THREE.Vector3();
+    // for ( let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex ++ ) {
+    // 	localVertex.fromBufferAttribute( positionAttribute, vertexIndex );
+    // 	// globalVertex.copy( localVertex ).applyMatrix4( planeGeometryReal.matrixWorld );
+    // }
+    var a = new THREE.Vector3();
+    var b = new THREE.Vector3();
+    var c = new THREE.Vector3();
+    a.fromBufferAttribute(positionAttribute, 0);
+    b.fromBufferAttribute(positionAttribute, 1);
+    c.fromBufferAttribute(positionAttribute, 2);
+    return [a, b, c];
+};
 //# sourceMappingURL=PlaneMeshIntersection.js.map
 
 /***/ }),
@@ -2564,16 +2603,17 @@ exports.PlaneMeshIntersection = PlaneMeshIntersection;
  * @author   Ikaros Kappler
  * @date     2021-08-03
  * @modified 2021-08-04 Ported to Typsescript from vanilla JS.
- * @version  1.0.1
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.0.2
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UVHelpers = void 0;
-var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 exports.UVHelpers = {
     /**
      * Helper function to create triangular UV Mappings for a triangle.
      *
-     * @param {THREE.Geometry} thisGeometry
+     * @param {ThreeGeometryHellfix.Gmetry} thisGeometry
      * @param {Bounds} shapeBounds
      * @param {number} vertIndexA - The index in the geometry's vertices array.
      * @param {number} vertIndexB - ...
@@ -2682,34 +2722,26 @@ var containsElementFrom = function (vertices, vertex, fromIndex, epsilon) {
  *
  * https://meshola.wordpress.com/2016/07/24/three-js-vertex-normals/
  *
- * @author  Ikaros Kappler
- * @date    2021-08-31
- * @version 1.0.0
+ * @author   Ikaros Kappler
+ * @date     2021-08-31
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.0.1
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.computeVertexNormals = void 0;
-var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 /**
  * Compute the vertex normals of a base geometry and its buffered counterpart (both parts are required here).
  *
  * Note that unbufferedGeometry.computeVertexNormals() must have been called for this to work.
  *
- * @param {THREE.Geometry} unbufferedGeometry - The base geometry.
+ * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The base geometry.
  * @param {THREE.BufferedGeometry} bufferedGeometry - The buffered geometry.
  * @returns
  */
 var computeVertexNormals = function (unbufferedGeometry, bufferedGeometry) {
     // Fetch the face normals from the buffers.
     var vertexNormals = bufferedGeometry.getAttribute("normal");
-    //   console.log("normals", vertexNormals);
-    //   console.log(
-    //     "unbufferedGeometry.vertices.length",
-    //     unbufferedGeometry.vertices.length,
-    //     "unbufferedGeometry.faces.length",
-    //     unbufferedGeometry.faces.length,
-    //     "vertexNormals.array.length/3",
-    //     vertexNormals.array.length / 3
-    //   );
     var collectedFaceNormals = Array(unbufferedGeometry.faces.length);
     // For each face get the three face normals, each of which consists of 3 float values itself.
     // So each face consumes 9 floats from the array buffer.
@@ -2908,13 +2940,14 @@ exports.locateVertexInArray = locateVertexInArray;
  * @author   Ikaros Kappler
  * @date     2021-07-26
  * @modified 2021-08-04 Ported to Typescript from vanilla JS.
- * @version  1.0.0
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry (and so Face3).
+ * @version  1.0.1
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.mergeAndMapVertices = exports.mergeGeometries = void 0;
-var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
-// import { Geometry, Face3 } from "three/examples/jsm/deprecated/Geometry";
+var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 var locateVertexInArray_1 = __webpack_require__(/*! ./locateVertexInArray */ "./src/cjs/locateVertexInArray.js");
+var three_geometry_hellfix_1 = __webpack_require__(/*! three-geometry-hellfix */ "./node_modules/three-geometry-hellfix/src/esm/index.js");
 var EPS = 0.000001;
 // import { EPS } from "./constants";
 /**
@@ -2925,8 +2958,8 @@ var EPS = 0.000001;
  *
  * The merged vertices will be cloned.
  *
- * @param {THREE.Geometry} baseGeometry
- * @param {THREE.Geometry} mergeGeometry
+ * @param {ThreeGeometryHellfix.Gmetry} baseGeometry
+ * @param {ThreeGeometryHellfix.Gmetry} mergeGeometry
  */
 var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
     if (typeof epsilon === "undefined") {
@@ -2941,7 +2974,7 @@ var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
         // baseGeometry.faces.push(new THREE.Face3(a, b, c));
         // TODO: how to use this here?
         // Face3 is not a constructor!!! Just a type!!!
-        baseGeometry.faces.push(new THREE.Face3(a, b, c));
+        baseGeometry.faces.push(new three_geometry_hellfix_1.Face3(a, b, c));
         if (mergeGeometry.faceVertexUvs.length > 0 && f < mergeGeometry.faceVertexUvs[0].length) {
             var uvData = mergeGeometry.faceVertexUvs[0][f]; // [Vector2,Vector2,Vector2]
             baseGeometry.faceVertexUvs[0].push([uvData[0].clone(), uvData[1].clone(), uvData[2].clone()]);
@@ -3086,6 +3119,471 @@ var randomWebColor = function (index, colorSet) {
 };
 exports.randomWebColor = randomWebColor;
 //# sourceMappingURL=randomWebColor.js.map
+
+/***/ }),
+
+/***/ "../threejs-slice-geometry-typescript/src/esm/GeometryBuilder.js":
+/*!***********************************************************************!*\
+  !*** ../threejs-slice-geometry-typescript/src/esm/GeometryBuilder.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "GeometryBuilder": () => (/* binding */ GeometryBuilder)
+/* harmony export */ });
+/* harmony import */ var _faces_from_edges__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./faces-from-edges */ "../threejs-slice-geometry-typescript/src/esm/faces-from-edges.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constants */ "../threejs-slice-geometry-typescript/src/esm/constants.js");
+/* harmony import */ var three_geometry_hellfix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! three-geometry-hellfix */ "../threejs-slice-geometry-typescript/node_modules/three-geometry-hellfix/src/esm/index.js");
+/**
+ * Ported to TypeScript from vanilla-js by Ikaros Kappler.
+ *
+ * @date 2021-09-28
+ */
+
+
+
+class GeometryBuilder {
+    constructor(sourceGeometry, targetGeometry, slicePlane) {
+        this.sourceGeometry = sourceGeometry;
+        this.targetGeometry = targetGeometry;
+        this.slicePlane = slicePlane;
+        this.addedVertices = [];
+        this.addedIntersections = [];
+        this.newEdges = [[]];
+    }
+    ;
+    // TODO: check undfined?
+    // This is called without params in line ---67 but param used here as an index??
+    startFace(sourceFaceIndex) {
+        this.sourceFaceIndex = sourceFaceIndex;
+        this.sourceFace = this.sourceGeometry.faces[sourceFaceIndex];
+        this.sourceFaceUvs = this.sourceGeometry.faceVertexUvs[0][sourceFaceIndex];
+        this.faceIndices = [];
+        this.faceNormals = [];
+        this.faceUvs = [];
+    }
+    ;
+    endFace() {
+        var indices = this.faceIndices.map(function (index, i) {
+            return i;
+        });
+        this.addFace(indices);
+    }
+    ;
+    closeHoles() {
+        if (!this.newEdges[0].length) {
+            return;
+        }
+        (0,_faces_from_edges__WEBPACK_IMPORTED_MODULE_0__.facesFromEdges)(this.newEdges)
+            .forEach((faceIndices) => {
+            var normal = this.faceNormal(faceIndices);
+            if (normal.dot(this.slicePlane.normal) > .5) {
+                faceIndices.reverse();
+            }
+            this.startFace();
+            this.faceIndices = faceIndices;
+            this.endFace();
+        }, this);
+    }
+    ;
+    addVertex(key) {
+        this.addUv(key);
+        this.addNormal(key);
+        const index = this.sourceFace[key];
+        let newIndex;
+        if (this.addedVertices.hasOwnProperty(index)) {
+            newIndex = this.addedVertices[index];
+        }
+        else {
+            const vertex = this.sourceGeometry.vertices[index];
+            this.targetGeometry.vertices.push(vertex);
+            newIndex = this.targetGeometry.vertices.length - 1;
+            this.addedVertices[index] = newIndex;
+        }
+        this.faceIndices.push(newIndex);
+    }
+    ;
+    addIntersection(keyA, keyB, distanceA, distanceB) {
+        const t = Math.abs(distanceA) / (Math.abs(distanceA) + Math.abs(distanceB));
+        this.addIntersectionUv(keyA, keyB, t);
+        this.addIntersectionNormal(keyA, keyB, t);
+        const indexA = this.sourceFace[keyA];
+        const indexB = this.sourceFace[keyB];
+        const id = this.intersectionId(indexA, indexB);
+        let index;
+        if (this.addedIntersections.hasOwnProperty(id)) {
+            index = this.addedIntersections[id];
+        }
+        else {
+            const vertexA = this.sourceGeometry.vertices[indexA];
+            const vertexB = this.sourceGeometry.vertices[indexB];
+            const newVertex = vertexA.clone().lerp(vertexB, t);
+            this.targetGeometry.vertices.push(newVertex);
+            index = this.targetGeometry.vertices.length - 1;
+            this.addedIntersections[id] = index;
+        }
+        this.faceIndices.push(index);
+        this.updateNewEdges(index);
+    }
+    ;
+    addUv(key) {
+        if (!this.sourceFaceUvs) {
+            return;
+        }
+        const index = this.keyIndex(key);
+        const uv = this.sourceFaceUvs[index];
+        this.faceUvs.push(uv);
+    }
+    ;
+    addIntersectionUv(keyA, keyB, t) {
+        if (!this.sourceFaceUvs) {
+            return;
+        }
+        const indexA = this.keyIndex(keyA);
+        const indexB = this.keyIndex(keyB);
+        const uvA = this.sourceFaceUvs[indexA];
+        const uvB = this.sourceFaceUvs[indexB];
+        const uv = uvA.clone().lerp(uvB, t);
+        this.faceUvs.push(uv);
+    }
+    ;
+    addNormal(key) {
+        if (!this.sourceFace.vertexNormals.length) {
+            return;
+        }
+        const index = this.keyIndex(key);
+        const normal = this.sourceFace.vertexNormals[index];
+        this.faceNormals.push(normal);
+    }
+    ;
+    addIntersectionNormal(keyA, keyB, t) {
+        if (!this.sourceFace.vertexNormals.length) {
+            return;
+        }
+        const indexA = this.keyIndex(keyA);
+        const indexB = this.keyIndex(keyB);
+        const normalA = this.sourceFace.vertexNormals[indexA];
+        const normalB = this.sourceFace.vertexNormals[indexB];
+        const normal = normalA.clone().lerp(normalB, t).normalize();
+        this.faceNormals.push(normal);
+    }
+    ;
+    addFace(indices) {
+        if (indices.length === 3) {
+            this.addFacePart(indices[0], indices[1], indices[2]);
+            return;
+        }
+        const pairs = [];
+        for (var i = 0; i < indices.length; i++) {
+            for (var j = i + 1; j < indices.length; j++) {
+                var diff = Math.abs(i - j);
+                if (diff > 1 && diff < indices.length - 1) {
+                    pairs.push([indices[i], indices[j]]);
+                }
+            }
+        }
+        pairs.sort(((pairA, pairB) => {
+            var lengthA = this.faceEdgeLength(pairA[0], pairA[1]);
+            var lengthB = this.faceEdgeLength(pairB[0], pairB[1]);
+            return lengthA - lengthB;
+        }).bind(this));
+        const a = indices.indexOf(pairs[0][0]);
+        indices = indices.slice(a).concat(indices.slice(0, a));
+        const b = indices.indexOf(pairs[0][1]);
+        const indicesA = indices.slice(0, b + 1);
+        const indicesB = indices.slice(b).concat(indices.slice(0, 1));
+        this.addFace(indicesA);
+        this.addFace(indicesB);
+    }
+    ;
+    addFacePart(a, b, c) {
+        let normals = null;
+        if (this.faceNormals.length) {
+            normals = [
+                this.faceNormals[a],
+                this.faceNormals[b],
+                this.faceNormals[c],
+            ];
+        }
+        const face = new three_geometry_hellfix__WEBPACK_IMPORTED_MODULE_2__.Face3(this.faceIndices[a], this.faceIndices[b], this.faceIndices[c], normals);
+        this.targetGeometry.faces.push(face);
+        if (!this.sourceFaceUvs) {
+            return;
+        }
+        this.targetGeometry.faceVertexUvs[0].push([
+            this.faceUvs[a],
+            this.faceUvs[b],
+            this.faceUvs[c]
+        ]);
+    }
+    ;
+    faceEdgeLength(a, b) {
+        const indexA = this.faceIndices[a];
+        const indexB = this.faceIndices[b];
+        const vertexA = this.targetGeometry.vertices[indexA];
+        const vertexB = this.targetGeometry.vertices[indexB];
+        return vertexA.distanceToSquared(vertexB);
+    }
+    ;
+    intersectionId(indexA, indexB) {
+        return [indexA, indexB].sort().join(',');
+    }
+    ;
+    keyIndex(key) {
+        return _constants__WEBPACK_IMPORTED_MODULE_1__.FACE_KEYS.indexOf(key);
+    }
+    ;
+    updateNewEdges(index) {
+        const edgeIndex = this.newEdges.length - 1;
+        let edge = this.newEdges[edgeIndex];
+        if (edge.length < 2) {
+            edge.push(index);
+        }
+        else {
+            this.newEdges.push([index]);
+        }
+    }
+    ;
+    faceNormal(faceIndices) {
+        const vertices = faceIndices.map(((index) => {
+            return this.targetGeometry.vertices[index];
+        }).bind(this));
+        const edgeA = vertices[0].clone().sub(vertices[1]);
+        const edgeB = vertices[0].clone().sub(vertices[2]);
+        return edgeA.cross(edgeB).normalize();
+    }
+    ;
+}
+//# sourceMappingURL=GeometryBuilder.js.map
+
+/***/ }),
+
+/***/ "../threejs-slice-geometry-typescript/src/esm/constants.js":
+/*!*****************************************************************!*\
+  !*** ../threejs-slice-geometry-typescript/src/esm/constants.js ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "FRONT": () => (/* binding */ FRONT),
+/* harmony export */   "BACK": () => (/* binding */ BACK),
+/* harmony export */   "ON": () => (/* binding */ ON),
+/* harmony export */   "FACE_KEYS": () => (/* binding */ FACE_KEYS)
+/* harmony export */ });
+const FRONT = 'front';
+const BACK = 'back';
+const ON = 'on';
+const FACE_KEYS = ['a', 'b', 'c'];
+//# sourceMappingURL=constants.js.map
+
+/***/ }),
+
+/***/ "../threejs-slice-geometry-typescript/src/esm/faces-from-edges.js":
+/*!************************************************************************!*\
+  !*** ../threejs-slice-geometry-typescript/src/esm/faces-from-edges.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "facesFromEdges": () => (/* binding */ facesFromEdges)
+/* harmony export */ });
+/**
+ * Ported to TypeScript from vanilla-js by Ikaros Kappler.
+ *
+ * @date 2021-09-28
+ */
+const facesFromEdges = (edges) => {
+    var chains = joinEdges(edges).filter(validFace);
+    var faces = chains.map(function (chain) {
+        return chain.map(function (edge) {
+            return edge[0];
+        });
+    });
+    return faces;
+};
+const joinEdges = (edges) => {
+    let changes = true;
+    var chains = edges.map((edge) => {
+        return [edge];
+    });
+    while (changes) {
+        changes = connectChains(chains);
+    }
+    chains = chains.filter(function (chain) {
+        return chain.length;
+    });
+    return chains;
+};
+const connectChains = (chains) => {
+    chains.forEach(function (chainA, i) {
+        chains.forEach(function (chainB, j) {
+            var merged = mergeChains(chainA, chainB);
+            if (merged) {
+                delete chains[j];
+                return true;
+            }
+        });
+    });
+    return false;
+};
+const mergeChains = (chainA, chainB) => {
+    if (chainA === chainB) {
+        return false;
+    }
+    if (chainStart(chainA) === chainEnd(chainB)) {
+        chainA.unshift.apply(chainA, chainB);
+        return true;
+    }
+    if (chainStart(chainA) === chainStart(chainB)) {
+        reverseChain(chainB);
+        chainA.unshift.apply(chainA, chainB);
+        return true;
+    }
+    if (chainEnd(chainA) === chainStart(chainB)) {
+        chainA.push.apply(chainA, chainB);
+        return true;
+    }
+    if (chainEnd(chainA) === chainEnd(chainB)) {
+        reverseChain(chainB);
+        chainA.push.apply(chainA, chainB);
+        return true;
+    }
+    return false;
+};
+const chainStart = (chain) => {
+    return chain[0][0];
+};
+const chainEnd = (chain) => {
+    return chain[chain.length - 1][1];
+};
+const reverseChain = (chain) => {
+    chain.reverse();
+    chain.forEach(function (edge) {
+        edge.reverse();
+    });
+};
+const validFace = (chain) => {
+    return chainStart(chain) === chainEnd(chain) ? 1 : 0;
+};
+//# sourceMappingURL=faces-from-edges.js.map
+
+/***/ }),
+
+/***/ "../threejs-slice-geometry-typescript/src/esm/index.js":
+/*!*************************************************************!*\
+  !*** ../threejs-slice-geometry-typescript/src/esm/index.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "BACK": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.BACK),
+/* harmony export */   "FACE_KEYS": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.FACE_KEYS),
+/* harmony export */   "FRONT": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.FRONT),
+/* harmony export */   "ON": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.ON),
+/* harmony export */   "facesFromEdges": () => (/* reexport safe */ _faces_from_edges__WEBPACK_IMPORTED_MODULE_1__.facesFromEdges),
+/* harmony export */   "GeometryBuilder": () => (/* reexport safe */ _GeometryBuilder__WEBPACK_IMPORTED_MODULE_2__.GeometryBuilder),
+/* harmony export */   "sliceGeometry": () => (/* reexport safe */ _slice__WEBPACK_IMPORTED_MODULE_3__.sliceGeometry)
+/* harmony export */ });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "../threejs-slice-geometry-typescript/src/esm/constants.js");
+/* harmony import */ var _faces_from_edges__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./faces-from-edges */ "../threejs-slice-geometry-typescript/src/esm/faces-from-edges.js");
+/* harmony import */ var _GeometryBuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./GeometryBuilder */ "../threejs-slice-geometry-typescript/src/esm/GeometryBuilder.js");
+/* harmony import */ var _slice__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./slice */ "../threejs-slice-geometry-typescript/src/esm/slice.js");
+
+
+
+
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ "../threejs-slice-geometry-typescript/src/esm/slice.js":
+/*!*************************************************************!*\
+  !*** ../threejs-slice-geometry-typescript/src/esm/slice.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sliceGeometry": () => (/* binding */ sliceGeometry)
+/* harmony export */ });
+/* harmony import */ var _GeometryBuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./GeometryBuilder */ "../threejs-slice-geometry-typescript/src/esm/GeometryBuilder.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constants */ "../threejs-slice-geometry-typescript/src/esm/constants.js");
+/* harmony import */ var three_geometry_hellfix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! three-geometry-hellfix */ "../threejs-slice-geometry-typescript/node_modules/three-geometry-hellfix/src/esm/index.js");
+
+
+
+const sliceGeometry = (geometry, plane, closeHoles) => {
+    const sliced = new three_geometry_hellfix__WEBPACK_IMPORTED_MODULE_2__.Gmetry();
+    const builder = new _GeometryBuilder__WEBPACK_IMPORTED_MODULE_0__.GeometryBuilder(geometry, sliced, plane);
+    const distances = [];
+    const positions = [];
+    geometry.vertices.forEach((vertex) => {
+        const distance = findDistance(vertex, plane);
+        const position = distanceAsPosition(distance);
+        distances.push(distance);
+        positions.push(position);
+    });
+    geometry.faces.forEach(function (face, faceIndex) {
+        const facePositions = _constants__WEBPACK_IMPORTED_MODULE_1__.FACE_KEYS.map(function (key) {
+            return positions[face[key]];
+        });
+        if (facePositions.indexOf(_constants__WEBPACK_IMPORTED_MODULE_1__.FRONT) === -1 &&
+            facePositions.indexOf(_constants__WEBPACK_IMPORTED_MODULE_1__.BACK) !== -1) {
+            return;
+        }
+        builder.startFace(faceIndex);
+        let lastKey = _constants__WEBPACK_IMPORTED_MODULE_1__.FACE_KEYS[_constants__WEBPACK_IMPORTED_MODULE_1__.FACE_KEYS.length - 1];
+        let lastIndex = face[lastKey];
+        let lastDistance = distances[lastIndex];
+        let lastPosition = positions[lastIndex];
+        _constants__WEBPACK_IMPORTED_MODULE_1__.FACE_KEYS.map((key) => {
+            var index = face[key];
+            var distance = distances[index];
+            var position = positions[index];
+            if (position === _constants__WEBPACK_IMPORTED_MODULE_1__.FRONT) {
+                if (lastPosition === _constants__WEBPACK_IMPORTED_MODULE_1__.BACK) {
+                    builder.addIntersection(lastKey, key, lastDistance, distance);
+                    builder.addVertex(key);
+                }
+                else {
+                    builder.addVertex(key);
+                }
+            }
+            if (position === _constants__WEBPACK_IMPORTED_MODULE_1__.ON) {
+                builder.addVertex(key);
+            }
+            if (position === _constants__WEBPACK_IMPORTED_MODULE_1__.BACK && lastPosition === _constants__WEBPACK_IMPORTED_MODULE_1__.FRONT) {
+                builder.addIntersection(lastKey, key, lastDistance, distance);
+            }
+            lastKey = key;
+            lastIndex = index;
+            lastPosition = position;
+            lastDistance = distance;
+        });
+        builder.endFace();
+    });
+    if (closeHoles) {
+        builder.closeHoles();
+    }
+    return sliced;
+};
+const distanceAsPosition = (distance) => {
+    if (distance < 0) {
+        return _constants__WEBPACK_IMPORTED_MODULE_1__.BACK;
+    }
+    if (distance > 0) {
+        return _constants__WEBPACK_IMPORTED_MODULE_1__.FRONT;
+    }
+    return _constants__WEBPACK_IMPORTED_MODULE_1__.ON;
+};
+const findDistance = (vertex, plane) => {
+    return plane.distanceToPoint(vertex);
+};
+//# sourceMappingURL=slice.js.map
 
 /***/ })
 

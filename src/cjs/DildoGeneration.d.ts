@@ -7,7 +7,8 @@
  * @modified 2021-06-07 Fixing `removeCachedGeometries`. Adding bending of model.
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
  * @modified 2022-02-03 Added `clearResults` function.
- * @version  1.2.2
+ * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.2.3
  **/
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -64,7 +65,7 @@ export declare class DildoGeneration implements IDildoGeneration {
      * These will always be generated, even if the options tell different; if so then they are set
      * to be invisible.
      *
-     * @param {THREE.Geometry} latheMesh - The buffered dildo geometry (required to perform the slice operation).
+     * @param {ThreeGeometryHellfix.Gmetry} latheMesh - The buffered dildo geometry (required to perform the slice operation).
      * @param {DildoGeometry} latheUnbufferedGeometry - The unbuffered dildo geometry (required to obtain the perpendicular path lines).
      * @param {boolean} wireframe
      */

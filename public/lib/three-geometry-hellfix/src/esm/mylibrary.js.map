@@ -1,0 +1,1 @@
+{"version":3,"file":"mylibrary.js","sourceRoot":"","sources":["../ts/mylibrary.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,cAAc,EAAE,MAAM,kBAAkB,CAAC;AAClD,OAAO,EAAE,cAAc,EAAE,MAAM,kBAAkB,CAAC;AAClD,OAAO,EAAE,KAAK,EAAE,MAAM,SAAS,CAAC;AAChC,OAAO,EAAE,MAAM,EAAE,MAAM,UAAU,CAAC;AAGlC,MAAM,CAAC,MAAM,oBAAoB,GAAG;IAChC,cAAc;IACd,KAAK;IACL,MAAM;IACN,cAAc;CACjB,CAAA"}

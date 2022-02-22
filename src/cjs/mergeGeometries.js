@@ -7,13 +7,14 @@
  * @author   Ikaros Kappler
  * @date     2021-07-26
  * @modified 2021-08-04 Ported to Typescript from vanilla JS.
- * @version  1.0.0
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry (and so Face3).
+ * @version  1.0.1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mergeAndMapVertices = exports.mergeGeometries = void 0;
 var THREE = require("three");
-// import { Geometry, Face3 } from "three/examples/jsm/deprecated/Geometry";
 var locateVertexInArray_1 = require("./locateVertexInArray");
+var three_geometry_hellfix_1 = require("three-geometry-hellfix");
 var EPS = 0.000001;
 // import { EPS } from "./constants";
 /**
@@ -24,8 +25,8 @@ var EPS = 0.000001;
  *
  * The merged vertices will be cloned.
  *
- * @param {THREE.Geometry} baseGeometry
- * @param {THREE.Geometry} mergeGeometry
+ * @param {ThreeGeometryHellfix.Gmetry} baseGeometry
+ * @param {ThreeGeometryHellfix.Gmetry} mergeGeometry
  */
 var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
     if (typeof epsilon === "undefined") {
@@ -40,7 +41,7 @@ var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
         // baseGeometry.faces.push(new THREE.Face3(a, b, c));
         // TODO: how to use this here?
         // Face3 is not a constructor!!! Just a type!!!
-        baseGeometry.faces.push(new THREE.Face3(a, b, c));
+        baseGeometry.faces.push(new three_geometry_hellfix_1.Face3(a, b, c));
         if (mergeGeometry.faceVertexUvs.length > 0 && f < mergeGeometry.faceVertexUvs[0].length) {
             var uvData = mergeGeometry.faceVertexUvs[0][f]; // [Vector2,Vector2,Vector2]
             baseGeometry.faceVertexUvs[0].push([uvData[0].clone(), uvData[1].clone(), uvData[2].clone()]);

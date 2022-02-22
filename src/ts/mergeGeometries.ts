@@ -6,12 +6,13 @@
  * @author   Ikaros Kappler
  * @date     2021-07-26
  * @modified 2021-08-04 Ported to Typescript from vanilla JS.
- * @version  1.0.0
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry (and so Face3).
+ * @version  1.0.1
  */
 
 import * as THREE from "three";
-// import { Geometry, Face3 } from "three/examples/jsm/deprecated/Geometry";
 import { locateVertexInArray } from "./locateVertexInArray";
+import { Face3, Gmetry } from "three-geometry-hellfix";
 
 const EPS: number = 0.000001;
 // import { EPS } from "./constants";
@@ -24,10 +25,10 @@ const EPS: number = 0.000001;
  *
  * The merged vertices will be cloned.
  *
- * @param {THREE.Geometry} baseGeometry
- * @param {THREE.Geometry} mergeGeometry
+ * @param {ThreeGeometryHellfix.Gmetry} baseGeometry
+ * @param {ThreeGeometryHellfix.Gmetry} mergeGeometry
  */
-export const mergeGeometries = (baseGeometry: THREE.Geometry, mergeGeometry: THREE.Geometry, epsilon?: number): void => {
+export const mergeGeometries = (baseGeometry: Gmetry, mergeGeometry: Gmetry, epsilon?: number): void => {
   if (typeof epsilon === "undefined") {
     epsilon = EPS;
   }
@@ -40,7 +41,7 @@ export const mergeGeometries = (baseGeometry: THREE.Geometry, mergeGeometry: THR
     // baseGeometry.faces.push(new THREE.Face3(a, b, c));
     // TODO: how to use this here?
     // Face3 is not a constructor!!! Just a type!!!
-    baseGeometry.faces.push(new THREE.Face3(a, b, c));
+    baseGeometry.faces.push(new Face3(a, b, c));
     if (mergeGeometry.faceVertexUvs.length > 0 && f < mergeGeometry.faceVertexUvs[0].length) {
       var uvData: THREE.Vector2[] = mergeGeometry.faceVertexUvs[0][f]; // [Vector2,Vector2,Vector2]
       baseGeometry.faceVertexUvs[0].push([uvData[0].clone(), uvData[1].clone(), uvData[2].clone()]);
@@ -63,11 +64,7 @@ export const mergeGeometries = (baseGeometry: THREE.Geometry, mergeGeometry: THR
  * @param {number} epsilon
  * @returns Array<number>
  */
-export const mergeAndMapVertices = (
-  baseGeometry: THREE.Geometry,
-  mergeGeometry: THREE.Geometry,
-  epsilon: number
-): Array<number> => {
+export const mergeAndMapVertices = (baseGeometry: Gmetry, mergeGeometry: Gmetry, epsilon: number): Array<number> => {
   const vertexMap: Array<number> = [];
   for (var v = 0; v < mergeGeometry.vertices.length; v++) {
     const mergeVert: THREE.Vector3 = mergeGeometry.vertices[v];

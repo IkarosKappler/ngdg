@@ -1,12 +1,14 @@
 /**
  * All custom global interfaces used in the library.
  *
- * @author  Ikaros Kappler
- * @date    2021-08-28
- * @version 1.0.0
+ * @author   Ikaros Kappler
+ * @date     2021-08-28
+ * @modified 2022-02-22 Replaced THREE.Face3 by ThreeGeometryHellfix.Face3.
+ * @version  1.0.1
  */
 import { BezierPath, Polygon } from "plotboilerplate";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { Face3 } from "three-geometry-hellfix";
 export interface DildoGenerationOptions {
     makeOrbitControls: (camera: THREE.Camera, domElement: HTMLCanvasElement) => OrbitControls;
 }
@@ -57,7 +59,7 @@ export interface IDildoGeneration {
 }
 export interface IDildoGeometry {
     vertices: Array<THREE.Vector3>;
-    faces: Array<THREE.Face3>;
+    faces: Array<Face3>;
     faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
     uvsNeedUpdate: boolean;
     buffersNeedUpdate: boolean;

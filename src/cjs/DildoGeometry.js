@@ -6,7 +6,8 @@
  * @date     2020-07-08
  * @modified 2021-06-11 Fixing top and bottom points; preparing slicing of mesh.
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @version  1.0.2
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry (and Face3).
+ * @version  1.0.3
  **/
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -24,7 +25,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DildoGeometry = exports.DildoBaseClass = void 0;
+exports.DildoGeometry = void 0;
 // TODOs
 // + Add cut-plane faces when hollow
 // + Move vertex-creating helper functions out of the class
@@ -34,24 +35,29 @@ exports.DildoGeometry = exports.DildoBaseClass = void 0;
 var plotboilerplate_1 = require("plotboilerplate");
 var THREE = require("three");
 var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
-// import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types
 var earcut_typescript_1 = require("earcut-typescript"); // TODO: fix earcut types
 var UVHelpers_1 = require("./UVHelpers");
+var three_geometry_hellfix_1 = require("three-geometry-hellfix");
 var DEG_TO_RAD = Math.PI / 180.0;
 // import { DEG_TO_RAD } from "./constants";
 // This is a dirty workaround to
 // avoid direct class extending of THREE.Geometry.
 // I am using `THREE.Geometry.call(this);` instead :/
-var DildoBaseClass = /** @class */ (function () {
-    function DildoBaseClass() {
-        this.vertices = [];
-        this.faces = [];
-        this.faceVertexUvs = [[]];
-    }
-    return DildoBaseClass;
-}());
-exports.DildoBaseClass = DildoBaseClass;
+// export class DildoBaseClass {
+//   // implements IDildoGeometry {
+//   vertices: Array<THREE.Vector3>;
+//   faces: Array<Face3>;
+//   faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
+//   uvsNeedUpdate: boolean;
+//   buffersNeedUpdate: boolean;
+//   constructor() {
+//     this.vertices = [];
+//     this.faces = [];
+//     this.faceVertexUvs = [[]];
+//   }
+// }
 // export class DildoGeometry { // extends globalThis.THREE.Geometry {
+// export class DildoGeometry extends DildoBaseClass {
 var DildoGeometry = /** @class */ (function (_super) {
     __extends(DildoGeometry, _super);
     /**
@@ -66,7 +72,9 @@ var DildoGeometry = /** @class */ (function (_super) {
      **/
     function DildoGeometry(options) {
         var _this = _super.call(this) || this;
-        THREE.Geometry.call(_this);
+        // TODO: verify
+        // THREE.Geometry.call(this);
+        three_geometry_hellfix_1.Gmetry.call(_this);
         _this.vertexMatrix = []; // Array<Array<number>>
         _this.topIndex = -1;
         _this.bottomIndex = -1;
@@ -628,12 +636,12 @@ var DildoGeometry = /** @class */ (function (_super) {
             var curIndex = findClosestEdgeIndex(this.vertices[this.vertexMatrix[0][i]]);
             // Close gap to last (different shell index)
             triangleIndices = [lastIndex, this.vertexMatrix[0][i == 0 ? n - 1 : i - 1], this.vertexMatrix[0][i]];
-            this.faces.push(new THREE.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2])); // Same?
+            this.faces.push(new three_geometry_hellfix_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2])); // Same?
             this.hollowBottomTriagles.push(triangleIndices);
             if (lastIndex !== curIndex) {
                 // Add normal triangle to same shell index
                 triangleIndices = [curIndex, lastIndex, this.vertexMatrix[0][i]];
-                this.faces.push(new THREE.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2]));
+                this.faces.push(new three_geometry_hellfix_1.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2]));
                 this.hollowBottomTriagles.push(triangleIndices);
             }
             lastIndex = curIndex;
@@ -847,7 +855,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         }
     };
     return DildoGeometry;
-}(DildoBaseClass)); // END class
+}(three_geometry_hellfix_1.Gmetry)); // END class
 exports.DildoGeometry = DildoGeometry;
 // TODO: move to helpers
 var rotateVert = function (vert, angle, xCenter, yCenter) {

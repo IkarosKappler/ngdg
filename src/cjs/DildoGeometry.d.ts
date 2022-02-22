@@ -5,20 +5,14 @@
  * @date     2020-07-08
  * @modified 2021-06-11 Fixing top and bottom points; preparing slicing of mesh.
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @version  1.0.2
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry (and Face3).
+ * @version  1.0.3
  **/
 import { Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
 import { ExtendedDildoOptions } from "./interfaces";
-export declare class DildoBaseClass {
-    vertices: Array<THREE.Vector3>;
-    faces: Array<THREE.Face3>;
-    faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
-    uvsNeedUpdate: boolean;
-    buffersNeedUpdate: boolean;
-    constructor();
-}
-export declare class DildoGeometry extends DildoBaseClass {
+import { Gmetry } from "three-geometry-hellfix";
+export declare class DildoGeometry extends Gmetry {
     vertexMatrix: Array<Array<number>>;
     topIndex: number;
     bottomIndex: number;

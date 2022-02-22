@@ -9,7 +9,8 @@
  * @co-author Ikaros Kappler
  * @date 2021-06-11
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @version 1.0.0
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version 1.0.1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PlaneMeshIntersection = void 0;
@@ -23,7 +24,7 @@ var PlaneMeshIntersection = /** @class */ (function () {
         /**
          *
          * @param {THREE.Mesh} mesh
-         * @param {THREE.Geometry} geometry
+         * @param {ThreeGeometryHellfix.Gmetry} geometry
          * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
          * @returns {Array<THREE.Vector3>}
          */
@@ -36,9 +37,14 @@ var PlaneMeshIntersection = /** @class */ (function () {
             // plane.localToWorld(this.planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
             // plane.localToWorld(this.planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
             // plane.localToWorld(this.planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
-            plane.localToWorld(_this.planePointA.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].a]));
-            plane.localToWorld(_this.planePointB.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].b]));
-            plane.localToWorld(_this.planePointC.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].c]));
+            // TODO: https://discourse.threejs.org/t/three-geometry-will-be-removed-from-core-with-r125/22401/13
+            // plane.localToWorld(this.planePointA.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].a]));
+            // plane.localToWorld(this.planePointB.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].b]));
+            // plane.localToWorld(this.planePointC.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].c]));
+            var _a = getThreePlanePoints(planeGeometryReal), a = _a[0], b = _a[1], c = _a[2];
+            plane.localToWorld(_this.planePointA.copy(a));
+            plane.localToWorld(_this.planePointB.copy(b));
+            plane.localToWorld(_this.planePointC.copy(c));
             mathPlane.setFromCoplanarPoints(_this.planePointA, _this.planePointB, _this.planePointC);
             var _self = _this;
             geometry.faces.forEach(function (face) {
@@ -76,4 +82,31 @@ var PlaneMeshIntersection = /** @class */ (function () {
     return PlaneMeshIntersection;
 }());
 exports.PlaneMeshIntersection = PlaneMeshIntersection;
+// https://discourse.threejs.org/t/three-geometry-will-be-removed-from-core-with-r125/22401/13
+//
+// Due to Mugen87 accessing vertices in the BufferGeometry (replacing Geomtry) works like this:
+//
+// const positionAttribute = MovingCube.geometry.getAttribute( 'position' );
+// const localVertex = new THREE.Vector3();
+// const globalVertex = new THREE.Vector3();
+// for ( let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex ++ ) {
+// 	localVertex.fromBufferAttribute( positionAttribute, vertexIndex );
+// 	globalVertex.copy( localVertex ).applyMatrix4( MovingCube.matrixWorld );
+// }
+var getThreePlanePoints = function (planeGeometryReal) {
+    var positionAttribute = planeGeometryReal.getAttribute("position");
+    var localVertex = new THREE.Vector3();
+    // const globalVertex = new THREE.Vector3();
+    // for ( let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex ++ ) {
+    // 	localVertex.fromBufferAttribute( positionAttribute, vertexIndex );
+    // 	// globalVertex.copy( localVertex ).applyMatrix4( planeGeometryReal.matrixWorld );
+    // }
+    var a = new THREE.Vector3();
+    var b = new THREE.Vector3();
+    var c = new THREE.Vector3();
+    a.fromBufferAttribute(positionAttribute, 0);
+    b.fromBufferAttribute(positionAttribute, 1);
+    c.fromBufferAttribute(positionAttribute, 2);
+    return [a, b, c];
+};
 //# sourceMappingURL=PlaneMeshIntersection.js.map

@@ -4,23 +4,25 @@
  *
  * @author  Ikaros Kappler
  * @date    2021-09-06
- * @version 1.0.0
+ * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
+ * @version 1.0.1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BumpMapper = void 0;
 var THREE = require("three");
 var computeVertexNormals_1 = require("./computeVertexNormals");
 var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
+var three_geometry_hellfix_1 = require("three-geometry-hellfix");
 exports.BumpMapper = {
     applyBumpmap: function (dildoGeometry, bufferedGeometry, bumpmap, material, options) {
         var collectedVertexNormals = (0, computeVertexNormals_1.computeVertexNormals)(dildoGeometry, bufferedGeometry);
-        var dildoNormalGeometry = new THREE.Geometry();
+        var dildoNormalGeometry = new three_geometry_hellfix_1.Gmetry();
         dildoNormalGeometry.vertices = collectedVertexNormals.map(function (normalLine) {
             var endPoint = normalLine.end.clone();
             GeometryGenerationHelpers_1.GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
             return endPoint;
         });
-        var dildoNormalsMesh = new THREE.Points(dildoNormalGeometry, new THREE.PointsMaterial({
+        var dildoNormalsMesh = new THREE.Points(dildoNormalGeometry.toBufferGeometry(), new THREE.PointsMaterial({
             size: 1.4,
             color: 0x00ffff
         }));
@@ -53,7 +55,9 @@ exports.BumpMapper = {
             //   const lerpTarget: THREE.Vector3 = dildoNormalGeometry.vertices[vertIndex];
             //   vertex.lerp(lerpTarget, lerpFactor);
             // Override the buffered geometry! (bumpmap has been applied)
-            bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry);
+            // TODO: verify correctness with Gmery
+            // bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry as unknown as Gmetry);
+            bufferedGeometry = dildoGeometry.toBufferGeometry();
             bufferedGeometry.computeVertexNormals();
             // Override the mesh! (bumpmap has been applied)
             dildoMesh = new THREE.Mesh(bufferedGeometry, material);

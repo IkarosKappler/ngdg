@@ -3,21 +3,23 @@
  *
  * @author  Ikaros Kappler
  * @date    2021-09-06
- * @version 1.0.0
+ * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
+ * @version 1.0.1
  */
 import * as THREE from "three";
 import { computeVertexNormals } from "./computeVertexNormals";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
+import { Gmetry } from "three-geometry-hellfix";
 export const BumpMapper = {
     applyBumpmap: (dildoGeometry, bufferedGeometry, bumpmap, material, options) => {
         const collectedVertexNormals = computeVertexNormals(dildoGeometry, bufferedGeometry);
-        const dildoNormalGeometry = new THREE.Geometry();
+        const dildoNormalGeometry = new Gmetry();
         dildoNormalGeometry.vertices = collectedVertexNormals.map((normalLine) => {
             const endPoint = normalLine.end.clone();
             GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
             return endPoint;
         });
-        const dildoNormalsMesh = new THREE.Points(dildoNormalGeometry, new THREE.PointsMaterial({
+        const dildoNormalsMesh = new THREE.Points(dildoNormalGeometry.toBufferGeometry(), new THREE.PointsMaterial({
             size: 1.4,
             color: 0x00ffff
         }));
@@ -50,7 +52,9 @@ export const BumpMapper = {
             //   const lerpTarget: THREE.Vector3 = dildoNormalGeometry.vertices[vertIndex];
             //   vertex.lerp(lerpTarget, lerpFactor);
             // Override the buffered geometry! (bumpmap has been applied)
-            bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry);
+            // TODO: verify correctness with Gmery
+            // bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry as unknown as Gmetry);
+            bufferedGeometry = dildoGeometry.toBufferGeometry();
             bufferedGeometry.computeVertexNormals();
             // Override the mesh! (bumpmap has been applied)
             dildoMesh = new THREE.Mesh(bufferedGeometry, material);

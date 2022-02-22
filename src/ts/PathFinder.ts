@@ -7,12 +7,13 @@
  *
  * @author   Ikaros Kappler
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
  * @date     2021-07-06
- * @version  1.0.0
+ * @version  1.0.1
  */
 
-// var EPS = 0.000001;
 import { EPS } from "./constants";
+import { Face3, Gmetry } from "three-geometry-hellfix";
 
 export class PathFinder {
   /**
@@ -75,11 +76,11 @@ export class PathFinder {
    *
    * The pathVertices array must not contain duplicates.
    *
-   * @param {THREE.Geometry} unbufferedGeometry - The geometry itself containing the path vertices.
+   * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The geometry itself containing the path vertices.
    * @param {THREE.Vector3[]} pathVertices - The unsorted vertices (must form a connected path on the geometry).
    * @return {Array<number[]>} An array of paths; each path consists of an array of path vertex indices in the `pathVertices` param.
    */
-  findAllPathsOnMesh(unbufferedGeometry: THREE.Geometry, pathVertices: Array<THREE.Vector3>): Array<number[]> {
+  findAllPathsOnMesh(unbufferedGeometry: Gmetry, pathVertices: Array<THREE.Vector3>): Array<number[]> {
     var collectedPaths: Array<number[]> = []; // Array<number[]>
     this.visitedVertices.clear();
     this.unvisitedVertIndices.clear();
@@ -117,12 +118,12 @@ export class PathFinder {
    * in several paths that can still be connected, if you start with some random vertex
    * index.
    *
-   * @param {THREE.Geometry} unbufferedGeometry - The geometry to use to find connected vertices (use it's faces).
+   * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The geometry to use to find connected vertices (use it's faces).
    * @param {Array<number>} pathVertIndices - The indices of all vertices that form the path(s). Each index must match a vertex in the geometry's `vertices` array.
    * @param {number} unvisitedIndex - The path vertex (index) to start with. This can be picked randomly.
    * @returns {Array<number>} The indices of the found path in an array (index sequence).
    */
-  findUnvisitedPaths(unbufferedGeometry: THREE.Geometry, pathVertIndices: Array<number>, unvisitedIndex: number): Array<number> {
+  findUnvisitedPaths(unbufferedGeometry: Gmetry, pathVertIndices: Array<number>, unvisitedIndex: number): Array<number> {
     const path: Array<number> = [unvisitedIndex]; // which elements?
     this.visitedVertices.add(unvisitedIndex);
     this.unvisitedVertIndices.delete(unvisitedIndex);
@@ -147,12 +148,12 @@ export class PathFinder {
    *
    * To find that the geometry's faces will be used.
    *
-   * @param {THREE.Geometry} unbufferedGeometry
+   * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry
    * @param {Array<number>} pathVertIndices
    * @param {number} unvisitedIndex
    * @returns {number} The next adjacent face index or -1 if none can be found.
    */
-  findAdjacentFace(unbufferedGeometry: THREE.Geometry, pathVertIndices: Array<number>, unvisitedIndex: number): number {
+  findAdjacentFace(unbufferedGeometry: Gmetry, pathVertIndices: Array<number>, unvisitedIndex: number): number {
     const faceCount: number = unbufferedGeometry.faces.length;
 
     for (var f = 0; f < faceCount; f++) {
@@ -195,11 +196,11 @@ export class PathFinder {
    * Find adjacent paths and connect them.
    *
    * @param {Array<number[]>} collectedPaths
-   * @param {THREE.Geometry} unbufferedGeometry
+   * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry
    * @param {THREE.Vector3[]} pathVertices
    * @return {Array<number[]>} A new sequence of paths (a path is an array of vertex indices).
    */
-  private combineAdjacentPaths(collectedPaths: Array<number[]>, unbufferedGeometry: THREE.Geometry): Array<number[]> {
+  private combineAdjacentPaths(collectedPaths: Array<number[]>, unbufferedGeometry: Gmetry): Array<number[]> {
     const resultPaths: Array<number[]> = [];
     // First build up an unvisited path set (set of path indices)
     const unvisitedPathIndexSet: Set<number> = new Set<number>(
@@ -247,13 +248,13 @@ export class PathFinder {
  * A simple check to determine if a face of the geometry (given by the face index)
  * is adjacent to the given vertex index (a vertex index in the geometry.).
  *
- * @param {THREE.Geometry} unbufferedGeometry
+ * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry
  * @param {number} faceIndex
  * @param {number} geometryVertexIndex
  * @returns
  */
-const faceHasVertIndex = function (unbufferedGeometry: THREE.Geometry, faceIndex: number, geometryVertexIndex: number) {
-  const face: THREE.Face3 = unbufferedGeometry.faces[faceIndex];
+const faceHasVertIndex = function (unbufferedGeometry: Gmetry, faceIndex: number, geometryVertexIndex: number) {
+  const face: Face3 = unbufferedGeometry.faces[faceIndex];
   return face.a === geometryVertexIndex || face.b === geometryVertexIndex || face.c === geometryVertexIndex;
 };
 
@@ -264,13 +265,13 @@ const faceHasVertIndex = function (unbufferedGeometry: THREE.Geometry, faceIndex
  * will be skipped.
  * So the returned array might be shorter than the path – and thus, have gaps.
  *
- * @param {THREE.Geometry} unbufferedGeometry - The Three.js geometry to use.
+ * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The Three.js geometry to use.
  * @param {Array<THREE.Vector3>} pathVertices - The acual mesh vertices of the current path.
  * @param {number} epsilon - Is required here (just pass through).
  * @returns
  */
 const mapVerticesToGeometryIndices = (
-  unbufferedGeometry: THREE.Geometry,
+  unbufferedGeometry: Gmetry,
   pathVertices: Array<THREE.Vector3>,
   epsilon: number
 ): number[] => {
@@ -324,14 +325,14 @@ const mapVerticesToGeometryIndices = (
  * @param {Array<number[]>} collectedPaths - The array of paths (array of array)
  * @param {number} currentVertIndex - The vertex index in the geometry to find the next adjacent path for.
  * @param {Set<number>} unvisitedPathIndexSet - A set to keep track of unvisited vertex indices. Will be updated.
- * @param {THREE.Geometry} unbufferedGeometry - The geometry to find the path on.
+ * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The geometry to find the path on.
  * @returns
  */
 const findAdjacentPath = function (
   collectedPaths: Array<number[]>,
   currentVertIndex: number,
   unvisitedPathIndexSet: Set<number>,
-  unbufferedGeometry: THREE.Geometry
+  unbufferedGeometry: Gmetry
 ) {
   for (var f = 0; f < unbufferedGeometry.faces.length; f++) {
     if (faceHasVertIndex(unbufferedGeometry, f, currentVertIndex)) {

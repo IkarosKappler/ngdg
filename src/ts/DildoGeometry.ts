@@ -5,7 +5,8 @@
  * @date     2020-07-08
  * @modified 2021-06-11 Fixing top and bottom points; preparing slicing of mesh.
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @version  1.0.2
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry (and Face3).
+ * @version  1.0.3
  **/
 
 // TODOs
@@ -17,11 +18,11 @@
 
 import { BezierPath, Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
-import { DildoOptions, ExtendedDildoOptions } from "./interfaces";
+import { ExtendedDildoOptions } from "./interfaces";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
-// import { earcut } from "./thirdparty-ported/earcut"; // TODO: fix earcut types
 import { earcut } from "earcut-typescript"; // TODO: fix earcut types
 import { UVHelpers } from "./UVHelpers";
+import { Face3, Gmetry } from "three-geometry-hellfix";
 
 var DEG_TO_RAD = Math.PI / 180.0;
 // import { DEG_TO_RAD } from "./constants";
@@ -29,23 +30,24 @@ var DEG_TO_RAD = Math.PI / 180.0;
 // This is a dirty workaround to
 // avoid direct class extending of THREE.Geometry.
 // I am using `THREE.Geometry.call(this);` instead :/
-export class DildoBaseClass {
-  // implements IDildoGeometry {
-  vertices: Array<THREE.Vector3>;
-  faces: Array<THREE.Face3>;
-  faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
-  uvsNeedUpdate: boolean;
-  buffersNeedUpdate: boolean;
+// export class DildoBaseClass {
+//   // implements IDildoGeometry {
+//   vertices: Array<THREE.Vector3>;
+//   faces: Array<Face3>;
+//   faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
+//   uvsNeedUpdate: boolean;
+//   buffersNeedUpdate: boolean;
 
-  constructor() {
-    this.vertices = [];
-    this.faces = [];
-    this.faceVertexUvs = [[]];
-  }
-}
+//   constructor() {
+//     this.vertices = [];
+//     this.faces = [];
+//     this.faceVertexUvs = [[]];
+//   }
+// }
 
 // export class DildoGeometry { // extends globalThis.THREE.Geometry {
-export class DildoGeometry extends DildoBaseClass {
+// export class DildoGeometry extends DildoBaseClass {
+export class DildoGeometry extends Gmetry {
   vertexMatrix: Array<Array<number>>;
   topIndex: number;
   bottomIndex: number;
@@ -77,7 +79,9 @@ export class DildoGeometry extends DildoBaseClass {
    **/
   constructor(options: ExtendedDildoOptions) {
     super();
-    THREE.Geometry.call(this);
+    // TODO: verify
+    // THREE.Geometry.call(this);
+    Gmetry.call(this);
 
     this.vertexMatrix = []; // Array<Array<number>>
     this.topIndex = -1;
@@ -690,12 +694,12 @@ export class DildoGeometry extends DildoBaseClass {
       var curIndex = findClosestEdgeIndex(this.vertices[this.vertexMatrix[0][i]]);
       // Close gap to last (different shell index)
       triangleIndices = [lastIndex, this.vertexMatrix[0][i == 0 ? n - 1 : i - 1], this.vertexMatrix[0][i]];
-      this.faces.push(new THREE.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2])); // Same?
+      this.faces.push(new Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2])); // Same?
       this.hollowBottomTriagles.push(triangleIndices);
       if (lastIndex !== curIndex) {
         // Add normal triangle to same shell index
         triangleIndices = [curIndex, lastIndex, this.vertexMatrix[0][i]];
-        this.faces.push(new THREE.Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2]));
+        this.faces.push(new Face3(triangleIndices[0], triangleIndices[1], triangleIndices[2]));
         this.hollowBottomTriagles.push(triangleIndices);
       }
       lastIndex = curIndex;
@@ -985,7 +989,7 @@ export class DildoGeometry extends DildoBaseClass {
   }
 
   private __applyBumpmap(bumpmapTexture: THREE.Texture) {
-    const tmp: THREE.Geometry = this as unknown as THREE.Geometry;
+    const tmp: Gmetry = this as unknown as Gmetry;
     for (var i = 0; i < this.vertexMatrix.length; i++) {
       for (var j = 0; j < this.vertexMatrix[i].length; j++) {
         // apply local bump map

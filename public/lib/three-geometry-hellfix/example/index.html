@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Document Title</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Content Description">
+    <meta name="keywords" content="any, keywords, you, want">
+    <meta name="author" content="Ikaros Kappler">
+    <meta name="date" content="2015-04-22">
+
+    <script>
+        var exports = globalThis.exports = globalThis;
+        var require = globalThis.require = function(...args) { return globalThis; };
+    </script>
+    <script src="../node_modules/three/build/three.min.js"></script>
+    <!-- <script src="../node_modules/three/examples/jsm/helpers/PlaneHelper.js"></script> -->
+    <!-- <script src="../dist/three-geometry-hellfix-vendor.js"></script> -->
+    <script>console.log("THREE", typeof THREE);</script>
+    <script src="../node_modules/three/examples/js/controls/TrackballControls.js"></script>
+    <script src="../dist/three-geometry-hellfix-main.js"></script>
+    <!-- <script src="../src/cjs/Face3.js"></script>  -->
+    <!-- <script src="../node_modules/threejs-slice-geometry-typescript/build/slice.js"></script> -->
+    <!-- <script src="threejs-slice-geometry-typescript/dist/slice.js"></script> -->
+    <!-- <script src="threejs-slice-geometry-typescript/dist/threejs-slice-geometry-typescript-vendor.js"></script> -->
+    <script src="threejs-slice-geometry-typescript/dist/threejs-slice-geometry-typescript-main.js"></script>
+    <script>
+      console.log("sliceGeometry", exports);
+    </script>
+    
+    <script src="script.js"></script>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="styles.css">
+    
+  </head>
+
+  <body>
+
+  </body>
+</html>

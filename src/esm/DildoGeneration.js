@@ -7,7 +7,8 @@
  * @modified 2021-06-07 Fixing `removeCachedGeometries`. Adding bending of model.
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
  * @modified 2022-02-03 Added `clearResults` function.
- * @version  1.2.2
+ * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.2.3
  **/
 import * as THREE from "three";
 import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper";
@@ -19,6 +20,7 @@ import { PathFinder } from "./PathFinder";
 import { randomWebColor } from "./randomWebColor";
 import { EPS, SPLIT_MESH_OFFSET, KEY_LEFT_SLICE_GEOMETRY, KEY_LEFT_SLICE_PLANE, KEY_PLANE_INTERSECTION_POINTS, KEY_RIGHT_SLICE_GEOMETRY, KEY_RIGHT_SLICE_PLANE, KEY_SPLIT_PANE_MESH, KEY_SPLIT_TRIANGULATION_GEOMETRIES, KEY_SLICED_MESH_RIGHT, KEY_SLICED_MESH_LEFT } from "./constants";
 import { BumpMapper } from "./BumpMapper";
+import { Gmetry } from "three-geometry-hellfix";
 export class DildoGeneration {
     constructor(canvasId, options) {
         this.canvas = document.getElementById(canvasId);
@@ -116,16 +118,19 @@ export class DildoGeneration {
         const textureImagePath = typeof options.textureImagePath !== "undefined" ? options.textureImagePath : null;
         const doubleSingleSide = options.renderFaces === "double" ? THREE.DoubleSide : options.renderFaces === "back" ? THREE.BackSide : THREE.FrontSide;
         const wireframe = typeof options.wireframe !== "undefined" ? options.wireframe : false;
-        // const isBumpmappingPossible : boolean = (options.useBumpmap && bumpmapTexture);
         const material = DildoMaterials.createMainMaterial(useTextureImage, wireframe, textureImagePath, doubleSingleSide);
         // This can be overriden in later steps! (after bumpmap was applied)
-        let bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry);
+        // let bufferedGeometry: THREE.BufferGeometry = new THREE.BufferGeometry().fromGeometry(
+        //   dildoGeometry as unknown as Gmetry
+        // );
+        // TODO: verify correctness
+        let bufferedGeometry = dildoGeometry.toBufferGeometry();
         bufferedGeometry.computeVertexNormals();
         // This can be overriden in later steps! (after bumpmap was applied)
         let dildoMesh = new THREE.Mesh(bufferedGeometry, material);
         this.camera.lookAt(new THREE.Vector3(20, 0, 150));
         this.camera.lookAt(dildoMesh.position);
-        const spineGeometry = new THREE.Geometry();
+        const spineGeometry = new Gmetry();
         dildoGeometry.spineVertices.forEach(function (spineVert) {
             spineGeometry.vertices.push(spineVert.clone());
         });
@@ -140,10 +145,10 @@ export class DildoGeneration {
         // if (options.previewBumpmap || options.useBumpmap) {
         if (options.useBumpmap) {
             // const collectedVertexNormals: Array<THREE.Line3> = computeVertexNormals(
-            //   dildoGeometry as unknown as THREE.Geometry,
+            //   dildoGeometry as unknown as Gmetry,
             //   bufferedGeometry
             // );
-            // const dildoNormalGeometry = new THREE.Geometry();
+            // const dildoNormalGeometry = new Gmetry();
             // dildoNormalGeometry.vertices = collectedVertexNormals.map((normalLine: THREE.Line3) => {
             //   const endPoint: THREE.Vector3 = normalLine.end.clone();
             //   GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
@@ -175,7 +180,7 @@ export class DildoGeneration {
             //     }
             //   }
             //   // Override the buffered geometry! (bumpmap has been applied)
-            //   bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry as unknown as THREE.Geometry);
+            //   bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry as unknown as Gmetry);
             //   bufferedGeometry.computeVertexNormals();
             //   // Override the mesh! (bumpmap has been applied)
             //   dildoMesh = new THREE.Mesh(bufferedGeometry, material);
@@ -218,7 +223,7 @@ export class DildoGeneration {
      * These will always be generated, even if the options tell different; if so then they are set
      * to be invisible.
      *
-     * @param {THREE.Geometry} latheMesh - The buffered dildo geometry (required to perform the slice operation).
+     * @param {ThreeGeometryHellfix.Gmetry} latheMesh - The buffered dildo geometry (required to perform the slice operation).
      * @param {DildoGeometry} latheUnbufferedGeometry - The unbuffered dildo geometry (required to obtain the perpendicular path lines).
      * @param {boolean} wireframe
      */
@@ -252,11 +257,11 @@ export class DildoGeneration {
         // TEST what the connected paths look like
         // TODO: add an option and only add to scene if desired.
         for (var p = 0; p < connectedPaths.length; p++) {
-            const geometry = new THREE.Geometry();
+            const geometry = new Gmetry();
             geometry.vertices = connectedPaths[p].map(function (geometryVertexIndex) {
                 return leftSliceGeometry.vertices[geometryVertexIndex];
             });
-            const linesMesh = new THREE.Line(geometry, new THREE.LineBasicMaterial({
+            const linesMesh = new THREE.Line(geometry.toBufferGeometry(), new THREE.LineBasicMaterial({
                 color: randomWebColor(i, "Mixed") // 0x8800a8
             }));
             // linesMesh.position.y = -100;
@@ -266,9 +271,9 @@ export class DildoGeneration {
         }
         if (options.addPrecalculatedShapeOutlines) {
             // TEST what the line mesh looks like
-            const pointGeometry = new THREE.Geometry();
+            const pointGeometry = new Gmetry();
             pointGeometry.vertices = planeIntersectionPoints;
-            var linesMesh = new THREE.Line(pointGeometry, new THREE.LineBasicMaterial({
+            var linesMesh = new THREE.Line(pointGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
                 color: 0x8800a8
             }));
             // linesMesh.position.y = -100;
@@ -295,7 +300,7 @@ export class DildoGeneration {
             // TODO: check if this is still required
             leftSliceGeometry.buffersNeedUpdate = true;
             leftSliceGeometry.computeVertexNormals();
-            const slicedMeshLeft = new THREE.Mesh(leftSliceGeometry, sliceMaterial);
+            const slicedMeshLeft = new THREE.Mesh(leftSliceGeometry.toBufferGeometry(), sliceMaterial);
             // slicedMeshLeft.position.y = -100;
             // slicedMeshLeft.position.z = -50;
             slicedMeshLeft.position.y = SPLIT_MESH_OFFSET.y;
@@ -319,7 +324,7 @@ export class DildoGeneration {
             // TODO: check if this is still required
             rightSliceGeometry.buffersNeedUpdate = true;
             rightSliceGeometry.computeVertexNormals();
-            const slicedMeshRight = new THREE.Mesh(rightSliceGeometry, sliceMaterial);
+            const slicedMeshRight = new THREE.Mesh(rightSliceGeometry.toBufferGeometry(), sliceMaterial);
             // slicedMeshRight.position.y = -100;
             // slicedMeshRight.position.z = 50;
             slicedMeshRight.position.y = SPLIT_MESH_OFFSET.y;
@@ -345,7 +350,7 @@ export class DildoGeneration {
     //    * Make a triangulation of the given path specified by the verted indices.
     //    *
     //    * @param {Array<number>} connectedPath - An array of vertex indices.
-    //    * @return {THREE.Geometry} trianglesMesh
+    //    * @return {ThreeGeometryHellfix.Gmetry} trianglesMesh
     //    */
     //   var makePlaneTriangulation = function (generator, sliceGeometry, connectedPath, options) {
     //     // Convert the connected paths indices to [x, y, x, y, x, y, ...] coordinates (requied by earcut)
@@ -357,7 +362,7 @@ export class DildoGeneration {
     //     // Array<number> : triplets of vertex indices in the plain XY array
     //     var triangles = earcut(currentPathXYData);
     //     // Convert triangle indices back to a geometry
-    //     var trianglesGeometry = new THREE.Geometry();
+    //     var trianglesGeometry = new Gmetry();
     //     // We will merge the geometries in the end which will create clones of the vertices.
     //     // No need to clone here.
     //     // trianglesGeometry.vertices = leftSliceGeometry.vertices;
