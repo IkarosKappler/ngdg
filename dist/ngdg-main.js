@@ -112,7 +112,6 @@ var PathFinder_1 = __webpack_require__(/*! ./PathFinder */ "./src/cjs/PathFinder
 var randomWebColor_1 = __webpack_require__(/*! ./randomWebColor */ "./src/cjs/randomWebColor.js");
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/cjs/constants.js");
 var BumpMapper_1 = __webpack_require__(/*! ./BumpMapper */ "./src/cjs/BumpMapper.js");
-var three_geometry_hellfix_1 = __webpack_require__(/*! three-geometry-hellfix */ "./node_modules/three-geometry-hellfix/src/esm/index.js");
 var DildoGeneration = /** @class */ (function () {
     function DildoGeneration(canvasId, options) {
         this.canvas = document.getElementById(canvasId);
@@ -222,10 +221,12 @@ var DildoGeneration = /** @class */ (function () {
         var dildoMesh = new THREE.Mesh(bufferedGeometry, material);
         this.camera.lookAt(new THREE.Vector3(20, 0, 150));
         this.camera.lookAt(dildoMesh.position);
-        var spineGeometry = new three_geometry_hellfix_1.Gmetry();
-        dildoGeometry.spineVertices.forEach(function (spineVert) {
-            spineGeometry.vertices.push(spineVert.clone());
-        });
+        // TODO: verify
+        // const spineGeometry: Gmetry = new Gmetry();
+        // dildoGeometry.spineVertices.forEach(function (spineVert) {
+        //   spineGeometry.vertices.push(spineVert.clone());
+        // });
+        var spineGeometry = GeometryGenerationHelpers_1.GeometryGenerationHelpers.verticesToBufferGeometry(dildoGeometry.spineVertices);
         if (options.addSpine) {
             GeometryGenerationHelpers_1.GeometryGenerationHelpers.addSpine(this, spineGeometry);
         }
@@ -369,9 +370,12 @@ var DildoGeneration = /** @class */ (function () {
         }
         if (options.addPrecalculatedShapeOutlines) {
             // TEST what the line mesh looks like
-            var pointGeometry = new three_geometry_hellfix_1.Gmetry();
-            pointGeometry.vertices = planeIntersectionPoints;
-            var linesMesh = new THREE.Line(pointGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+            // TODO: verify with Gmetry
+            // const pointGeometry: Gmetry = new Gmetry();
+            // pointGeometry.vertices = planeIntersectionPoints;
+            var pointGeometry = GeometryGenerationHelpers_1.GeometryGenerationHelpers.verticesToBufferGeometry(planeIntersectionPoints);
+            var linesMesh = new THREE.Line(pointGeometry, // .toBufferGeometry(),
+            new THREE.LineBasicMaterial({
                 color: 0x8800a8
             }));
             // linesMesh.position.y = -100;
@@ -1654,8 +1658,10 @@ exports.GeometryGenerationHelpers = {
      * @param {DildoGeneration} thisGenerator - The generator to add the new mesh to.
      * @param {ThreeGeometryHellfix.Gmetry} spineGeometry - The spine geometry itself.
      */
+    // addSpine: (thisGenerator: IDildoGeneration, spineGeometry: Gmetry): void => {
     addSpine: function (thisGenerator, spineGeometry) {
-        var spineMesh = new THREE.LineSegments(spineGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+        var spineMesh = new THREE.LineSegments(spineGeometry, // .toBufferGeometry(),
+        new THREE.LineBasicMaterial({
             color: 0xff8800
         }));
         spineMesh.position.y = -100;
@@ -1681,12 +1687,20 @@ exports.GeometryGenerationHelpers = {
      * @param {number} materialColor - A color for the material to use (like 0xff0000 for red).
      */
     addPerpendicularPath: function (thisGenerator, perpLines, materialColor) {
-        var outerPerpGeometry = new three_geometry_hellfix_1.Gmetry();
+        // TODO: verify
+        // const outerPerpGeometry: Gmetry = new Gmetry();
+        // perpLines.forEach((perpLine: THREE.Line3) => {
+        //   outerPerpGeometry.vertices.push(perpLine.start.clone());
+        //   outerPerpGeometry.vertices.push(perpLine.end.clone());
+        // });
+        var vertices = [];
         perpLines.forEach(function (perpLine) {
-            outerPerpGeometry.vertices.push(perpLine.start.clone());
-            outerPerpGeometry.vertices.push(perpLine.end.clone());
+            vertices.push(perpLine.start.clone());
+            vertices.push(perpLine.end.clone());
         });
-        var outerPerpMesh = new THREE.LineSegments(outerPerpGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+        var outerPerpGeometry = exports.GeometryGenerationHelpers.verticesToBufferGeometry(vertices);
+        var outerPerpMesh = new THREE.LineSegments(outerPerpGeometry, // .toBufferGeometry(),
+        new THREE.LineBasicMaterial({
             color: materialColor
         }));
         outerPerpMesh.position.y = -100;

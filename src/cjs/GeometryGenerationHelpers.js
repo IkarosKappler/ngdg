@@ -318,8 +318,10 @@ exports.GeometryGenerationHelpers = {
      * @param {DildoGeneration} thisGenerator - The generator to add the new mesh to.
      * @param {ThreeGeometryHellfix.Gmetry} spineGeometry - The spine geometry itself.
      */
+    // addSpine: (thisGenerator: IDildoGeneration, spineGeometry: Gmetry): void => {
     addSpine: function (thisGenerator, spineGeometry) {
-        var spineMesh = new THREE.LineSegments(spineGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+        var spineMesh = new THREE.LineSegments(spineGeometry, // .toBufferGeometry(),
+        new THREE.LineBasicMaterial({
             color: 0xff8800
         }));
         spineMesh.position.y = -100;
@@ -345,12 +347,20 @@ exports.GeometryGenerationHelpers = {
      * @param {number} materialColor - A color for the material to use (like 0xff0000 for red).
      */
     addPerpendicularPath: function (thisGenerator, perpLines, materialColor) {
-        var outerPerpGeometry = new three_geometry_hellfix_1.Gmetry();
+        // TODO: verify
+        // const outerPerpGeometry: Gmetry = new Gmetry();
+        // perpLines.forEach((perpLine: THREE.Line3) => {
+        //   outerPerpGeometry.vertices.push(perpLine.start.clone());
+        //   outerPerpGeometry.vertices.push(perpLine.end.clone());
+        // });
+        var vertices = [];
         perpLines.forEach(function (perpLine) {
-            outerPerpGeometry.vertices.push(perpLine.start.clone());
-            outerPerpGeometry.vertices.push(perpLine.end.clone());
+            vertices.push(perpLine.start.clone());
+            vertices.push(perpLine.end.clone());
         });
-        var outerPerpMesh = new THREE.LineSegments(outerPerpGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+        var outerPerpGeometry = exports.GeometryGenerationHelpers.verticesToBufferGeometry(vertices);
+        var outerPerpMesh = new THREE.LineSegments(outerPerpGeometry, // .toBufferGeometry(),
+        new THREE.LineBasicMaterial({
             color: materialColor
         }));
         outerPerpMesh.position.y = -100;

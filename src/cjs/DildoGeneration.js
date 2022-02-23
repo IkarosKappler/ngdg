@@ -23,7 +23,6 @@ var PathFinder_1 = require("./PathFinder");
 var randomWebColor_1 = require("./randomWebColor");
 var constants_1 = require("./constants");
 var BumpMapper_1 = require("./BumpMapper");
-var three_geometry_hellfix_1 = require("three-geometry-hellfix");
 var DildoGeneration = /** @class */ (function () {
     function DildoGeneration(canvasId, options) {
         this.canvas = document.getElementById(canvasId);
@@ -133,10 +132,12 @@ var DildoGeneration = /** @class */ (function () {
         var dildoMesh = new THREE.Mesh(bufferedGeometry, material);
         this.camera.lookAt(new THREE.Vector3(20, 0, 150));
         this.camera.lookAt(dildoMesh.position);
-        var spineGeometry = new three_geometry_hellfix_1.Gmetry();
-        dildoGeometry.spineVertices.forEach(function (spineVert) {
-            spineGeometry.vertices.push(spineVert.clone());
-        });
+        // TODO: verify
+        // const spineGeometry: Gmetry = new Gmetry();
+        // dildoGeometry.spineVertices.forEach(function (spineVert) {
+        //   spineGeometry.vertices.push(spineVert.clone());
+        // });
+        var spineGeometry = GeometryGenerationHelpers_1.GeometryGenerationHelpers.verticesToBufferGeometry(dildoGeometry.spineVertices);
         if (options.addSpine) {
             GeometryGenerationHelpers_1.GeometryGenerationHelpers.addSpine(this, spineGeometry);
         }
@@ -280,9 +281,12 @@ var DildoGeneration = /** @class */ (function () {
         }
         if (options.addPrecalculatedShapeOutlines) {
             // TEST what the line mesh looks like
-            var pointGeometry = new three_geometry_hellfix_1.Gmetry();
-            pointGeometry.vertices = planeIntersectionPoints;
-            var linesMesh = new THREE.Line(pointGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+            // TODO: verify with Gmetry
+            // const pointGeometry: Gmetry = new Gmetry();
+            // pointGeometry.vertices = planeIntersectionPoints;
+            var pointGeometry = GeometryGenerationHelpers_1.GeometryGenerationHelpers.verticesToBufferGeometry(planeIntersectionPoints);
+            var linesMesh = new THREE.Line(pointGeometry, // .toBufferGeometry(),
+            new THREE.LineBasicMaterial({
                 color: 0x8800a8
             }));
             // linesMesh.position.y = -100;

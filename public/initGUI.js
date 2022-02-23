@@ -31,6 +31,8 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback) {
   var fold0 = gui.addFolder("Path");
   // prettier-ignore
   fold0.add( config, "acquireOptimalPathView" );
+  // prettier-ignore
+  fold0.add(config, "showDiscreteOutlinePoints").onChange( function() { pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
 
   var fold1 = gui.addFolder("Mesh");
   // prettier-ignore
@@ -99,8 +101,6 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback) {
   fold4.add(config, "restoreSplitAlignment").name('restoreSplitAlignment').title('Restore original split alignment.');
 
   var fold5 = gui.addFolder("Render Settings");
-  // prettier-ignore
-  fold5.add(config, "showDiscreteOutlinePoints").onChange( function() { pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
   // prettier-ignore
   fold5.add(config, "wireframe").onChange( function() { rebuildCallback() } ).name('wireframe').title('Display the mesh as a wireframe model?');
   // prettier-ignore

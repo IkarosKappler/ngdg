@@ -20,7 +20,6 @@ import { PathFinder } from "./PathFinder";
 import { randomWebColor } from "./randomWebColor";
 import { EPS, SPLIT_MESH_OFFSET, KEY_LEFT_SLICE_GEOMETRY, KEY_LEFT_SLICE_PLANE, KEY_PLANE_INTERSECTION_POINTS, KEY_RIGHT_SLICE_GEOMETRY, KEY_RIGHT_SLICE_PLANE, KEY_SPLIT_PANE_MESH, KEY_SPLIT_TRIANGULATION_GEOMETRIES, KEY_SLICED_MESH_RIGHT, KEY_SLICED_MESH_LEFT } from "./constants";
 import { BumpMapper } from "./BumpMapper";
-import { Gmetry } from "three-geometry-hellfix";
 export class DildoGeneration {
     constructor(canvasId, options) {
         this.canvas = document.getElementById(canvasId);
@@ -130,10 +129,12 @@ export class DildoGeneration {
         let dildoMesh = new THREE.Mesh(bufferedGeometry, material);
         this.camera.lookAt(new THREE.Vector3(20, 0, 150));
         this.camera.lookAt(dildoMesh.position);
-        const spineGeometry = new Gmetry();
-        dildoGeometry.spineVertices.forEach(function (spineVert) {
-            spineGeometry.vertices.push(spineVert.clone());
-        });
+        // TODO: verify
+        // const spineGeometry: Gmetry = new Gmetry();
+        // dildoGeometry.spineVertices.forEach(function (spineVert) {
+        //   spineGeometry.vertices.push(spineVert.clone());
+        // });
+        const spineGeometry = GeometryGenerationHelpers.verticesToBufferGeometry(dildoGeometry.spineVertices);
         if (options.addSpine) {
             GeometryGenerationHelpers.addSpine(this, spineGeometry);
         }
@@ -277,9 +278,12 @@ export class DildoGeneration {
         }
         if (options.addPrecalculatedShapeOutlines) {
             // TEST what the line mesh looks like
-            const pointGeometry = new Gmetry();
-            pointGeometry.vertices = planeIntersectionPoints;
-            var linesMesh = new THREE.Line(pointGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+            // TODO: verify with Gmetry
+            // const pointGeometry: Gmetry = new Gmetry();
+            // pointGeometry.vertices = planeIntersectionPoints;
+            const pointGeometry = GeometryGenerationHelpers.verticesToBufferGeometry(planeIntersectionPoints);
+            var linesMesh = new THREE.Line(pointGeometry, // .toBufferGeometry(),
+            new THREE.LineBasicMaterial({
                 color: 0x8800a8
             }));
             // linesMesh.position.y = -100;

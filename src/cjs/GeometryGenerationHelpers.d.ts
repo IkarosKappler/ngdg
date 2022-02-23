@@ -117,7 +117,7 @@ export declare const GeometryGenerationHelpers: {
      * @param {DildoGeneration} thisGenerator - The generator to add the new mesh to.
      * @param {ThreeGeometryHellfix.Gmetry} spineGeometry - The spine geometry itself.
      */
-    addSpine: (thisGenerator: IDildoGeneration, spineGeometry: Gmetry) => void;
+    addSpine: (thisGenerator: IDildoGeneration, spineGeometry: THREE.BufferGeometry) => void;
     /**
      * This function creates two line-meshes in red and green indicating the perpendicular cut
      * path along the geometry to be sliced.

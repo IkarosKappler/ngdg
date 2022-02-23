@@ -211,10 +211,12 @@ export class DildoGeneration implements IDildoGeneration {
     this.camera.lookAt(new THREE.Vector3(20, 0, 150));
     this.camera.lookAt(dildoMesh.position);
 
-    const spineGeometry: Gmetry = new Gmetry();
-    dildoGeometry.spineVertices.forEach(function (spineVert) {
-      spineGeometry.vertices.push(spineVert.clone());
-    });
+    // TODO: verify
+    // const spineGeometry: Gmetry = new Gmetry();
+    // dildoGeometry.spineVertices.forEach(function (spineVert) {
+    //   spineGeometry.vertices.push(spineVert.clone());
+    // });
+    const spineGeometry = GeometryGenerationHelpers.verticesToBufferGeometry(dildoGeometry.spineVertices);
 
     if (options.addSpine) {
       GeometryGenerationHelpers.addSpine(this, spineGeometry);
@@ -395,10 +397,12 @@ export class DildoGeneration implements IDildoGeneration {
 
     if (options.addPrecalculatedShapeOutlines) {
       // TEST what the line mesh looks like
-      const pointGeometry: Gmetry = new Gmetry();
-      pointGeometry.vertices = planeIntersectionPoints;
+      // TODO: verify with Gmetry
+      // const pointGeometry: Gmetry = new Gmetry();
+      // pointGeometry.vertices = planeIntersectionPoints;
+      const pointGeometry = GeometryGenerationHelpers.verticesToBufferGeometry(planeIntersectionPoints);
       var linesMesh = new THREE.Line(
-        pointGeometry.toBufferGeometry(),
+        pointGeometry, // .toBufferGeometry(),
         new THREE.LineBasicMaterial({
           color: 0x8800a8
         })

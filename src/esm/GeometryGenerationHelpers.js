@@ -315,8 +315,10 @@ export const GeometryGenerationHelpers = {
      * @param {DildoGeneration} thisGenerator - The generator to add the new mesh to.
      * @param {ThreeGeometryHellfix.Gmetry} spineGeometry - The spine geometry itself.
      */
+    // addSpine: (thisGenerator: IDildoGeneration, spineGeometry: Gmetry): void => {
     addSpine: (thisGenerator, spineGeometry) => {
-        var spineMesh = new THREE.LineSegments(spineGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+        var spineMesh = new THREE.LineSegments(spineGeometry, // .toBufferGeometry(),
+        new THREE.LineBasicMaterial({
             color: 0xff8800
         }));
         spineMesh.position.y = -100;
@@ -342,12 +344,20 @@ export const GeometryGenerationHelpers = {
      * @param {number} materialColor - A color for the material to use (like 0xff0000 for red).
      */
     addPerpendicularPath: (thisGenerator, perpLines, materialColor) => {
-        const outerPerpGeometry = new Gmetry();
+        // TODO: verify
+        // const outerPerpGeometry: Gmetry = new Gmetry();
+        // perpLines.forEach((perpLine: THREE.Line3) => {
+        //   outerPerpGeometry.vertices.push(perpLine.start.clone());
+        //   outerPerpGeometry.vertices.push(perpLine.end.clone());
+        // });
+        const vertices = [];
         perpLines.forEach((perpLine) => {
-            outerPerpGeometry.vertices.push(perpLine.start.clone());
-            outerPerpGeometry.vertices.push(perpLine.end.clone());
+            vertices.push(perpLine.start.clone());
+            vertices.push(perpLine.end.clone());
         });
-        const outerPerpMesh = new THREE.LineSegments(outerPerpGeometry.toBufferGeometry(), new THREE.LineBasicMaterial({
+        const outerPerpGeometry = GeometryGenerationHelpers.verticesToBufferGeometry(vertices);
+        const outerPerpMesh = new THREE.LineSegments(outerPerpGeometry, // .toBufferGeometry(),
+        new THREE.LineBasicMaterial({
             color: materialColor
         }));
         outerPerpMesh.position.y = -100;

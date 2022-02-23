@@ -1,4 +1,6 @@
-console.warn( "THREE.STLExporter: As part of the transition to ES6 Modules, the files in 'examples/js' were deprecated in May 2020 (r117) and will be deleted in December 2020 (r124). You can find more information about developing using ES6 Modules in https://threejs.org/docs/index.html#manual/en/introduction/Import-via-modules." );
+console.warn(
+  "THREE.STLExporter: As part of the transition to ES6 Modules, the files in 'examples/js' were deprecated in May 2020 (r117) and will be deleted in December 2020 (r124). You can find more information about developing using ES6 Modules in https://threejs.org/docs/index.html#manual/en/introduction/Import-via-modules."
+);
 /**
  * @author kovacsv / http://kovacsv.hu/
  * @author mrdoob / http://mrdoob.com/
@@ -12,156 +14,135 @@ console.warn( "THREE.STLExporter: As part of the transition to ES6 Modules, the 
  *  var data = exporter.parse( mesh, { binary: true } );
  *
  */
+// WARNING: THIS CLASS WAS CHANGED TO BE COMPATIBLE WITH threejs > 124!
+// THE CLASS THREE.Geometry DOES NOT EXIST ANY MORE.
 
 THREE.STLExporter = function () {};
 
 THREE.STLExporter.prototype = {
+  constructor: THREE.STLExporter,
 
-	constructor: THREE.STLExporter,
+  parse: (function () {
+    var vector = new THREE.Vector3();
+    var normalMatrixWorld = new THREE.Matrix3();
 
-	parse: ( function () {
+    return function parse(scene, options) {
+      if (options === undefined) options = {};
 
-		var vector = new THREE.Vector3();
-		var normalMatrixWorld = new THREE.Matrix3();
+      var binary = options.binary !== undefined ? options.binary : false;
 
-		return function parse( scene, options ) {
+      //
 
-			if ( options === undefined ) options = {};
+      var objects = [];
+      var triangles = 0;
 
-			var binary = options.binary !== undefined ? options.binary : false;
+      scene.traverse(function (object) {
+        if (object.isMesh) {
+          var geometry = object.geometry;
 
-			//
+          if (geometry.isBufferGeometry) {
+            // geometry = new THREE.Geometry().fromBufferGeometry(geometry);
+            geometry = new ThreeGeometryHellfix.Gmetry().fromBufferGeometry(geometry);
+          }
 
-			var objects = [];
-			var triangles = 0;
+          if (geometry.isGeometry) {
+            triangles += geometry.faces.length;
 
-			scene.traverse( function ( object ) {
+            objects.push({
+              geometry: geometry,
+              matrixWorld: object.matrixWorld
+            });
+          }
+        }
+      });
 
-				if ( object.isMesh ) {
+      if (binary) {
+        var offset = 80; // skip header
+        var bufferLength = triangles * 2 + triangles * 3 * 4 * 4 + 80 + 4;
+        var arrayBuffer = new ArrayBuffer(bufferLength);
+        var output = new DataView(arrayBuffer);
+        output.setUint32(offset, triangles, true);
+        offset += 4;
 
-					var geometry = object.geometry;
+        for (var i = 0, il = objects.length; i < il; i++) {
+          var object = objects[i];
 
-					if ( geometry.isBufferGeometry ) {
+          var vertices = object.geometry.vertices;
+          var faces = object.geometry.faces;
+          var matrixWorld = object.matrixWorld;
 
-						geometry = new THREE.Geometry().fromBufferGeometry( geometry );
+          normalMatrixWorld.getNormalMatrix(matrixWorld);
 
-					}
+          for (var j = 0, jl = faces.length; j < jl; j++) {
+            var face = faces[j];
 
-					if ( geometry.isGeometry ) {
+            vector.copy(face.normal).applyMatrix3(normalMatrixWorld).normalize();
 
-						triangles += geometry.faces.length;
+            output.setFloat32(offset, vector.x, true);
+            offset += 4; // normal
+            output.setFloat32(offset, vector.y, true);
+            offset += 4;
+            output.setFloat32(offset, vector.z, true);
+            offset += 4;
 
-						objects.push( {
+            var indices = [face.a, face.b, face.c];
 
-							geometry: geometry,
-							matrixWorld: object.matrixWorld
+            for (var k = 0; k < 3; k++) {
+              vector.copy(vertices[indices[k]]).applyMatrix4(matrixWorld);
 
-						} );
+              output.setFloat32(offset, vector.x, true);
+              offset += 4; // vertices
+              output.setFloat32(offset, vector.y, true);
+              offset += 4;
+              output.setFloat32(offset, vector.z, true);
+              offset += 4;
+            }
 
-					}
+            output.setUint16(offset, 0, true);
+            offset += 2; // attribute byte count
+          }
+        }
 
-				}
+        return output;
+      } else {
+        var output = "";
 
-			} );
+        output += "solid exported\n";
 
-			if ( binary ) {
+        for (var i = 0, il = objects.length; i < il; i++) {
+          var object = objects[i];
 
-				var offset = 80; // skip header
-				var bufferLength = triangles * 2 + triangles * 3 * 4 * 4 + 80 + 4;
-				var arrayBuffer = new ArrayBuffer( bufferLength );
-				var output = new DataView( arrayBuffer );
-				output.setUint32( offset, triangles, true ); offset += 4;
+          var vertices = object.geometry.vertices;
+          var faces = object.geometry.faces;
+          var matrixWorld = object.matrixWorld;
 
-				for ( var i = 0, il = objects.length; i < il; i ++ ) {
+          normalMatrixWorld.getNormalMatrix(matrixWorld);
 
-					var object = objects[ i ];
+          for (var j = 0, jl = faces.length; j < jl; j++) {
+            var face = faces[j];
 
-					var vertices = object.geometry.vertices;
-					var faces = object.geometry.faces;
-					var matrixWorld = object.matrixWorld;
+            vector.copy(face.normal).applyMatrix3(normalMatrixWorld).normalize();
 
-					normalMatrixWorld.getNormalMatrix( matrixWorld );
+            output += "\tfacet normal " + vector.x + " " + vector.y + " " + vector.z + "\n";
+            output += "\t\touter loop\n";
 
-					for ( var j = 0, jl = faces.length; j < jl; j ++ ) {
+            var indices = [face.a, face.b, face.c];
 
-						var face = faces[ j ];
+            for (var k = 0; k < 3; k++) {
+              vector.copy(vertices[indices[k]]).applyMatrix4(matrixWorld);
 
-						vector.copy( face.normal ).applyMatrix3( normalMatrixWorld ).normalize();
+              output += "\t\t\tvertex " + vector.x + " " + vector.y + " " + vector.z + "\n";
+            }
 
-						output.setFloat32( offset, vector.x, true ); offset += 4; // normal
-						output.setFloat32( offset, vector.y, true ); offset += 4;
-						output.setFloat32( offset, vector.z, true ); offset += 4;
+            output += "\t\tendloop\n";
+            output += "\tendfacet\n";
+          }
+        }
 
-						var indices = [ face.a, face.b, face.c ];
+        output += "endsolid exported\n";
 
-						for ( var k = 0; k < 3; k ++ ) {
-
-							vector.copy( vertices[ indices[ k ] ] ).applyMatrix4( matrixWorld );
-
-							output.setFloat32( offset, vector.x, true ); offset += 4; // vertices
-							output.setFloat32( offset, vector.y, true ); offset += 4;
-							output.setFloat32( offset, vector.z, true ); offset += 4;
-
-						}
-
-						output.setUint16( offset, 0, true ); offset += 2; // attribute byte count
-
-					}
-
-				}
-
-				return output;
-
-			} else {
-
-				var output = '';
-
-				output += 'solid exported\n';
-
-				for ( var i = 0, il = objects.length; i < il; i ++ ) {
-
-					var object = objects[ i ];
-
-					var vertices = object.geometry.vertices;
-					var faces = object.geometry.faces;
-					var matrixWorld = object.matrixWorld;
-
-					normalMatrixWorld.getNormalMatrix( matrixWorld );
-
-					for ( var j = 0, jl = faces.length; j < jl; j ++ ) {
-
-						var face = faces[ j ];
-
-						vector.copy( face.normal ).applyMatrix3( normalMatrixWorld ).normalize();
-
-						output += '\tfacet normal ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
-						output += '\t\touter loop\n';
-
-						var indices = [ face.a, face.b, face.c ];
-
-						for ( var k = 0; k < 3; k ++ ) {
-
-							vector.copy( vertices[ indices[ k ] ] ).applyMatrix4( matrixWorld );
-
-							output += '\t\t\tvertex ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
-
-						}
-
-						output += '\t\tendloop\n';
-						output += '\tendfacet\n';
-
-					}
-
-				}
-
-				output += 'endsolid exported\n';
-
-				return output;
-
-			}
-
-		};
-
-	}() )
-
+        return output;
+      }
+    };
+  })()
 };
