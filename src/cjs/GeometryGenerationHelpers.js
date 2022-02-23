@@ -7,15 +7,15 @@
  * @author   Ikaros Kappler
  * @date     2021-06-30
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version  1.0.0
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.0.1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GeometryGenerationHelpers = void 0;
 var THREE = require("three");
 var earcut_typescript_1 = require("earcut-typescript");
 var plotboilerplate_1 = require("plotboilerplate");
-var threejs_slice_geometry_typescript_1 = require("threejs-slice-geometry-typescript"); // TODO: convert to custom library
+var threejs_slice_geometry_typescript_1 = require("threejs-slice-geometry-typescript");
 var PlaneMeshIntersection_1 = require("./PlaneMeshIntersection");
 var clearDuplicateVertices3_1 = require("./clearDuplicateVertices3");
 var three_geometry_hellfix_1 = require("three-geometry-hellfix");
@@ -207,16 +207,11 @@ exports.GeometryGenerationHelpers = {
         var intersectionPoints = planeMeshIntersection.getIntersectionPoints(mesh, unbufferedGeometry, planeGeometry, planeGeometryReal);
         var EPS = 0.000001;
         var uniqueIntersectionPoints = (0, clearDuplicateVertices3_1.clearDuplicateVertices3)(intersectionPoints, EPS);
-        // TODO: verify
-        // const pointGeometry: Gmetry = new Gmetry();
-        // pointGeometry.vertices = uniqueIntersectionPoints;
         var pointGeometry = exports.GeometryGenerationHelpers.verticesToBufferGeometry(uniqueIntersectionPoints);
         var pointsMaterial = new THREE.PointsMaterial({
             size: 1.4,
             color: 0x00ffff
         });
-        // TODO: verify
-        // const pointsMesh: THREE.Points = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
         var pointsMesh = new THREE.Points(pointGeometry, pointsMaterial);
         if (options.showSplitShape) {
             pointsMesh.position.y = -100;
@@ -361,7 +356,6 @@ exports.GeometryGenerationHelpers = {
         outerPerpMesh.position.y = -100;
         thisGenerator.addMesh(outerPerpMesh);
     },
-    // TODO: add to global helper functions
     /**
      * Make a triangulation of the given path specified by the verted indices.
      *
@@ -477,6 +471,43 @@ exports.GeometryGenerationHelpers = {
         // itemSize = 3 because there are 3 values (components) per vertex
         geometry.setAttribute("position", new THREE.BufferAttribute(vertexData, 3));
         return geometry;
+    },
+    /**
+     * Rotate a 3d vertex around its z axsis.
+     *
+     * @param {THREE.Vector3} vert - The vertex to rotate (in-place).
+     * @param {number} angle - The angle to rotate abount (in radians).
+     * @param {number} xCenter - The x component of the z axis to rotate around.
+     * @param {number} yCenter - The y component of the z axis to rotate around.
+     * @returns {THREE.Vector3} The vertex itself (for chaining).
+     */
+    rotateVert: function (vert, angle, xCenter, yCenter) {
+        var axis = new THREE.Vector3(0, 0, 1);
+        vert.x -= xCenter;
+        vert.y -= yCenter;
+        vert.applyAxisAngle(axis, angle);
+        vert.x += xCenter;
+        vert.y += yCenter;
+        return vert;
+    },
+    /**
+     * Rotate a 3d vector around the y axis (up-down-axis).
+     *
+     * @param {THREE.Vector3} vert
+     * @param {THREE.Vector3} angle
+     * @param {number} xCenter
+     * @param {number} zCenter
+     * @returns
+     */
+    // TODO: move to helpers
+    rotateVertY: function (vert, angle, xCenter, zCenter) {
+        var axis = new THREE.Vector3(0, 1, 0);
+        vert.x -= xCenter;
+        vert.z -= zCenter;
+        vert.applyAxisAngle(axis, angle);
+        vert.x += xCenter;
+        vert.z += zCenter;
+        return vert;
     }
 };
 //# sourceMappingURL=GeometryGenerationHelpers.js.map

@@ -1,5 +1,7 @@
 /**
- * @require THREE.Geometry
+ * This is the central class for generating dildo base geometries.
+ *
+ * @require ThreeGeometryHellfix.Gmetry
  *
  * @author   Ikaros Kappler
  * @date     2020-07-08
@@ -14,41 +16,18 @@
 // + Move vertex-creating helper functions out of the class
 // + Move face-creating helper functions out of the class
 // + Move UV-creating helper functions out of the class
-// + port to typescript
 
 import { BezierPath, Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
-import { ExtendedDildoOptions, IDildoGeometry } from "./interfaces";
+import { ExtendedDildoOptions } from "./interfaces";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
-import { earcut } from "earcut-typescript"; // TODO: fix earcut types
+import { earcut } from "earcut-typescript";
 import { UVHelpers } from "./UVHelpers";
 import { Face3, Gmetry } from "three-geometry-hellfix/src/cjs";
 
-var DEG_TO_RAD = Math.PI / 180.0;
-// import { DEG_TO_RAD } from "./constants";
+import { DEG_TO_RAD } from "./constants";
 
-// This is a dirty workaround to
-// avoid direct class extending of THREE.Geometry.
-// I am using `THREE.Geometry.call(this);` instead :/
-// export class DildoBaseClass {
-//   // implements IDildoGeometry {
-//   vertices: Array<THREE.Vector3>;
-//   faces: Array<Face3>;
-//   faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
-//   uvsNeedUpdate: boolean;
-//   buffersNeedUpdate: boolean;
-
-//   constructor() {
-//     this.vertices = [];
-//     this.faces = [];
-//     this.faceVertexUvs = [[]];
-//   }
-// }
-
-// export class DildoGeometry { // extends globalThis.THREE.Geometry {
-// export class DildoGeometry extends DildoBaseClass {
 export class DildoGeometry extends Gmetry {
-  // implements IDildoGeometry
   vertexMatrix: Array<Array<number>>;
   topIndex: number;
   bottomIndex: number;
@@ -81,7 +60,6 @@ export class DildoGeometry extends Gmetry {
   constructor(options: ExtendedDildoOptions) {
     super();
     // TODO: verify
-    // THREE.Geometry.call(this);
     Gmetry.call(this);
 
     this.vertexMatrix = []; // Array<Array<number>>
@@ -126,7 +104,7 @@ export class DildoGeometry extends Gmetry {
    * @param {Polygon} baseShape
    * @param {Vertex} shapeCenter
    * @param {Bounds} outlineBounds
-   * @param {THREE.Vertex3} outlineVert
+   * @param {THREE.Vector3} outlineVert
    * @param {number} sliceIndex
    * @param {number} heightT A value between 0.0 and 1.0 (inclusive) to indicate the height position.
    * @param {boolean} isBending
@@ -138,15 +116,15 @@ export class DildoGeometry extends Gmetry {
    * @return { yMin: number, yMax : number }
    */
   private __buildSlice(
-    baseShape,
-    outlineBounds,
-    outlineVert,
-    sliceIndex,
-    heightT,
-    isBending,
-    bendAngle,
-    arcRadius,
-    shapeTwistAngle
+    baseShape: Polygon,
+    outlineBounds: Bounds,
+    outlineVert: Vertex,
+    sliceIndex: number,
+    heightT: number,
+    isBending: boolean,
+    bendAngle: number,
+    arcRadius: number,
+    shapeTwistAngle: number
   ) {
     var outlineXPct = (outlineBounds.max.x - outlineVert.x) / outlineBounds.width;
     // TODO: are these is use?
@@ -156,13 +134,13 @@ export class DildoGeometry extends Gmetry {
       if (isBending) {
         var vert = new THREE.Vector3(shapeVert.x * outlineXPct, 0, shapeVert.y * outlineXPct);
         // Apply twist
-        rotateVertY(vert, shapeTwistAngle, 0, 0);
+        GeometryGenerationHelpers.rotateVertY(vert, shapeTwistAngle, 0, 0);
         this._bendVertex(vert, bendAngle, arcRadius, heightT);
         vert.y += outlineBounds.max.y;
       } else {
         var vert = new THREE.Vector3(shapeVert.x * outlineXPct, outlineVert.y, shapeVert.y * outlineXPct);
         // Apply twist
-        rotateVertY(vert, shapeTwistAngle, 0, 0);
+        GeometryGenerationHelpers.rotateVertY(vert, shapeTwistAngle, 0, 0);
       }
       this.vertexMatrix[sliceIndex][i] = this.vertices.length;
       this.vertices.push(vert);
@@ -247,7 +225,7 @@ export class DildoGeometry extends Gmetry {
       // TODO: check (this is in both cases the same)
       if (i == 0) var endVert = new THREE.Vector3(vert.x - perpendicularVert.x, vert.y + perpendicularVert.y, 0);
       else var endVert = new THREE.Vector3(vert.x + perpendicularVert.x, vert.y + perpendicularVert.y, 0);
-      rotateVert(endVert, bendAngle * heightT, vert.x, vert.y);
+      GeometryGenerationHelpers.rotateVert(endVert, bendAngle * heightT, vert.x, vert.y);
       var outerPerpVert = vert.clone();
       outerPerpVert.x += perpDifference.x;
       outerPerpVert.y += perpDifference.y;
@@ -262,123 +240,6 @@ export class DildoGeometry extends Gmetry {
       }
     } // END for
   }
-
-  //   /**
-  //    *
-  //    * @param {Polygon} baseShape
-  //    * @param {Bounds} outlineBounds
-  //    * @param {THREE.Vertex3} outlineVert
-  //    * @param {number} sliceIndex
-  //    * @param {number} heightT A value between 0.0 and 1.0 (inclusive) to indicate the height position.
-  //    * @param {boolean} isBending
-  //    * @param {number=} bendAngle Must not be null, NaN or infinity if `isBending==true`
-  //    * @param {number=} arcRadius
-  //    * @param {boolean=} normalizePerpendiculars
-  //    * @param {number=} normalsLength
-  //    * @return { yMin: number, yMax : number }
-  //    */
-  //   __buildNormals(
-  //     outlineSegmentIndex: number,
-  //     baseShape: Polygon,
-  //     outlineBounds: Bounds,
-  //     outlineVert: Vertex, // THREE.Vector3?
-  //     perpendicularVert: Vertex,
-  //     heightT: number,
-  //     isBending: boolean,
-  //     bendAngle: number,
-  //     arcRadius: number,
-  //     normalizePerpendiculars: boolean,
-  //     normalsLength: number
-  //   ) {
-  //     // var outlineXPct = (outlineBounds.max.x - outlineVert.x) / outlineBounds.width;
-  //     // var halfIndices = [0, Math.floor(baseShape.vertices.length / 2)];
-  //     // for (var j = 0; j < halfIndices.length; j++) {
-  //     //   var i = halfIndices[j];
-  //     //   var shapeVert = baseShape.vertices[i];
-  //     //   if (isBending) {
-  //     //     var vert = new THREE.Vector3(shapeVert.x * outlineXPct, 0, shapeVert.y * outlineXPct);
-  //     //     this._bendVertex(vert, bendAngle, arcRadius, heightT);
-  //     //     vert.y += outlineBounds.max.y;
-  //     //   } else {
-  //     //     var vert = new THREE.Vector3(shapeVert.x * outlineXPct, outlineVert.y, shapeVert.y * outlineXPct);
-  //     //   }
-
-  //     //   var perpDifference = new THREE.Vector3(outlineVert.x - perpendicularVert.x, outlineVert.y - perpendicularVert.y, 0);
-
-  //     //   if (i == 0) var endVert = new THREE.Vector3(vert.x - perpendicularVert.x, vert.y + perpendicularVert.y, 0);
-  //     //   else var endVert = new THREE.Vector3(vert.x + perpendicularVert.x, vert.y + perpendicularVert.y, 0);
-  //     //   rotateVert(endVert, bendAngle * heightT, vert.x, vert.y);
-  //     //   var outerPerpVert = vert.clone();
-  //     //   outerPerpVert.x += perpDifference.x;
-  //     //   outerPerpVert.y += perpDifference.y;
-  //     //   outerPerpVert.z += perpDifference.z;
-  //     //   if (normalizePerpendiculars) {
-  //     //     normalizeVectorXY(vert, endVert, normalsLength);
-  //     //   }
-  //     //   if (i == 0) {
-  //     //     this.outerPerpLines.push(new THREE.Line3(vert, endVert));
-  //     //   } else {
-  //     //     this.innerPerpLines.push(new THREE.Line3(vert, endVert));
-  //     //   }
-  //     // } // END for
-  //     var outlineXPct = (outlineBounds.max.x - outlineVert.x) / outlineBounds.width;
-  //     var halfIndices = [0, Math.floor(baseShape.vertices.length / 2)];
-  //     // Just append? Should be growing from 0 to n-1
-  //     this.dildoNormals[outlineSegmentIndex] = [];
-  //     // for (var j = 0; j < halfIndices.length; j++) {
-  //     console.log("baseShape.vertices.length", baseShape.vertices.length);
-  //     for (var i = 0; i < baseShape.vertices.length; i++) {
-  //       //   var i = halfIndices[j];
-  //       var shapeVert = baseShape.vertices[i];
-  //       var perpDifference = new THREE.Vector3(outlineVert.x - perpendicularVert.x, outlineVert.y - perpendicularVert.y, 0);
-  //       normalizeVectorXY(outlineVert, perpDifference, normalsLength);
-  //       rotateVertY(perpDifference, bendAngle * heightT, vert.x, vert.y);
-  //       if (i == 0) {
-  //         console.log("perpDifference", perpDifference);
-  //       }
-
-  //       if (isBending) {
-  //         var vert = new THREE.Vector3(shapeVert.x * outlineXPct, 0, shapeVert.y * outlineXPct);
-  //         // vert.add(new THREE.Vector3(perpDifference.x, 0, perpDifference.y));
-  //         // vert.sub(perpDifference);
-  //         this._bendVertex(vert, bendAngle, arcRadius, heightT);
-  //         vert.y += outlineBounds.max.y;
-  //       } else {
-  //         var vert = new THREE.Vector3(shapeVert.x * outlineXPct, outlineVert.y, shapeVert.y * outlineXPct);
-  //         // vert.add(new THREE.Vector3(perpDifference.x, perpDifference.y, 0));
-  //         // vert.sub(perpDifference);
-  //       }
-
-  //       //   var perpDifference = new THREE.Vector3(outlineVert.x - perpendicularVert.x, outlineVert.y - perpendicularVert.y, 0);
-
-  //       // TODO: check (this is in both cases the same)
-  //       //   if (i == 0) var endVert = new THREE.Vector3(vert.x - perpendicularVert.x, vert.y + perpendicularVert.y, vert.z);
-  //       //   //0);
-  //       //   else var endVert = new THREE.Vector3(vert.x + perpendicularVert.x, vert.y + perpendicularVert.y, vert.z); // 0);
-  //       // var endVert = new THREE.Vector3(vert.x + perpendicularVert.x, vert.y + perpendicularVert.y, vert.z);
-  //       //   rotateVert(endVert, bendAngle * heightT, vert.x, vert.y);
-  //       var outerPerpVert = vert.clone();
-  //       outerPerpVert.x += perpDifference.x;
-  //       outerPerpVert.y += perpDifference.y;
-  //       outerPerpVert.z += perpDifference.z;
-  //       // TODO: re-check
-  //       if (true || normalizePerpendiculars) {
-  //         // normalizeVectorXY(vert, endVert, normalsLength);
-  //         // normalizeVectorXYZ(vert, endVert, normalsLength);
-  //       }
-  //       // Add to cut lines?
-  //       //   if (i == 0) {
-  //       //     this.outerPerpLines.push(new THREE.Line3(vert, endVert));
-  //       //   } else if (i == halfIndices[1]) {
-  //       //     this.innerPerpLines.push(new THREE.Line3(vert, endVert));
-  //       //   }
-  //       // Add to regular normals
-  //       this.dildoNormals[outlineSegmentIndex].push(vert);
-  //       if (i == 0) {
-  //         // console.log("endVert", outerPerpVert);
-  //       }
-  //     } // END for
-  //   }
 
   /**
    * Pre: perpLines are already built.
@@ -397,7 +258,10 @@ export class DildoGeometry extends Gmetry {
 
     // Step 1: serialize the 2d vertex data along the perpendicular path
     // var polygon = new Polygon(this.getPerpendicularPathVertices(true), false);
-    this.flatSidePolygon = new Polygon(this.getPerpendicularPathVertices(true), false);
+    this.flatSidePolygon = new Polygon(
+      this.getPerpendicularPathVertices(true).map(vert => new Vertex(vert)),
+      false
+    );
     this.flatSideBounds = this.flatSidePolygon.getBounds();
 
     // Step 2: Add the 3d vertices to this geometry (and store positions in left-/rightFlatIndices array)
@@ -464,9 +328,10 @@ export class DildoGeometry extends Gmetry {
     }
   }
 
-  getPerpendicularPathVertices(includeBottomVert, getInner?: boolean) {
-    // Array<XYCoords>
-    var polygonVertices = [];
+  getPerpendicularPathVertices(includeBottomVert: boolean, getInner?: boolean) {
+    // Compatible with: Array<XYCoords>
+    // All elements are located on a plane with constant z value.
+    var polygonVertices: Array<THREE.Vector3> = [];
     for (var i = 0; i < this.innerPerpLines.length; i++) {
       polygonVertices.push(getInner ? this.innerPerpLines[i].start : this.innerPerpLines[i].end);
     }
@@ -478,12 +343,12 @@ export class DildoGeometry extends Gmetry {
     if (includeBottomVert) {
       polygonVertices.push(this.vertices[this.bottomIndex]);
     }
+    // return polygonVertices; //.map( vert => ({ x : vert.x, y : vert.y } as));
     return polygonVertices;
   }
 
   getPerpendicularHullLines() {
-    // Array<XYCoords>
-    var perpLines = [];
+    var perpLines: THREE.Line3[] = [];
     for (var i = 0; i < this.innerPerpLines.length; i++) {
       perpLines.push(this.innerPerpLines[i]);
     }
@@ -503,7 +368,7 @@ export class DildoGeometry extends Gmetry {
    * @param {number|undefined} arcRadius
    * @returns THREE.Vector
    */
-  _getTopVertex(outlineBounds, isBending, bendAngle, arcRadius) {
+  _getTopVertex(outlineBounds: Bounds, isBending: boolean, bendAngle: number, arcRadius: number) {
     if (isBending) {
       var topPoint = new THREE.Vector3(0, 0, 0);
       this._bendVertex(topPoint, bendAngle, arcRadius, 1.0);
@@ -518,27 +383,23 @@ export class DildoGeometry extends Gmetry {
    * Construct the bottom vertex that's used to closed the cylinder geometry at the bottom.
    *
    * @param {plotboilerplate.Bounds} outlineBounds
-   * @param {boolean} isBending
    * @returns THREE.Vector
    */
-  _getBottomVertex(outlineBounds) {
+  _getBottomVertex(outlineBounds: Bounds) {
     var bottomPoint = new THREE.Vector3(0, outlineBounds.max.y, 0);
-    // if (isBending) {
     // No need to bend the bottom point (no effect)
-    // this._bendVertex(bottomPoint, bendAngle, arcRadius, 0.0);
-    // }
     return bottomPoint;
   }
 
   /**
    * A helper function to 'bend' a vertex position around the desired bend axis (angle + radius).
    * @private
-   * @param {} vert
-   * @param {*} bendAngle
-   * @param {*} arcRadius
-   * @param {*} heightT
+   * @param {THREE.Vector3} vert
+   * @param {number} bendAngle
+   * @param {number} arcRadius
+   * @param {number} heightT
    */
-  _bendVertex(vert, bendAngle, arcRadius, heightT) {
+  _bendVertex(vert: THREE.Vector3, bendAngle: number, arcRadius: number, heightT: number) {
     var axis = new THREE.Vector3(0, 0, 1);
     var angle = bendAngle * heightT;
     // Move slice point along radius, rotate, then move back
@@ -548,93 +409,29 @@ export class DildoGeometry extends Gmetry {
     vert.x += arcRadius;
   }
 
-  /**
-   * Rotate a 3d vector around the z axis (back-front-axis).
-   *
-   * @param {THREE.Vector3} vert
-   * @param {THREE.Vector3} angle
-   * @param {number} xCenter
-   * @param {number} yCenter
-   * @returns
-   */
-  //   // TODO: move to helpers
-  //   var rotateVert = function (vert, angle, xCenter, yCenter) {
-  //     var axis = new THREE.Vector3(0, 0, 1);
-  //     vert.x -= xCenter;
-  //     vert.y -= yCenter;
-  //     vert.applyAxisAngle(axis, angle);
-  //     vert.x += xCenter;
-  //     vert.y += yCenter;
-  //     return vert;
-  //   };
-
-  //   /**
-  //    * Rotate a 3d vector around the y axis (up-down-axis).
-  //    *
-  //    * @param {THREE.Vector3} vert
-  //    * @param {THREE.Vector3} angle
-  //    * @param {number} xCenter
-  //    * @param {number} zCenter
-  //    * @returns
-  //    */
-  //   // TODO: move to helpers
-  //   var rotateVertY = function (vert, angle, xCenter, zCenter) {
-  //     var axis = new THREE.Vector3(0, 1, 0);
-  //     vert.x -= xCenter;
-  //     vert.z -= zCenter;
-  //     vert.applyAxisAngle(axis, angle);
-  //     vert.x += xCenter;
-  //     vert.z += zCenter;
-  //     return vert;
-  //   };
-
-  //   /**
-  //    * Normalize a 2D vector to a given length.
-  //    *
-  //    * @param {XYCoords} base - The start point.
-  //    * @param {XYCoords} extend - The end point.
-  //    * @param {number} normalLength - The desired length
-  //    */
-  //   var normalizeVectorXY = function (base, extend, normalLength) {
-  //     var diff = { x: extend.x - base.x, y: extend.y - base.y }; // XYCoords
-  //     var length = Math.sqrt(diff.x * diff.x + diff.y * diff.y);
-  //     var ratio = normalLength / length;
-  //     extend.x = base.x + diff.x * ratio;
-  //     extend.y = base.y + diff.y * ratio;
-  //   };
-
-  // computeVertexNormals() {
-  //   for( var f = 0; f < this.faces.length; f++ ) {
-  //       var face = this.faces[f];
-
-  //   }
-  // }
-
   // TODO
   applyBumpMap(bumpMapTexture: THREE.Texture) {
     // Build normals
-
-    for (var i = 0; i < this.vertexMatrix.length; i++) {
-      for (var j = 0; j < this.vertexMatrix[i].length; j++) {
-        var vertIndex = this.vertexMatrix[i][j];
-        var vertex = this.vertices[vertIndex];
-      }
-    }
+    // for (var i = 0; i < this.vertexMatrix.length; i++) {
+    //   for (var j = 0; j < this.vertexMatrix[i].length; j++) {
+    //     var vertIndex = this.vertexMatrix[i][j];
+    //     var vertex = this.vertices[vertIndex];
+    //   }
+    // }
   }
 
   /**
    * Build up the faces for this geometry.
-   * @param {*} options
+   * @param {ExtendedDildoOptions} options
    */
-  // DildoGeometry.prototype._buildFaces = function (options) {
-  private _buildFaces(options) {
-    var baseShape = options.baseShape;
-    var outlineSegmentCount = options.outlineSegmentCount;
-    var closeTop = Boolean(options.closeTop);
-    var closeBottom = Boolean(options.closeBottom);
-    var makeHollow = Boolean(options.makeHollow);
+  private _buildFaces(options: ExtendedDildoOptions) {
+    const baseShape = options.baseShape;
+    const outlineSegmentCount = options.outlineSegmentCount;
+    const closeTop = Boolean(options.closeTop);
+    const closeBottom = Boolean(options.closeBottom);
+    const makeHollow = Boolean(options.makeHollow);
 
-    var baseShapeSegmentCount = baseShape.vertices.length;
+    const baseShapeSegmentCount = baseShape.vertices.length;
     this.faceVertexUvs[0] = [];
 
     for (var s = 0; s < outlineSegmentCount; s++) {
@@ -666,16 +463,15 @@ export class DildoGeometry extends Gmetry {
   }
 
   _buildHollowBottomFaces() {
-    var _self = this;
-    var edgeVertices = this.hollowBottomEdgeVertIndices.map(function (edgeVertIndex) {
+    const _self = this;
+    const edgeVertices = this.hollowBottomEdgeVertIndices.map((edgeVertIndex: number) => {
       return _self.vertices[edgeVertIndex];
     });
 
-    var findClosestEdgeIndex = function (vert) {
-      // THREE.Vector
-      var index = 0;
-      var distance = Number.MAX_VALUE;
-      var tmpDist;
+    const findClosestEdgeIndex = (vert: THREE.Vector3) => {
+      let index = 0;
+      let distance = Number.MAX_VALUE;
+      let tmpDist: number;
       for (var i = 0; i < edgeVertices.length; i++) {
         var tmpIndex = _self.hollowBottomEdgeVertIndices[i];
         if ((tmpDist = edgeVertices[i].distanceTo(vert)) < distance) {
@@ -689,7 +485,7 @@ export class DildoGeometry extends Gmetry {
     // 'Last index' starts at last point at all : )
     var n = this.vertexMatrix[0].length;
     var lastIndex = findClosestEdgeIndex(this.vertices[n - 1]);
-    var triangleIndices: [number, number, number]; // = []; // [number,number,number]
+    var triangleIndices: [number, number, number];
     // Use first slice (at bottom position)
     for (var i = 0; i < n; i++) {
       var curIndex = findClosestEdgeIndex(this.vertices[this.vertexMatrix[0][i]]);
@@ -716,7 +512,7 @@ export class DildoGeometry extends Gmetry {
    * @param {number} baseShapeSegmentCount - The number of shape segments.
    * @param {boolean=false} inverseFaceDirection - If true then the face will have left winding order (instead of right which is the default).
    */
-  _buildEndFaces(endVertexIndex, shapeIndex, baseShapeSegmentCount, inverseFaceDirection) {
+  _buildEndFaces(endVertexIndex: number, shapeIndex: number, baseShapeSegmentCount: number, inverseFaceDirection: boolean) {
     // Close at top.
     for (var i = 1; i < baseShapeSegmentCount; i++) {
       GeometryGenerationHelpers.makeFace3(
@@ -740,8 +536,6 @@ export class DildoGeometry extends Gmetry {
 
   /**
    * Pre: flatSides are made
-   *
-   * @param {*} options
    */
   private __makeBackFrontFaces() {
     // Connect left and right side (important: ignore bottom vertex at last index)
@@ -759,12 +553,9 @@ export class DildoGeometry extends Gmetry {
   /**
    * Build the texture UV mapping for all faces.
    *
-   * @param {Polygon} options.baseShape
-   * @param {number} options.outlineSegmentCount
-   * @param {number} options.vertices.length
+   * @param {ExtendedDildoOptions} options
    */
-  // DildoGeometry.prototype._buildUVMapping = function (options) {
-  private _buildUVMapping(options) {
+  private _buildUVMapping(options: ExtendedDildoOptions) {
     var baseShape = options.baseShape;
     var outlineSegmentCount = options.outlineSegmentCount;
     var baseShapeSegmentCount = baseShape.vertices.length;
@@ -842,7 +633,7 @@ export class DildoGeometry extends Gmetry {
     // Build UV mapping for the bottom (base)
     if (closeBottom) {
       if (makeHollow) {
-        makeHollowBottomUVs(this, this.hollowBottomEdgeVertIndices, this.hollowBottomTriagles);
+        UVHelpers.makeHollowBottomUVs(this, this.hollowBottomEdgeVertIndices, this.hollowBottomTriagles);
       } else {
         for (var i = 1; i < baseShapeSegmentCount; i++) {
           GeometryGenerationHelpers.addPyramidalBaseUV3(this, i - 1, baseShapeSegmentCount);
@@ -887,7 +678,7 @@ export class DildoGeometry extends Gmetry {
    * @param {number} d - The second seconday index in the `vertexMatrix[c]` array.
    * @param {boolean=false} inverseFaceDirection - If true then the face will have left winding order (instead of right which is the default).
    */
-  addFace4ByIndices(a, b, c, d, inverseFaceDirection) {
+  addFace4ByIndices(a: number, b: number, c: number, d: number, inverseFaceDirection: boolean) {
     GeometryGenerationHelpers.makeFace4(
       this,
       this.vertexMatrix[a][b],
@@ -959,19 +750,6 @@ export class DildoGeometry extends Gmetry {
         normalizePerpendiculars,
         normalsLength
       );
-      // this.__buildNormals(
-      //   s,
-      //   baseShape,
-      //   outlineBounds,
-      //   outlineVert,
-      //   perpendicularVert,
-      //   heightT,
-      //   isBending,
-      //   bendAngleRad,
-      //   arcRadius,
-      //   normalizePerpendiculars,
-      //   normalsLength
-      // );
     } // END for
 
     const topVertex: THREE.Vector3 = this._getTopVertex(outlineBounds, isBending, bendAngleRad, arcRadius);
@@ -989,108 +767,13 @@ export class DildoGeometry extends Gmetry {
     }
   }
 
+  // TODO: this function currently does nothing
   private __applyBumpmap(bumpmapTexture: THREE.Texture) {
-    const tmp: Gmetry = this as unknown as Gmetry;
-    for (var i = 0; i < this.vertexMatrix.length; i++) {
-      for (var j = 0; j < this.vertexMatrix[i].length; j++) {
-        // apply local bump map
-        // const normal = tmp.
-      }
-    }
+    // const tmp: Gmetry = this as unknown as Gmetry;
+    // for (var i = 0; i < this.vertexMatrix.length; i++) {
+    //   for (var j = 0; j < this.vertexMatrix[i].length; j++) {
+    //     // apply local bump map
+    //   }
+    // }
   }
 } // END class
-
-// TODO: move to helpers
-var rotateVert = function (vert, angle, xCenter, yCenter) {
-  var axis = new THREE.Vector3(0, 0, 1);
-  vert.x -= xCenter;
-  vert.y -= yCenter;
-  vert.applyAxisAngle(axis, angle);
-  vert.x += xCenter;
-  vert.y += yCenter;
-  return vert;
-};
-
-/**
- * Rotate a 3d vector around the y axis (up-down-axis).
- *
- * @param {THREE.Vector3} vert
- * @param {THREE.Vector3} angle
- * @param {number} xCenter
- * @param {number} zCenter
- * @returns
- */
-// TODO: move to helpers
-var rotateVertY = function (vert, angle, xCenter, zCenter) {
-  var axis = new THREE.Vector3(0, 1, 0);
-  vert.x -= xCenter;
-  vert.z -= zCenter;
-  vert.applyAxisAngle(axis, angle);
-  vert.x += xCenter;
-  vert.z += zCenter;
-  return vert;
-};
-
-// /**
-//  * Normalize a 2D vector to a given length.
-//  *
-//  * @param {XYCoords} base - The start point.
-//  * @param {XYCoords} extend - The end point.
-//  * @param {number} normalLength - The desired length
-//  */
-// // TODO: add types
-// var normalizeVectorXY = function (base, extend, normalLength) {
-//   var diff = { x: extend.x - base.x, y: extend.y - base.y }; // XYCoords
-//   var length = Math.sqrt(diff.x * diff.x + diff.y * diff.y);
-//   var ratio = normalLength / length;
-//   extend.x = base.x + diff.x * ratio;
-//   extend.y = base.y + diff.y * ratio;
-// };
-
-/**
- * Normalize a 2D vector to a given length.
- *
- * @param {THREE.Vector3} base - The start point.
- * @param {THREE.Vector3} extend - The end point.
- * @param {number} normalLength - The desired length
- */
-// TOTO: add types
-var normalizeVectorXYZ = function (base, extend, normalLength) {
-  var diff = { x: extend.x - base.x, y: extend.y - base.y, z: extend.z - base.z };
-  var length = Math.sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
-  var ratio = normalLength / length;
-  extend.x = base.x + diff.x * ratio;
-  extend.y = base.y + diff.y * ratio;
-  extend.z = base.z + diff.z * ratio;
-};
-
-/**
- *
- * @param {THREE.Geometry} thisGeometry
- * @param {Array<number>} containingPolygonIndices
- * @param {Array<[number,number,number]>} triangles
- */
-var makeHollowBottomUVs = function (thisGeometry, containingPolygonIndices, triangles) {
-  // Compute polyon bounds
-  var polygonBounds = Bounds.computeFromVertices(
-    containingPolygonIndices.map(function (vertIndex) {
-      return new Vertex(thisGeometry.vertices[vertIndex].x, thisGeometry.vertices[vertIndex].z);
-    })
-  );
-
-  var getUVRatios = function (vert) {
-    // console.log((vert.x - shapeBounds.min.x) / shapeBounds.width, (vert.y - shapeBounds.min.y) / shapeBounds.height);
-    return new THREE.Vector2(
-      (vert.x - polygonBounds.min.x) / polygonBounds.width,
-      (vert.z - polygonBounds.min.y) / polygonBounds.height
-    );
-  };
-
-  // ON the x-z-plane {x, *, z}
-  for (var t = 0; t < triangles.length; t++) {
-    var vertA = thisGeometry.vertices[triangles[t][0]];
-    var vertB = thisGeometry.vertices[triangles[t][1]];
-    var vertC = thisGeometry.vertices[triangles[t][2]];
-    thisGeometry.faceVertexUvs[0].push([getUVRatios(vertA), getUVRatios(vertB), getUVRatios(vertC)]);
-  }
-};

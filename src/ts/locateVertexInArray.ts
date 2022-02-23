@@ -19,7 +19,7 @@ export const locateVertexInArray = (vertArray: Array<THREE.Vector3>, vertex: THR
   let closestDist = Number.POSITIVE_INFINITY;
   let closestIndex = -1;
   for (var i = 0; i < vertArray.length; i++) {
-    var dist = vertArray[i].distanceTo(vertex);
+    const dist = vertArray[i].distanceTo(vertex);
     if (closestIndex === -1 && dist < closestDist && dist < epsilon) {
       closestIndex = i;
       closestDist = dist;

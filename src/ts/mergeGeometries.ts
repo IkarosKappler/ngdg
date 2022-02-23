@@ -14,8 +14,8 @@ import * as THREE from "three";
 import { locateVertexInArray } from "./locateVertexInArray";
 import { Face3, Gmetry } from "three-geometry-hellfix";
 
-const EPS: number = 0.000001;
-// import { EPS } from "./constants";
+// const EPS: number = 0.000001;
+import { EPS } from "./constants";
 
 /**
  * This function tries to merge the 'mergeGeometry' into the 'baseGeometry'.
@@ -38,12 +38,10 @@ export const mergeGeometries = (baseGeometry: Gmetry, mergeGeometry: Gmetry, eps
     var a = vertexMap[face.a];
     var b = vertexMap[face.b];
     var c = vertexMap[face.c];
-    // baseGeometry.faces.push(new THREE.Face3(a, b, c));
-    // TODO: how to use this here?
-    // Face3 is not a constructor!!! Just a type!!!
     baseGeometry.faces.push(new Face3(a, b, c));
     if (mergeGeometry.faceVertexUvs.length > 0 && f < mergeGeometry.faceVertexUvs[0].length) {
-      var uvData: THREE.Vector2[] = mergeGeometry.faceVertexUvs[0][f]; // [Vector2,Vector2,Vector2]
+      // [Vector2,Vector2,Vector2]
+      var uvData: THREE.Vector2[] = mergeGeometry.faceVertexUvs[0][f];
       baseGeometry.faceVertexUvs[0].push([uvData[0].clone(), uvData[1].clone(), uvData[2].clone()]);
     } else {
       baseGeometry.faceVertexUvs[0].push([new THREE.Vector2(0.0, 0.0), new THREE.Vector2(0.0, 1.0), new THREE.Vector2(1.0, 0.5)]);

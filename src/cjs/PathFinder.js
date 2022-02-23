@@ -58,7 +58,6 @@ var PathFinder = /** @class */ (function () {
         // to be processed.
         while (this.numVisitedVertices < n) {
             var nextUnvisitedIndex = this.unvisitedVertIndices.values().next().value;
-            // Array<number>
             var path = this.findUnvisitedPaths(unbufferedGeometry, pathVertIndices, nextUnvisitedIndex);
             collectedPaths.push(path);
         }
@@ -79,12 +78,11 @@ var PathFinder = /** @class */ (function () {
      * @returns {Array<number>} The indices of the found path in an array (index sequence).
      */
     PathFinder.prototype.findUnvisitedPaths = function (unbufferedGeometry, pathVertIndices, unvisitedIndex) {
-        var path = [unvisitedIndex]; // which elements?
+        var path = [unvisitedIndex];
         this.visitedVertices.add(unvisitedIndex);
         this.unvisitedVertIndices.delete(unvisitedIndex);
         this.numVisitedVertices++;
         // Find the the face for this vertex's index
-        // var faceAndVertIndex; // { faceIndex: number, vertIndex: number }
         var adjacentVertIndex;
         while ((adjacentVertIndex = this.findAdjacentFace(unbufferedGeometry, pathVertIndices, unvisitedIndex)) !== -1) {
             // Retrieved face/vertex tuple represents the next element on the path
@@ -161,7 +159,7 @@ var PathFinder = /** @class */ (function () {
             var currentPathIndex = unvisitedPathIndexSet.values().next().value;
             unvisitedPathIndexSet.delete(currentPathIndex);
             var currentPath = collectedPaths[currentPathIndex];
-            var nextPath = null; // TODO: type?
+            var nextPath = null;
             do {
                 nextPath = findAdjacentPath(collectedPaths, currentPath[currentPath.length - 1], unvisitedPathIndexSet, unbufferedGeometry);
                 if (!nextPath && currentPath.length > 1) {

@@ -1,16 +1,18 @@
 /**
  * A helper to apply bumpmaps to any rectangular mesh.
  *
- * @author  Ikaros Kappler
- * @date    2021-09-06
+ * Currently not in use because it's buggy.
+ *
+ * @author   Ikaros Kappler
+ * @date     2021-09-06
  * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version 1.0.1
+ * @version  1.0.1
  */
 
 import * as THREE from "three";
 import { computeVertexNormals } from "./computeVertexNormals";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
-import { DildoOptions, IBumpmap, IDildoGeometry } from "./interfaces";
+import { DildoOptions, IBumpmap } from "./interfaces";
 import { Gmetry } from "three-geometry-hellfix";
 import { DildoGeometry } from "./DildoGeometry";
 

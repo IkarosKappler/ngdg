@@ -15,8 +15,8 @@ exports.mergeAndMapVertices = exports.mergeGeometries = void 0;
 var THREE = require("three");
 var locateVertexInArray_1 = require("./locateVertexInArray");
 var three_geometry_hellfix_1 = require("three-geometry-hellfix");
-var EPS = 0.000001;
-// import { EPS } from "./constants";
+// const EPS: number = 0.000001;
+var constants_1 = require("./constants");
 /**
  * This function tries to merge the 'mergeGeometry' into the 'baseGeometry'.
  * It assumes that both geometries are somehow connected, so it will try to
@@ -30,7 +30,7 @@ var EPS = 0.000001;
  */
 var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
     if (typeof epsilon === "undefined") {
-        epsilon = EPS;
+        epsilon = constants_1.EPS;
     }
     var vertexMap = (0, exports.mergeAndMapVertices)(baseGeometry, mergeGeometry, epsilon);
     for (var f = 0; f < mergeGeometry.faces.length; f++) {
@@ -38,12 +38,10 @@ var mergeGeometries = function (baseGeometry, mergeGeometry, epsilon) {
         var a = vertexMap[face.a];
         var b = vertexMap[face.b];
         var c = vertexMap[face.c];
-        // baseGeometry.faces.push(new THREE.Face3(a, b, c));
-        // TODO: how to use this here?
-        // Face3 is not a constructor!!! Just a type!!!
         baseGeometry.faces.push(new three_geometry_hellfix_1.Face3(a, b, c));
         if (mergeGeometry.faceVertexUvs.length > 0 && f < mergeGeometry.faceVertexUvs[0].length) {
-            var uvData = mergeGeometry.faceVertexUvs[0][f]; // [Vector2,Vector2,Vector2]
+            // [Vector2,Vector2,Vector2]
+            var uvData = mergeGeometry.faceVertexUvs[0][f];
             baseGeometry.faceVertexUvs[0].push([uvData[0].clone(), uvData[1].clone(), uvData[2].clone()]);
         }
         else {

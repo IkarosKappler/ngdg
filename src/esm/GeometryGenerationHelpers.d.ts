@@ -6,15 +6,15 @@
  * @author   Ikaros Kappler
  * @date     2021-06-30
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version  1.0.0
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.0.1
  */
 import * as THREE from "three";
 import { Polygon, XYCoords } from "plotboilerplate";
 import { Gmetry } from "three-geometry-hellfix";
 import { DildoOptions, IDildoGeneration } from "./interfaces";
-import { /* DildoBaseClass, */ DildoGeometry } from "./DildoGeometry";
-import { BufferGeometry } from "three";
+import { DildoGeometry } from "./DildoGeometry";
+import { BufferGeometry, Vector3 } from "three";
 export declare const GeometryGenerationHelpers: {
     /**
      * Create a (right-turning) triangle of the three vertices at index A, B and C.
@@ -174,4 +174,24 @@ export declare const GeometryGenerationHelpers: {
      */
     clamp: (n: number, min: number, max: number) => number;
     verticesToBufferGeometry: (vertices: THREE.Vector3[]) => THREE.BufferGeometry;
+    /**
+     * Rotate a 3d vertex around its z axsis.
+     *
+     * @param {THREE.Vector3} vert - The vertex to rotate (in-place).
+     * @param {number} angle - The angle to rotate abount (in radians).
+     * @param {number} xCenter - The x component of the z axis to rotate around.
+     * @param {number} yCenter - The y component of the z axis to rotate around.
+     * @returns {THREE.Vector3} The vertex itself (for chaining).
+     */
+    rotateVert: (vert: Vector3, angle: number, xCenter: number, yCenter: number) => THREE.Vector3;
+    /**
+     * Rotate a 3d vector around the y axis (up-down-axis).
+     *
+     * @param {THREE.Vector3} vert
+     * @param {THREE.Vector3} angle
+     * @param {number} xCenter
+     * @param {number} zCenter
+     * @returns
+     */
+    rotateVertY: (vert: Vector3, angle: number, xCenter: number, zCenter: number) => THREE.Vector3;
 };

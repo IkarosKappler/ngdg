@@ -24,15 +24,13 @@ export const DildoMaterials = (() => {
          * @param {THREE.DoubleSide|THREE.FrontSide|THREE.Backside} doubleSingleSide - Wether to display one one or both face sides.
          * @returns
          */
-        createMainMaterial: function (useTextureImage, wireframe, textureImagePath, doubleSingleSide) {
+        createMainMaterial: (useTextureImage, wireframe, textureImagePath, doubleSingleSide) => {
             return useTextureImage
                 ? new THREE.MeshLambertMaterial({
                     color: 0xffffff,
                     wireframe: wireframe,
-                    //   flatShading: false,
                     depthTest: true,
                     opacity: 1.0,
-                    // side: THREE.DoubleSide,
                     side: doubleSingleSide,
                     visible: true,
                     emissive: 0x0,
@@ -46,7 +44,6 @@ export const DildoMaterials = (() => {
                     flatShading: false,
                     depthTest: true,
                     opacity: 1.0,
-                    // side: THREE.DoubleSide,
                     side: doubleSingleSide,
                     visible: true,
                     emissive: 0x0,
@@ -55,20 +52,17 @@ export const DildoMaterials = (() => {
                     map: null
                 });
         },
-        createSliceMaterial: function (useTextureImage, wireframe, textureImagePath) {
+        createSliceMaterial: (useTextureImage, wireframe, textureImagePath) => {
             if (wireframe) {
                 return new THREE.MeshBasicMaterial({ wireframe: true });
-                // return new THREE.MeshStandardMaterial({ wireframe: true });
             }
             else {
                 return new THREE.MeshLambertMaterial({
                     color: useTextureImage ? 0x888888 : 0xa1848a8,
                     wireframe: false,
-                    // flatShading: false,
                     depthTest: true,
                     opacity: 1.0,
                     side: THREE.DoubleSide,
-                    // side: doubleSingleSide,
                     visible: true,
                     emissive: 0x0,
                     reflectivity: 1.0,

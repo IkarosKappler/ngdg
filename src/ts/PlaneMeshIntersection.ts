@@ -54,10 +54,9 @@ export class PlaneMeshIntersection {
    *
    * @param {THREE.Mesh} mesh
    * @param {ThreeGeometryHellfix.Gmetry} geometry
-   * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
+   * @param {THREE.Mesh} plane
    * @returns {Array<THREE.Vector3>}
    */
-  // TODO: plane type???
   getIntersectionPoints = (
     mesh: THREE.Mesh,
     geometry: Gmetry | DildoGeometry,
@@ -67,18 +66,7 @@ export class PlaneMeshIntersection {
     // Note: this could also work with a directly passed Mesh.Plane object instead a THREE.PlaneGeometry.
     this.pointsOfIntersection = [];
     var mathPlane = new THREE.Plane();
-    // var planeGeometry : THREE.Geometry = (plane as unknown).geometry;
-    // plane.localToWorld(this.planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
-    // plane.localToWorld(this.planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
-    // plane.localToWorld(this.planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
-
-    // TODO: https://discourse.threejs.org/t/three-geometry-will-be-removed-from-core-with-r125/22401/13
-    // plane.localToWorld(this.planePointA.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].a]));
-    // plane.localToWorld(this.planePointB.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].b]));
-    // plane.localToWorld(this.planePointC.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].c]));
-
     const [a, b, c] = getThreePlanePoints(planeGeometryReal);
-
     plane.localToWorld(this.planePointA.copy(a));
     plane.localToWorld(this.planePointB.copy(b));
     plane.localToWorld(this.planePointC.copy(c));
@@ -101,7 +89,7 @@ export class PlaneMeshIntersection {
     return this.pointsOfIntersection;
   };
 
-  private __setPointOfIntersection = function (line: THREE.Line3, plane: THREE.Plane) {
+  private __setPointOfIntersection = (line: THREE.Line3, plane: THREE.Plane) => {
     var intersectionPoint = plane.intersectLine(line, this.pointOfIntersection);
     if (intersectionPoint) {
       this.pointsOfIntersection.push(intersectionPoint.clone());

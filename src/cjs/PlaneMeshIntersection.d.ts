@@ -34,7 +34,7 @@ export declare class PlaneMeshIntersection {
      *
      * @param {THREE.Mesh} mesh
      * @param {ThreeGeometryHellfix.Gmetry} geometry
-     * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
+     * @param {THREE.Mesh} plane
      * @returns {Array<THREE.Vector3>}
      */
     getIntersectionPoints: (mesh: THREE.Mesh, geometry: Gmetry | DildoGeometry, plane: THREE.Mesh, planeGeometryReal: THREE.PlaneGeometry) => Array<THREE.Vector3>;

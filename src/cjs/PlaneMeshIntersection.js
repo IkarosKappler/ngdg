@@ -25,22 +25,13 @@ var PlaneMeshIntersection = /** @class */ (function () {
          *
          * @param {THREE.Mesh} mesh
          * @param {ThreeGeometryHellfix.Gmetry} geometry
-         * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
+         * @param {THREE.Mesh} plane
          * @returns {Array<THREE.Vector3>}
          */
-        // TODO: plane type???
         this.getIntersectionPoints = function (mesh, geometry, plane, planeGeometryReal) {
             // Note: this could also work with a directly passed Mesh.Plane object instead a THREE.PlaneGeometry.
             _this.pointsOfIntersection = [];
             var mathPlane = new THREE.Plane();
-            // var planeGeometry : THREE.Geometry = (plane as unknown).geometry;
-            // plane.localToWorld(this.planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
-            // plane.localToWorld(this.planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
-            // plane.localToWorld(this.planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
-            // TODO: https://discourse.threejs.org/t/three-geometry-will-be-removed-from-core-with-r125/22401/13
-            // plane.localToWorld(this.planePointA.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].a]));
-            // plane.localToWorld(this.planePointB.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].b]));
-            // plane.localToWorld(this.planePointC.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].c]));
             var _a = getThreePlanePoints(planeGeometryReal), a = _a[0], b = _a[1], c = _a[2];
             plane.localToWorld(_this.planePointA.copy(a));
             plane.localToWorld(_this.planePointB.copy(b));
@@ -61,9 +52,9 @@ var PlaneMeshIntersection = /** @class */ (function () {
             return _this.pointsOfIntersection;
         };
         this.__setPointOfIntersection = function (line, plane) {
-            var intersectionPoint = plane.intersectLine(line, this.pointOfIntersection);
+            var intersectionPoint = plane.intersectLine(line, _this.pointOfIntersection);
             if (intersectionPoint) {
-                this.pointsOfIntersection.push(intersectionPoint.clone());
+                _this.pointsOfIntersection.push(intersectionPoint.clone());
             }
         };
         //   Vector3[]

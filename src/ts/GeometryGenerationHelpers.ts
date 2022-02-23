@@ -6,23 +6,23 @@
  * @author   Ikaros Kappler
  * @date     2021-06-30
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version  1.0.0
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.0.1
  */
 
 import * as THREE from "three";
 import { earcut } from "earcut-typescript";
 import { Bounds, Polygon, Vertex, XYCoords } from "plotboilerplate";
-import { sliceGeometry } from "threejs-slice-geometry-typescript"; // TODO: convert to custom library
+import { sliceGeometry } from "threejs-slice-geometry-typescript";
 import { PlaneMeshIntersection } from "./PlaneMeshIntersection";
 import { clearDuplicateVertices3 } from "./clearDuplicateVertices3";
 import { Face3, Gmetry } from "three-geometry-hellfix";
 
-import { DildoOptions, IDildoGeneration, IDildoGeometry } from "./interfaces";
-import { /* DildoBaseClass, */ DildoGeometry } from "./DildoGeometry";
+import { DildoOptions, IDildoGeneration } from "./interfaces";
+import { DildoGeometry } from "./DildoGeometry";
 import { UVHelpers } from "./UVHelpers";
 import { KEY_PLANE_INTERSECTION_TRIANGULATION } from "./constants";
-import { BufferGeometry } from "three";
+import { BufferGeometry, Vector3 } from "three";
 
 export const GeometryGenerationHelpers = {
   /**
@@ -248,17 +248,11 @@ export const GeometryGenerationHelpers = {
     );
     const EPS: number = 0.000001;
     const uniqueIntersectionPoints: Array<THREE.Vector3> = clearDuplicateVertices3(intersectionPoints, EPS);
-
-    // TODO: verify
-    // const pointGeometry: Gmetry = new Gmetry();
-    // pointGeometry.vertices = uniqueIntersectionPoints;
     const pointGeometry = GeometryGenerationHelpers.verticesToBufferGeometry(uniqueIntersectionPoints);
     const pointsMaterial: THREE.Material = new THREE.PointsMaterial({
       size: 1.4,
       color: 0x00ffff
     });
-    // TODO: verify
-    // const pointsMesh: THREE.Points = new THREE.Points(pointGeometry.toBufferGeometry(), pointsMaterial);
     const pointsMesh: THREE.Points = new THREE.Points(pointGeometry, pointsMaterial);
 
     if (options.showSplitShape) {
@@ -426,7 +420,6 @@ export const GeometryGenerationHelpers = {
     thisGenerator.addMesh(outerPerpMesh);
   },
 
-  // TODO: add to global helper functions
   /**
    * Make a triangulation of the given path specified by the verted indices.
    *
@@ -564,5 +557,44 @@ export const GeometryGenerationHelpers = {
     geometry.setAttribute("position", new THREE.BufferAttribute(vertexData, 3));
 
     return geometry;
+  },
+
+  /**
+   * Rotate a 3d vertex around its z axsis.
+   *
+   * @param {THREE.Vector3} vert - The vertex to rotate (in-place).
+   * @param {number} angle - The angle to rotate abount (in radians).
+   * @param {number} xCenter - The x component of the z axis to rotate around.
+   * @param {number} yCenter - The y component of the z axis to rotate around.
+   * @returns {THREE.Vector3} The vertex itself (for chaining).
+   */
+  rotateVert: (vert: Vector3, angle: number, xCenter: number, yCenter: number) => {
+    var axis = new THREE.Vector3(0, 0, 1);
+    vert.x -= xCenter;
+    vert.y -= yCenter;
+    vert.applyAxisAngle(axis, angle);
+    vert.x += xCenter;
+    vert.y += yCenter;
+    return vert;
+  },
+
+  /**
+   * Rotate a 3d vector around the y axis (up-down-axis).
+   *
+   * @param {THREE.Vector3} vert
+   * @param {THREE.Vector3} angle
+   * @param {number} xCenter
+   * @param {number} zCenter
+   * @returns
+   */
+  // TODO: move to helpers
+  rotateVertY: function (vert: Vector3, angle: number, xCenter: number, zCenter: number) {
+    var axis = new THREE.Vector3(0, 1, 0);
+    vert.x -= xCenter;
+    vert.z -= zCenter;
+    vert.applyAxisAngle(axis, angle);
+    vert.x += xCenter;
+    vert.z += zCenter;
+    return vert;
   }
 };

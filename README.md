@@ -8,7 +8,7 @@ Because 3d printing, web 3d, and dildos are fun.
 
 - [Bugs](#bugs)
 - [todos](#todos)
-- [changelog]
+- [changelog](#changelos)
 
 ## Bugs
 
@@ -19,12 +19,12 @@ Because 3d printing, web 3d, and dildos are fun.
 
 - [x] Configure webpack to handle type definitions in node_modules correctly.
 - [x] Port all vanilla JS parts to Typescript.
-- [ ] Arrange splits on plane.
+- [x] Arrange splits on plane.
 - [x] Update to THREE >= r125. Replace all THREE.Geometry and THREE.Face3 instances by proper BufferGeometries
       (not supported any more since r125). See https://sbcode.net/threejs/geometry-to-buffergeometry/ for details.
 - [x] Rename base branch to 'main'.
 - [x] Create a Typescript port from mapbox/earcut.
-- [ ] Create a Typescript port from tdhooper/threejs-slice-geometry.
+- [x] Create a Typescript port from tdhooper/threejs-slice-geometry.
 - [x] Add a proper Typescript interface for all available dildo generation options.
 - [ ] STL-Export: merge all exportable geometries together and export as one.
 - [ ] Add a 'Material' switch/tab.
@@ -32,12 +32,16 @@ Because 3d printing, web 3d, and dildos are fun.
 - [x] Define one global library export to avoid environment pollution.
 - [x] Remove unused build libraries: babel, rollup.
 - [x] Remove old alloyfinger library. Replace by alloyfinger-typescript.
-- [ ] Add a session storage for the current settings, especially the Bézier curve and bend.
-- [ ] Make the Bézier curve more look like in the old version.
-- [ ] Add horizonal and vertical scale like in the old version.
+- [x] Add a session storage for the current settings, especially the Bézier curve..
+- [ ] Add a session storage for the bend setting.
+- [x] Make the Bézier curve more look like in the old version.
+- [x] Add horizonal and vertical scale like in the old version.
+- [ ] Fix the string.substr deprecation issue in `isMobileDevice`.
 
 ### Changelog
 
+- 2022-02-23
+  - Added proper types to all function params.
 - 2022-02-22
   - Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
   - Upgrading all components to work with Gmetry or BufferGeometry.

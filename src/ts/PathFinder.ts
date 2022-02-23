@@ -101,8 +101,7 @@ export class PathFinder {
     // to be processed.
     while (this.numVisitedVertices < n) {
       const nextUnvisitedIndex: number = this.unvisitedVertIndices.values().next().value;
-      // Array<number>
-      const path = this.findUnvisitedPaths(unbufferedGeometry, pathVertIndices, nextUnvisitedIndex);
+      const path: Array<number> = this.findUnvisitedPaths(unbufferedGeometry, pathVertIndices, nextUnvisitedIndex);
       collectedPaths.push(path);
     }
 
@@ -124,12 +123,11 @@ export class PathFinder {
    * @returns {Array<number>} The indices of the found path in an array (index sequence).
    */
   findUnvisitedPaths(unbufferedGeometry: Gmetry, pathVertIndices: Array<number>, unvisitedIndex: number): Array<number> {
-    const path: Array<number> = [unvisitedIndex]; // which elements?
+    const path: Array<number> = [unvisitedIndex];
     this.visitedVertices.add(unvisitedIndex);
     this.unvisitedVertIndices.delete(unvisitedIndex);
     this.numVisitedVertices++;
     // Find the the face for this vertex's index
-    // var faceAndVertIndex; // { faceIndex: number, vertIndex: number }
     let adjacentVertIndex: number;
     while ((adjacentVertIndex = this.findAdjacentFace(unbufferedGeometry, pathVertIndices, unvisitedIndex)) !== -1) {
       // Retrieved face/vertex tuple represents the next element on the path
@@ -155,7 +153,6 @@ export class PathFinder {
    */
   findAdjacentFace(unbufferedGeometry: Gmetry, pathVertIndices: Array<number>, unvisitedIndex: number): number {
     const faceCount: number = unbufferedGeometry.faces.length;
-
     for (var f = 0; f < faceCount; f++) {
       if (faceHasVertIndex(unbufferedGeometry, f, unvisitedIndex)) {
         // Face is a canditate to extend the path.
@@ -213,7 +210,7 @@ export class PathFinder {
       const currentPathIndex: number = unvisitedPathIndexSet.values().next().value;
       unvisitedPathIndexSet.delete(currentPathIndex);
       let currentPath: Array<number> = collectedPaths[currentPathIndex];
-      let nextPath: Array<number> = null; // TODO: type?
+      let nextPath: Array<number> = null;
       do {
         nextPath = findAdjacentPath(
           collectedPaths,

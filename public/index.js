@@ -586,7 +586,7 @@
     // | Load the config from the local storage.
     // | Handle file drop.
     // +-------------------------------
-    var localstorageIO = new ngdg.LocalstorageIO(document.getElementsByTagName("body")[0]);
+    var localstorageIO = new ngdg.LocalstorageIO();
     var fileDrop = new FileDrop(pb.eventCatcher);
     fileDrop.onFileJSONDropped(function (jsonObject) {
       try {
@@ -598,14 +598,25 @@
       }
     });
     localstorageIO.onPathRestored(
-      function (jsonString) {
+      function (jsonString, bendAngle, twistAngle) {
         // This is called when json string was loaded from storage
         if (!GUP.rbdata) {
           loadPathJSON(jsonString);
         }
+        if (!GUP.bendAngle) {
+          config.bendAngle = bendAngle;
+        }
+        if (!GUP.twistAngle) {
+          config.twistAngle = twistAngle;
+        }
       },
       function () {
-        return outline ? outline.toJSON() : null;
+        //  return outline ? outline.toJSON() : null;
+        return {
+          bezierJSON: outline ? outline.toJSON() : null,
+          bendAngle: config.bendAngle,
+          twistAngle: config.twistAngle
+        };
       }
     );
 

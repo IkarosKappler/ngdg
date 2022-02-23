@@ -2,10 +2,12 @@
 /**
  * A helper to apply bumpmaps to any rectangular mesh.
  *
- * @author  Ikaros Kappler
- * @date    2021-09-06
+ * Currently not in use because it's buggy.
+ *
+ * @author   Ikaros Kappler
+ * @date     2021-09-06
  * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version 1.0.1
+ * @version  1.0.1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BumpMapper = void 0;
