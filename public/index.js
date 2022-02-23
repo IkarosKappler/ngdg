@@ -538,7 +538,12 @@
       stats.width = pathBounds.width * Rulers.mmPerUnit;
       stats.height = pathBounds.height * Rulers.mmPerUnit;
       stats.diameter = 2 * pathBounds.width * Rulers.mmPerUnit;
-      // stats.area = outline.toPolygon();
+      // Compute area from outline
+      var vertices = outline.getEvenDistributionVertices(100);
+      var bounds = outline.getBounds();
+      vertices.push(new Vertex(bounds.max));
+      var polygon = new Polygon(vertices, false);
+      stats.area = polygon.area();
     };
 
     // THIS IS JUST EXPERIMENTAL
