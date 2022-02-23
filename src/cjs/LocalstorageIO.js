@@ -23,19 +23,23 @@ var LocalstorageIO = /** @class */ (function () {
         var bezierJSON = localStorage.getItem("bezier_path");
         var bendAngle = localStorage.getItem("bend_angle");
         var twistAngle = localStorage.getItem("twist_angle");
+        var baseShapeExcentricity = localStorage.getItem("base_shape_excentricity");
         if (bezierJSON) {
-            handlePathRestored(bezierJSON, bendAngle ? Number(bendAngle) : 0.0, twistAngle ? Number(twistAngle) : 0.0);
+            handlePathRestored(bezierJSON, bendAngle ? Number(bendAngle) : 0.0, twistAngle ? Number(twistAngle) : 0.0, baseShapeExcentricity ? Number(baseShapeExcentricity) : 1.0);
         }
         setInterval(function () {
             var pathData = requestPathData();
             if (pathData.bezierJSON) {
                 localStorage.setItem("bezier_path", pathData.bezierJSON);
             }
-            if (pathData.bendAngle) {
+            if (typeof pathData.bendAngle !== "undefined") {
                 localStorage.setItem("bend_angle", pathData.bendAngle.toString());
             }
-            if (pathData.twistAngle) {
+            if (typeof pathData.twistAngle !== "undefined") {
                 localStorage.setItem("twist_angle", pathData.twistAngle.toString());
+            }
+            if (typeof pathData.baseShapeExcentricity !== "undefined") {
+                localStorage.setItem("base_shape_excentricity", pathData.baseShapeExcentricity.toString());
             }
         }, 10000);
     };

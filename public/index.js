@@ -598,7 +598,7 @@
       }
     });
     localstorageIO.onPathRestored(
-      function (jsonString, bendAngle, twistAngle) {
+      function (jsonString, bendAngle, twistAngle, baseShapeExcentricity) {
         // This is called when json string was loaded from storage
         if (!GUP.rbdata) {
           loadPathJSON(jsonString);
@@ -609,13 +609,17 @@
         if (!GUP.twistAngle) {
           config.twistAngle = twistAngle;
         }
+        if (!GUP.baseShapeExcentricity) {
+          config.baseShapeExcentricity = baseShapeExcentricity;
+        }
       },
       function () {
         //  return outline ? outline.toJSON() : null;
         return {
           bezierJSON: outline ? outline.toJSON() : null,
           bendAngle: config.bendAngle,
-          twistAngle: config.twistAngle
+          twistAngle: config.twistAngle,
+          baseShapeExcentricity: config.baseShapeExcentricity
         };
       }
     );

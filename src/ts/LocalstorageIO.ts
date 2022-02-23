@@ -8,8 +8,13 @@
  * @version  1.2.0
  */
 
-type PathRestoredCallback = (jsonData: string, bendAngle: number, twistAngle: number) => void;
-type PathDataRequestCallback = () => { bezierJSON: string; bendAngle: number; twistAngle: number };
+type PathRestoredCallback = (jsonData: string, bendAngle: number, twistAngle: number, baseShapeExcentricity: number) => void;
+type PathDataRequestCallback = () => {
+  bezierJSON: string;
+  bendAngle: number;
+  twistAngle: number;
+  baseShapeExcentricity: number;
+};
 
 export class LocalstorageIO {
   constructor() {}
@@ -24,19 +29,28 @@ export class LocalstorageIO {
     const bezierJSON = localStorage.getItem("bezier_path");
     const bendAngle = localStorage.getItem("bend_angle");
     const twistAngle = localStorage.getItem("twist_angle");
+    const baseShapeExcentricity = localStorage.getItem("base_shape_excentricity");
     if (bezierJSON) {
-      handlePathRestored(bezierJSON, bendAngle ? Number(bendAngle) : 0.0, twistAngle ? Number(twistAngle) : 0.0);
+      handlePathRestored(
+        bezierJSON,
+        bendAngle ? Number(bendAngle) : 0.0,
+        twistAngle ? Number(twistAngle) : 0.0,
+        baseShapeExcentricity ? Number(baseShapeExcentricity) : 1.0
+      );
     }
     setInterval(() => {
       const pathData = requestPathData();
       if (pathData.bezierJSON) {
         localStorage.setItem("bezier_path", pathData.bezierJSON);
       }
-      if (pathData.bendAngle) {
+      if (typeof pathData.bendAngle !== "undefined") {
         localStorage.setItem("bend_angle", pathData.bendAngle.toString());
       }
-      if (pathData.twistAngle) {
+      if (typeof pathData.twistAngle !== "undefined") {
         localStorage.setItem("twist_angle", pathData.twistAngle.toString());
+      }
+      if (typeof pathData.baseShapeExcentricity !== "undefined") {
+        localStorage.setItem("base_shape_excentricity", pathData.baseShapeExcentricity.toString());
       }
     }, 10000);
   }

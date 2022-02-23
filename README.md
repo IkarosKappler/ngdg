@@ -38,6 +38,15 @@ Because 3d printing, web 3d, and dildos are fun.
 - [x] Add horizonal and vertical scale like in the old version.
 - [ ] Fix the string.substr deprecation issue in `isMobileDevice`.
 
+### LocalStorage
+
+The following config values are stored in the `LocalStorage`:
+
+- bezier_path
+- bend_angle
+- twist_angle");
+- base_shape_excentricity
+
 ### Changelog
 
 - 2022-02-23
