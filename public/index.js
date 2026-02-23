@@ -646,7 +646,13 @@
 
     // Add action buttons
     // prettier-ignore
-    ActionButtons.addNewButton(function() { setDefaultPathInstance(true); acquireOptimalPathView(pb,outline ) });
+    ActionButtons.addNewButton(function() {
+      config.bendAngle = 0.0;
+      config.twistAngle = 0.0;
+      config.baseShapeExcentricity = 1.0;
+      setDefaultPathInstance(true); 
+      acquireOptimalPathView(pb,outline ) 
+    });
     // prettier-ignore
     ActionButtons.addFitToViewButton( function() { acquireOptimalPathView(pb, outline); } );
   });
