@@ -1,37 +1,38 @@
 /**
  * A helper to apply bumpmaps to any rectangular mesh.
  *
- * @author  Ikaros Kappler
- * @date    2021-09-06
- * @version 1.0.0
+ * Currently not in use because it's buggy.
+ *
+ * @author   Ikaros Kappler
+ * @date     2021-09-06
+ * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.0.1
  */
 
 import * as THREE from "three";
 import { computeVertexNormals } from "./computeVertexNormals";
-import { DildoGeometry } from "./DildoGeometry";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
-import { DildoOptions, IBumpmap, IDildoGeometry } from "./interfaces";
+import { DildoOptions, IBumpmap } from "./interfaces";
+import { Gmetry } from "three-geometry-hellfix";
+import { DildoGeometry } from "./DildoGeometry";
 
 export const BumpMapper = {
   applyBumpmap: (
-    dildoGeometry: IDildoGeometry,
+    dildoGeometry: DildoGeometry,
     bufferedGeometry: THREE.BufferGeometry,
     bumpmap: IBumpmap,
     material: THREE.Material,
     options: DildoOptions
   ) => {
-    const collectedVertexNormals: Array<THREE.Line3> = computeVertexNormals(
-      dildoGeometry as unknown as THREE.Geometry,
-      bufferedGeometry
-    );
-    const dildoNormalGeometry = new THREE.Geometry();
+    const collectedVertexNormals: Array<THREE.Line3> = computeVertexNormals(dildoGeometry as unknown as Gmetry, bufferedGeometry);
+    const dildoNormalGeometry = new Gmetry();
     dildoNormalGeometry.vertices = collectedVertexNormals.map((normalLine: THREE.Line3) => {
       const endPoint: THREE.Vector3 = normalLine.end.clone();
       GeometryGenerationHelpers.normalizeVectorXYZ(normalLine.start, endPoint, options.bumpmapStrength);
       return endPoint;
     });
     const dildoNormalsMesh: THREE.Points = new THREE.Points(
-      dildoNormalGeometry,
+      dildoNormalGeometry.toBufferGeometry(),
       new THREE.PointsMaterial({
         size: 1.4,
         color: 0x00ffff
@@ -70,7 +71,9 @@ export const BumpMapper = {
       //   vertex.lerp(lerpTarget, lerpFactor);
 
       // Override the buffered geometry! (bumpmap has been applied)
-      bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry as unknown as THREE.Geometry);
+      // TODO: verify correctness with Gmery
+      // bufferedGeometry = new THREE.BufferGeometry().fromGeometry(dildoGeometry as unknown as Gmetry);
+      bufferedGeometry = (dildoGeometry as unknown as Gmetry).toBufferGeometry();
       bufferedGeometry.computeVertexNormals();
       // Override the mesh! (bumpmap has been applied)
       dildoMesh = new THREE.Mesh(bufferedGeometry, material);

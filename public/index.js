@@ -537,8 +537,13 @@
       var pathBounds = outline.getBounds();
       stats.width = pathBounds.width * Rulers.mmPerUnit;
       stats.height = pathBounds.height * Rulers.mmPerUnit;
-      stats.diameter = 2 * pathBounds.height * Rulers.mmPerUnit;
-      // stats.area = outline.toPolygon();
+      stats.diameter = 2 * pathBounds.width * Rulers.mmPerUnit;
+      // Compute area from outline
+      var vertices = outline.getEvenDistributionVertices(100);
+      var bounds = outline.getBounds();
+      vertices.push(new Vertex(bounds.max));
+      var polygon = new Polygon(vertices, false);
+      stats.area = polygon.area();
     };
 
     // THIS IS JUST EXPERIMENTAL
@@ -586,7 +591,7 @@
     // | Load the config from the local storage.
     // | Handle file drop.
     // +-------------------------------
-    var localstorageIO = new ngdg.LocalstorageIO(document.getElementsByTagName("body")[0]);
+    var localstorageIO = new ngdg.LocalstorageIO();
     var fileDrop = new FileDrop(pb.eventCatcher);
     fileDrop.onFileJSONDropped(function (jsonObject) {
       try {
@@ -598,14 +603,29 @@
       }
     });
     localstorageIO.onPathRestored(
-      function (jsonString) {
+      function (jsonString, bendAngle, twistAngle, baseShapeExcentricity) {
         // This is called when json string was loaded from storage
         if (!GUP.rbdata) {
           loadPathJSON(jsonString);
         }
+        if (!GUP.bendAngle) {
+          config.bendAngle = bendAngle;
+        }
+        if (!GUP.twistAngle) {
+          config.twistAngle = twistAngle;
+        }
+        if (!GUP.baseShapeExcentricity) {
+          config.baseShapeExcentricity = baseShapeExcentricity;
+        }
       },
       function () {
-        return outline ? outline.toJSON() : null;
+        //  return outline ? outline.toJSON() : null;
+        return {
+          bezierJSON: outline ? outline.toJSON() : null,
+          bendAngle: config.bendAngle,
+          twistAngle: config.twistAngle,
+          baseShapeExcentricity: config.baseShapeExcentricity
+        };
       }
     );
 
@@ -626,7 +646,13 @@
 
     // Add action buttons
     // prettier-ignore
-    ActionButtons.addNewButton(function() { setDefaultPathInstance(true); acquireOptimalPathView(pb,outline ) });
+    ActionButtons.addNewButton(function() {
+      config.bendAngle = 0.0;
+      config.twistAngle = 0.0;
+      config.baseShapeExcentricity = 1.0;
+      setDefaultPathInstance(true); 
+      acquireOptimalPathView(pb,outline ) 
+    });
     // prettier-ignore
     ActionButtons.addFitToViewButton( function() { acquireOptimalPathView(pb, outline); } );
   });

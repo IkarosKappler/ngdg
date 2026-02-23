@@ -1,0 +1,62 @@
+{
+  "_from": "three-geometry-hellfix",
+  "_id": "three-geometry-hellfix@1.1.0",
+  "_inBundle": false,
+  "_integrity": "sha512-aP9Acur/SLMApn7V+96jfDYcBFq0Bj7IxM1joT6wtQqCMZUo61Nu9Bzg+gN8r2CLGGw8zB+o7dCrkUbjDykCfg==",
+  "_location": "/three-geometry-hellfix",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "three-geometry-hellfix",
+    "name": "three-geometry-hellfix",
+    "escapedName": "three-geometry-hellfix",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/three-geometry-hellfix/-/three-geometry-hellfix-1.1.0.tgz",
+  "_shasum": "25532bd00fdb93144a637672faae749956991571",
+  "_spec": "three-geometry-hellfix",
+  "_where": "/home/ika/public_html/ngdg",
+  "author": {
+    "name": "Ikaros Kappler"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "@types/three": "^0.137.0",
+    "repeat-string": "^1.6.1",
+    "typescript": "^4.4.3"
+  },
+  "deprecated": false,
+  "description": "A backport for the THREE.Geometry that went missing since r125. Name: Gmetry.",
+  "devDependencies": {
+    "mocha": "^9.1.2",
+    "terser-webpack-plugin": "^5.2.4",
+    "threejs-slice-geometry-typescript": "^0.2.2",
+    "webpack": "^5.54.0",
+    "webpack-cli": "^4.8.0"
+  },
+  "license": "MIT",
+  "main": "src/cjs/index.js",
+  "module": "src/esm/index.js",
+  "name": "three-geometry-hellfix",
+  "scripts": {
+    "build": "npm run compile && npm run webpack",
+    "compile": "npm run compile:cjs && npm run compile:esm",
+    "compile:cjs": "tsc -p tsconfig.json --target es5 --module commonjs --outDir src/cjs/",
+    "compile:esm": "tsc -p tsconfig.json --target ES2015 --module ESNext --outdir src/esm/ --moduleResolution node",
+    "copy_slice_lib": "cp -R ../threejs-slice-geometry-typescript/dist example/threejs-slice-geometry-typescript/",
+    "server": "npx http-server",
+    "test": "./node_modules/mocha/bin/mocha test.js --reporter spec",
+    "webpack": "npm run webpack:dev && npm run webpack:prod",
+    "webpack:dev": "npx webpack --env=development --config webpack.config.js",
+    "webpack:prod": "npx webpack --env=production --config webpack.config.js"
+  },
+  "types": "src/cjs/index.d.ts",
+  "version": "1.1.0"
+}

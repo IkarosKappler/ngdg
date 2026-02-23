@@ -32,10 +32,8 @@ exports.DildoMaterials = (function () {
                 ? new THREE.MeshLambertMaterial({
                     color: 0xffffff,
                     wireframe: wireframe,
-                    //   flatShading: false,
                     depthTest: true,
                     opacity: 1.0,
-                    // side: THREE.DoubleSide,
                     side: doubleSingleSide,
                     visible: true,
                     emissive: 0x0,
@@ -49,7 +47,6 @@ exports.DildoMaterials = (function () {
                     flatShading: false,
                     depthTest: true,
                     opacity: 1.0,
-                    // side: THREE.DoubleSide,
                     side: doubleSingleSide,
                     visible: true,
                     emissive: 0x0,
@@ -61,17 +58,14 @@ exports.DildoMaterials = (function () {
         createSliceMaterial: function (useTextureImage, wireframe, textureImagePath) {
             if (wireframe) {
                 return new THREE.MeshBasicMaterial({ wireframe: true });
-                // return new THREE.MeshStandardMaterial({ wireframe: true });
             }
             else {
                 return new THREE.MeshLambertMaterial({
                     color: useTextureImage ? 0x888888 : 0xa1848a8,
                     wireframe: false,
-                    // flatShading: false,
                     depthTest: true,
                     opacity: 1.0,
                     side: THREE.DoubleSide,
-                    // side: doubleSingleSide,
                     visible: true,
                     emissive: 0x0,
                     reflectivity: 1.0,

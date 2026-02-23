@@ -1,24 +1,20 @@
 /**
- * @require THREE.Geometry
+ * This is the central class for generating dildo base geometries.
+ *
+ * @require ThreeGeometryHellfix.Gmetry
  *
  * @author   Ikaros Kappler
  * @date     2020-07-08
  * @modified 2021-06-11 Fixing top and bottom points; preparing slicing of mesh.
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @version  1.0.2
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry (and Face3).
+ * @version  1.0.3
  **/
 import { Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
 import { ExtendedDildoOptions } from "./interfaces";
-export declare class DildoBaseClass {
-    vertices: Array<THREE.Vector3>;
-    faces: Array<THREE.Face3>;
-    faceVertexUvs: Array<Array<[THREE.Vector2, THREE.Vector2, THREE.Vector2]>>;
-    uvsNeedUpdate: boolean;
-    buffersNeedUpdate: boolean;
-    constructor();
-}
-export declare class DildoGeometry extends DildoBaseClass {
+import { Gmetry } from "three-geometry-hellfix/src/cjs";
+export declare class DildoGeometry extends Gmetry {
     vertexMatrix: Array<Array<number>>;
     topIndex: number;
     bottomIndex: number;
@@ -50,7 +46,7 @@ export declare class DildoGeometry extends DildoBaseClass {
      * @param {Polygon} baseShape
      * @param {Vertex} shapeCenter
      * @param {Bounds} outlineBounds
-     * @param {THREE.Vertex3} outlineVert
+     * @param {THREE.Vector3} outlineVert
      * @param {number} sliceIndex
      * @param {number} heightT A value between 0.0 and 1.0 (inclusive) to indicate the height position.
      * @param {boolean} isBending
@@ -110,8 +106,8 @@ export declare class DildoGeometry extends DildoBaseClass {
      * @param {*}
      */
     private __makeFlatSideFaces;
-    getPerpendicularPathVertices(includeBottomVert: any, getInner?: boolean): any[];
-    getPerpendicularHullLines(): any[];
+    getPerpendicularPathVertices(includeBottomVert: boolean, getInner?: boolean): THREE.Vector3[];
+    getPerpendicularHullLines(): THREE.Line3[];
     /**
      * Construct the top vertex that's used to closed the cylinder geometry at the top.
      *
@@ -121,37 +117,27 @@ export declare class DildoGeometry extends DildoBaseClass {
      * @param {number|undefined} arcRadius
      * @returns THREE.Vector
      */
-    _getTopVertex(outlineBounds: any, isBending: any, bendAngle: any, arcRadius: any): THREE.Vector3;
+    _getTopVertex(outlineBounds: Bounds, isBending: boolean, bendAngle: number, arcRadius: number): THREE.Vector3;
     /**
      * Construct the bottom vertex that's used to closed the cylinder geometry at the bottom.
      *
      * @param {plotboilerplate.Bounds} outlineBounds
-     * @param {boolean} isBending
      * @returns THREE.Vector
      */
-    _getBottomVertex(outlineBounds: any): THREE.Vector3;
+    _getBottomVertex(outlineBounds: Bounds): THREE.Vector3;
     /**
      * A helper function to 'bend' a vertex position around the desired bend axis (angle + radius).
      * @private
-     * @param {} vert
-     * @param {*} bendAngle
-     * @param {*} arcRadius
-     * @param {*} heightT
-     */
-    _bendVertex(vert: any, bendAngle: any, arcRadius: any, heightT: any): void;
-    /**
-     * Rotate a 3d vector around the z axis (back-front-axis).
-     *
      * @param {THREE.Vector3} vert
-     * @param {THREE.Vector3} angle
-     * @param {number} xCenter
-     * @param {number} yCenter
-     * @returns
+     * @param {number} bendAngle
+     * @param {number} arcRadius
+     * @param {number} heightT
      */
+    _bendVertex(vert: THREE.Vector3, bendAngle: number, arcRadius: number, heightT: number): void;
     applyBumpMap(bumpMapTexture: THREE.Texture): void;
     /**
      * Build up the faces for this geometry.
-     * @param {*} options
+     * @param {ExtendedDildoOptions} options
      */
     private _buildFaces;
     _buildHollowBottomFaces(): void;
@@ -164,19 +150,15 @@ export declare class DildoGeometry extends DildoBaseClass {
      * @param {number} baseShapeSegmentCount - The number of shape segments.
      * @param {boolean=false} inverseFaceDirection - If true then the face will have left winding order (instead of right which is the default).
      */
-    _buildEndFaces(endVertexIndex: any, shapeIndex: any, baseShapeSegmentCount: any, inverseFaceDirection: any): void;
+    _buildEndFaces(endVertexIndex: number, shapeIndex: number, baseShapeSegmentCount: number, inverseFaceDirection: boolean): void;
     /**
      * Pre: flatSides are made
-     *
-     * @param {*} options
      */
     private __makeBackFrontFaces;
     /**
      * Build the texture UV mapping for all faces.
      *
-     * @param {Polygon} options.baseShape
-     * @param {number} options.outlineSegmentCount
-     * @param {number} options.vertices.length
+     * @param {ExtendedDildoOptions} options
      */
     private _buildUVMapping;
     /**
@@ -197,7 +179,7 @@ export declare class DildoGeometry extends DildoBaseClass {
      * @param {number} d - The second seconday index in the `vertexMatrix[c]` array.
      * @param {boolean=false} inverseFaceDirection - If true then the face will have left winding order (instead of right which is the default).
      */
-    addFace4ByIndices(a: any, b: any, c: any, d: any, inverseFaceDirection: any): void;
+    addFace4ByIndices(a: number, b: number, c: number, d: number, inverseFaceDirection: boolean): void;
     /**
      * Build up the vertices in this geometry.
      *

@@ -8,11 +8,14 @@
  * @co-author Ikaros Kappler
  * @date 2021-06-11
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
- * @version 1.0.0
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version 1.0.1
  */
 
 import * as THREE from "three";
 import { IDildoGeometry } from "./interfaces";
+import { Gmetry } from "three-geometry-hellfix";
+import { DildoGeometry } from "./DildoGeometry";
 
 export class PlaneMeshIntersection {
   pointsOfIntersection: Array<THREE.Vector3>;
@@ -50,27 +53,24 @@ export class PlaneMeshIntersection {
   /**
    *
    * @param {THREE.Mesh} mesh
-   * @param {THREE.Geometry} geometry
-   * @param {THREE.Mesh} plane {THREE.PlaneGeometry ???
+   * @param {ThreeGeometryHellfix.Gmetry} geometry
+   * @param {THREE.Mesh} plane
    * @returns {Array<THREE.Vector3>}
    */
-  // TODO: plane type???
   getIntersectionPoints = (
     mesh: THREE.Mesh,
-    geometry: THREE.Geometry | IDildoGeometry,
+    geometry: Gmetry | DildoGeometry,
     plane: THREE.Mesh,
     planeGeometryReal: THREE.PlaneGeometry
   ): Array<THREE.Vector3> => {
     // Note: this could also work with a directly passed Mesh.Plane object instead a THREE.PlaneGeometry.
     this.pointsOfIntersection = [];
     var mathPlane = new THREE.Plane();
-    // var planeGeometry : THREE.Geometry = (plane as unknown).geometry;
-    // plane.localToWorld(this.planePointA.copy(plane.geometry.vertices[plane.geometry.faces[0].a]));
-    // plane.localToWorld(this.planePointB.copy(plane.geometry.vertices[plane.geometry.faces[0].b]));
-    // plane.localToWorld(this.planePointC.copy(plane.geometry.vertices[plane.geometry.faces[0].c]));
-    plane.localToWorld(this.planePointA.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].a]));
-    plane.localToWorld(this.planePointB.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].b]));
-    plane.localToWorld(this.planePointC.copy(planeGeometryReal.vertices[planeGeometryReal.faces[0].c]));
+    const [a, b, c] = getThreePlanePoints(planeGeometryReal);
+    plane.localToWorld(this.planePointA.copy(a));
+    plane.localToWorld(this.planePointB.copy(b));
+    plane.localToWorld(this.planePointC.copy(c));
+
     mathPlane.setFromCoplanarPoints(this.planePointA, this.planePointB, this.planePointC);
 
     var _self = this;
@@ -89,10 +89,43 @@ export class PlaneMeshIntersection {
     return this.pointsOfIntersection;
   };
 
-  private __setPointOfIntersection = function (line: THREE.Line3, plane: THREE.Plane) {
+  private __setPointOfIntersection = (line: THREE.Line3, plane: THREE.Plane) => {
     var intersectionPoint = plane.intersectLine(line, this.pointOfIntersection);
     if (intersectionPoint) {
       this.pointsOfIntersection.push(intersectionPoint.clone());
     }
   };
 }
+
+// https://discourse.threejs.org/t/three-geometry-will-be-removed-from-core-with-r125/22401/13
+//
+// Due to Mugen87 accessing vertices in the BufferGeometry (replacing Geomtry) works like this:
+//
+// const positionAttribute = MovingCube.geometry.getAttribute( 'position' );
+// const localVertex = new THREE.Vector3();
+// const globalVertex = new THREE.Vector3();
+// for ( let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex ++ ) {
+// 	localVertex.fromBufferAttribute( positionAttribute, vertexIndex );
+// 	globalVertex.copy( localVertex ).applyMatrix4( MovingCube.matrixWorld );
+// }
+const getThreePlanePoints = (planeGeometryReal: THREE.PlaneGeometry): [THREE.Vector3, THREE.Vector3, THREE.Vector3] => {
+  const positionAttribute = planeGeometryReal.getAttribute("position");
+
+  const localVertex = new THREE.Vector3();
+  // const globalVertex = new THREE.Vector3();
+
+  // for ( let vertexIndex = 0; vertexIndex < positionAttribute.count; vertexIndex ++ ) {
+
+  // 	localVertex.fromBufferAttribute( positionAttribute, vertexIndex );
+  // 	// globalVertex.copy( localVertex ).applyMatrix4( planeGeometryReal.matrixWorld );
+
+  // }
+  const a = new THREE.Vector3();
+  const b = new THREE.Vector3();
+  const c = new THREE.Vector3();
+  a.fromBufferAttribute(positionAttribute, 0);
+  b.fromBufferAttribute(positionAttribute, 1);
+  c.fromBufferAttribute(positionAttribute, 2);
+
+  return [a, b, c];
+};

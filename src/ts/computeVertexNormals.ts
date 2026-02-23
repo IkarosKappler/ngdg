@@ -8,37 +8,27 @@
  *
  * https://meshola.wordpress.com/2016/07/24/three-js-vertex-normals/
  *
- * @author  Ikaros Kappler
- * @date    2021-08-31
- * @version 1.0.0
+ * @author   Ikaros Kappler
+ * @date     2021-08-31
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.0.1
  */
 
 import * as THREE from "three";
+import { Gmetry } from "three-geometry-hellfix";
 
 /**
  * Compute the vertex normals of a base geometry and its buffered counterpart (both parts are required here).
  *
  * Note that unbufferedGeometry.computeVertexNormals() must have been called for this to work.
  *
- * @param {THREE.Geometry} unbufferedGeometry - The base geometry.
+ * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The base geometry.
  * @param {THREE.BufferedGeometry} bufferedGeometry - The buffered geometry.
  * @returns
  */
-export const computeVertexNormals = (
-  unbufferedGeometry: THREE.Geometry,
-  bufferedGeometry: THREE.BufferGeometry
-): Array<THREE.Line3> => {
+export const computeVertexNormals = (unbufferedGeometry: Gmetry, bufferedGeometry: THREE.BufferGeometry): Array<THREE.Line3> => {
   // Fetch the face normals from the buffers.
   const vertexNormals: THREE.BufferAttribute | THREE.InterleavedBufferAttribute = bufferedGeometry.getAttribute("normal");
-  //   console.log("normals", vertexNormals);
-  //   console.log(
-  //     "unbufferedGeometry.vertices.length",
-  //     unbufferedGeometry.vertices.length,
-  //     "unbufferedGeometry.faces.length",
-  //     unbufferedGeometry.faces.length,
-  //     "vertexNormals.array.length/3",
-  //     vertexNormals.array.length / 3
-  //   );
   const collectedFaceNormals: Array<THREE.Vector3[]> = Array<THREE.Vector3[]>(unbufferedGeometry.faces.length);
   // For each face get the three face normals, each of which consists of 3 float values itself.
   // So each face consumes 9 floats from the array buffer.

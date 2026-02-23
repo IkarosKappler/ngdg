@@ -7,9 +7,11 @@
  *
  * @author   Ikaros Kappler
  * @modified 2021-08-29 Ported to Typescript from vanilla JS.
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
  * @date     2021-07-06
- * @version  1.0.0
+ * @version  1.0.1
  */
+import { Gmetry } from "three-geometry-hellfix";
 export declare class PathFinder {
     /**
      * Remembers all vertex indices that were already visited.
@@ -61,11 +63,11 @@ export declare class PathFinder {
      *
      * The pathVertices array must not contain duplicates.
      *
-     * @param {THREE.Geometry} unbufferedGeometry - The geometry itself containing the path vertices.
+     * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The geometry itself containing the path vertices.
      * @param {THREE.Vector3[]} pathVertices - The unsorted vertices (must form a connected path on the geometry).
      * @return {Array<number[]>} An array of paths; each path consists of an array of path vertex indices in the `pathVertices` param.
      */
-    findAllPathsOnMesh(unbufferedGeometry: THREE.Geometry, pathVertices: Array<THREE.Vector3>): Array<number[]>;
+    findAllPathsOnMesh(unbufferedGeometry: Gmetry, pathVertices: Array<THREE.Vector3>): Array<number[]>;
     /**
      * Find the next sequence unvisited path (indices) of vertices that are directly connected
      * via some faces on the geometry's surface.
@@ -74,24 +76,24 @@ export declare class PathFinder {
      * in several paths that can still be connected, if you start with some random vertex
      * index.
      *
-     * @param {THREE.Geometry} unbufferedGeometry - The geometry to use to find connected vertices (use it's faces).
+     * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The geometry to use to find connected vertices (use it's faces).
      * @param {Array<number>} pathVertIndices - The indices of all vertices that form the path(s). Each index must match a vertex in the geometry's `vertices` array.
      * @param {number} unvisitedIndex - The path vertex (index) to start with. This can be picked randomly.
      * @returns {Array<number>} The indices of the found path in an array (index sequence).
      */
-    findUnvisitedPaths(unbufferedGeometry: THREE.Geometry, pathVertIndices: Array<number>, unvisitedIndex: number): Array<number>;
+    findUnvisitedPaths(unbufferedGeometry: Gmetry, pathVertIndices: Array<number>, unvisitedIndex: number): Array<number>;
     /**
      * Find the next unvisited vertex index that connects the given (unvisited) vertex
      * index of the path.
      *
      * To find that the geometry's faces will be used.
      *
-     * @param {THREE.Geometry} unbufferedGeometry
+     * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry
      * @param {Array<number>} pathVertIndices
      * @param {number} unvisitedIndex
      * @returns {number} The next adjacent face index or -1 if none can be found.
      */
-    findAdjacentFace(unbufferedGeometry: THREE.Geometry, pathVertIndices: Array<number>, unvisitedIndex: number): number;
+    findAdjacentFace(unbufferedGeometry: Gmetry, pathVertIndices: Array<number>, unvisitedIndex: number): number;
     /**
      * Checks if the given vertex index (one of the path vertices) was already
      * marked as being visited.
@@ -104,7 +106,7 @@ export declare class PathFinder {
      * Find adjacent paths and connect them.
      *
      * @param {Array<number[]>} collectedPaths
-     * @param {THREE.Geometry} unbufferedGeometry
+     * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry
      * @param {THREE.Vector3[]} pathVertices
      * @return {Array<number[]>} A new sequence of paths (a path is an array of vertex indices).
      */

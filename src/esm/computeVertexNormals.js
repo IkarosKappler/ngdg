@@ -8,9 +8,10 @@
  *
  * https://meshola.wordpress.com/2016/07/24/three-js-vertex-normals/
  *
- * @author  Ikaros Kappler
- * @date    2021-08-31
- * @version 1.0.0
+ * @author   Ikaros Kappler
+ * @date     2021-08-31
+ * @modified 2022-02-22 Replaced THREE.Geometry by ThreeGeometryHellfix.Gmetry.
+ * @version  1.0.1
  */
 import * as THREE from "three";
 /**
@@ -18,22 +19,13 @@ import * as THREE from "three";
  *
  * Note that unbufferedGeometry.computeVertexNormals() must have been called for this to work.
  *
- * @param {THREE.Geometry} unbufferedGeometry - The base geometry.
+ * @param {ThreeGeometryHellfix.Gmetry} unbufferedGeometry - The base geometry.
  * @param {THREE.BufferedGeometry} bufferedGeometry - The buffered geometry.
  * @returns
  */
 export const computeVertexNormals = (unbufferedGeometry, bufferedGeometry) => {
     // Fetch the face normals from the buffers.
     const vertexNormals = bufferedGeometry.getAttribute("normal");
-    //   console.log("normals", vertexNormals);
-    //   console.log(
-    //     "unbufferedGeometry.vertices.length",
-    //     unbufferedGeometry.vertices.length,
-    //     "unbufferedGeometry.faces.length",
-    //     unbufferedGeometry.faces.length,
-    //     "vertexNormals.array.length/3",
-    //     vertexNormals.array.length / 3
-    //   );
     const collectedFaceNormals = Array(unbufferedGeometry.faces.length);
     // For each face get the three face normals, each of which consists of 3 float values itself.
     // So each face consumes 9 floats from the array buffer.
