@@ -91,7 +91,7 @@ export class DildoGeometry extends Gmetry {
         return this.vertexMatrix[0].length;
     }
     getVertexAt(xCoord, yCoord) {
-        const vertIndex = this.vertexMatrix[xCoord][yCoord];
+        const vertIndex = this.vertexMatrix[yCoord][xCoord];
         return this.vertices[vertIndex];
     }
     /**

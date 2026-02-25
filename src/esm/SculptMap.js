@@ -53,9 +53,12 @@ export class SculptMap {
             for (var x = 0; x < w; x++) {
                 // Get Vertex
                 const vert = geometry.getVertexAt(x, y);
-                const r = Math.floor(Math.random() * 255);
-                const g = Math.floor(Math.random() * 255);
-                const b = Math.floor(Math.random() * 255);
+                const r = ((vert.x - bounds.min.x) / (bounds.max.x - bounds.min.x)) * 255;
+                const g = ((vert.y - bounds.min.y) / (bounds.max.y - bounds.min.y)) * 255;
+                const b = ((vert.z - bounds.min.z) / (bounds.max.z - bounds.min.z)) * 255;
+                // const r = Math.floor(Math.random() * 255);
+                // const g = Math.floor(Math.random() * 255);
+                // const b = Math.floor(Math.random() * 255);
                 // const color = new Color().setRed(r).setGreen(g).setBlue(b);
                 const color = { r: r, g: g, b: b, a: 255 };
                 colorRow.push(color);

@@ -111,7 +111,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         return this.vertexMatrix[0].length;
     };
     DildoGeometry.prototype.getVertexAt = function (xCoord, yCoord) {
-        var vertIndex = this.vertexMatrix[xCoord][yCoord];
+        var vertIndex = this.vertexMatrix[yCoord][xCoord];
         return this.vertices[vertIndex];
     };
     /**

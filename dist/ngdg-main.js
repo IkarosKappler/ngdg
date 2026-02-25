@@ -688,7 +688,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         return this.vertexMatrix[0].length;
     };
     DildoGeometry.prototype.getVertexAt = function (xCoord, yCoord) {
-        var vertIndex = this.vertexMatrix[xCoord][yCoord];
+        var vertIndex = this.vertexMatrix[yCoord][xCoord];
         return this.vertices[vertIndex];
     };
     /**
@@ -2474,9 +2474,12 @@ var SculptMap = /** @class */ (function () {
             for (var x = 0; x < w; x++) {
                 // Get Vertex
                 var vert = geometry.getVertexAt(x, y);
-                var r = Math.floor(Math.random() * 255);
-                var g = Math.floor(Math.random() * 255);
-                var b = Math.floor(Math.random() * 255);
+                var r = ((vert.x - bounds.min.x) / (bounds.max.x - bounds.min.x)) * 255;
+                var g = ((vert.y - bounds.min.y) / (bounds.max.y - bounds.min.y)) * 255;
+                var b = ((vert.z - bounds.min.z) / (bounds.max.z - bounds.min.z)) * 255;
+                // const r = Math.floor(Math.random() * 255);
+                // const g = Math.floor(Math.random() * 255);
+                // const b = Math.floor(Math.random() * 255);
                 // const color = new Color().setRed(r).setGreen(g).setBlue(b);
                 var color = { r: r, g: g, b: b, a: 255 };
                 colorRow.push(color);

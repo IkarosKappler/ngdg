@@ -123,7 +123,7 @@ export class DildoGeometry extends Gmetry {
   }
 
   getVertexAt(xCoord: number, yCoord: number): THREE.Vector3 {
-    const vertIndex = this.vertexMatrix[xCoord][yCoord];
+    const vertIndex = this.vertexMatrix[yCoord][xCoord];
     return this.vertices[vertIndex];
   }
 
