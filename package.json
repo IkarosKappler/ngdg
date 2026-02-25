@@ -21,7 +21,7 @@
     "source-map-loader": "^3.0.1",
     "three": "^0.137.5",
     "three-geometry-hellfix": "^1.1.0",
-    "threejs-slice-geometry-typescript": "file:../threejs-slice-geometry-typescript",
+    "threejs-slice-geometry-typescript": "^0.3.0",
     "typescript": "^4.5.5",
     "uistats-typescript": "0.0.2",
     "webpack": "^5.67.0",
@@ -29,9 +29,9 @@
   },
   "devDependencies": {
     "@types/dat.gui": "^0.7.7",
-    "FileSaver": "^0.10.0",
     "alloyfinger-typescript": "^0.1.19",
     "dat.gui": "^0.7.7",
+    "FileSaver": "^0.10.0",
     "ts-loader": "^7.0.5"
   },
   "scripts": {
