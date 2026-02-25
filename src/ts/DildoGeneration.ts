@@ -68,6 +68,10 @@ export class DildoGeneration implements IDildoGeneration {
   renderer: THREE.WebGLRenderer;
   controls: OrbitControls;
 
+  // The first level computed dildo geometry. Stored here for later use.
+  // (like computing a sculpt map)
+  primaryDildoGeometry: DildoGeometry;
+
   // Cache all geometries for later removal
   geometries: Array<THREE.Object3D>;
 
@@ -186,6 +190,8 @@ export class DildoGeneration implements IDildoGeneration {
     const dildoGeometry: DildoGeometry = new DildoGeometry(
       Object.assign({ baseShape: baseShape /*, bumpmapTexture: bumpmapTexture */ }, options)
     );
+    // Store for later use
+    this.primaryDildoGeometry = dildoGeometry;
     const useTextureImage: boolean = options.useTextureImage && typeof options.textureImagePath !== "undefined";
     const textureImagePath: string = typeof options.textureImagePath !== "undefined" ? options.textureImagePath : null;
     const doubleSingleSide: THREE.Side =

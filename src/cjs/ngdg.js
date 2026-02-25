@@ -17,6 +17,7 @@ var DildoGeneration_1 = require("./DildoGeneration");
 var LocalstorageIO_1 = require("./LocalstorageIO");
 var isMobileDevice_1 = require("./isMobileDevice");
 var constants_1 = require("./constants");
+var SculptMap_1 = require("./SculptMap");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
@@ -26,6 +27,7 @@ exports.ngdg = {
     LocalstorageIO: LocalstorageIO_1.LocalstorageIO,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
     ImageStore: ImageStore_1.ImageStore,
-    isMobileDevice: isMobileDevice_1.isMobileDevice
+    isMobileDevice: isMobileDevice_1.isMobileDevice,
+    SculptMap: SculptMap_1.SculptMap
 };
 //# sourceMappingURL=ngdg.js.map

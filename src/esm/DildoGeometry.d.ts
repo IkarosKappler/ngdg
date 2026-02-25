@@ -42,6 +42,18 @@ export declare class DildoGeometry extends Gmetry {
      **/
     constructor(options: ExtendedDildoOptions);
     /**
+     * Calculate the bounding box of this geometry.
+     *
+     * @method getBounds
+     * @instance
+     * @memberof DildoGeometry
+     * @return {THREE.Box3}
+     */
+    getBounds(): THREE.Box3;
+    getMatrixHeight(): number;
+    getMatrixWidth(): number;
+    getVertexAt(xCoord: number, yCoord: number): THREE.Vector3;
+    /**
      *
      * @param {Polygon} baseShape
      * @param {Vertex} shapeCenter

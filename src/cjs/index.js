@@ -31,4 +31,5 @@ __exportStar(require("./randomWebColor"), exports);
 __exportStar(require("./RasteredBumpmap"), exports);
 __exportStar(require("./randomWebColor"), exports);
 __exportStar(require("./UVHelpers"), exports);
+__exportStar(require("./SculptMap"), exports);
 //# sourceMappingURL=index.js.map

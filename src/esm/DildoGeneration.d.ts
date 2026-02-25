@@ -31,6 +31,7 @@ export declare class DildoGeneration implements IDildoGeneration {
     directionalLightB: THREE.DirectionalLight;
     renderer: THREE.WebGLRenderer;
     controls: OrbitControls;
+    primaryDildoGeometry: DildoGeometry;
     geometries: Array<THREE.Object3D>;
     partialResults: Record<string, object>;
     splitResults: Record<string, THREE.Mesh>;

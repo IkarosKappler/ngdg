@@ -49,6 +49,10 @@ The following config values are stored in the `LocalStorage`:
 
 ### Changelog
 
+- 2026-02-25
+  - Fixing package json: replacing relative path for threejs-slice-geometry-typscript library by proper npm package.
+  - Adding class `SculptMap`.
+  - Adding `DildoGeometry.getBounds` method.
 - 2022-02-23
   - Added proper types to all function params.
 - 2022-02-22

@@ -142,6 +142,8 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback) {
   fold6.add(config, "exportSTL").name('STL').title('Export an STL file.');
   // prettier-ignore
   fold6.add(config, "showPathJSON").name('Show Path JSON ...').title('Show the path data.');
+  // prettier-ignore
+  fold6.add(config, "showSculptmap").name('Show sculpt map ...').title('Show the mesh sculpt map.');
 
   var fold7 = gui.addFolder("Import");
   // prettier-ignore

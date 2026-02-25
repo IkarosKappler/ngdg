@@ -19,4 +19,5 @@ export * from "./randomWebColor";
 export * from "./RasteredBumpmap";
 export * from "./randomWebColor";
 export * from "./UVHelpers";
+export * from "./SculptMap";
 //# sourceMappingURL=index.js.map

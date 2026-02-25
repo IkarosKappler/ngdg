@@ -100,6 +100,34 @@ export class DildoGeometry extends Gmetry {
   }
 
   /**
+   * Calculate the bounding box of this geometry.
+   *
+   * @method getBounds
+   * @instance
+   * @memberof DildoGeometry
+   * @return {THREE.Box3}
+   */
+  getBounds(): THREE.Box3 {
+    return new THREE.Box3().setFromPoints(this.vertices);
+  }
+
+  getMatrixHeight(): number {
+    return this.vertexMatrix.length;
+  }
+
+  getMatrixWidth(): number {
+    if (!this.vertexMatrix || this.vertexMatrix.length === 0) {
+      return 0;
+    }
+    return this.vertexMatrix[0].length;
+  }
+
+  getVertexAt(xCoord: number, yCoord: number): THREE.Vector3 {
+    const vertIndex = this.vertexMatrix[xCoord][yCoord];
+    return this.vertices[vertIndex];
+  }
+
+  /**
    *
    * @param {Polygon} baseShape
    * @param {Vertex} shapeCenter

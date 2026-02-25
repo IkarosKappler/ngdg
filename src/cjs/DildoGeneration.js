@@ -116,6 +116,8 @@ var DildoGeneration = /** @class */ (function () {
         // const bumpmapTexture: THREE.Texture | null = useBumpmap ? DildoMaterials.loadTextureImage(bumpmapPath) : null;
         var bumpmap = useBumpmap && options.bumpmap ? options.bumpmap : null;
         var dildoGeometry = new DildoGeometry_1.DildoGeometry(Object.assign({ baseShape: baseShape /*, bumpmapTexture: bumpmapTexture */ }, options));
+        // Store for later use
+        this.primaryDildoGeometry = dildoGeometry;
         var useTextureImage = options.useTextureImage && typeof options.textureImagePath !== "undefined";
         var textureImagePath = typeof options.textureImagePath !== "undefined" ? options.textureImagePath : null;
         var doubleSingleSide = options.renderFaces === "double" ? THREE.DoubleSide : options.renderFaces === "back" ? THREE.BackSide : THREE.FrontSide;

@@ -168,6 +168,9 @@
         showPathJSON: function () {
           showPathJSON();
         },
+        showSculptmap: function () {
+          showSculptmap();
+        },
         insertPathJSON: function () {
           insertPathJSON();
         },
@@ -229,6 +232,18 @@
         modal.setActions([Modal.ACTION_CLOSE]);
         modal.open();
       }
+    };
+
+    var showSculptmap = function () {
+      modal.setTitle("Show Sculpt Map");
+      modal.setFooter("");
+      modal.setActions([Modal.ACTION_CLOSE]);
+      const geometry = dildoGeneration.primaryDildoGeometry;
+      const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
+      const canvas = sculptmap.toCanvas();
+      const dataString = canvas.toDataURL();
+      modal.setBody('<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%"></div>');
+      modal.open();
     };
 
     var showPathJSON = function () {

@@ -91,6 +91,30 @@ var DildoGeometry = /** @class */ (function (_super) {
         return _this;
     }
     /**
+     * Calculate the bounding box of this geometry.
+     *
+     * @method getBounds
+     * @instance
+     * @memberof DildoGeometry
+     * @return {THREE.Box3}
+     */
+    DildoGeometry.prototype.getBounds = function () {
+        return new THREE.Box3().setFromPoints(this.vertices);
+    };
+    DildoGeometry.prototype.getMatrixHeight = function () {
+        return this.vertexMatrix.length;
+    };
+    DildoGeometry.prototype.getMatrixWidth = function () {
+        if (!this.vertexMatrix || this.vertexMatrix.length === 0) {
+            return 0;
+        }
+        return this.vertexMatrix[0].length;
+    };
+    DildoGeometry.prototype.getVertexAt = function (xCoord, yCoord) {
+        var vertIndex = this.vertexMatrix[xCoord][yCoord];
+        return this.vertices[vertIndex];
+    };
+    /**
      *
      * @param {Polygon} baseShape
      * @param {Vertex} shapeCenter
