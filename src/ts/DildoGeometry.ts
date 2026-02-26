@@ -19,7 +19,7 @@
 
 import { BezierPath, Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
-import { ExtendedDildoOptions } from "./interfaces";
+import { DildoGeometryOptions } from "./interfaces";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { earcut } from "earcut-typescript";
 import { UVHelpers } from "./UVHelpers";
@@ -57,7 +57,7 @@ export class DildoGeometry extends Gmetry {
    * @param {boolean} options.isBending - Switch bending on/off no matter what the bend angle says.
    * @param {boolean} options.makeHollow - Make a hollow mold.
    **/
-  constructor(options: ExtendedDildoOptions) {
+  constructor(options: DildoGeometryOptions) {
     super();
     // TODO: verify
     Gmetry.call(this);
@@ -452,7 +452,7 @@ export class DildoGeometry extends Gmetry {
    * Build up the faces for this geometry.
    * @param {ExtendedDildoOptions} options
    */
-  private _buildFaces(options: ExtendedDildoOptions) {
+  private _buildFaces(options: DildoGeometryOptions) {
     const baseShape = options.baseShape;
     const outlineSegmentCount = options.outlineSegmentCount;
     const closeTop = Boolean(options.closeTop);
@@ -581,9 +581,9 @@ export class DildoGeometry extends Gmetry {
   /**
    * Build the texture UV mapping for all faces.
    *
-   * @param {ExtendedDildoOptions} options
+   * @param {DildoGeometryOptions} options
    */
-  private _buildUVMapping(options: ExtendedDildoOptions) {
+  private _buildUVMapping(options: DildoGeometryOptions) {
     var baseShape = options.baseShape;
     var outlineSegmentCount = options.outlineSegmentCount;
     var baseShapeSegmentCount = baseShape.vertices.length;
@@ -722,7 +722,7 @@ export class DildoGeometry extends Gmetry {
    *
    * @param {} options
    */
-  private _buildVertices(options: ExtendedDildoOptions) {
+  private _buildVertices(options: DildoGeometryOptions) {
     const baseShape: Polygon = options.baseShape;
     const outline: BezierPath = options.outline;
     const outlineSegmentCount: number = options.outlineSegmentCount;

@@ -61,6 +61,26 @@ export interface ExtendedDildoOptions extends DildoOptions {
   outline: BezierPath;
 }
 
+export interface DildoGeometryOptions
+  extends Pick<
+    ExtendedDildoOptions,
+    | "baseShape"
+    | "isBending"
+    | "bendAngle"
+    | "outline"
+    | "useBumpmap"
+    | "bumpmap"
+    | "bumpmapTexture"
+    | "outlineSegmentCount"
+    | "closeTop"
+    | "closeBottom"
+    | "makeHollow"
+    | "hollowStrengthX"
+    | "twistAngle"
+    | "normalizePerpendiculars"
+    | "normalsLength"
+  > {}
+
 export interface IDildoGeneration {
   partialResults: Record<string, object>;
   addMesh: (mesh: THREE.Mesh | THREE.Points | THREE.LineSegments) => void;

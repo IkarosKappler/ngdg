@@ -21,6 +21,7 @@ import { DildoMaterials } from "./DildoMaterials";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import {
   DildoGenerationOptions,
+  DildoGeometryOptions,
   DildoOptions,
   ExportOptions,
   ExtendedDildoOptions,

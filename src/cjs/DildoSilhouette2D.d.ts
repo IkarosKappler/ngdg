@@ -7,10 +7,12 @@ export interface IDildoSilhouette2DProps {
     outline: BezierPath;
     outlineSegmentCount: number;
     bendAngleRad: number;
+    bendAngleDeg: number;
     isBending: boolean;
 }
 export declare class DildoSilhouette2D {
     leftPathVertices: Vertex[];
     rightPathVertices: Vertex[];
     constructor(props: IDildoSilhouette2DProps);
+    ___test(props: IDildoSilhouette2DProps): void;
 }

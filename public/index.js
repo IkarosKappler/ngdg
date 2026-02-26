@@ -290,10 +290,21 @@
       }
     };
 
-    var updateSilhouette = function (doRedraw) {
+    var updateSilhouette = function (noRedraw) {
+      // TODO: baseShape updating belongs elsewhere!
       const baseRadius = outline.getBounds().width;
+
       baseShape = GeometryGenerationHelpers.mkCircularPolygon(baseRadius, config.shapeSegmentCount, config.baseShapeExcentricity);
-      if (doRedraw) {
+      // Also draw the bent 2D dildo outline?
+      dildoSilhouette = new DildoSilhouette2D({
+        baseShape: baseShape,
+        outline: outline,
+        outlineSegmentCount: config.outlineSegmentCount,
+        bendAngleRad: config.bendAngle * DEG_TO_RAD,
+        bendAngleDeg: config.bendAngle,
+        isBending: config.isBending
+      });
+      if (!noRedraw) {
         pb.redraw();
       }
     };
@@ -390,17 +401,27 @@
     // | Each outline vertex requires a drag (end) listener. We need this to update
     // | the 3d mesh on changes, update stats, and resize handle positions.
     // +-------------------------------
-    var dragListener = function (dragEvent) {
+    var dragEndListener = function (dragEvent) {
       // Uhm, well, some curve point moved.
       updatePathResizer();
       updateOutlineStats();
       rebuild();
     };
+    // +---------------------------------------------------------------------------------
+    // | Each outline vertex requires a drag (end) listener. We need this to update
+    // | the 2d preview on changes.
+    // +-------------------------------
+    var dragListener = function (dragEvent) {
+      // Uhm, well, some curve point moved.
+      updateSilhouette(false); // noRedraw=false
+    };
     var addPathListeners = function (path) {
-      BezierPathInteractionHelper.addPathVertexDragEndListeners(path, dragListener);
+      BezierPathInteractionHelper.addPathVertexDragEndListeners(path, dragEndListener);
+      BezierPathInteractionHelper.addPathVertexDragListeners(path, dragListener);
     };
     var removePathListeners = function (path) {
-      BezierPathInteractionHelper.removePathVertexDragEndListeners(path, dragListener);
+      BezierPathInteractionHelper.removePathVertexDragEndListeners(path, dragEndListener);
+      BezierPathInteractionHelper.removePathVertexDragListeners(path, dragListener);
     };
 
     // +---------------------------------------------------------------------------------
@@ -423,17 +444,19 @@
       }
       fill.polyline(polyline, false, config.bezierFillColor);
 
-      // Also draw the bent 2D dildo outline?
-      var silhouette = new DildoSilhouette2D({
-        baseShape: baseShape,
-        outline: outline,
-        outlineSegmentCount: config.outlineSegmentCount,
-        bendAngleRad: config.bendAngle * DEG_TO_RAD,
-        isBending: config.isBending
-      });
+      // // Also draw the bent 2D dildo outline?
+      // var silhouette = new DildoSilhouette2D({
+      //   baseShape: baseShape,
+      //   outline: outline,
+      //   outlineSegmentCount: config.outlineSegmentCount,
+      //   bendAngleRad: config.bendAngle * DEG_TO_RAD,
+      //   bendAngleDeg: config.bendAngle,
 
-      draw.polyline(silhouette.leftPathVertices, true, "orange", 3.0);
-      draw.polyline(silhouette.rightPathVertices, true, "orange", 3.0);
+      //   isBending: config.isBending
+      // });
+
+      draw.polyline(dildoSilhouette.leftPathVertices, true, "orange", 3.0);
+      draw.polyline(dildoSilhouette.rightPathVertices, true, "orange", 3.0);
     };
 
     // +---------------------------------------------------------------------------------
@@ -483,7 +506,7 @@
       }
       var onUpdate = function () {
         updateOutlineStats();
-        updateSilhouette(true); // doRedraw=true
+        updateSilhouette(false); // noRedraw=false
         rebuild();
       };
       bezierResizer = new BezierResizeHelper(pb, outline, onUpdate);
@@ -613,6 +636,12 @@
     // | By default this is a circular polygon.
     // +-------------------------------
     var baseShape = null; // Polygon
+
+    // +---------------------------------------------------------------------------------
+    // | This stores the solhouette on parameter changes :)
+    // +-------------------------------
+    var dildoSilhouette = null;
+
     // This will trigger the first initial postDraw/draw/redraw call
     // setPathInstance(BezierPath.fromJSON(initialPathJSON));
     if (GUP.rbdata) {
@@ -680,10 +709,11 @@
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
     // +-------------------------------
-    initGUI(pb, config, GUP, rebuild, updateModifiers);
+    initGUI(pb, config, GUP, rebuild, updateModifiers, updateSilhouette);
 
     pb.config.preDraw = preDraw;
     pb.config.postDraw = postDraw;
+    updateSilhouette(false);
     pb.fitToView(scaleBounds(outline.getBounds(), 1.6));
     rebuild();
 

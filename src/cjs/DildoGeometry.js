@@ -507,7 +507,7 @@ var DildoGeometry = /** @class */ (function (_super) {
     /**
      * Build the texture UV mapping for all faces.
      *
-     * @param {ExtendedDildoOptions} options
+     * @param {DildoGeometryOptions} options
      */
     DildoGeometry.prototype._buildUVMapping = function (options) {
         var baseShape = options.baseShape;

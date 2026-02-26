@@ -10,7 +10,7 @@
  * @version  1.1.0
  */
 
-function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback) {
+function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bendAngleChangedCallback) {
   // TODO: remove the DatGuiProps again from PB? Not Used? Not Working?
   // See https://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-dat-gui-dropdown
   var gui = pb.createGUI({ autoPlace: false });
@@ -40,7 +40,7 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback) {
   // prettier-ignore
   fold1.add(config, "shapeSegmentCount").min(3).max(256).onChange( function() { rebuildCallback() } ).name('shapeSegmentCount').title('The number of segments on the shape.');
   // prettier-ignore
-  fold1.add(config, "bendAngle").min(0).max(180).onChange( function() { rebuildCallback() } ).name('bendAngle').title('The bending angle in degrees.');
+  fold1.add(config, "bendAngle").min(0).max(180).onChange( function() { bendAngleChangedCallback(); rebuildCallback() } ).name('bendAngle').title('The bending angle in degrees.');
   // prettier-ignore
   fold1.add(config, "twistAngle").min(-360.0*3).max(360.0*3).onChange( function() { rebuildCallback() } ).name('twistAngle').title('Twist the mesh along its spine.');
   // prettier-ignore
