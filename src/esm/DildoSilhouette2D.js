@@ -2,22 +2,44 @@
  * @date 2026-02-26
  */
 import { Vertex } from "plotboilerplate";
+import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
+import { DildoGeometry } from "./DildoGeometry";
 export class DildoSilhouette2D {
     constructor(props) {
         this.leftPathVertices = [];
         this.rightPathVertices = [];
-        // Note: this is very similar to the creation od the 3D model.
-        // Duplicate code? refactor?
         const outlineBounds = props.outline.getBounds();
-        const shapeHeight = outlineBounds.height;
-        for (var s = 0; s < props.outlineSegmentCount; s++) {
-            const t = Math.min(1.0, Math.max(0.0, s / (props.outlineSegmentCount - 1)));
-            const outlineVert = props.outline.getPointAt(t);
-            const perpendicularVert = props.outline.getPerpendicularAt(t);
-            const heightT = (outlineBounds.max.y - outlineVert.y) / shapeHeight;
-            const outlineT = s / (props.outlineSegmentCount - 1);
-            this.leftPathVertices.push(new Vertex(outlineVert.x, outlineVert.y));
-            this.rightPathVertices.push(new Vertex(-outlineVert.x, outlineVert.y));
+        // Create a new base shape only consisting of two vertices :)
+        //  min x extreme and max x extreme.
+        const silhouetteBaseShape = GeometryGenerationHelpers.mkCircularPolygon(outlineBounds.width, // 100.0, // baseRadius
+        2, // two vertices
+        1.0 // baseShapeExcentricity
+        );
+        const silhouetteDildoGeometry = new DildoGeometry({
+            baseShape: silhouetteBaseShape,
+            isBending: true,
+            bendAngle: props.bendAngleDeg,
+            outline: props.outline,
+            outlineSegmentCount: props.outlineSegmentCount,
+            useBumpmap: false,
+            bumpmap: null,
+            bumpmapTexture: null,
+            closeTop: false,
+            closeBottom: false,
+            makeHollow: false,
+            hollowStrengthX: 0.0,
+            twistAngle: 0.0,
+            normalizePerpendiculars: true,
+            normalsLength: 100.0
+        });
+        // Retrieve silhouette vertices from geometry
+        for (var i = 0; i < silhouetteDildoGeometry.vertexMatrix.length; i++) {
+            const leftVert = silhouetteDildoGeometry.getVertexAt(0, i);
+            const rightVert = silhouetteDildoGeometry.getVertexAt(1, i);
+            // Convert 3D vertex to 2D vertex by dropping one dimension.
+            // Also move back to the original bounding box.
+            this.leftPathVertices.push(new Vertex(leftVert.x + outlineBounds.max.x, leftVert.y));
+            this.rightPathVertices.push(new Vertex(rightVert.x + outlineBounds.max.x, rightVert.y));
         }
     }
 }

@@ -98,7 +98,8 @@ exports.BumpMapper = {
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
  * @modified 2022-02-03 Added `clearResults` function.
  * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version  1.2.3
+ * @modified 2026-02-26 The `baseShape` param is now mandatory.
+ * @version  1.3.0
  **/
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DildoGeneration = void 0;
@@ -111,6 +112,7 @@ var mergeGeometries_1 = __webpack_require__(/*! ./mergeGeometries */ "./src/cjs/
 var PathFinder_1 = __webpack_require__(/*! ./PathFinder */ "./src/cjs/PathFinder.js");
 var randomWebColor_1 = __webpack_require__(/*! ./randomWebColor */ "./src/cjs/randomWebColor.js");
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/cjs/constants.js");
+// import { computeVertexNormals } from "./computeVertexNormals";
 var BumpMapper_1 = __webpack_require__(/*! ./BumpMapper */ "./src/cjs/BumpMapper.js");
 var DildoGeneration = /** @class */ (function () {
     function DildoGeneration(canvasId, options) {
@@ -198,8 +200,7 @@ var DildoGeneration = /** @class */ (function () {
     DildoGeneration.prototype.rebuild = function (options) {
         this.removeCachedGeometries();
         this.clearResults();
-        var baseRadius = options.outline.getBounds().width;
-        var baseShape = GeometryGenerationHelpers_1.GeometryGenerationHelpers.mkCircularPolygon(baseRadius, options.shapeSegmentCount, options.baseShapeExcentricity);
+        var baseShape = options.baseShape;
         var useBumpmap = typeof options.useBumpmap !== "undefined" ? options.useBumpmap : false;
         // const bumpmapPath = "./assets/img/bumpmap.png";
         // const bumpmapTexture: THREE.Texture | null = useBumpmap ? DildoMaterials.loadTextureImage(bumpmapPath) : null;
@@ -1084,7 +1085,7 @@ var DildoGeometry = /** @class */ (function (_super) {
     /**
      * Build the texture UV mapping for all faces.
      *
-     * @param {ExtendedDildoOptions} options
+     * @param {DildoGeometryOptions} options
      */
     DildoGeometry.prototype._buildUVMapping = function (options) {
         var baseShape = options.baseShape;
@@ -1369,22 +1370,44 @@ exports.DildoMaterials = (function () {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DildoSilhouette2D = void 0;
 var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
+var DildoGeometry_1 = __webpack_require__(/*! ./DildoGeometry */ "./src/cjs/DildoGeometry.js");
 var DildoSilhouette2D = /** @class */ (function () {
     function DildoSilhouette2D(props) {
         this.leftPathVertices = [];
         this.rightPathVertices = [];
-        // Note: this is very similar to the creation od the 3D model.
-        // Duplicate code? refactor?
         var outlineBounds = props.outline.getBounds();
-        var shapeHeight = outlineBounds.height;
-        for (var s = 0; s < props.outlineSegmentCount; s++) {
-            var t = Math.min(1.0, Math.max(0.0, s / (props.outlineSegmentCount - 1)));
-            var outlineVert = props.outline.getPointAt(t);
-            var perpendicularVert = props.outline.getPerpendicularAt(t);
-            var heightT = (outlineBounds.max.y - outlineVert.y) / shapeHeight;
-            var outlineT = s / (props.outlineSegmentCount - 1);
-            this.leftPathVertices.push(new plotboilerplate_1.Vertex(outlineVert.x, outlineVert.y));
-            this.rightPathVertices.push(new plotboilerplate_1.Vertex(-outlineVert.x, outlineVert.y));
+        // Create a new base shape only consisting of two vertices :)
+        //  min x extreme and max x extreme.
+        var silhouetteBaseShape = GeometryGenerationHelpers_1.GeometryGenerationHelpers.mkCircularPolygon(outlineBounds.width, // 100.0, // baseRadius
+        2, // two vertices
+        1.0 // baseShapeExcentricity
+        );
+        var silhouetteDildoGeometry = new DildoGeometry_1.DildoGeometry({
+            baseShape: silhouetteBaseShape,
+            isBending: true,
+            bendAngle: props.bendAngleDeg,
+            outline: props.outline,
+            outlineSegmentCount: props.outlineSegmentCount,
+            useBumpmap: false,
+            bumpmap: null,
+            bumpmapTexture: null,
+            closeTop: false,
+            closeBottom: false,
+            makeHollow: false,
+            hollowStrengthX: 0.0,
+            twistAngle: 0.0,
+            normalizePerpendiculars: true,
+            normalsLength: 100.0
+        });
+        // Retrieve silhouette vertices from geometry
+        for (var i = 0; i < silhouetteDildoGeometry.vertexMatrix.length; i++) {
+            var leftVert = silhouetteDildoGeometry.getVertexAt(0, i);
+            var rightVert = silhouetteDildoGeometry.getVertexAt(1, i);
+            // Convert 3D vertex to 2D vertex by dropping one dimension.
+            // Also move back to the original bounding box.
+            this.leftPathVertices.push(new plotboilerplate_1.Vertex(leftVert.x + outlineBounds.max.x, leftVert.y));
+            this.rightPathVertices.push(new plotboilerplate_1.Vertex(rightVert.x + outlineBounds.max.x, rightVert.y));
         }
     }
     return DildoSilhouette2D;
@@ -3011,6 +3034,7 @@ var isMobileDevice_1 = __webpack_require__(/*! ./isMobileDevice */ "./src/cjs/is
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/cjs/constants.js");
 var SculptMap_1 = __webpack_require__(/*! ./SculptMap */ "./src/cjs/SculptMap.js");
 var DildoSilhouette2D_1 = __webpack_require__(/*! ./DildoSilhouette2D */ "./src/cjs/DildoSilhouette2D.js");
+var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
@@ -3019,6 +3043,7 @@ exports.ngdg = {
     KEY_SLICED_MESH_LEFT: constants_1.KEY_SLICED_MESH_LEFT,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
     DildoSilhouette2D: DildoSilhouette2D_1.DildoSilhouette2D,
+    GeometryGenerationHelpers: GeometryGenerationHelpers_1.GeometryGenerationHelpers,
     ImageStore: ImageStore_1.ImageStore,
     isMobileDevice: isMobileDevice_1.isMobileDevice,
     LocalstorageIO: LocalstorageIO_1.LocalstorageIO,

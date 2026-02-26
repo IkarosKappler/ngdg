@@ -19,6 +19,7 @@ var isMobileDevice_1 = require("./isMobileDevice");
 var constants_1 = require("./constants");
 var SculptMap_1 = require("./SculptMap");
 var DildoSilhouette2D_1 = require("./DildoSilhouette2D");
+var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
@@ -27,6 +28,7 @@ exports.ngdg = {
     KEY_SLICED_MESH_LEFT: constants_1.KEY_SLICED_MESH_LEFT,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
     DildoSilhouette2D: DildoSilhouette2D_1.DildoSilhouette2D,
+    GeometryGenerationHelpers: GeometryGenerationHelpers_1.GeometryGenerationHelpers,
     ImageStore: ImageStore_1.ImageStore,
     isMobileDevice: isMobileDevice_1.isMobileDevice,
     LocalstorageIO: LocalstorageIO_1.LocalstorageIO,

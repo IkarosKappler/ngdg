@@ -8,17 +8,19 @@
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
  * @modified 2022-02-03 Added `clearResults` function.
  * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version  1.2.3
+ * @modified 2026-02-26 The `baseShape` param is now mandatory.
+ * @version  1.3.0
  **/
 import * as THREE from "three";
 import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper";
-import { /* DildoBaseClass, */ DildoGeometry } from "./DildoGeometry";
+import { DildoGeometry } from "./DildoGeometry";
 import { DildoMaterials } from "./DildoMaterials";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { mergeGeometries } from "./mergeGeometries";
 import { PathFinder } from "./PathFinder";
 import { randomWebColor } from "./randomWebColor";
 import { EPS, SPLIT_MESH_OFFSET, KEY_LEFT_SLICE_GEOMETRY, KEY_LEFT_SLICE_PLANE, KEY_PLANE_INTERSECTION_POINTS, KEY_RIGHT_SLICE_GEOMETRY, KEY_RIGHT_SLICE_PLANE, KEY_SPLIT_PANE_MESH, KEY_SPLIT_TRIANGULATION_GEOMETRIES, KEY_SLICED_MESH_RIGHT, KEY_SLICED_MESH_LEFT } from "./constants";
+// import { computeVertexNormals } from "./computeVertexNormals";
 import { BumpMapper } from "./BumpMapper";
 export class DildoGeneration {
     constructor(canvasId, options) {
@@ -106,8 +108,7 @@ export class DildoGeneration {
     rebuild(options) {
         this.removeCachedGeometries();
         this.clearResults();
-        const baseRadius = options.outline.getBounds().width;
-        const baseShape = GeometryGenerationHelpers.mkCircularPolygon(baseRadius, options.shapeSegmentCount, options.baseShapeExcentricity);
+        const baseShape = options.baseShape;
         const useBumpmap = typeof options.useBumpmap !== "undefined" ? options.useBumpmap : false;
         // const bumpmapPath = "./assets/img/bumpmap.png";
         // const bumpmapTexture: THREE.Texture | null = useBumpmap ? DildoMaterials.loadTextureImage(bumpmapPath) : null;

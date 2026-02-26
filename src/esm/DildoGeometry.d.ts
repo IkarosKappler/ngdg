@@ -12,7 +12,7 @@
  **/
 import { Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
-import { ExtendedDildoOptions } from "./interfaces";
+import { DildoGeometryOptions } from "./interfaces";
 import { Gmetry } from "three-geometry-hellfix/src/cjs";
 export declare class DildoGeometry extends Gmetry {
     vertexMatrix: Array<Array<number>>;
@@ -40,7 +40,7 @@ export declare class DildoGeometry extends Gmetry {
      * @param {boolean} options.isBending - Switch bending on/off no matter what the bend angle says.
      * @param {boolean} options.makeHollow - Make a hollow mold.
      **/
-    constructor(options: ExtendedDildoOptions);
+    constructor(options: DildoGeometryOptions);
     /**
      * Calculate the bounding box of this geometry.
      *
@@ -170,7 +170,7 @@ export declare class DildoGeometry extends Gmetry {
     /**
      * Build the texture UV mapping for all faces.
      *
-     * @param {ExtendedDildoOptions} options
+     * @param {DildoGeometryOptions} options
      */
     private _buildUVMapping;
     /**

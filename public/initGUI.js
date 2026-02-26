@@ -33,6 +33,8 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   fold0.add( config, "acquireOptimalPathView" );
   // prettier-ignore
   fold0.add(config, "showDiscreteOutlinePoints").onChange( function() { pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
+  // prettier-ignore
+  fold0.add(config, "showSilhouette").onChange( function() { pb.redraw(); } ).name('showSilhouette').title('Show the 2D shilhouette of the dildo.');
 
   var fold1 = gui.addFolder("Mesh");
   // prettier-ignore

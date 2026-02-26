@@ -487,7 +487,7 @@ export class DildoGeometry extends Gmetry {
     /**
      * Build the texture UV mapping for all faces.
      *
-     * @param {ExtendedDildoOptions} options
+     * @param {DildoGeometryOptions} options
      */
     _buildUVMapping(options) {
         var baseShape = options.baseShape;

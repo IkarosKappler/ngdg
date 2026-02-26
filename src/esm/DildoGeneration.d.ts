@@ -8,12 +8,13 @@
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
  * @modified 2022-02-03 Added `clearResults` function.
  * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version  1.2.3
+ * @modified 2026-02-26 The `baseShape` param is now mandatory.
+ * @version  1.3.0
  **/
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { STLExporter } from "three/examples/jsm/exporters/STLExporter";
-import { /* DildoBaseClass, */ DildoGeometry } from "./DildoGeometry";
+import { DildoGeometry } from "./DildoGeometry";
 import { DildoGenerationOptions, DildoOptions, ExportOptions, ExtendedDildoOptions, IDildoGeneration } from "./interfaces";
 export declare class DildoGeneration implements IDildoGeneration {
     /**

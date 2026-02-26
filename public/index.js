@@ -118,6 +118,7 @@
         resizeHandleLineColor: isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
         rulerColor: isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)",
         showDiscreteOutlinePoints: false,
+        showSilhouette: true,
         // Modifiers
         leftSplitMeshRotationX: 180.0, // align properly according to split algorithm
         leftSplitMeshRotationY: 0.0,
@@ -294,13 +295,17 @@
       // TODO: baseShape updating belongs elsewhere!
       const baseRadius = outline.getBounds().width;
 
-      baseShape = GeometryGenerationHelpers.mkCircularPolygon(baseRadius, config.shapeSegmentCount, config.baseShapeExcentricity);
+      baseShape = ngdg.GeometryGenerationHelpers.mkCircularPolygon(
+        baseRadius,
+        config.shapeSegmentCount,
+        config.baseShapeExcentricity
+      );
       // Also draw the bent 2D dildo outline?
-      dildoSilhouette = new DildoSilhouette2D({
+      dildoSilhouette = new ngdg.DildoSilhouette2D({
         baseShape: baseShape,
         outline: outline,
         outlineSegmentCount: config.outlineSegmentCount,
-        bendAngleRad: config.bendAngle * DEG_TO_RAD,
+        bendAngleRad: config.bendAngle * ngdg.DEG_TO_RAD,
         bendAngleDeg: config.bendAngle,
         isBending: config.isBending
       });
@@ -444,19 +449,10 @@
       }
       fill.polyline(polyline, false, config.bezierFillColor);
 
-      // // Also draw the bent 2D dildo outline?
-      // var silhouette = new DildoSilhouette2D({
-      //   baseShape: baseShape,
-      //   outline: outline,
-      //   outlineSegmentCount: config.outlineSegmentCount,
-      //   bendAngleRad: config.bendAngle * DEG_TO_RAD,
-      //   bendAngleDeg: config.bendAngle,
-
-      //   isBending: config.isBending
-      // });
-
-      draw.polyline(dildoSilhouette.leftPathVertices, true, "orange", 3.0);
-      draw.polyline(dildoSilhouette.rightPathVertices, true, "orange", 3.0);
+      if (config.showSilhouette) {
+        draw.polyline(dildoSilhouette.leftPathVertices, true, "orange", 3.0);
+        draw.polyline(dildoSilhouette.rightPathVertices, true, "orange", 3.0);
+      }
     };
 
     // +---------------------------------------------------------------------------------
