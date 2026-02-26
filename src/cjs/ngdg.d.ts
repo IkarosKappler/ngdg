@@ -11,6 +11,7 @@
 import { DildoGeneration } from "./DildoGeneration";
 import { LocalstorageIO } from "./LocalstorageIO";
 import { SculptMap } from "./SculptMap";
+import { DildoSilhouette2D } from "./DildoSilhouette2D";
 export declare const ngdg: {
     DEFAULT_BEZIER_JSON: string;
     DEG_TO_RAD: number;
@@ -21,12 +22,13 @@ export declare const ngdg: {
     };
     KEY_SLICED_MESH_RIGHT: string;
     KEY_SLICED_MESH_LEFT: string;
-    LocalstorageIO: typeof LocalstorageIO;
     DildoGeneration: typeof DildoGeneration;
+    DildoSilhouette2D: typeof DildoSilhouette2D;
     ImageStore: {
         getImage: (path: string, onComplete: (completeImage: HTMLImageElement) => void) => HTMLImageElement;
         isImageLoaded: (image: HTMLImageElement) => boolean;
     };
     isMobileDevice: () => boolean;
+    LocalstorageIO: typeof LocalstorageIO;
     SculptMap: typeof SculptMap;
 };

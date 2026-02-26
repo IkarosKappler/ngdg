@@ -16,6 +16,7 @@ import { LocalstorageIO } from "./LocalstorageIO";
 import { isMobileDevice } from "./isMobileDevice";
 import { DEG_TO_RAD, KEY_SLICED_MESH_LEFT, KEY_SLICED_MESH_RIGHT, SPLIT_MESH_OFFSET } from "./constants";
 import { SculptMap } from "./SculptMap";
+import { DildoSilhouette2D } from "./DildoSilhouette2D";
 
 export const ngdg = {
   DEFAULT_BEZIER_JSON,
@@ -25,9 +26,10 @@ export const ngdg = {
   KEY_SLICED_MESH_RIGHT,
   KEY_SLICED_MESH_LEFT,
 
-  LocalstorageIO,
   DildoGeneration,
+  DildoSilhouette2D,
   ImageStore,
   isMobileDevice,
+  LocalstorageIO,
   SculptMap
 };

@@ -18,16 +18,18 @@ var LocalstorageIO_1 = require("./LocalstorageIO");
 var isMobileDevice_1 = require("./isMobileDevice");
 var constants_1 = require("./constants");
 var SculptMap_1 = require("./SculptMap");
+var DildoSilhouette2D_1 = require("./DildoSilhouette2D");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
     SPLIT_MESH_OFFSET: constants_1.SPLIT_MESH_OFFSET,
     KEY_SLICED_MESH_RIGHT: constants_1.KEY_SLICED_MESH_RIGHT,
     KEY_SLICED_MESH_LEFT: constants_1.KEY_SLICED_MESH_LEFT,
-    LocalstorageIO: LocalstorageIO_1.LocalstorageIO,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
+    DildoSilhouette2D: DildoSilhouette2D_1.DildoSilhouette2D,
     ImageStore: ImageStore_1.ImageStore,
     isMobileDevice: isMobileDevice_1.isMobileDevice,
+    LocalstorageIO: LocalstorageIO_1.LocalstorageIO,
     SculptMap: SculptMap_1.SculptMap
 };
 //# sourceMappingURL=ngdg.js.map

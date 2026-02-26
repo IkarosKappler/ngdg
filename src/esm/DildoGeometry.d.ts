@@ -145,7 +145,7 @@ export declare class DildoGeometry extends Gmetry {
      * @param {number} arcRadius
      * @param {number} heightT
      */
-    _bendVertex(vert: THREE.Vector3, bendAngle: number, arcRadius: number, heightT: number): void;
+    static _bendVertex(vert: THREE.Vector3, bendAngle: number, arcRadius: number, heightT: number): void;
     applyBumpMap(bumpMapTexture: THREE.Texture): void;
     /**
      * Build up the faces for this geometry.

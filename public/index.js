@@ -290,6 +290,14 @@
       }
     };
 
+    var updateSilhouette = function (doRedraw) {
+      const baseRadius = outline.getBounds().width;
+      baseShape = GeometryGenerationHelpers.mkCircularPolygon(baseRadius, config.shapeSegmentCount, config.baseShapeExcentricity);
+      if (doRedraw) {
+        pb.redraw();
+      }
+    };
+
     // +---------------------------------------------------------------------------------
     // | Delay the build a bit. And cancel stale builds.
     // | This avoids too many rebuilds (pretty expensive) on mouse drag events.
@@ -301,6 +309,7 @@
         (function (bId) {
           return function () {
             if (bId === buildId) {
+              updateSilhouette(false);
               if (config.useBumpmap && ImageStore.isImageLoaded(bumpmapRasterImage)) {
                 // Resize the bumpmap to satisfy the mesh resolution.
                 bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.shapeSegmentCount, config.outlineSegmentCount);
@@ -308,7 +317,12 @@
               updateBumpmapPreview(bumpmap, config.useBumpmap && typeof bumpmap !== "undefined" && config.showBumpmapImage);
               // Set the bending flag only if bendAngle if not zero.
               dildoGeneration.rebuild(
-                Object.assign(config, { outline: outline, isBending: config.bendAngle !== 0, bumpmap: bumpmap })
+                Object.assign(config, {
+                  outline: outline,
+                  isBending: config.bendAngle !== 0,
+                  bumpmap: bumpmap,
+                  baseShape: baseShape
+                })
               );
               updateModifiers();
             }
@@ -392,10 +406,10 @@
     // +---------------------------------------------------------------------------------
     // | Draw some stuff before rendering?
     // +-------------------------------
-    var preDraw = function () {
+    var preDraw = function (draw, fill) {
       // Draw bounds
       var pathBounds = outline.getBounds();
-      pb.draw.rect(pathBounds.min, pathBounds.width, pathBounds.height, config.pathBoundsColor, 1);
+      draw.rect(pathBounds.min, pathBounds.width, pathBounds.height, config.pathBoundsColor, 1);
 
       // Fill inner area
       var polyline = [
@@ -407,7 +421,19 @@
       for (var i = 0; i < pathSteps; i++) {
         polyline.push(outline.getPointAt(i / pathSteps));
       }
-      pb.fill.polyline(polyline, false, config.bezierFillColor);
+      fill.polyline(polyline, false, config.bezierFillColor);
+
+      // Also draw the bent 2D dildo outline?
+      var silhouette = new DildoSilhouette2D({
+        baseShape: baseShape,
+        outline: outline,
+        outlineSegmentCount: config.outlineSegmentCount,
+        bendAngleRad: config.bendAngle * DEG_TO_RAD,
+        isBending: config.isBending
+      });
+
+      draw.polyline(silhouette.leftPathVertices, true, "orange", 3.0);
+      draw.polyline(silhouette.rightPathVertices, true, "orange", 3.0);
     };
 
     // +---------------------------------------------------------------------------------
@@ -457,6 +483,7 @@
       }
       var onUpdate = function () {
         updateOutlineStats();
+        updateSilhouette(true); // doRedraw=true
         rebuild();
       };
       bezierResizer = new BezierResizeHelper(pb, outline, onUpdate);
@@ -580,6 +607,12 @@
     // | Create the outline: a Bézier path.
     // +-------------------------------
     var outline = null;
+
+    // +---------------------------------------------------------------------------------
+    // | The base shape that's used for the extrusion geometry part.
+    // | By default this is a circular polygon.
+    // +-------------------------------
+    var baseShape = null; // Polygon
     // This will trigger the first initial postDraw/draw/redraw call
     // setPathInstance(BezierPath.fromJSON(initialPathJSON));
     if (GUP.rbdata) {

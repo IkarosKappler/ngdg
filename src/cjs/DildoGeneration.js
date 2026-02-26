@@ -9,7 +9,8 @@
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
  * @modified 2022-02-03 Added `clearResults` function.
  * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version  1.2.3
+ * @modified 2026-02-26 The `baseShape` param is now mandatory.
+ * @version  1.3.0
  **/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DildoGeneration = void 0;
@@ -22,6 +23,7 @@ var mergeGeometries_1 = require("./mergeGeometries");
 var PathFinder_1 = require("./PathFinder");
 var randomWebColor_1 = require("./randomWebColor");
 var constants_1 = require("./constants");
+// import { computeVertexNormals } from "./computeVertexNormals";
 var BumpMapper_1 = require("./BumpMapper");
 var DildoGeneration = /** @class */ (function () {
     function DildoGeneration(canvasId, options) {
@@ -109,8 +111,7 @@ var DildoGeneration = /** @class */ (function () {
     DildoGeneration.prototype.rebuild = function (options) {
         this.removeCachedGeometries();
         this.clearResults();
-        var baseRadius = options.outline.getBounds().width;
-        var baseShape = GeometryGenerationHelpers_1.GeometryGenerationHelpers.mkCircularPolygon(baseRadius, options.shapeSegmentCount, options.baseShapeExcentricity);
+        var baseShape = options.baseShape;
         var useBumpmap = typeof options.useBumpmap !== "undefined" ? options.useBumpmap : false;
         // const bumpmapPath = "./assets/img/bumpmap.png";
         // const bumpmapTexture: THREE.Texture | null = useBumpmap ? DildoMaterials.loadTextureImage(bumpmapPath) : null;

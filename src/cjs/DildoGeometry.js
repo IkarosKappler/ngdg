@@ -133,14 +133,14 @@ var DildoGeometry = /** @class */ (function (_super) {
     DildoGeometry.prototype.__buildSlice = function (baseShape, outlineBounds, outlineVert, sliceIndex, heightT, isBending, bendAngle, arcRadius, shapeTwistAngle) {
         var outlineXPct = (outlineBounds.max.x - outlineVert.x) / outlineBounds.width;
         // TODO: are these is use?
-        var yMin, yMax;
+        // var yMin, yMax;
         for (var i = 0; i < baseShape.vertices.length; i++) {
             var shapeVert = baseShape.vertices[i];
             if (isBending) {
                 var vert = new THREE.Vector3(shapeVert.x * outlineXPct, 0, shapeVert.y * outlineXPct);
                 // Apply twist
                 GeometryGenerationHelpers_1.GeometryGenerationHelpers.rotateVertY(vert, shapeTwistAngle, 0, 0);
-                this._bendVertex(vert, bendAngle, arcRadius, heightT);
+                DildoGeometry._bendVertex(vert, bendAngle, arcRadius, heightT);
                 vert.y += outlineBounds.max.y;
             }
             else {
@@ -150,12 +150,10 @@ var DildoGeometry = /** @class */ (function (_super) {
             }
             this.vertexMatrix[sliceIndex][i] = this.vertices.length;
             this.vertices.push(vert);
-            if (sliceIndex == 0) {
-                if (i == 0)
-                    yMin = vert.y;
-                if (i + 1 == baseShape.vertices.length)
-                    yMax = vert.y;
-            }
+            // if (sliceIndex == 0) {
+            //   if (i == 0) yMin = vert.y;
+            //   if (i + 1 == baseShape.vertices.length) yMax = vert.y;
+            // }
         } // END for
     };
     /**
@@ -179,7 +177,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         var spineVert = shapeCenter.clone();
         if (isBending) {
             var vert = new THREE.Vector3(spineVert.x * outlineXPct, 0, spineVert.y * outlineXPct);
-            this._bendVertex(vert, bendAngle, arcRadius, heightT);
+            DildoGeometry._bendVertex(vert, bendAngle, arcRadius, heightT);
             vert.y += outlineBounds.max.y;
         }
         else {
@@ -210,7 +208,7 @@ var DildoGeometry = /** @class */ (function (_super) {
             var shapeVert = baseShape.vertices[i];
             if (isBending) {
                 var vert = new THREE.Vector3(shapeVert.x * outlineXPct, 0, shapeVert.y * outlineXPct);
-                this._bendVertex(vert, bendAngle, arcRadius, heightT);
+                DildoGeometry._bendVertex(vert, bendAngle, arcRadius, heightT);
                 vert.y += outlineBounds.max.y;
             }
             else {
@@ -356,7 +354,7 @@ var DildoGeometry = /** @class */ (function (_super) {
     DildoGeometry.prototype._getTopVertex = function (outlineBounds, isBending, bendAngle, arcRadius) {
         if (isBending) {
             var topPoint = new THREE.Vector3(0, 0, 0);
-            this._bendVertex(topPoint, bendAngle, arcRadius, 1.0);
+            DildoGeometry._bendVertex(topPoint, bendAngle, arcRadius, 1.0);
             topPoint.y += outlineBounds.max.y;
             return topPoint;
         }
@@ -383,7 +381,7 @@ var DildoGeometry = /** @class */ (function (_super) {
      * @param {number} arcRadius
      * @param {number} heightT
      */
-    DildoGeometry.prototype._bendVertex = function (vert, bendAngle, arcRadius, heightT) {
+    DildoGeometry._bendVertex = function (vert, bendAngle, arcRadius, heightT) {
         var axis = new THREE.Vector3(0, 0, 1);
         var angle = bendAngle * heightT;
         // Move slice point along radius, rotate, then move back

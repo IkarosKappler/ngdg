@@ -59,10 +59,6 @@ var SculptMap = /** @class */ (function () {
                 var r = ((vert.x - bounds.min.x) / (bounds.max.x - bounds.min.x)) * 255;
                 var g = ((vert.y - bounds.min.y) / (bounds.max.y - bounds.min.y)) * 255;
                 var b = ((vert.z - bounds.min.z) / (bounds.max.z - bounds.min.z)) * 255;
-                // const r = Math.floor(Math.random() * 255);
-                // const g = Math.floor(Math.random() * 255);
-                // const b = Math.floor(Math.random() * 255);
-                // const color = new Color().setRed(r).setGreen(g).setBlue(b);
                 var color = { r: r, g: g, b: b, a: 255 };
                 colorRow.push(color);
             }

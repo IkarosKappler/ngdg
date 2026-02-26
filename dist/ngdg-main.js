@@ -710,14 +710,14 @@ var DildoGeometry = /** @class */ (function (_super) {
     DildoGeometry.prototype.__buildSlice = function (baseShape, outlineBounds, outlineVert, sliceIndex, heightT, isBending, bendAngle, arcRadius, shapeTwistAngle) {
         var outlineXPct = (outlineBounds.max.x - outlineVert.x) / outlineBounds.width;
         // TODO: are these is use?
-        var yMin, yMax;
+        // var yMin, yMax;
         for (var i = 0; i < baseShape.vertices.length; i++) {
             var shapeVert = baseShape.vertices[i];
             if (isBending) {
                 var vert = new THREE.Vector3(shapeVert.x * outlineXPct, 0, shapeVert.y * outlineXPct);
                 // Apply twist
                 GeometryGenerationHelpers_1.GeometryGenerationHelpers.rotateVertY(vert, shapeTwistAngle, 0, 0);
-                this._bendVertex(vert, bendAngle, arcRadius, heightT);
+                DildoGeometry._bendVertex(vert, bendAngle, arcRadius, heightT);
                 vert.y += outlineBounds.max.y;
             }
             else {
@@ -727,12 +727,10 @@ var DildoGeometry = /** @class */ (function (_super) {
             }
             this.vertexMatrix[sliceIndex][i] = this.vertices.length;
             this.vertices.push(vert);
-            if (sliceIndex == 0) {
-                if (i == 0)
-                    yMin = vert.y;
-                if (i + 1 == baseShape.vertices.length)
-                    yMax = vert.y;
-            }
+            // if (sliceIndex == 0) {
+            //   if (i == 0) yMin = vert.y;
+            //   if (i + 1 == baseShape.vertices.length) yMax = vert.y;
+            // }
         } // END for
     };
     /**
@@ -756,7 +754,7 @@ var DildoGeometry = /** @class */ (function (_super) {
         var spineVert = shapeCenter.clone();
         if (isBending) {
             var vert = new THREE.Vector3(spineVert.x * outlineXPct, 0, spineVert.y * outlineXPct);
-            this._bendVertex(vert, bendAngle, arcRadius, heightT);
+            DildoGeometry._bendVertex(vert, bendAngle, arcRadius, heightT);
             vert.y += outlineBounds.max.y;
         }
         else {
@@ -787,7 +785,7 @@ var DildoGeometry = /** @class */ (function (_super) {
             var shapeVert = baseShape.vertices[i];
             if (isBending) {
                 var vert = new THREE.Vector3(shapeVert.x * outlineXPct, 0, shapeVert.y * outlineXPct);
-                this._bendVertex(vert, bendAngle, arcRadius, heightT);
+                DildoGeometry._bendVertex(vert, bendAngle, arcRadius, heightT);
                 vert.y += outlineBounds.max.y;
             }
             else {
@@ -933,7 +931,7 @@ var DildoGeometry = /** @class */ (function (_super) {
     DildoGeometry.prototype._getTopVertex = function (outlineBounds, isBending, bendAngle, arcRadius) {
         if (isBending) {
             var topPoint = new THREE.Vector3(0, 0, 0);
-            this._bendVertex(topPoint, bendAngle, arcRadius, 1.0);
+            DildoGeometry._bendVertex(topPoint, bendAngle, arcRadius, 1.0);
             topPoint.y += outlineBounds.max.y;
             return topPoint;
         }
@@ -960,7 +958,7 @@ var DildoGeometry = /** @class */ (function (_super) {
      * @param {number} arcRadius
      * @param {number} heightT
      */
-    DildoGeometry.prototype._bendVertex = function (vert, bendAngle, arcRadius, heightT) {
+    DildoGeometry._bendVertex = function (vert, bendAngle, arcRadius, heightT) {
         var axis = new THREE.Vector3(0, 0, 1);
         var angle = bendAngle * heightT;
         // Move slice point along radius, rotate, then move back
@@ -1355,6 +1353,44 @@ exports.DildoMaterials = (function () {
     return DildoMaterials;
 })();
 //# sourceMappingURL=DildoMaterials.js.map
+
+/***/ }),
+
+/***/ "./src/cjs/DildoSilhouette2D.js":
+/*!**************************************!*\
+  !*** ./src/cjs/DildoSilhouette2D.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+/**
+ * @date 2026-02-26
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DildoSilhouette2D = void 0;
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var DildoSilhouette2D = /** @class */ (function () {
+    function DildoSilhouette2D(props) {
+        this.leftPathVertices = [];
+        this.rightPathVertices = [];
+        // Note: this is very similar to the creation od the 3D model.
+        // Duplicate code? refactor?
+        var outlineBounds = props.outline.getBounds();
+        var shapeHeight = outlineBounds.height;
+        for (var s = 0; s < props.outlineSegmentCount; s++) {
+            var t = Math.min(1.0, Math.max(0.0, s / (props.outlineSegmentCount - 1)));
+            var outlineVert = props.outline.getPointAt(t);
+            var perpendicularVert = props.outline.getPerpendicularAt(t);
+            var heightT = (outlineBounds.max.y - outlineVert.y) / shapeHeight;
+            var outlineT = s / (props.outlineSegmentCount - 1);
+            this.leftPathVertices.push(new plotboilerplate_1.Vertex(outlineVert.x, outlineVert.y));
+            this.rightPathVertices.push(new plotboilerplate_1.Vertex(-outlineVert.x, outlineVert.y));
+        }
+    }
+    return DildoSilhouette2D;
+}());
+exports.DildoSilhouette2D = DildoSilhouette2D;
+//# sourceMappingURL=DildoSilhouette2D.js.map
 
 /***/ }),
 
@@ -2452,8 +2488,8 @@ var SculptMap = /** @class */ (function () {
                 // d[2] = color.b;
                 // d[3] = 0.0; // a
                 // context.putImageData(id, x, y);
+                // console.log("color", "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a / 255 + ")");
                 context.fillStyle = "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a / 255 + ")";
-                console.log("color", "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a / 255 + ")");
                 context.fillRect(x, y, 1, 1);
             }
         }
@@ -2477,10 +2513,6 @@ var SculptMap = /** @class */ (function () {
                 var r = ((vert.x - bounds.min.x) / (bounds.max.x - bounds.min.x)) * 255;
                 var g = ((vert.y - bounds.min.y) / (bounds.max.y - bounds.min.y)) * 255;
                 var b = ((vert.z - bounds.min.z) / (bounds.max.z - bounds.min.z)) * 255;
-                // const r = Math.floor(Math.random() * 255);
-                // const g = Math.floor(Math.random() * 255);
-                // const b = Math.floor(Math.random() * 255);
-                // const color = new Color().setRed(r).setGreen(g).setBlue(b);
                 var color = { r: r, g: g, b: b, a: 255 };
                 colorRow.push(color);
             }
@@ -2978,16 +3010,18 @@ var LocalstorageIO_1 = __webpack_require__(/*! ./LocalstorageIO */ "./src/cjs/Lo
 var isMobileDevice_1 = __webpack_require__(/*! ./isMobileDevice */ "./src/cjs/isMobileDevice.js");
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/cjs/constants.js");
 var SculptMap_1 = __webpack_require__(/*! ./SculptMap */ "./src/cjs/SculptMap.js");
+var DildoSilhouette2D_1 = __webpack_require__(/*! ./DildoSilhouette2D */ "./src/cjs/DildoSilhouette2D.js");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
     SPLIT_MESH_OFFSET: constants_1.SPLIT_MESH_OFFSET,
     KEY_SLICED_MESH_RIGHT: constants_1.KEY_SLICED_MESH_RIGHT,
     KEY_SLICED_MESH_LEFT: constants_1.KEY_SLICED_MESH_LEFT,
-    LocalstorageIO: LocalstorageIO_1.LocalstorageIO,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
+    DildoSilhouette2D: DildoSilhouette2D_1.DildoSilhouette2D,
     ImageStore: ImageStore_1.ImageStore,
     isMobileDevice: isMobileDevice_1.isMobileDevice,
+    LocalstorageIO: LocalstorageIO_1.LocalstorageIO,
     SculptMap: SculptMap_1.SculptMap
 };
 //# sourceMappingURL=ngdg.js.map
