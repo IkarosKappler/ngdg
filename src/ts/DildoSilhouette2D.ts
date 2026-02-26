@@ -44,24 +44,40 @@ export class DildoSilhouette2D {
       const outlineT: number = s / (props.outlineSegmentCount - 1);
       const outlineXPct = (outlineBounds.max.x - outlineVert.x) / outlineBounds.width;
       const shapeTwistAngle: number = 0.0;
-      // console.log("s", s, "isBending", isBending);
+      console.log("s", s, "isBending", isBending);
 
       // const shapeVert = baseShape.vertices[i];
       const shapeVertLeft: Vertex = outlineVert.clone(); // new Vertex(outlineVert.x, outlineBounds;
-      const shapeVertRight: Vertex = outlineVert.clone().addX(2 * outlineBounds.max.x); // new Vertex(outlineVert.x, outlineBounds;
+      // const shapeVertRight: Vertex = outlineVert.clone().addX(2 * outlineBounds.max.x); // new Vertex(outlineVert.x, outlineBounds;
+      const shapeVertRight: Vertex = new Vertex(-outlineVert.x + 2 * outlineBounds.max.x, outlineVert.y); // new Vertex(outlineVert.x, outlineBounds;
+
       if (isBending) {
-        var vert = new THREE.Vector3(shapeVertLeft.x * outlineXPct, 0, shapeVertLeft.y * outlineXPct);
+        // var vert = new THREE.Vector3(shapeVertLeft.x * outlineXPct, 0, shapeVertLeft.y * outlineXPct);
+        var vertL = new THREE.Vector3(shapeVertLeft.x, 0, shapeVertLeft.y);
+        var vertR = new THREE.Vector3(shapeVertRight.x, 0, shapeVertRight.y);
+
         // Apply twist
         // GeometryGenerationHelpers.rotateVertY(vert, shapeTwistAngle, 0, 0);
-        DildoGeometry._bendVertex(vert, props.bendAngleRad, arcRadius, heightT);
-        vert.y += outlineBounds.max.y;
+        // DildoGeometry._bendVertex(vert, props.bendAngleRad, arcRadius, heightT);
+        // vert.y += outlineBounds.max.y;
+        vertL.y += outlineBounds.max.y;
+        vertR.y += outlineBounds.max.y;
+        this.leftPathVertices.push(new Vertex(vertL.x, vertL.z));
+        this.rightPathVertices.push(new Vertex(vertR.x, vertR.z));
+
+        // this.leftPathVertices.push(new Vertex(shapeVertLeft.x, shapeVertLeft.y));
+        // this.rightPathVertices.push(new Vertex(-shapeVertLeft.x + 2 * outlineBounds.max.x, shapeVertLeft.y));
       } else {
-        var vert = new THREE.Vector3(shapeVertLeft.x * outlineXPct, outlineVert.y, shapeVertLeft.y * outlineXPct);
+        console.log("Not bend");
+        // var vert = new THREE.Vector3(shapeVertLeft.x * outlineXPct, outlineVert.y, shapeVertLeft.y * outlineXPct);
+        var vert = new THREE.Vector3(shapeVertLeft.x, outlineVert.y, shapeVertLeft.y);
+
         // Apply twist
-        GeometryGenerationHelpers.rotateVertY(vert, shapeTwistAngle, 0, 0);
+        // GeometryGenerationHelpers.rotateVertY(vert, shapeTwistAngle, 0, 0);
+        this.leftPathVertices.push(new Vertex(shapeVertLeft.x, shapeVertLeft.y));
+        // this.rightPathVertices.push(new Vertex(-shapeVertLeft.x + 2 * outlineBounds.max.x, shapeVertLeft.y));
+        this.rightPathVertices.push(new Vertex(shapeVertRight.x, shapeVertRight.y));
       }
-      this.leftPathVertices.push(new Vertex(shapeVertLeft.x, shapeVertLeft.y));
-      this.rightPathVertices.push(new Vertex(-shapeVertLeft.x + 2 * outlineBounds.max.x, shapeVertLeft.y));
       // if (isBending) {
       //   var vertLeft = new THREE.Vector3(shapeVertLeft.x * outlineXPct, 0, shapeVertLeft.y * outlineXPct);
       //   var vertRight = new THREE.Vector3(shapeVertRight.x * outlineXPct, 0, shapeVertRight.y * outlineXPct);
