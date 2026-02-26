@@ -1,6 +1,6 @@
-# Codename NGDG
+# Dildo Generator: Next Generation
 
-Because 3d printing, web 3d, and dildos are fun.
+Because 3D printing, 3D web, and dildos are fun.
 
 ![Screenshot](screenshot.png)
 
@@ -37,6 +37,12 @@ Because 3d printing, web 3d, and dildos are fun.
 - [x] Make the Bézier curve more look like in the old version.
 - [x] Add horizonal and vertical scale like in the old version.
 - [ ] Fix the string.substr deprecation issue in `isMobileDevice`.
+- [x] Add sculptmaps.
+- [ ] Show full 2D outline preview (with bend).
+- [ ] Convert all `var` to `const` where possible.
+- [ ] Add proper and complete TSDoc comments.
+- [ ] Upgrade to Typescript 5.
+- [ ] Install latest Plotboilerplate 1.26.0 (requires Typescript 5).
 
 ### LocalStorage
 
@@ -44,7 +50,7 @@ The following config values are stored in the `LocalStorage`:
 
 - bezier_path
 - bend_angle
-- twist_angle");
+- twist_angle
 - base_shape_excentricity
 
 ### Changelog
@@ -53,6 +59,7 @@ The following config values are stored in the `LocalStorage`:
   - Fixing package json: replacing relative path for threejs-slice-geometry-typscript library by proper npm package.
   - Adding class `SculptMap`.
   - Adding `DildoGeometry.getBounds` method.
+  - Adding a dialog feature for displaying the sculpt map.
 - 2022-02-23
   - Added proper types to all function params.
 - 2022-02-22

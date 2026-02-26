@@ -12,7 +12,7 @@
 import { DildoGeometry } from "./DildoGeometry";
 // import { Color } from "plotboilerplate/src/ts/utils/datastructures/Color";
 
-interface Color {
+interface IColor {
   r: number;
   g: number;
   b: number;
@@ -20,7 +20,7 @@ interface Color {
 }
 
 export class SculptMap {
-  private colorMatrix: Color[][];
+  private colorMatrix: IColor[][];
   private width: number;
   private height: number;
 
@@ -40,7 +40,7 @@ export class SculptMap {
     // var d = id.data; // only do this once per page
 
     for (var x = 0; x < this.width; x++) {
-      const colorRow: Color[] = [];
+      const colorRow: IColor[] = [];
       for (var y = 0; y < this.height; y++) {
         const color = this.colorMatrix[y][x];
         // console.log("color", color);
@@ -72,17 +72,13 @@ export class SculptMap {
     const bounds = geometry.getBounds();
 
     for (var y = 0; y < h; y++) {
-      const colorRow: Color[] = [];
+      const colorRow: IColor[] = [];
       for (var x = 0; x < w; x++) {
         // Get Vertex
         const vert = geometry.getVertexAt(x, y);
         const r = ((vert.x - bounds.min.x) / (bounds.max.x - bounds.min.x)) * 255;
         const g = ((vert.y - bounds.min.y) / (bounds.max.y - bounds.min.y)) * 255;
         const b = ((vert.z - bounds.min.z) / (bounds.max.z - bounds.min.z)) * 255;
-        // const r = Math.floor(Math.random() * 255);
-        // const g = Math.floor(Math.random() * 255);
-        // const b = Math.floor(Math.random() * 255);
-        // const color = new Color().setRed(r).setGreen(g).setBlue(b);
         const color = { r: r, g: g, b: b, a: 255 };
         colorRow.push(color);
       }
