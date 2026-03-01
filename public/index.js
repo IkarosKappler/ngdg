@@ -79,48 +79,52 @@
     // +-------------------------------
     var config = PlotBoilerplate.utils.safeMergeByKeys(
       {
-        outlineSegmentCount: 128,
-        shapeSegmentCount: 64,
-        bendAngle: 0,
-        closeTop: true,
-        closeBottom: true,
-        showNormals: false,
-        normalsLength: 10.0,
-        normalizePerpendiculars: true,
-        useTextureImage: true,
+        outlineSegmentCount: params.getNumber("outlineSegmentCount", 128),
+        shapeSegmentCount: params.getNumber("shapeSegmentCount", 64),
+        bendAngle: params.getNumber("bendAngle", 0.0),
+        closeTop: params.getBoolean("closeTop", true),
+        closeBottom: params.getBoolean("closeBottom", true),
+        drawPathBounds: params.getBoolean("drawPathBounds", false),
+        drawResizeHandleLines: params.getBoolean("drawResizeHandleLines", true),
+        drawRulers: params.getBoolean("drawRulers", true),
+        drawOutline: params.getBoolean("drawOutline", true),
+        showNormals: params.getBoolean("showNormals", false),
+        normalsLength: params.getNumber("normalsLength", 10.0),
+        normalizePerpendiculars: params.getBoolean("normalizePerpendiculars", true),
+        useTextureImage: params.getBoolean("useTextureImage", true),
         textureImagePath: "assets/img/wood.png",
-        wireframe: false,
-        performSlice: false,
-        makeHollow: false,
-        hollowStrengthX: 15.0, // equivalent for Y is 'normalsLength'
-        renderFaces: "double", // "double" or "front" or "back"
-        twistAngle: 0.0,
-        baseShapeExcentricity: 1.0,
-        closeCutAreas: true,
+        wireframe: params.getBoolean("wireframe", false),
+        performSlice: params.getBoolean("performSlice", false),
+        makeHollow: params.getBoolean("makeHollow", false),
+        hollowStrengthX: params.getNumber("hollowStrengthX", 15.0), // equivalent for Y is 'normalsLength'
+        renderFaces: params.getString("renderFaces", "double"), // "double" or "front" or "back"
+        twistAngle: params.getNumber("twistAngle", 0.0),
+        baseShapeExcentricity: params.getNumber("baseShapeExcentricity", 1.0),
+        closeCutAreas: params.getBoolean("closeCutAreas", true),
         // previewBumpmap: false, // TODO: Is this actually in use?
-        useBumpmap: false,
-        showBumpmapTargets: false,
-        showBumpmapImage: false, // Not part of the generator interface
+        useBumpmap: params.getBoolean("useBumpmap", false),
+        showBumpmapTargets: params.getBoolean("showBumpmapTargets", false),
+        showBumpmapImage: params.getBoolean("showBumpmapImage", false), // Not part of the generator interface
         bumpmap: null, // This is not configurable at the moment and merge in later
-        bumpmapStrength: 10.0,
+        bumpmapStrength: params.getNumber("bumpmapStrength", 10.0),
         // Render settings
-        showBasicPerpendiculars: false,
-        addSpine: false,
-        showSplitPane: true,
-        showLeftSplit: true,
-        showRightSplit: true,
-        showSplitShape: true,
-        showSplitShapeTriangulation: true,
-        addPrecalculatedMassiveFaces: false,
-        addPrecalculatedHollowFaces: false,
-        addRawIntersectionTriangleMesh: false,
-        addPrecalculatedShapeOutlines: false,
-        bezierFillColor: isDarkmode ? "rgba(64,64,64,.35)" : "rgba(0,0,0,0.15)",
-        pathBoundsColor: isDarkmode ? "rgba(64,64,64,.5)" : "rgba(0,0,0,0.5)",
+        showBasicPerpendiculars: params.getBoolean("showBasicPerpendiculars", false),
+        addSpine: params.getBoolean("addSpine", false),
+        showSplitPane: params.getBoolean("showSplitPane", true),
+        showLeftSplit: params.getBoolean("showLeftSplit", true),
+        showRightSplit: params.getBoolean("showRightSplit", true),
+        showSplitShape: params.getBoolean("showSplitShape", true),
+        showSplitShapeTriangulation: params.getBoolean("showSplitShapeTriangulation", true),
+        addPrecalculatedMassiveFaces: params.getBoolean("addPrecalculatedMassiveFaces", false),
+        addPrecalculatedHollowFaces: params.getBoolean("addPrecalculatedHollowFaces", false),
+        addRawIntersectionTriangleMesh: params.getBoolean("addRawIntersectionTriangleMesh", false),
+        addPrecalculatedShapeOutlines: params.getBoolean("addPrecalculatedShapeOutlines", false),
+        bezierFillColor: params.getString("bezierFillColor", isDarkmode ? "rgba(64,64,64,.35)" : "rgba(0,0,0,0.15)"),
+        pathBoundsColor: params.getString("pathBoundsColor", isDarkmode ? "rgba(64,64,64,.5)" : "rgba(0,0,0,0.5)"),
         resizeHandleLineColor: isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
-        rulerColor: isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)",
-        showDiscreteOutlinePoints: false,
-        showSilhouette: true,
+        rulerColor: params.getString("rulerColor", isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)"),
+        showDiscreteOutlinePoints: params.getBoolean("showDiscreteOutlinePoints", false),
+        showSilhouette: params.getBoolean("showSilhouette", true),
         // Modifiers
         leftSplitMeshRotationX: 180.0, // align properly according to split algorithm
         leftSplitMeshRotationY: 0.0,
@@ -437,7 +441,7 @@
     var preDraw = function (draw, fill) {
       // Draw bounds
       var pathBounds = outline.getBounds();
-      draw.rect(pathBounds.min, pathBounds.width, pathBounds.height, config.pathBoundsColor, 1);
+      config.drawPathBounds && draw.rect(pathBounds.min, pathBounds.width, pathBounds.height, config.pathBoundsColor, 1);
 
       // Fill inner area
       var polyline = [
@@ -462,8 +466,8 @@
     // +-------------------------------
     var postDraw = function (draw, fill) {
       drawBezierDistanceLine();
-      drawRulers();
-      drawResizeHandleLines(pb, outline, bezierResizer, config.resizeHandleLineColor);
+      config.drawRulers && drawRulers();
+      config.drawResizeHandleLines && drawResizeHandleLines(pb, outline, bezierResizer, config.resizeHandleLineColor);
       if (config.showDiscreteOutlinePoints) {
         drawOutlineToPolygon(draw, fill);
       }

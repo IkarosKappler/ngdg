@@ -9,23 +9,24 @@
  */
 
 var drawResizeHandleLines = function (pb, outline, bezierResizer, lineColor) {
+  // console.log("drawResizeHandleLines", bezierResizer.verticalResizeHandleDragStartPosition);
   var bounds = outline.getBounds();
   if (bezierResizer.verticalResizeHandleDragStartPosition) {
-    // TODO: draw a dashed line? : )
     pb.draw.line(
       { x: bounds.min.x, y: bezierResizer.verticalResizeHandle.y },
       { x: bounds.max.x, y: bezierResizer.verticalResizeHandle.y },
       lineColor,
-      1.0
+      1.0,
+      { dashOffset: 0.0, dashArray: [5, 5] }
     );
   }
   if (bezierResizer.horizontalResizeHandleDragStartPosition) {
-    // TODO: draw a dashed line? : )
     pb.draw.line(
       { x: bezierResizer.horizontalResizeHandle.x, y: bounds.min.y },
       { x: bezierResizer.horizontalResizeHandle.x, y: bounds.max.y },
       lineColor,
-      1.0
+      1.0,
+      { dashOffset: 0.0, dashArray: [5, 5] }
     );
   }
 };
