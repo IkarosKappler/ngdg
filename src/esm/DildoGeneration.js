@@ -49,7 +49,7 @@ export class DildoGeneration {
         this.scene.add(this.directionalLightB);
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
-            preserveDrawingBuffer: true,
+            preserveDrawingBuffer: true, // This is required to take screen shots
             antialias: true // false
         });
         // TODO: check if this works!

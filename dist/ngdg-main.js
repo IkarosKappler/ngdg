@@ -2,11 +2,11 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/cjs/BumpMapper.js":
+/***/ "./src/cjs/BumpMapper.js"
 /*!*******************************!*\
   !*** ./src/cjs/BumpMapper.js ***!
   \*******************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -79,13 +79,13 @@ exports.BumpMapper = {
 };
 //# sourceMappingURL=BumpMapper.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/DildoGeneration.js":
+/***/ "./src/cjs/DildoGeneration.js"
 /*!************************************!*\
   !*** ./src/cjs/DildoGeneration.js ***!
   \************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -141,7 +141,7 @@ var DildoGeneration = /** @class */ (function () {
         this.scene.add(this.directionalLightB);
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
-            preserveDrawingBuffer: true,
+            preserveDrawingBuffer: true, // This is required to take screen shots
             antialias: true // false
         });
         // TODO: check if this works!
@@ -568,13 +568,13 @@ var DildoGeneration = /** @class */ (function () {
 exports.DildoGeneration = DildoGeneration;
 //# sourceMappingURL=DildoGeneration.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/DildoGeometry.js":
+/***/ "./src/cjs/DildoGeometry.js"
 /*!**********************************!*\
   !*** ./src/cjs/DildoGeometry.js ***!
   \**********************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -1249,13 +1249,13 @@ var DildoGeometry = /** @class */ (function (_super) {
 exports.DildoGeometry = DildoGeometry;
 //# sourceMappingURL=DildoGeometry.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/DildoMaterials.js":
+/***/ "./src/cjs/DildoMaterials.js"
 /*!***********************************!*\
   !*** ./src/cjs/DildoMaterials.js ***!
   \***********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -1320,7 +1320,7 @@ exports.DildoMaterials = (function () {
             }
             else {
                 return new THREE.MeshLambertMaterial({
-                    color: useTextureImage ? 0x888888 : 0xa1848a8,
+                    color: useTextureImage ? 0x888888 : 0xa1848a8, // == blue
                     wireframe: false,
                     depthTest: true,
                     opacity: 1.0,
@@ -1355,13 +1355,13 @@ exports.DildoMaterials = (function () {
 })();
 //# sourceMappingURL=DildoMaterials.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/DildoSilhouette2D.js":
+/***/ "./src/cjs/DildoSilhouette2D.js"
 /*!**************************************!*\
   !*** ./src/cjs/DildoSilhouette2D.js ***!
   \**************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -1415,13 +1415,13 @@ var DildoSilhouette2D = /** @class */ (function () {
 exports.DildoSilhouette2D = DildoSilhouette2D;
 //# sourceMappingURL=DildoSilhouette2D.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/GeometryGenerationHelpers.js":
+/***/ "./src/cjs/GeometryGenerationHelpers.js"
 /*!**********************************************!*\
   !*** ./src/cjs/GeometryGenerationHelpers.js ***!
   \**********************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -1947,13 +1947,13 @@ exports.GeometryGenerationHelpers = {
 };
 //# sourceMappingURL=GeometryGenerationHelpers.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/ImageStore.js":
+/***/ "./src/cjs/ImageStore.js"
 /*!*******************************!*\
   !*** ./src/cjs/ImageStore.js ***!
   \*******************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 
 /**
@@ -2007,13 +2007,13 @@ exports.ImageStore = (function () {
 })();
 //# sourceMappingURL=ImageStore.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/LocalstorageIO.js":
+/***/ "./src/cjs/LocalstorageIO.js"
 /*!***********************************!*\
   !*** ./src/cjs/LocalstorageIO.js ***!
   \***********************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 
 /**
@@ -2065,13 +2065,13 @@ var LocalstorageIO = /** @class */ (function () {
 exports.LocalstorageIO = LocalstorageIO;
 //# sourceMappingURL=LocalstorageIO.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/PathFinder.js":
+/***/ "./src/cjs/PathFinder.js"
 /*!*******************************!*\
   !*** ./src/cjs/PathFinder.js ***!
   \*******************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -2355,13 +2355,13 @@ var findAdjacentPath = function (collectedPaths, currentVertIndex, unvisitedPath
 };
 //# sourceMappingURL=PathFinder.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/PlaneMeshIntersection.js":
+/***/ "./src/cjs/PlaneMeshIntersection.js"
 /*!******************************************!*\
   !*** ./src/cjs/PlaneMeshIntersection.js ***!
   \******************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -2467,13 +2467,13 @@ var getThreePlanePoints = function (planeGeometryReal) {
 };
 //# sourceMappingURL=PlaneMeshIntersection.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/SculptMap.js":
+/***/ "./src/cjs/SculptMap.js"
 /*!******************************!*\
   !*** ./src/cjs/SculptMap.js ***!
   \******************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 
 /**
@@ -2548,13 +2548,13 @@ var SculptMap = /** @class */ (function () {
 exports.SculptMap = SculptMap;
 //# sourceMappingURL=SculptMap.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/UVHelpers.js":
+/***/ "./src/cjs/UVHelpers.js"
 /*!******************************!*\
   !*** ./src/cjs/UVHelpers.js ***!
   \******************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -2622,13 +2622,13 @@ exports.UVHelpers = {
 };
 //# sourceMappingURL=UVHelpers.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/clearDuplicateVertices3.js":
+/***/ "./src/cjs/clearDuplicateVertices3.js"
 /*!********************************************!*\
   !*** ./src/cjs/clearDuplicateVertices3.js ***!
   \********************************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 
 /**
@@ -2692,13 +2692,13 @@ var containsElementFrom = function (vertices, vertex, fromIndex, epsilon) {
 };
 //# sourceMappingURL=clearDuplicateVertices3.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/computeVertexNormals.js":
+/***/ "./src/cjs/computeVertexNormals.js"
 /*!*****************************************!*\
   !*** ./src/cjs/computeVertexNormals.js ***!
   \*****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -2787,13 +2787,13 @@ var computeAverageVector = function (vectors) {
 };
 //# sourceMappingURL=computeVertexNormals.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/constants.js":
+/***/ "./src/cjs/constants.js"
 /*!******************************!*\
   !*** ./src/cjs/constants.js ***!
   \******************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 
 /**
@@ -2819,13 +2819,13 @@ exports.KEY_SLICED_MESH_RIGHT = "KEY_SLICED_MESH_RIGHT"; // THREE.Mesh
 exports.KEY_SLICED_MESH_LEFT = "KEY_SLICED_MESH_LEFT"; // THREE.Mesh
 //# sourceMappingURL=constants.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/defaults.js":
+/***/ "./src/cjs/defaults.js"
 /*!*****************************!*\
   !*** ./src/cjs/defaults.js ***!
   \*****************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
@@ -2834,13 +2834,13 @@ exports.DEFAULT_BEZIER_JSON = void 0;
 exports.DEFAULT_BEZIER_JSON = "\n  [\n    {\n       \"startPoint\":[\n          -122,\n          77.80736634304651\n       ],\n       \"endPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"startControlPoint\":[\n          -121.62058129515852,\n          25.08908859418696\n       ],\n       \"endControlPoint\":[\n          -79.33419353770395,\n          48.71529293460728\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.59022229786551,\n          21.46778533702511\n       ],\n       \"endPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"startControlPoint\":[\n          -52.448492057756646,\n          -4.585775770903305\n       ],\n       \"endControlPoint\":[\n          -86.1618869001374,\n          -62.11613821618976\n       ]\n    },\n    {\n       \"startPoint\":[\n          -65.66917273472913,\n          -149.23537680826058\n       ],\n       \"endPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"startControlPoint\":[\n          -53.701578771473564,\n          -200.1123697454778\n       ],\n       \"endControlPoint\":[\n          -69.80704300441666,\n          -205.36451303641783\n       ]\n    },\n    {\n       \"startPoint\":[\n          -61.86203591980055,\n          -243.8368165606738\n       ],\n       \"endPoint\":[\n          -21.108966092052256,\n          -323\n       ],\n       \"startControlPoint\":[\n          -54.08681426887413,\n          -281.486963896856\n       ],\n       \"endControlPoint\":[\n          -53.05779349623559,\n          -323\n       ]\n    }\n ]\n  ";
 //# sourceMappingURL=defaults.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/entry.js":
+/***/ "./src/cjs/entry.js"
 /*!**************************!*\
   !*** ./src/cjs/entry.js ***!
   \**************************/
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
+(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 
 
 
@@ -2848,13 +2848,13 @@ exports.DEFAULT_BEZIER_JSON = "\n  [\n    {\n       \"startPoint\":[\n          
 globalThis.ngdg = (__webpack_require__(/*! ./ngdg */ "./src/cjs/ngdg.js").ngdg);
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/isMobileDevice.js":
+/***/ "./src/cjs/isMobileDevice.js"
 /*!***********************************!*\
   !*** ./src/cjs/isMobileDevice.js ***!
   \***********************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 
 // http://detectmobilebrowsers.com/
@@ -2870,13 +2870,13 @@ var isMobileDevice = function () {
 exports.isMobileDevice = isMobileDevice;
 //# sourceMappingURL=isMobileDevice.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/locateVertexInArray.js":
+/***/ "./src/cjs/locateVertexInArray.js"
 /*!****************************************!*\
   !*** ./src/cjs/locateVertexInArray.js ***!
   \****************************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 
 /**
@@ -2912,13 +2912,13 @@ var locateVertexInArray = function (vertArray, vertex, epsilon) {
 exports.locateVertexInArray = locateVertexInArray;
 //# sourceMappingURL=locateVertexInArray.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/mergeGeometries.js":
+/***/ "./src/cjs/mergeGeometries.js"
 /*!************************************!*\
   !*** ./src/cjs/mergeGeometries.js ***!
   \************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -3005,13 +3005,13 @@ var mergeAndMapVertices = function (baseGeometry, mergeGeometry, epsilon) {
 exports.mergeAndMapVertices = mergeAndMapVertices;
 //# sourceMappingURL=mergeGeometries.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/ngdg.js":
+/***/ "./src/cjs/ngdg.js"
 /*!*************************!*\
   !*** ./src/cjs/ngdg.js ***!
   \*************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -3051,13 +3051,13 @@ exports.ngdg = {
 };
 //# sourceMappingURL=ngdg.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./src/cjs/randomWebColor.js":
+/***/ "./src/cjs/randomWebColor.js"
 /*!***********************************!*\
   !*** ./src/cjs/randomWebColor.js ***!
   \***********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -3113,7 +3113,7 @@ var randomWebColor = function (index, colorSet) {
 exports.randomWebColor = randomWebColor;
 //# sourceMappingURL=randomWebColor.js.map
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
@@ -3135,6 +3135,12 @@ exports.randomWebColor = randomWebColor;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
+/******/ 		if (!(moduleId in __webpack_modules__)) {
+/******/ 			delete __webpack_module_cache__[moduleId];
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
 /******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module

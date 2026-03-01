@@ -7,8 +7,8 @@
  * @modified 2022-02-23 Handling twistAngle and bendAngle, too.
  * @version  1.2.0
  */
-declare type PathRestoredCallback = (jsonData: string, bendAngle: number, twistAngle: number, baseShapeExcentricity: number) => void;
-declare type PathDataRequestCallback = () => {
+type PathRestoredCallback = (jsonData: string, bendAngle: number, twistAngle: number, baseShapeExcentricity: number) => void;
+type PathDataRequestCallback = () => {
     bezierJSON: string;
     bendAngle: number;
     twistAngle: number;

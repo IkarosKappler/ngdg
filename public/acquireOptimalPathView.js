@@ -11,8 +11,8 @@
 // +-------------------------------
 var acquireOptimalPathView = function (pb, outline) {
   // var frameSize = new THREE.Vector2(25, 25);
-  // Just keep a 10% frame to stay clear of the canvas limits.
-  var frameSize = new THREE.Vector2(pb.canvasSize.width * 0.1, pb.canvasSize.height * 0.1);
+  // Just keep a 20% frame to stay clear of the canvas limits.
+  var frameSize = new THREE.Vector2(pb.canvasSize.width * 0.2, pb.canvasSize.height * 0.2);
 
   // Compute the applicable canvas size, which leaves the passed frame untouched
   var applicableCanvasWidth = pb.canvasSize.width - frameSize.x * 2;

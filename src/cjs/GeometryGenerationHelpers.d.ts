@@ -14,7 +14,7 @@ import { Polygon, XYCoords } from "plotboilerplate";
 import { Gmetry } from "three-geometry-hellfix";
 import { DildoOptions, IDildoGeneration } from "./interfaces";
 import { DildoGeometry } from "./DildoGeometry";
-import { BufferGeometry, Vector3 } from "three";
+import { Vector3 } from "three";
 export declare const GeometryGenerationHelpers: {
     /**
      * Create a (right-turning) triangle of the three vertices at index A, B and C.

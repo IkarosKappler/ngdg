@@ -1,15 +1,15 @@
 "use strict";
 (self["webpackChunkngdg"] = self["webpackChunkngdg"] || []).push([["vendor"],{
 
-/***/ "./node_modules/alloyfinger-typescript/src/esm/alloy_finger.js":
+/***/ "./node_modules/alloyfinger-typescript/src/esm/alloy_finger.js"
 /*!*********************************************************************!*\
   !*** ./node_modules/alloyfinger-typescript/src/esm/alloy_finger.js ***!
   \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "AlloyFinger": () => (/* binding */ AlloyFinger),
+/* harmony export */   AlloyFinger: () => (/* binding */ AlloyFinger),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* Port from AlloyFinger v0.1.15
@@ -402,17 +402,17 @@ class AlloyFinger {
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AlloyFinger);
 //# sourceMappingURL=alloy_finger.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/alloyfinger-typescript/src/esm/index.js":
+/***/ "./node_modules/alloyfinger-typescript/src/esm/index.js"
 /*!**************************************************************!*\
   !*** ./node_modules/alloyfinger-typescript/src/esm/index.js ***!
   \**************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "AlloyFinger": () => (/* reexport safe */ _alloy_finger__WEBPACK_IMPORTED_MODULE_0__.AlloyFinger),
+/* harmony export */   AlloyFinger: () => (/* reexport safe */ _alloy_finger__WEBPACK_IMPORTED_MODULE_0__.AlloyFinger),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _alloy_finger__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./alloy_finger */ "./node_modules/alloyfinger-typescript/src/esm/alloy_finger.js");
@@ -428,13 +428,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_alloy_finger__WEBPACK_IMPORTED_MODULE_0__.AlloyFinger);
 //# sourceMappingURL=index.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/earcut-typescript/src/cjs/earcut.js":
+/***/ "./node_modules/earcut-typescript/src/cjs/earcut.js"
 /*!**********************************************************!*\
   !*** ./node_modules/earcut-typescript/src/cjs/earcut.js ***!
   \**********************************************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 
 // Original algorithm by https://github.com/mapbox/earcut
@@ -1035,17 +1035,17 @@ exports.earcut = (function () {
 })();
 //# sourceMappingURL=earcut.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/BezierPath.js":
+/***/ "./node_modules/plotboilerplate/src/esm/BezierPath.js"
 /*!************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/BezierPath.js ***!
   \************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "BezierPath": () => (/* binding */ BezierPath)
+/* harmony export */   BezierPath: () => (/* binding */ BezierPath)
 /* harmony export */ });
 /* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
 /* harmony import */ var _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CubicBezierCurve */ "./node_modules/plotboilerplate/src/esm/CubicBezierCurve.js");
@@ -1076,7 +1076,12 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2022-01-31 Added `BezierPath.getEvenDistributionVertices(number)`.
  * @modified 2022-02-02 Added the `destroy` method.
  * @modified 2022-02-02 Cleared the `toSVGString` function (deprecated). Use `drawutilssvg` instead.
- * @version 2.5.0
+ * @modified 2023-10-06 Adding the `BezierPath.toPathPoints()` method.
+ * @modified 2023-10-07 Adding the `BezierPath.fromCurve(CubicBezierCurve)` static function.
+ * @modified 2025-04-09 Added the `BezierPath.move` method to match the convention – which just calls `translate`.
+ * @modified 2025-04-09 Modified the `BezierPath.translate` method: chaning parameter `Vertex` to more generalized `XYCoords`.
+ * @modified 2025-04-14 Class `BezierPath` is now implementing interface `Intersectable`.
+ * @version 2.7.0
  *
  * @file BezierPath
  * @public
@@ -1111,7 +1116,7 @@ class BezierPath {
      * @name BezierPath
      * @param {Vertex[]} pathPoints - An array of path vertices (no control points).
      **/
-    constructor(pathPoints) {
+    constructor() {
         /**
          * Required to generate proper CSS classes and other class related IDs.
          **/
@@ -1124,9 +1129,11 @@ class BezierPath {
         this.END_CONTROL_POINT = 2;
         /** @constant {number} */
         this.END_POINT = 3;
+        // pathPoints: Array<Vertex> | undefined | null) {
         this.uid = _UIDGenerator__WEBPACK_IMPORTED_MODULE_2__.UIDGenerator.next();
-        if (!pathPoints)
-            pathPoints = [];
+        // if (!pathPoints) {
+        //   pathPoints = [];
+        // }
         this.totalArcLength = 0.0;
         // Set this flag to true if you want the first point and
         // last point of the path to be auto adjusted, too.
@@ -1280,219 +1287,10 @@ class BezierPath {
         return this.bezierCurves[curveIndex];
     }
     /**
-     * Remove the end point of this path (which removes the last curve from this path).<br>
-     * <br>
-     * Please note that this function does never remove the first curve, thus the path
-     * cannot be empty after this call.
-     *
-     * @method removeEndPoint
-     * @instance
-     * @memberof BezierPath
-     * @return {boolean} Indicating if the last curve was removed.
-     **/
-    /*
-      BezierPath.prototype.removeEndPoint = function() {
-      if( this.bezierCurves.length <= 1 )
-          return false;
-      
-      var newArray = [ this.bezierCurves.length-1 ];
-      for( var i = 0; i < this.bezierCurves.length-1; i++ ) {
-          newArray[i] = this.bezierCurves[i];
-      }
-      
-      // Update arc length
-      this.totalArcLength -= this.bezierCurves[ this.bezierCurves.length-1 ].getLength();
-      this.bezierCurves = newArray;
-      return true;
-      }
-      */
-    /**
-     * Remove the start point of this path (which removes the first curve from this path).<br>
-     * <br>
-     * Please note that this function does never remove the last curve, thus the path
-     * cannot be empty after this call.<br>
-     *
-     * @method removeStartPoint
-     * @instance
-     * @memberof BezierPath
-     * @return {boolean} Indicating if the first curve was removed.
-     **/
-    /*
-      BezierPath.prototype.removeStartPoint = function() {
-  
-      if( this.bezierCurves.length <= 1 )
-          return false;
-  
-      var newArray = [ this.bezierCurves.length-1 ];
-      for( var i = 1; i < this.bezierCurves.length; i++ ) {
-  
-          newArray[i-1] = this.bezierCurves[i];
-  
-      }
-      
-      // Update arc length
-      this.totalArcLength -= this.bezierCurves[ 0 ].getLength();
-      this.bezierCurves = newArray;
-      
-      return true;
-      }
-      */
-    /**
-     * Removes a path point inside the path.
-     *
-     * This function joins the bezier curve at the given index with
-     * its predecessor, which means that the start point at the given
-     * curve index will be removed.
-     *
-     * @method joinAt
-     * @param {number} curveIndex - The index of the curve to be joined with its predecessor.
-     * @instance
-     * @memberof BezierPath
-     * @return {boolean} True if the passed index indicated an inner vertex and the two curves were joined.
-     **/
-    /*
-      BezierPath.prototype.joinAt = function( curveIndex ) {
-  
-      if( curveIndex < 0 || curveIndex >= this.bezierCurves.length )
-          return false;
-      
-      var leftCurve  = this.bezierCurves[ curveIndex-1 ];
-      var rightCurve = this.bezierCurves[ curveIndex ];
-  
-      // Make the length of the new handle double that long
-      var leftControlPoint = leftCurve.getStartControlPoint().clone();
-      leftControlPoint.sub( leftCurve.getStartPoint() );
-      leftControlPoint.multiplyScalar( 2.0 );
-      leftControlPoint.add( leftCurve.getStartPoint() );
-      
-      var rightControlPoint = rightCurve.getEndControlPoint().clone();
-      rightControlPoint.sub( rightCurve.getEndPoint() );
-      rightControlPoint.multiplyScalar( 2.0 );
-      rightControlPoint.add( rightCurve.getEndPoint() );
-  
-      var newCurve = new IKRS.CubicBezierCurve( leftCurve.getStartPoint(),
-                            rightCurve.getEndPoint(),
-                            leftControlPoint,
-                            rightControlPoint
-                          );
-      // Place into array
-      var newArray = [ this.bezierCurves.length - 1 ];
-  
-      for( var i = 0; i < curveIndex-1; i++ )
-          newArray[ i ] = this.bezierCurves[i];
-      
-      newArray[ curveIndex-1 ] = newCurve;
-      
-      // Shift trailing curves left
-      for( var i = curveIndex; i+1 < this.bezierCurves.length; i++ )
-          newArray[ i ] = this.bezierCurves[ i+1 ];
-          
-      this.bezierCurves = newArray;
-      this.updateArcLengths();
-  
-      return true;
-      }
-      */
-    /**
-     * Add a new inner curve point to the path.<br>
-     * <br>
-     * This function splits the bezier curve at the given index and given
-     * curve segment index.
-     *
-     * @method splitAt
-     * @param {number} curveIndex - The index of the curve to split.
-     * @param {nunber} segmentIndex - The index of the curve segment where the split should be performed.
-     * @instance
-     * @memberof BezierPath
-     * @return {boolean} True if the passed indices were valid and the path was split.
-     **/
-    /*
-      BezierPath.prototype.splitAt = function( curveIndex,
-                           segmentIndex
-                         ) {
-      // Must be a valid curve index
-      if( curveIndex < 0 || curveIndex >= this.bezierCurves.length )
-          return false;
-  
-      var oldCurve = this.bezierCurves[ curveIndex ];
-  
-      // Segment must be an INNER point!
-      // (the outer points are already bezier end/start points!)
-      if( segmentIndex < 1 || segmentIndex-1 >= oldCurve.segmentCache.length )
-          return false;
-  
-      // Make room for a new curve
-      for( var c = this.bezierCurves.length; c > curveIndex; c-- ) {
-          // Move one position to the right
-          this.bezierCurves[ c ] = this.bezierCurves[ c-1 ];
-      }
-  
-      // Accumulate segment lengths
-      var u = 0;
-      for( var i = 0; i < segmentIndex; i++ )
-          u += oldCurve.segmentLengths[i];
-      //var tangent = oldCurve.getTangentAt( u );
-      var tangent = oldCurve.getTangent( u );
-      tangent = tangent.multiplyScalar( 0.25 );
-  
-      var leftEndControlPoint = oldCurve.segmentCache[ segmentIndex ].clone();
-      leftEndControlPoint.sub( tangent );
-      
-      var rightStartControlPoint = oldCurve.segmentCache[ segmentIndex ].clone();
-      rightStartControlPoint.add( tangent );
-      
-      // Make the old existing handles a quarter that long
-      var leftStartControlPoint = oldCurve.getStartControlPoint().clone();
-      // move to (0,0)
-      leftStartControlPoint.sub( oldCurve.getStartPoint() );
-      leftStartControlPoint.multiplyScalar( 0.25 );
-      leftStartControlPoint.add( oldCurve.getStartPoint() );
-  
-      var rightEndControlPoint = oldCurve.getEndControlPoint().clone();
-      // move to (0,0)
-      rightEndControlPoint.sub( oldCurve.getEndPoint() );
-      rightEndControlPoint.multiplyScalar( 0.25 );
-      rightEndControlPoint.add( oldCurve.getEndPoint() );
-  
-      var newLeft  = new CubicBezierCurve( oldCurve.getStartPoint(),                      // old start point
-                           oldCurve.segmentCache[ segmentIndex ],         // new end point
-                           leftStartControlPoint,                         // old start control point
-                           leftEndControlPoint                            // new end control point
-                         );
-      var newRight = new CubicBezierCurve( oldCurve.segmentCache[ segmentIndex ],         // new start point
-                           oldCurve.getEndPoint(),                        // old end point
-                           rightStartControlPoint,                        // new start control point
-                           rightEndControlPoint                           // old end control point
-                         );
-      
-      // Insert split curve(s) at free index
-      this.bezierCurves[ curveIndex ]     = newLeft;
-      this.bezierCurves[ curveIndex + 1 ] = newRight;
-      
-      // Update total arc length, even if there is only a very little change!
-      this.totalArcLength -= oldCurve.getLength();
-      this.totalArcLength += newLeft.getLength();
-      this.totalArcLength += newRight.getLength();
-  
-      return true;
-      };
-      */
-    /*
-      insertVertexAt( t:number ) : void {
-      console.log('Inserting vertex at', t );
-      // Find the curve index
-      var u : number = 0;
-      var curveIndex : number = -1;
-      var localT : number = 0.0;
-      for( var i = 0; curveIndex == -1 && i < this.bezierCurves.length; i++ ) {
-          
-      }
-      }; */
-    /**
      * Move the whole bezier path by the given (x,y)-amount.
      *
      * @method translate
-     * @param {Vertex} amount - The amount to be added (amount.x and amount.y)
+     * @param {XYCoords} amount - The amount to be added (amount.x and amount.y)
      *                          to each vertex of the curve.
      * @instance
      * @memberof BezierPath
@@ -1512,6 +1310,19 @@ class BezierPath {
         return this;
     }
     /**
+     * Move the whole bezier path by the given (x,y)-amount.
+     *
+     * @method move
+     * @param {XYCoords} amount - The amount to be added (amount.x and amount.y)
+     *                          to each vertex of the curve.
+     * @instance
+     * @memberof BezierPath
+     * @return {BezierPath} this for chaining
+     **/
+    move(amount) {
+        return this.translate(amount);
+    }
+    /**
      * Scale the whole bezier path by the given uniform factor.
      *
      * @method scale
@@ -1522,22 +1333,6 @@ class BezierPath {
      * @return {BezierPath} this for chaining.
      **/
     scale(anchor, scaleFactor) {
-        // var scaleFactors : XYCoords = { x : scaleFactor, y : scaleFactor };
-        // for (var i = 0; i < this.bezierCurves.length; i++) {
-        //   var curve = this.bezierCurves[i];
-        //   curve.getStartPoint().scale(scaleFactor, anchor);
-        //   curve.getStartControlPoint().scale(scaleFactor, anchor);
-        //   curve.getEndControlPoint().scale(scaleFactor, anchor);
-        //   // Do NOT scale the end point here!
-        //   // Don't forget that the curves are connected and on curve's end point
-        //   // the the successor's start point (same instance)!
-        // }
-        // // Finally move the last end point (was not scaled yet)
-        // if (this.bezierCurves.length > 0 && !this.adjustCircular) {
-        //   this.bezierCurves[this.bezierCurves.length - 1].getEndPoint().scale(scaleFactor, anchor);
-        // }
-        // this.updateArcLengths();
-        // return this;
         return this.scaleXY({ x: scaleFactor, y: scaleFactor }, anchor);
     }
     /**
@@ -1737,6 +1532,36 @@ class BezierPath {
         var relativeU = u - uResult.uPart;
         return bCurve.getPerpendicular(relativeU);
     }
+    //--- BEGIN --- Implement interface `Intersectable`
+    /**
+     * Get all line intersections with this shape.
+     *
+     * This method returns all intersections (as vertices) with this shape. The returned array of vertices is in no specific order.
+     *
+     * @param {VertTuple} line - The line to find intersections with.
+     * @param {boolean} inVectorBoundsOnly - If set to true only intersecion points on the passed vector are returned (located strictly between start and end vertex).
+     * @returns {Array<Vertex>} - An array of all intersections with the shape's outline.
+     */
+    lineIntersections(line, inVectorBoundsOnly = false) {
+        return this.bezierCurves.reduce((accu, curCurve) => {
+            return accu.concat(curCurve.lineIntersections(line, inVectorBoundsOnly));
+        }, []);
+    }
+    /**
+     * Get all line intersections of this polygon and their tangents along the shape.
+     *
+     * This method returns all intersection tangents (as vectors) with this shape. The returned array of vectors is in no specific order.
+     *
+     * @param line
+     * @param lineIntersectionTangents
+     * @returns
+     */
+    lineIntersectionTangents(line, inVectorBoundsOnly = false) {
+        return this.bezierCurves.reduce((accu, curCurve) => {
+            return accu.concat(curCurve.lineIntersectionTangents(line, inVectorBoundsOnly));
+        }, []);
+    }
+    //--- END --- Implement interface `Intersectable`
     /**
      * This is a helper function to locate the curve index for a given
      * absolute path position u.
@@ -1950,6 +1775,7 @@ class BezierPath {
         }
         neighbourCurve.updateArcLengths();
     }
+    //--- BEGIN --- Implement interface `IBounded`
     /**
      * Get the bounds of this Bézier path.
      *
@@ -1971,6 +1797,7 @@ class BezierPath {
         }
         return new _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds(min, max);
     }
+    //--- END --- Implement interface `IBounded`
     /**
      * Get n 'equally' distributed vertices along this Bézier path.
      *
@@ -2033,7 +1860,7 @@ class BezierPath {
      * @return {BezierPath}
      **/
     clone() {
-        var path = new BezierPath(undefined);
+        var path = new BezierPath(); // undefined);
         for (var i = 0; i < this.bezierCurves.length; i++) {
             path.bezierCurves.push(this.bezierCurves[i].clone());
             // Connect splines
@@ -2070,41 +1897,53 @@ class BezierPath {
         return true;
     }
     /**
-     * Create a <pre>&lt;path&gt;</pre> SVG representation of this bézier curve.
-     *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGString
-     * @param {object=} [options={}] - Like options.className
-     * @param {string=} [options.className] - The classname to use for the SVG item.
-     * @instance
-     * @memberof BezierPath
-     * @return {string} The SVG string.
-     **/
-    toSVGString(options) {
-        // options = options || {};
-        // var buffer: Array<string> = [];
-        // buffer.push("<path");
-        // if (options.className) buffer.push(' class="' + options.className + '"');
-        // buffer.push(' d="');
-        // for (var c = 0; c < this.bezierCurves.length; c++) {
-        //   if (c > 0) buffer.push(" ");
-        //   buffer.push(this.bezierCurves[c].toSVGPathData());
-        // }
-        // buffer.push('" />');
-        // return buffer.join("");
-        console.warn("[Deprecation] Warning: the BezierPath.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
-        return "";
-    }
-    /**
      * This function should invalidate any installed listeners and invalidate this object.
      * After calling this function the object might not hold valid data any more and
      * should not be used.
+     *
+     * @method destroy
+     * @instance
+     * @memberof BezierPath
      */
     destroy() {
         for (var i = 0; i < this.bezierCurves.length; i++) {
             this.bezierCurves[i].destroy();
         }
         this.isDestroyed = true;
+    }
+    /**
+     * Convert this path to an array of path points that can be drawn by the default DrawLib
+     * implementations.
+     *
+     * @method toPathPoints
+     * @instance
+     * @memberof BezierPath
+     * @return {Array<XYCoords>}
+     */
+    toPathPoints() {
+        if (this.bezierCurves.length === 0) {
+            return [];
+        }
+        if (this.bezierCurves.length === 1) {
+            return [
+                this.bezierCurves[0].startPoint,
+                this.bezierCurves[0].startControlPoint,
+                this.bezierCurves[0].endControlPoint,
+                this.bezierCurves[0].endPoint
+            ];
+        }
+        const arr = [];
+        arr.push(this.bezierCurves[0].startPoint);
+        arr.push(this.bezierCurves[0].startControlPoint);
+        for (var i = 1; i < this.bezierCurves.length; i++) {
+            arr.push(this.bezierCurves[i - 1].endControlPoint);
+            arr.push(this.bezierCurves[i - 1].endPoint);
+            arr.push(this.bezierCurves[i].startPoint);
+            arr.push(this.bezierCurves[i].startControlPoint);
+        }
+        arr.push(this.bezierCurves[0].endControlPoint);
+        arr.push(this.bezierCurves[0].endPoint);
+        return arr;
     }
     /**
      * Create a JSON string representation of this bézier curve.
@@ -2147,6 +1986,20 @@ class BezierPath {
         return BezierPath.fromArray(obj);
     }
     /**
+     * Construct a new path with a single curve. Adding more curves is always possible.
+     *
+     * @method fromCurve
+     * @param {CubicBezierCurve} curve - The curve to construct a new path from.
+     * @static
+     * @memberof BezierPath
+     * @return {BezierPath} The constructed bezier path instance.
+     */
+    static fromCurve(curve) {
+        const path = new BezierPath(); // []);
+        path.addCurve(curve);
+        return path;
+    }
+    /**
      * Create a BezierPath instance from the given array.
      *
      * @method fromArray
@@ -2157,13 +2010,15 @@ class BezierPath {
      * @return {BezierPath} The bezier path instance retrieved from the array data.
      **/
     static fromArray(obj) {
-        if (!Array.isArray(obj))
+        if (!Array.isArray(obj)) {
             throw "[BezierPath.fromArray] Passed object must be an array.";
+        }
         const arr = obj; // FORCE?
-        if (arr.length < 1)
+        if (arr.length < 1) {
             throw "[BezierPath.fromArray] Passed array must contain at least one bezier curve (has " + arr.length + ").";
+        }
         // Create an empty bezier path
-        var bPath = new BezierPath(undefined);
+        var bPath = new BezierPath(); // undefined);
         var lastCurve = null;
         for (var i = 0; i < arr.length; i++) {
             // Convert object (or array?) to bezier curve
@@ -2273,9 +2128,8 @@ class BezierPath {
      */
     static fromReducedList(pointArray, adjustCircular) {
         // Convert to object
-        var bezierPath = new BezierPath(null); // No points yet
-        // var firstStartPoint: Vertex;
-        var startPoint;
+        var bezierPath = new BezierPath(); // null); // No points yet
+        var startPoint = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex();
         var startControlPoint;
         var endControlPoint;
         var endPoint;
@@ -2297,7 +2151,7 @@ class BezierPath {
             startPoint = endPoint;
             i += 6;
         } while (i + 2 < pointArray.length);
-        bezierPath.adjustCircular = adjustCircular;
+        bezierPath.adjustCircular = adjustCircular !== null && adjustCircular !== void 0 ? adjustCircular : false;
         if (adjustCircular) {
             bezierPath.bezierCurves[bezierPath.bezierCurves.length - 1].endPoint = bezierPath.bezierCurves[0].startPoint;
         }
@@ -2318,17 +2172,17 @@ BezierPath.END_CONTROL_POINT = 2;
 BezierPath.END_POINT = 3;
 //# sourceMappingURL=BezierPath.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/Bounds.js":
+/***/ "./node_modules/plotboilerplate/src/esm/Bounds.js"
 /*!********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/Bounds.js ***!
   \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Bounds": () => (/* binding */ Bounds)
+/* harmony export */   Bounds: () => (/* binding */ Bounds)
 /* harmony export */ });
 /* harmony import */ var _Polygon__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Polygon */ "./node_modules/plotboilerplate/src/esm/Polygon.js");
 /* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
@@ -2339,7 +2193,19 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-11-19 Set min, max, width and height to private.
  * @modified 2021-02-02 Added the `toPolygon` method.
  * @modified 2021-06-21 (mid-summer) Added `getCenter` method.
- * @version  1.3.0
+ * @modified 2022-02-01 Added the `toString` function.
+ * @modified 2022-10-09 Added the `fromDimension` function.
+ * @modified 2022-11-28 Added the `clone` method.
+ * @modified 2023-09-29 Added the `randomPoint` method.
+ * @modified 2025-03-23 Added the `getMinDimension` and `getMaxDimension` methods.
+ * @modified 2025-04-18 Change parameter type in `Bounds.computeFromVertices` from `Vertex` to more general `XYCoords`.
+ * @modified 2025-04-19 Added methods to `Bounds` class: `getNorthPoint`, `getSouthPoint`, `getEastPoint` and `getWestPoint`.
+ * @modified 2025-04-26 Added static method `Bounds.computeFromBoundsSet` to calculate containing bounds for a set of bounding boxes.
+ * @modified 2025-10-17 Added the methods `Bounds.getSouthWestPoint`, `getNorthWestPoint`, `getNorthEastPoint` and `getSouthEastPoint`.
+ * @modified 2025-10-18 Added method `Bounds.containsVert(XYCoords)`.
+ * @modified 2025-10-28 Added the `Bounds.getWidth()` and `Bounds.getHeight()`.
+ * @modified 2025-11-12 Added the `Bounds.getMoved()` method.
+ * @version  1.11.0
  **/
 
 
@@ -2366,6 +2232,123 @@ class Bounds {
         this.height = max.y - min.y;
     }
     /**
+     * Check if the given vertex is inside this bounds.
+     *
+     * @method containsVert
+     * @param {XYCoords} vert - The vertex to check.
+     * @return {boolean} True if the passed vertex is inside this bounds.
+     * @instance
+     * @memberof Bounds
+     **/
+    containsVert(vert) {
+        return this.min.x <= vert.x && vert.x < this.max.x && this.min.y <= vert.y && vert.y < this.max.y;
+    }
+    getWidth() {
+        return this.max.x - this.min.x;
+    }
+    getHeight() {
+        return this.max.y - this.min.y;
+    }
+    getScaled(scaleFactor) {
+        const center = this.getCenter();
+        const newMin = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min).scale(scaleFactor, center);
+        const newMax = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.max).scale(scaleFactor, center);
+        return new Bounds(newMin, newMax);
+    }
+    getMoved(moveAmount) {
+        const newMin = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min).move(moveAmount);
+        const newMax = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.max).move(moveAmount);
+        return new Bounds(newMin, newMax);
+    }
+    /**
+     * Get the center point of the north bound.
+     *
+     * @method getNorthPoint
+     * @instance
+     * @memberof Bounds
+     * @return {Vertex} The "northmost" centered point of this bounding box.
+     */
+    getNorthPoint() {
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min.x + this.width / 2.0, this.min.y);
+    }
+    /**
+     * Get the center point of the south bound.
+     *
+     * @method getNorthPoint
+     * @instance
+     * @memberof Bounds
+     * @return {Vertex} The "southhmost" centered point of this bounding box.
+     */
+    getSouthPoint() {
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min.x + this.width / 2.0, this.max.y);
+    }
+    /**
+     * Get the center point of the west bound.
+     *
+     * @method getWestPoint
+     * @instance
+     * @memberof Bounds
+     * @return {Vertex} The "westhmost" centered point of this bounding box.
+     */
+    getWestPoint() {
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min.x, this.min.y + this.height / 2.0);
+    }
+    /**
+     * Get the center point of the east bound.
+     *
+     * @method getEastPoint
+     * @instance
+     * @memberof Bounds
+     * @return {Vertex} The "easthmost" centered point of this bounding box.
+     */
+    getEastPoint() {
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.max.x, this.min.y + this.height / 2.0);
+    }
+    /**
+     * Get the upper left corner point these bounds box.
+     *
+     * @method getNorthWestPoint
+     * @instance
+     * @memberof Bounds
+     * @return {Vertex} The "northwestmost" point of this bounding box.
+     */
+    getNorthWestPoint() {
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min.x, this.min.y);
+    }
+    /**
+     * Get the upper right corner point these bounds box.
+     *
+     * @method getNorthEastPoint
+     * @instance
+     * @memberof Bounds
+     * @return {Vertex} The "northeastmost" point of this bounding box.
+     */
+    getNorthEastPoint() {
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.max.x, this.min.y);
+    }
+    /**
+     * Get the lower right corner point these bounds box.
+     *
+     * @method getSouthEastPoint
+     * @instance
+     * @memberof Bounds
+     * @return {Vertex} The "southeastmost" point of this bounding box.
+     */
+    getSouthEastPoint() {
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.max.x, this.max.y);
+    }
+    /**
+     * Get the lower left corner point these bounds box.
+     *
+     * @method getSouthWestPoint
+     * @instance
+     * @memberof Bounds
+     * @return {Vertex} The "southwestmost" point of this bounding box.
+     */
+    getSouthWestPoint() {
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min.x, this.max.y);
+    }
+    /**
      * Convert this rectangular bounding box to a polygon with four vertices.
      *
      * @method toPolygon
@@ -2376,8 +2359,74 @@ class Bounds {
     toPolygon() {
         return new _Polygon__WEBPACK_IMPORTED_MODULE_0__.Polygon([new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min), new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.max.x, this.min.y), new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.max), new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min.x, this.max.y)], false);
     }
+    /**
+     * Get the center of this boinding box.
+     *
+     * @method getCenter
+     * @instance
+     * @memberof Bounds
+     * @returns {Vertex} The center of these bounds.
+     */
     getCenter() {
         return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min.x + (this.max.x - this.min.x) / 2.0, this.min.y + (this.max.y - this.min.y) / 2);
+    }
+    /**
+     * Get the minimum of `width` and `height`.
+     *
+     * @returns {number} The value of Math.min( this.width, this.height )
+     */
+    getMinDimension() {
+        return Math.min(this.width, this.height);
+    }
+    /**
+     * Get the minimum of `width` and `height`.
+     *
+     * @returns {number} The value of Math.min( this.width, this.height )
+     */
+    getMaxDimension() {
+        return Math.max(this.width, this.height);
+    }
+    /**
+     * Generate a random point inside this bounds object. Safe areas at the border to avoid
+     * included.
+     *
+     * @method randomPoint
+     * @instance
+     * @memberof Bounds
+     * @param {horizontalSafeArea} - (optional) The horizonal (left and right) safe area. No vertex will be created here. Can be used as percent in (0.0 ... 0.1) interval.
+     * @param {verticalSafeArea} - (optional) The vertical (top and bottom) safe area. No vertex will be created here. Can be used as percent in (0.0 ... 0.1) interval
+     * @returns {Vertex} A pseudo random point inside these bounds.
+     */
+    randomPoint(horizontalSafeArea = 0, verticalSafeArea = 0) {
+        // Check if the safe areas are meant as percent
+        const absHorizontalSafeArea = horizontalSafeArea > 0 && horizontalSafeArea < 1 ? this.width * horizontalSafeArea : horizontalSafeArea;
+        const absVerticalSafeArea = verticalSafeArea > 0 && verticalSafeArea < 1 ? this.height * verticalSafeArea : verticalSafeArea;
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.min.x + absHorizontalSafeArea + Math.random() * (this.width - 2 * absHorizontalSafeArea), this.min.y + absVerticalSafeArea + Math.random() * (this.height - 2 * absVerticalSafeArea));
+    }
+    /**
+     * Convert these bounds to a human readable form.
+     *
+     * Note: the returned format might change in the future, so please do not
+     * rely on the returned string format.
+     *
+     * @method toString
+     * @instance
+     * @memberof Bounds
+     * @returns {string} Get these bounds in a human readable form.
+     */
+    toString() {
+        return `{ min: ${this.min.toString()}, max : ${this.max.toString()}, width: ${this.width}, height : ${this.height} }`;
+    }
+    /**
+     * Clone this bounds object (create a deep clone).
+     *
+     * @method clone
+     * @instance
+     * @memberof Bounds
+     * @returns {Bounds} Creates a deep clone of this bounds object.
+     */
+    clone() {
+        return new Bounds({ x: this.min.x, y: this.min.y }, { x: this.max.x, y: this.max.y });
     }
     /**
      * Compute the minimal bounding box for a given set of vertices.
@@ -2387,12 +2436,13 @@ class Bounds {
      * @static
      * @method computeFromVertices
      * @memberof Bounds
-     * @param {Array<Vertex>} vertices - The set of vertices you want to get the bounding box for.
+     * @param {Array<XYCoords>} vertices - The set of vertices you want to get the bounding box for.
      * @return The minimal Bounds for the given vertices.
      **/
     static computeFromVertices(vertices) {
-        if (vertices.length == 0)
+        if (vertices.length == 0) {
             return new Bounds(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(0, 0), new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(0, 0));
+        }
         let xMin = vertices[0].x;
         let xMax = vertices[0].x;
         let yMin = vertices[0].y;
@@ -2407,25 +2457,66 @@ class Bounds {
         }
         return new Bounds(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(xMin, yMin), new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(xMax, yMax));
     }
+    /**
+     * Compute the minimal bounding box for a given set of existing bounding boxes.
+     *
+     * An empty vertex array will return an empty bounding box located at (0,0).
+     *
+     * @static
+     * @method computeFromBoundsSet
+     * @memberof Bounds
+     * @param {Array<IBounds>} boundingBoxes - The set of existing bounding boxes to get the containing bounding box for.
+     * @return The minimal Bounds for the given bounds instances.
+     **/
+    static computeFromBoundsSet(boundingBoxes) {
+        if (boundingBoxes.length == 0) {
+            return new Bounds(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(0, 0), new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(0, 0));
+        }
+        let xMin = boundingBoxes[0].min.x;
+        let xMax = boundingBoxes[0].max.x;
+        let yMin = boundingBoxes[0].min.y;
+        let yMax = boundingBoxes[0].min.y;
+        let bounds;
+        for (var i in boundingBoxes) {
+            bounds = boundingBoxes[i];
+            xMin = Math.min(xMin, bounds.min.x);
+            xMax = Math.max(xMax, bounds.max.x);
+            yMin = Math.min(yMin, bounds.min.y);
+            yMax = Math.max(yMax, bounds.min.y);
+        }
+        return new Bounds(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(xMin, yMin), new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(xMax, yMax));
+    }
+    /**
+     * Create a new `Bounds` instance just from `width` and `height`, located at (0,0) or the optionally given origin.
+     *
+     * @param {number} width - The width of the bounds
+     * @param {number} height  - The height of the bounds
+     * @param {XYCoords={x:0,y:0}} origin - [optional] A origin to locate the new Bounds object at.
+     * @returns {Bounds} A new `Bounds` instance width given width and height, located at (0,0) or the given origin..
+     */
+    static fromDimension(width, height, origin) {
+        return new Bounds(origin !== null && origin !== void 0 ? origin : { x: 0, y: 0 }, { x: (origin ? origin.x : 0) + width, y: (origin ? origin.y : 0) + height });
+    }
 } // END class bounds
 //# sourceMappingURL=Bounds.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/Circle.js":
+/***/ "./node_modules/plotboilerplate/src/esm/Circle.js"
 /*!********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/Circle.js ***!
   \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Circle": () => (/* binding */ Circle)
+/* harmony export */   Circle: () => (/* binding */ Circle)
 /* harmony export */ });
-/* harmony import */ var _Line__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Line */ "./node_modules/plotboilerplate/src/esm/Line.js");
-/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
-/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Vector */ "./node_modules/plotboilerplate/src/esm/Vector.js");
-/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
+/* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
+/* harmony import */ var _Line__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Line */ "./node_modules/plotboilerplate/src/esm/Line.js");
+/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Vector */ "./node_modules/plotboilerplate/src/esm/Vector.js");
+/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
 /**
  * @author   Ikaros Kappler
  * @date     2020-05-04
@@ -2437,8 +2528,14 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-01-20 Added UID.
  * @modified 2022-02-02 Added the `destroy` method.
  * @modified 2022-02-02 Cleared the `toSVGString` function (deprecated). Use `drawutilssvg` instead.
- * @version  1.3.0
+ * @modified 2022-08-15 Added the `containsPoint` function.
+ * @modified 2022-08-23 Added the `lineIntersection` function.
+ * @modified 2022-08-23 Added the `closestPoint` function.
+ * @modified 2025-04-09 Added the `Circle.move(amount: XYCoords)` method.
+ * @modified 2025-04-16 Class `Circle` now implements interface `Intersectable`.
+ * @version  1.5.0
  **/
+
 
 
 
@@ -2468,9 +2565,34 @@ class Circle {
          * Required to generate proper CSS classes and other class related IDs.
          **/
         this.className = "Circle";
-        this.uid = _UIDGenerator__WEBPACK_IMPORTED_MODULE_1__.UIDGenerator.next();
+        this.uid = _UIDGenerator__WEBPACK_IMPORTED_MODULE_2__.UIDGenerator.next();
         this.center = center;
         this.radius = radius;
+    }
+    /**
+     * Move the circle by the given amount.
+     *
+     * @method move
+     * @param {XYCoords} amount - The amount to move.
+     * @instance
+     * @memberof Circle
+     * @return {Circle} this for chaining
+     **/
+    move(amount) {
+        this.center.add(amount);
+        return this;
+    }
+    /**
+     * Check if the given circle is fully contained inside this circle.
+     *
+     * @method containsPoint
+     * @param {XYCoords} point - The point to check if it is contained in this circle.
+     * @instance
+     * @memberof Circle
+     * @return {boolean} `true` if the given point is inside this circle.
+     */
+    containsPoint(point) {
+        return this.center.distance(point) < this.radius;
     }
     /**
      * Check if the given circle is fully contained inside this circle.
@@ -2529,8 +2651,22 @@ class Circle {
     tangentAt(angle) {
         const pointA = Circle.circleUtils.vertAt(angle, this.radius);
         // Construct the perpendicular of the line in point a. Then move relative to center.
-        return new _Vector__WEBPACK_IMPORTED_MODULE_2__.Vector(pointA, new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(0, 0)).add(this.center).perp();
+        return new _Vector__WEBPACK_IMPORTED_MODULE_3__.Vector(pointA, new _Vertex__WEBPACK_IMPORTED_MODULE_4__.Vertex(0, 0)).add(this.center).perp();
+        // return (new Vector(this.center.clone(), pointA).add(pointA) as Vector).perp() as Vector;
     }
+    //--- BEGIN --- Implement interface `Intersectable`
+    /**
+     * Get the bounding box (bounds) of this Circle.
+     *
+     * @method getBounds
+     * @instance
+     * @memberof Circle
+     * @return {Bounds} The rectangular bounds of this Circle.
+     **/
+    getBounds() {
+        return new _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds(this.center.clone().subXY(Math.abs(this.radius), Math.abs(this.radius)), this.center.clone().addXY(Math.abs(this.radius), Math.abs(this.radius)));
+    }
+    //--- END --- Implement interface `Intersectable`
     /**
      * Calculate the intersection points (if exists) with the given circle.
      *
@@ -2581,30 +2717,118 @@ class Circle {
         var y3 = p2.y - (h * (p1.x - p0.x)) / d;
         var x4 = p2.x - (h * (p1.y - p0.y)) / d;
         var y4 = p2.y + (h * (p1.x - p0.x)) / d;
-        return new _Line__WEBPACK_IMPORTED_MODULE_0__.Line(new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(x3, y3), new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(x4, y4));
+        return new _Line__WEBPACK_IMPORTED_MODULE_1__.Line(new _Vertex__WEBPACK_IMPORTED_MODULE_4__.Vertex(x3, y3), new _Vertex__WEBPACK_IMPORTED_MODULE_4__.Vertex(x4, y4));
     }
     /**
-     * Create an SVG representation of this circle.
+     * Calculate the intersection points (if exists) with the given infinite line (defined by two points).
      *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGString
-     * @param {object=} options - An optional set of options, like 'className'.
-     * @return {string} A string representing the SVG code for this vertex.
+     * @method lineIntersection
      * @instance
      * @memberof Circle
+     * @param {Vertex} a- The first of the two points defining the line.
+     * @param {XYCoords} b - The second of the two points defining the line.
+     * @return {Line|null} The intersection points (as a line) or null if this circle does not intersect the line given.
+     **/
+    lineIntersection(a, b) {
+        // Based on the math from
+        //    https://mathworld.wolfram.com/Circle-LineIntersection.html
+        const interA = new _Vertex__WEBPACK_IMPORTED_MODULE_4__.Vertex();
+        const interB = new _Vertex__WEBPACK_IMPORTED_MODULE_4__.Vertex();
+        // First do a transformation, because the calculation is based on a cicle at (0,0)
+        const transA = new _Vertex__WEBPACK_IMPORTED_MODULE_4__.Vertex(a).sub(this.center);
+        const transB = new _Vertex__WEBPACK_IMPORTED_MODULE_4__.Vertex(b).sub(this.center);
+        const diff = transA.difference(transB);
+        // There is a special case if diff.y=0, where the intersection is not calcuatable.
+        // Use an non-zero epsilon here to approximate this case.
+        // TODO for the future: find a better solution
+        if (Math.abs(diff.y) === 0) {
+            diff.y = 0.000001;
+        }
+        const dist = transA.distance(transB);
+        const det = transA.x * transB.y - transA.y * transB.x;
+        const distSquared = dist * dist;
+        const radiusSquared = this.radius * this.radius;
+        // Check if circle and line have an intersection at all
+        if (radiusSquared * distSquared - det * det < 0) {
+            return null;
+        }
+        const belowSqrt = this.radius * this.radius * dist * dist - det * det;
+        const sqrt = Math.sqrt(belowSqrt);
+        interA.x = (det * diff.y + Math.sign(diff.y) * diff.x * sqrt) / distSquared;
+        interB.x = (det * diff.y - Math.sign(diff.y) * diff.x * sqrt) / distSquared;
+        interA.y = (-det * diff.x + Math.abs(diff.y) * sqrt) / distSquared;
+        interB.y = (-det * diff.x - Math.abs(diff.y) * sqrt) / distSquared;
+        return new _Line__WEBPACK_IMPORTED_MODULE_1__.Line(interA.add(this.center), interB.add(this.center));
+    }
+    //--- BEGIN --- Implement interface `Intersectable`
+    /**
+     * Get all line intersections with this circle.
+     *
+     * This method returns all intersections (as vertices) with this shape. The returned array of vertices is in no specific order.
+     *
+     * @param {VertTuple} line - The line to find intersections with.
+     * @param {boolean} inVectorBoundsOnly - If set to true only intersecion points on the passed vector are returned (located strictly between start and end vertex).
+     * @returns {Array<Vertex>} - An array of all intersections with the circle outline.
      */
-    toSVGString(options) {
-        // options = options || {};
-        // var buffer: Array<string> = [];
-        // buffer.push("<circle");
-        // if (options.className) buffer.push(' class="' + options.className + '"');
-        // buffer.push(' cx="' + this.center.x + '"');
-        // buffer.push(' cy="' + this.center.y + '"');
-        // buffer.push(' r="' + this.radius + '"');
-        // buffer.push(" />");
-        // return buffer.join("");
-        console.warn("[Deprecation] Warning: the Circle.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
-        return "";
+    lineIntersections(line, inVectorBoundsOnly = false) {
+        // Find the intersections of all lines inside the edge bounds
+        const intersectioLine = this.lineIntersection(line.a, line.b);
+        if (!intersectioLine) {
+            return [];
+        }
+        if (inVectorBoundsOnly) {
+            // const maxDist = line.length();
+            return [intersectioLine.a, intersectioLine.b].filter((vert) => line.hasPoint(vert, true));
+        }
+        else {
+            return [intersectioLine.a, intersectioLine.b];
+        }
+    }
+    /**
+     * Get all line intersections of this polygon and their tangents along the shape.
+     *
+     * This method returns all intersection tangents (as vectors) with this shape. The returned array of vectors is in no specific order.
+     *
+     * @param line
+     * @param lineIntersectionTangents
+     * @returns
+     */
+    lineIntersectionTangents(line, inVectorBoundsOnly = false) {
+        // Find the intersections of all lines plus their tangents inside the circle bounds
+        const interSectionPoints = this.lineIntersections(line, inVectorBoundsOnly);
+        return interSectionPoints.map((vert) => {
+            // Calculate angle
+            const lineFromCenter = new _Line__WEBPACK_IMPORTED_MODULE_1__.Line(this.center, vert);
+            const angle = lineFromCenter.angle();
+            // console.log("angle", (angle / Math.PI) * 180.0);
+            // const angle = Math.random() * Math.PI * 2; // TODO
+            // Calculate tangent at angle
+            return this.tangentAt(angle);
+        });
+    }
+    //--- END --- Implement interface `Intersectable`
+    /**
+     * Calculate the closest point on the outline of this circle to the given point.
+     *
+     * @method closestPoint
+     * @instance
+     * @memberof Circle
+     * @param {XYCoords} vert - The point to find the closest circle point for.
+     * @return {Vertex} The closest point on this circle.
+     **/
+    closestPoint(vert) {
+        const lineIntersection = this.lineIntersection(this.center, vert);
+        if (!lineIntersection) {
+            // Note: this case should not happen as a radial from the center always intersect this circle.
+            return new _Vertex__WEBPACK_IMPORTED_MODULE_4__.Vertex();
+        }
+        // Return closed of both
+        if (lineIntersection.a.distance(vert) < lineIntersection.b.distance(vert)) {
+            return lineIntersection.a;
+        }
+        else {
+            return lineIntersection.b;
+        }
     }
     /**
      * This function should invalidate any installed listeners and invalidate this object.
@@ -2620,31 +2844,50 @@ Circle.circleUtils = {
     vertAt: (angle, radius) => {
         /* return new Vertex( Math.sin(angle) * radius,
                      Math.cos(angle) * radius ); */
-        return new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(Math.cos(angle) * radius, Math.sin(angle) * radius);
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_4__.Vertex(Math.cos(angle) * radius, Math.sin(angle) * radius);
     }
 };
 //# sourceMappingURL=Circle.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/CircleSector.js":
+/***/ "./node_modules/plotboilerplate/src/esm/CircleSector.js"
 /*!**************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/CircleSector.js ***!
   \**************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "CircleSector": () => (/* binding */ CircleSector)
+/* harmony export */   CircleSector: () => (/* binding */ CircleSector)
 /* harmony export */ });
-/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
+/* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
+/* harmony import */ var _Circle__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Circle */ "./node_modules/plotboilerplate/src/esm/Circle.js");
+/* harmony import */ var _Line__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Line */ "./node_modules/plotboilerplate/src/esm/Line.js");
+/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
+/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
+/* harmony import */ var _geomutils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./geomutils */ "./node_modules/plotboilerplate/src/esm/geomutils.js");
 /**
  * @author   Ikaros Kappler
  * @date     2020-12-17
  * @modified 2021-01-20 Added UID.
  * @modified 2021-02-26 Fixed an error in the svg-arc-calculation (case angle<90deg and anti-clockwise).
- * @version  1.1.1
+ * @modified 2024-01-30 Added a missing type in the `describeSVGArc` function.
+ * @modified 2024-03-01 Added the `getStartPoint` and `getEndPoint` methods.
+ * @modified 2024-03-08 Added the `containsAngle` method.
+ * @modified 2024-03-09 Added the `circleSectorIntersection` method to find coherent sector intersections..
+ * @modified 2024-03-09 Added the `angleAt` method to determine any angle at some ratio.
+ * @modified 2025-04-02 Adding the `CircleSector.lineIntersections` and `CircleSector.lineIntersectionTangents` and implementing `Intersectable`.
+ * @modified 2025-04-09 Adding the `CircleSector.move()` method.
+ * @modified 2025-04-19 Tweaking the `CircleSector.containsAngle` method: all values (input angle, start- and end- angle) are wrapped into [0,2*PI) now.
+ * @modified 2025-04-19 Class `CircleSector` implements interface `Bounded` now (method `getBounds` added).
+ * @version  1.2.0
  **/
+
+
+
+
+
 
 /**
  * @classdesc A simple circle sector: circle, start- and end-angle.
@@ -2670,42 +2913,252 @@ class CircleSector {
          * Required to generate proper CSS classes and other class related IDs.
          **/
         this.className = "CircleSector";
-        this.uid = _UIDGenerator__WEBPACK_IMPORTED_MODULE_0__.UIDGenerator.next();
+        this.uid = _UIDGenerator__WEBPACK_IMPORTED_MODULE_3__.UIDGenerator.next();
         this.circle = circle;
         this.startAngle = startAngle;
         this.endAngle = endAngle;
     }
+    //--- BEGIN --- Implement interface `IBounded`
     /**
-     * Create an SVG representation of this circle.
+     * Get the bounds of this ellipse.
      *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGString
-     * @param {object=} options - An optional set of options, like 'className'.
-     * @return {string} A string representing the SVG code for this vertex.
+     * The bounds are approximated by the underlying segment buffer; the more segment there are,
+     * the more accurate will be the returned bounds.
+     *
+     * @method getBounds
      * @instance
-     * @memberof Circle
+     * @memberof VEllipse
+     * @return {Bounds} The bounds of this curve.
+     **/
+    getBounds() {
+        const _self = this;
+        const circleBounds = this.circle.getBounds();
+        // Calculage angles from east, west, north and south box points and check if they are inside
+        const candidates = [
+            circleBounds.getNorthPoint(),
+            circleBounds.getSouthPoint(),
+            circleBounds.getWestPoint(),
+            circleBounds.getEastPoint()
+        ].filter((point) => {
+            // Check for each candidate points if they are contained in this sector. Drop if not.
+            const angle = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(_self.circle.center, point).angle();
+            return _self.containsAngle(angle);
+        });
+        // Compute bounds and inlcude start end end point (they are definitely part of the bounds)
+        return _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds.computeFromVertices(candidates.concat([this.getStartPoint(), this.getEndPoint()]));
+    }
+    //--- BEGIN --- Implement interface `IBounded`
+    /**
+     * Move the circle sector by the given amount.
+     *
+     * @method move
+     * @param {XYCoords} amount - The amount to move.
+     * @instance
+     * @memberof CircleSector
+     * @return {CircleSector} this for chaining
+     **/
+    move(amount) {
+        this.circle.move(amount);
+        return this;
+    }
+    /**
+     * Checks wether the given angle (must be inside 0 and PI*2) is contained inside this sector.
+     *
+     * @param {number} angle - The numeric angle to check.
+     * @method containsAngle
+     * @instance
+     * @memberof CircleSector
+     * @return {boolean} True if (and only if) this sector contains the given angle.
      */
-    toSVGString(options) {
-        // options = options || {};
-        // var buffer: Array<string> = [];
-        // buffer.push("<path ");
-        // if (options.className) buffer.push(' class="' + options.className + '"');
-        // const data: SVGPathParams = CircleSector.circleSectorUtils.describeSVGArc(
-        //   this.circle.center.x,
-        //   this.circle.center.y,
-        //   this.circle.radius,
-        //   this.startAngle,
-        //   this.endAngle
-        // );
-        // buffer.push(' d="' + data.join(" ") + '" />');
-        // return buffer.join("");
-        console.warn("[Deprecation] Warning: the CircleSector.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
-        return "";
+    containsAngle(angle) {
+        var wrappedAngle = _geomutils__WEBPACK_IMPORTED_MODULE_5__.geomutils.mapAngleTo2PI(angle);
+        var wrappedStart = _geomutils__WEBPACK_IMPORTED_MODULE_5__.geomutils.mapAngleTo2PI(this.startAngle);
+        var wrappedEnd = _geomutils__WEBPACK_IMPORTED_MODULE_5__.geomutils.mapAngleTo2PI(this.endAngle);
+        // TODO: cleanup
+        // if (this.startAngle <= this.endAngle) {
+        //   return angle >= this.startAngle && angle < this.endAngle;
+        // } else {
+        //   // startAngle > endAngle
+        //   return angle >= this.startAngle || angle < this.endAngle;
+        // }
+        if (wrappedStart <= wrappedEnd) {
+            return wrappedAngle >= wrappedStart && wrappedAngle < wrappedEnd;
+        }
+        else {
+            // startAngle > endAngle
+            return wrappedAngle >= wrappedStart || wrappedAngle < wrappedEnd;
+        }
+    }
+    /**
+     * Get the angle inside this sector for a given ratio. 0.0 means startAngle, and 1.0 means endAngle.
+     *
+     * @param {number} t - The ratio inside [0..1].
+     * @method angleAt
+     * @instance
+     * @memberof CircleSector
+     * @return {number} The angle inside this sector at a given ratio.
+     */
+    angleAt(t) {
+        if (this.startAngle <= this.endAngle) {
+            const angleAtRatio = this.startAngle + (this.endAngle - this.startAngle) * t;
+            return angleAtRatio % (Math.PI * 2.0);
+        }
+        else {
+            // startAngle > endAngle
+            const angleAtRatio = this.startAngle + (Math.PI * 2 - this.startAngle + this.endAngle) * t;
+            return angleAtRatio % (Math.PI * 2.0);
+        }
+    }
+    /**
+     * Get the sectors starting point (on the underlying circle, located at the start angle).
+     *
+     * @method getStartPoint
+     * @instance
+     * @memberof CircleSector
+     * @return {Vertex} The sector's stating point.
+     */
+    getStartPoint() {
+        return this.circle.vertAt(this.startAngle);
+    }
+    /**
+     * Get the sectors ending point (on the underlying circle, located at the end angle).
+     *
+     * @method getEndPoint
+     * @instance
+     * @memberof CircleSector
+     * @return {Vertex} The sector's ending point.
+     */
+    getEndPoint() {
+        return this.circle.vertAt(this.endAngle);
+    }
+    /**
+     * Calculate the intersection of this circle sector and some other sector.
+     *
+     * If the two sectors do not corerently intersect (when not both points of the
+     * radical line are containted in both source sectors) then null is returned.
+     *
+     * See demo/53-circle-sector-intersections for a geometric visualisation.
+     *
+     * @method circleSectorIntersection
+     * @instance
+     * @memberof CircleSector
+     * @return {CircleSector | null} The intersecion of both sectors or null if they don't intersect.
+     */
+    circleSectorIntersection(sector) {
+        const radicalLine = this.circle.circleIntersection(sector.circle);
+        if (!radicalLine) {
+            // The circles to not intersect at all.
+            return null;
+        }
+        // Circles intersect. Check if this sector interval intersects, too.
+        const thisIntersectionAngleA = this.circle.center.angle(radicalLine.a);
+        const thisIntersectionAngleB = this.circle.center.angle(radicalLine.b);
+        // Is intersection inside this sector?
+        if (!this.containsAngle(thisIntersectionAngleA) || !this.containsAngle(thisIntersectionAngleB)) {
+            // At least one circle intersection point is not located in this sector.
+            //  -> no valid intersection at all
+            return null;
+        }
+        // Circles intersect. Check if the passed sector interval intersects, too.
+        const thatIntersectionAngleA = sector.circle.center.angle(radicalLine.a);
+        const thatIntersectionAngleB = sector.circle.center.angle(radicalLine.b);
+        // Is intersection inside this sector?
+        if (!sector.containsAngle(thatIntersectionAngleA) || !sector.containsAngle(thatIntersectionAngleB)) {
+            // At least one circle intersection point is not located in this sector.
+            //  -> no valid intersection at all
+            return null;
+        }
+        // The radical line has no direction. Thus the resulting sector _might_ be in reverse order.
+        // Make a quick logical check: the center of the gap must still be located inside the result sector.
+        // If not: reverse result.
+        var gapSector = new CircleSector(this.circle, this.endAngle, this.startAngle);
+        var centerOfOriginalGap = gapSector.angleAt(0.5);
+        const resultSector = new CircleSector(new _Circle__WEBPACK_IMPORTED_MODULE_1__.Circle(this.circle.center.clone(), this.circle.radius), thisIntersectionAngleA, thisIntersectionAngleB);
+        if (resultSector.containsAngle(centerOfOriginalGap)) {
+            resultSector.startAngle = thisIntersectionAngleB;
+            resultSector.endAngle = thisIntersectionAngleA;
+        }
+        return resultSector;
+    }
+    //--- BEGIN --- Implement interface `Intersectable`
+    /**
+     * Get the line intersections as vectors with this ellipse.
+     *
+     * @method lineIntersections
+     * @instance
+     * @param {VertTuple<Vector> ray - The line/ray to intersect this ellipse with.
+     * @param {boolean} inVectorBoundsOnly - (default=false) Set to true if only intersections within the vector bounds are of interest.
+     * @returns
+     */
+    lineIntersections(ray, inVectorBoundsOnly = false) {
+        // First get all line intersections from underlying ellipse.
+        const ellipseIntersections = this.circle.lineIntersections(ray, inVectorBoundsOnly);
+        // Drop all intersection points that are not contained in the circle sectors bounds.
+        const tmpLine = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(this.circle.center, new _Vertex__WEBPACK_IMPORTED_MODULE_4__.Vertex());
+        return ellipseIntersections.filter((intersectionPoint) => {
+            tmpLine.b.set(intersectionPoint);
+            const lineAngle = tmpLine.angle();
+            return this.containsAngle(_geomutils__WEBPACK_IMPORTED_MODULE_5__.geomutils.wrapMinMax(lineAngle, 0, Math.PI * 2));
+        });
+    }
+    /**
+     * Get all line intersections of this polygon and their tangents along the shape.
+     *
+     * This method returns all intersection tangents (as vectors) with this shape. The returned array of vectors is in no specific order.
+     *
+     * @param line
+     * @param lineIntersectionTangents
+     * @returns
+     */
+    lineIntersectionTangents(line, inVectorBoundsOnly = false) {
+        // Find the intersections of all lines plus their tangents inside the circle bounds
+        const interSectionPoints = this.lineIntersections(line, inVectorBoundsOnly);
+        return interSectionPoints.map((vert) => {
+            // Calculate angle
+            const lineFromCenter = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(this.circle.center, vert);
+            const angle = lineFromCenter.angle();
+            // console.log("angle", (angle / Math.PI) * 180.0);
+            // const angle = Math.random() * Math.PI * 2; // TODO
+            // Calculate tangent at angle
+            return this.circle.tangentAt(angle);
+        });
+    }
+    //--- END --- Implement interface `Intersectable`
+    describeSVGPath(options) {
+        // const buffer: SVGPathParams = [];
+        // const start = this.getStartPoint();
+        // const end = this.getEndPoint();
+        // //   describeSVGArc
+        // //   x: number,
+        // //   y: number,
+        // //   radius: number,
+        // //   startAngle: number,
+        // //   endAngle: number,
+        // //   options?: { moveToStart: boolean }
+        // // ): SVGPathParams => {
+        // var arcRotation = 0.0;
+        // var largeArcFlag = 1;
+        // var sweepFlag = 0;
+        // if (options && options.moveToStart) {
+        //   buffer.push("M", start.x, start.y);
+        // }
+        // buffer.push("A", cSector.circle.radius, cSector.circle.radius, arcRotation, largeArcFlag, sweepFlag, end.x, end.y);
+        // return buffer;
+        const arc = CircleSector.circleSectorUtils.describeSVGArc(this.circle.center.x, // end.x,
+        this.circle.center.y, // end.y,
+        this.circle.radius, this.startAngle, this.endAngle, options // options?: { moveToStart: boolean }
+        );
+        return arc;
     }
     /**
      * This function should invalidate any installed listeners and invalidate this object.
      * After calling this function the object might not hold valid data any more and
      * should not be used.
+     *
+     * @method destroy
+     * @instance
+     * @memberof CircleSector
+     * @return {void}
      */
     destroy() {
         this.circle.destroy();
@@ -2736,8 +3189,9 @@ CircleSector.circleSectorUtils = {
      * @return [ 'A', radiusx, radiusy, rotation=0, largeArcFlag=1|0, sweepFlag=0, endx, endy ]
      */
     describeSVGArc: (x, y, radius, startAngle, endAngle, options) => {
-        if (typeof options === "undefined")
+        if (typeof options === "undefined") {
             options = { moveToStart: true };
+        }
         const end = CircleSector.circleSectorUtils.polarToCartesian(x, y, radius, endAngle);
         const start = CircleSector.circleSectorUtils.polarToCartesian(x, y, radius, startAngle);
         // Split full circles into two halves.
@@ -2769,17 +3223,17 @@ CircleSector.circleSectorUtils = {
 };
 //# sourceMappingURL=CircleSector.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/CubicBezierCurve.js":
+/***/ "./node_modules/plotboilerplate/src/esm/CubicBezierCurve.js"
 /*!******************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/CubicBezierCurve.js ***!
   \******************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "CubicBezierCurve": () => (/* binding */ CubicBezierCurve)
+/* harmony export */   CubicBezierCurve: () => (/* binding */ CubicBezierCurve)
 /* harmony export */ });
 /* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
 /* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
@@ -2807,7 +3261,20 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-01-20 Added UID.
  * @modified 2022-02-02 Added the `destroy` method.
  * @modified 2022-02-02 Cleared the `toSVGPathData` function (deprecated). Use `drawutilssvg` instead.
- * @version 2.6.0
+ * @modified 2022-10-17 The `CubicBezierCurve` class now implements the new `PathSegment` interface.
+ * @modified 2023-09-30 Added the function `CubicbezierCurve.getSubCurve(number,number)` – similar to `getSubCurveAt(...)` but with absolute position parameters.
+ * @modified 2023-10-07 Added the `trimEnd`, `trimEndAt`, `trimStart`, `trimStartAt` methods.
+ * @modified 2025-04-09 Added the `CubicBezierCurve.move` method to match the convention – which just calls `translate`.
+ * @modified 2025-04-09 Modified the `CubicBezierCurve.translate` method: chaning parameter `Vertex` to more generalized `XYCoords`.
+ * @modified 2025-04-13 Changed visibility of `CubicBezierCurve.utils` from 'private' to  'public'.
+ * @modified 2025-04-13 Added helper function `CubicBezierCurve.utils.bezierCoeffs`.
+ * @modified 2025-04-13 Added helper functopn `CubicBezierCurve.utils.sgn(number)` for division safe sign calculation.
+ * @modified 2025-03-13 Class `CubicBezierCurve` is now implementing interface `Intersectable`.
+ * @modified 2025-04-18 Added evaluation method for cubic Bézier curves `CubicBezierCurve.utils.evaluateT`.
+ * @modified 2025-04-18 Refactored method `CubicBezierCurve.getPointAt` to use `evaluateT`.
+ * @modified 2025-04-18 Fixed the `CubicBezierCurve.getBounds` method: now returning the real bounding box. Before it was an approximated one.
+ * @modified 2025-ß4-18 Added helper methods for bounding box calculation `CubucBezierCurve.util.cubicPolyMinMax` and `cubicPoly`.
+ * @version 2.9.0
  *
  * @file CubicBezierCurve
  * @public
@@ -2857,7 +3324,7 @@ class CubicBezierCurve {
         // An array of floats
         this.segmentLengths = [];
         // float
-        this.arcLength = null;
+        // this.arcLength = null;
         this.updateArcLengths();
     }
     /**
@@ -2900,7 +3367,7 @@ class CubicBezierCurve {
      * Translate the whole curve by the given {x,y} amount: moves all four points.
      *
      * @method translate
-     * @param {Vertex} amount - The amount to translate this curve by.
+     * @param {XYCoords} amount - The amount to translate this curve by.
      * @instance
      * @memberof CubicBezierCurve
      * @return {CubicBezierCurve} this (for chaining).
@@ -2911,6 +3378,18 @@ class CubicBezierCurve {
         this.endControlPoint.add(amount);
         this.endPoint.add(amount);
         return this;
+    }
+    /**
+     * Translate the whole curve by the given {x,y} amount: moves all four points.
+     *
+     * @method translate
+     * @param {XYCoords} amount - The amount to translate this curve by.
+     * @instance
+     * @memberof CubicBezierCurve
+     * @return {CubicBezierCurve} this (for chaining).
+     **/
+    move(amount) {
+        return this.translate(amount);
     }
     /**
      * Reverse this curve, means swapping start- and end-point and swapping
@@ -2992,6 +3471,9 @@ class CubicBezierCurve {
      *
      * This function uses a recursive approach by cutting the curve into several linear segments.
      *
+     * @method getClosestT
+     * @instance
+     * @memberof CubicBezierCurve
      * @param {Vertex} p - The point to find the closest position ('t' on the curve).
      * @return {number}
      **/
@@ -3041,27 +3523,35 @@ class CubicBezierCurve {
             tNext: tStart + tDiff * (Math.min(stepCount, minIndex + 1) / stepCount)
         };
     }
+    //--- BEGIN --- Implement interface `IBounded`
     /**
      * Get the bounds of this bezier curve.
      *
      * The bounds are approximated by the underlying segment buffer; the more segment there are,
      * the more accurate will be the returned bounds.
      *
-     * @return {Bounds} The bounds of this curve.
+     * @method getClosestT
+     * @instance
+     * @memberof CubicBezierCurve
+     * @return {Bounds} The bounds of this ellipse.
      **/
     getBounds() {
-        var min = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
-        var max = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY);
-        let v;
-        for (var i = 0; i < this.segmentCache.length; i++) {
-            v = this.segmentCache[i];
-            min.x = Math.min(min.x, v.x);
-            min.y = Math.min(min.y, v.y);
-            max.x = Math.max(max.x, v.x);
-            max.y = Math.max(max.y, v.y);
-        }
-        return new _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds(min, max);
+        // Thanks to Richard "RM" for the Bézier bounds calculatin
+        //    https://jsfiddle.net/SalixAlba/QQnvm/4/
+        const xMinMax = CubicBezierCurve.utils.cubicPolyMinMax(this.startPoint.x, this.startControlPoint.x, this.endControlPoint.x, this.endPoint.x);
+        const xl = xMinMax.min;
+        const xh = xMinMax.max;
+        const yMinMax = CubicBezierCurve.utils.cubicPolyMinMax(this.startPoint.y, this.startControlPoint.y, this.endControlPoint.y, this.endPoint.y);
+        const yl = yMinMax.min;
+        const yh = yMinMax.max;
+        return _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds.computeFromVertices([
+            { x: xl, y: yl },
+            { x: xl, y: yh },
+            { x: xh, y: yh },
+            { x: xh, y: yl }
+        ]);
     }
+    //--- END --- Implement interface `IBounded`
     /**
      * Get the start point of the curve.<br>
      * <br>
@@ -3148,14 +3638,19 @@ class CubicBezierCurve {
      **/
     getPointAt(t) {
         // Perform some powerful math magic
-        const x = this.startPoint.x * Math.pow(1.0 - t, 3) +
-            this.startControlPoint.x * 3 * t * Math.pow(1.0 - t, 2) +
-            this.endControlPoint.x * 3 * Math.pow(t, 2) * (1.0 - t) +
-            this.endPoint.x * Math.pow(t, 3);
-        const y = this.startPoint.y * Math.pow(1.0 - t, 3) +
-            this.startControlPoint.y * 3 * t * Math.pow(1.0 - t, 2) +
-            this.endControlPoint.y * 3 * Math.pow(t, 2) * (1.0 - t) +
-            this.endPoint.y * Math.pow(t, 3);
+        // TODO: cleanup
+        // const x: number =
+        //   this.startPoint.x * Math.pow(1.0 - t, 3) +
+        //   this.startControlPoint.x * 3 * t * Math.pow(1.0 - t, 2) +
+        //   this.endControlPoint.x * 3 * Math.pow(t, 2) * (1.0 - t) +
+        //   this.endPoint.x * Math.pow(t, 3);
+        // const y: number =
+        //   this.startPoint.y * Math.pow(1.0 - t, 3) +
+        //   this.startControlPoint.y * 3 * t * Math.pow(1.0 - t, 2) +
+        //   this.endControlPoint.y * 3 * Math.pow(t, 2) * (1.0 - t) +
+        //   this.endPoint.y * Math.pow(t, 3);
+        const x = CubicBezierCurve.utils.evaluateT(this.startPoint.x, this.startControlPoint.x, this.endControlPoint.x, this.endPoint.x, t);
+        const y = CubicBezierCurve.utils.evaluateT(this.startPoint.y, this.startControlPoint.y, this.endControlPoint.y, this.endPoint.y, t);
         return new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(x, y);
     }
     /**
@@ -3199,6 +3694,91 @@ class CubicBezierCurve {
         return new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(tX, tY);
     }
     /**
+     * Trim off a start section of this curve. The position parameter `uValue` is the absolute position on the
+     * curve in `[0...arcLength]`.
+     * The remaining curve will be the one in the bounds `[uValue,1]` (so `[0.0,uValue]` is cut off).
+     *
+     * Note this function just converts the absolute parameter to a relative one and call `trimStartAt`.
+     *
+     * @method trimStart
+     * @instance
+     * @memberof CubicBezierCurve
+     * @param {number} uValue - The absolute position parameter where to cut off the head curve.
+     * @returns {CubicBezierCurve} `this` for chanining.
+     */
+    trimStart(uValue) {
+        return this.trimStartAt(this.convertU2T(uValue));
+    }
+    /**
+     * Trim off a start section of this curve. The position parameter `t` is the relative position in [0..1].
+     * The remaining curve will be the one in the bounds `[uValue,1]` (so `[0.0,uValue]` is cut off).
+     *
+     * @method trimStartAt
+     * @instance
+     * @memberof CubicBezierCurve
+     * @param {number} t - The relative position parameter where to cut off the head curve.
+     * @returns {CubicBezierCurve} `this` for chanining.
+     */
+    trimStartAt(t) {
+        const subCurbePoints = CubicBezierCurve.utils.getSubCurvePointsAt(this, t, 1.0);
+        this.startPoint.set(subCurbePoints[0]);
+        this.startControlPoint.set(subCurbePoints[2]);
+        this.endPoint.set(subCurbePoints[1]);
+        this.endControlPoint.set(subCurbePoints[3]);
+        this.updateArcLengths();
+        return this;
+    }
+    /**
+     * Trim off the end of this curve. The position parameter `uValue` is the absolute position on the
+     * curve in `[0...arcLength]`.
+     * The remaining curve will be the one in the bounds `[0,uValue]` (so `[1.0-uValue,1.0]` is cut off).
+     *
+     * Note this function just converts the absolute parameter to a relative one and call `trimEndAt`.
+     *
+     * @method trimEnd
+     * @instance
+     * @memberof CubicBezierCurve
+     * @param {number} uValue - The absolute position parameter where to cut off the tail curve.
+     * @returns {CubicBezierCurve} `this` for chanining.
+     */
+    trimEnd(uValue) {
+        return this.trimEndAt(this.convertU2T(uValue));
+    }
+    /**
+     * Trim off the end of this curve. The position parameter `t` is the relative position in [0..1].
+     * The remaining curve will be the one in the bounds `[0,t]` (so `[1.0-t,1.0]` is cut off).
+     *
+     * @method trimEndAt
+     * @instance
+     * @memberof CubicBezierCurve
+     * @param {number} t - The relative position parameter where to cut off the tail curve.
+     * @returns {CubicBezierCurve} `this` for chanining.
+     */
+    trimEndAt(t) {
+        const subCurbePoints = CubicBezierCurve.utils.getSubCurvePointsAt(this, 0.0, t);
+        this.startPoint.set(subCurbePoints[0]);
+        this.startControlPoint.set(subCurbePoints[2]);
+        this.endPoint.set(subCurbePoints[1]);
+        this.endControlPoint.set(subCurbePoints[3]);
+        this.updateArcLengths();
+        return this;
+    }
+    /**
+     * Get a sub curve at the given start end end positions (values on the curve's length, between 0 and curve.arcLength).
+     *
+     * tStart >= tEnd is allowed, you will get a reversed sub curve then.
+     *
+     * @method getSubCurve
+     * @param {number} tStart – The start position of the desired sub curve (must be in [0..arcLength]).
+     * @param {number} tEnd – The end position if the desired cub curve (must be in [0..arcLength]).
+     * @instance
+     * @memberof CubicBezierCurve
+     * @return {CubicBezierCurve} The sub curve as a new curve.
+     **/
+    getSubCurve(uStart, uEnd) {
+        return this.getSubCurveAt(this.convertU2T(uStart), this.convertU2T(uEnd));
+    }
+    /**
      * Get a sub curve at the given start end end offsets (values between 0.0 and 1.0).
      *
      * tStart >= tEnd is allowed, you will get a reversed sub curve then.
@@ -3211,17 +3791,9 @@ class CubicBezierCurve {
      * @return {CubicBezierCurve} The sub curve as a new curve.
      **/
     getSubCurveAt(tStart, tEnd) {
-        const startVec = new _Vector__WEBPACK_IMPORTED_MODULE_3__.Vector(this.getPointAt(tStart), this.getTangentAt(tStart));
-        const endVec = new _Vector__WEBPACK_IMPORTED_MODULE_3__.Vector(this.getPointAt(tEnd), this.getTangentAt(tEnd).inv());
-        // Tangents are relative. Make absolute.
-        startVec.b.add(startVec.a);
-        endVec.b.add(endVec.a);
         // This 'splits' the curve at the given point at t.
-        startVec.scale(0.33333333 * (tEnd - tStart));
-        endVec.scale(0.33333333 * (tEnd - tStart));
-        // Draw the bezier curve
-        // pb.draw.cubicBezier( startVec.a, endVec.a, startVec.b, endVec.b, '#8800ff', 2 );
-        return new CubicBezierCurve(startVec.a, endVec.a, startVec.b, endVec.b);
+        const subCurbePoints = CubicBezierCurve.utils.getSubCurvePointsAt(this, tStart, tEnd);
+        return new CubicBezierCurve(subCurbePoints[0], subCurbePoints[1], subCurbePoints[2], subCurbePoints[3]);
     }
     /**
      * Convert a relative curve position u to the absolute curve position t.
@@ -3289,6 +3861,91 @@ class CubicBezierCurve {
     clone() {
         return new CubicBezierCurve(this.getStartPoint().clone(), this.getEndPoint().clone(), this.getStartControlPoint().clone(), this.getEndControlPoint().clone());
     }
+    //---BEGIN PathSegment-------------------------
+    /**
+     * Get the tangent's end point at the start point of this segment.
+     *
+     * @method getStartTangent
+     * @memberof PathSegment
+     * @return {Vertex} The end point of the starting point's tangent.
+     */
+    getStartTangent() {
+        return this.startControlPoint;
+    }
+    /**
+     * Get the tangent's end point at the end point of this segment.
+     *
+     * @method getEndTangent
+     * @memberof PathSegment
+     * @return {Vertex} The end point of the ending point's tangent.
+     */
+    getEndTangent() {
+        return this.endControlPoint;
+    }
+    //---END PathSegment-------------------------
+    //--- BEGIN --- Implement interface `Intersectable`
+    /**
+     * Get all line intersections with this shape.
+     *
+     * This method returns all intersections (as vertices) with this shape. The returned array of vertices is in no specific order.
+     *
+     * @param {VertTuple} line - The line to find intersections with.
+     * @param {boolean} inVectorBoundsOnly - If set to true only intersecion points on the passed vector are returned (located strictly between start and end vertex).
+     * @returns {Array<Vertex>} - An array of all intersections with the shape outline.
+     */
+    lineIntersections(line, inVectorBoundsOnly = false) {
+        const intersectionTs = this.lineIntersectionTs(line);
+        const intersectionPoints = intersectionTs.map((t) => {
+            return this.getPointAt(t);
+        });
+        if (inVectorBoundsOnly) {
+            // const maxDist = line.length();
+            return intersectionPoints.filter((vert) => line.hasPoint(vert, true));
+        }
+        else {
+            return intersectionPoints;
+        }
+    }
+    /**
+     * Get all line intersections of this polygon and their tangents along the shape.
+     *
+     * This method returns all intersection tangents (as vectors) with this shape. The returned array of vectors is in no specific order.
+     *
+     * @param line
+     * @param lineIntersectionTangents
+     * @returns
+     */
+    lineIntersectionTangents(line, inVectorBoundsOnly = false) {
+        const intersectionTs = this.lineIntersectionTs(line);
+        const intersectionTangents = intersectionTs.map((t) => {
+            const startPoint = this.getPointAt(t);
+            const endPoint = this.getTangentAt(t);
+            return new _Vector__WEBPACK_IMPORTED_MODULE_3__.Vector(startPoint, endPoint.add(startPoint));
+        });
+        if (inVectorBoundsOnly) {
+            return intersectionTangents.filter((vec) => line.hasPoint(vec.a, true));
+        }
+        else {
+            return intersectionTangents;
+        }
+    }
+    //--- END --- Implement interface `Intersectable`
+    lineIntersectionTs(line) {
+        var A = line.b.y - line.a.y; // A=y2-y1
+        var B = line.a.x - line.b.x; // B=x1-x2
+        var C = line.a.x * (line.a.y - line.b.y) + line.a.y * (line.b.x - line.a.x); //C=x1*(y1-y2)+y1*(x2-x1)
+        // var bx = bezierCoeffs(px[0], px[1], px[2], px[3]);
+        // var by = bezierCoeffs(py[0], py[1], py[2], py[3]);
+        var bx = CubicBezierCurve.utils.bezierCoeffs(this.startPoint.x, this.startControlPoint.x, this.endControlPoint.x, this.endPoint.x);
+        var by = CubicBezierCurve.utils.bezierCoeffs(this.startPoint.y, this.startControlPoint.y, this.endControlPoint.y, this.endPoint.y);
+        const poly = Array(4);
+        poly[0] = A * bx[0] + B * by[0]; /*t^3*/
+        poly[1] = A * bx[1] + B * by[1]; /*t^2*/
+        poly[2] = A * bx[2] + B * by[2]; /*t*/
+        poly[3] = A * bx[3] + B * by[3] + C; /*1*/
+        var roots = CubicBezierCurve.utils.cubicRoots(poly);
+        return roots.filter((root) => root != -1);
+    }
     /**
      * Check if this and the specified curve are equal.<br>
      * <br>
@@ -3350,42 +4007,6 @@ class CubicBezierCurve {
             && typeof obj.endControlPoint == "object" && hasXY(obj.endControlPoint);
         */
         return obj instanceof CubicBezierCurve;
-    }
-    /**
-     * Create an SVG path data representation of this bézier curve.
-     *
-     * Path data string format is:<br>
-     *  <pre>'M x0 y1 C dx0 dy1 dx1 dy1 x1 x2'</pre><br>
-     * or in other words<br>
-     *   <pre>'M startoint.x startPoint.y C startControlPoint.x startControlPoint.y endControlPoint.x endControlPoint.y endPoint.x endPoint.y'</pre>
-     *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGPathData
-     * @instance
-     * @memberof CubicBezierCurve
-     * @return {string}  The SVG path data string.
-     **/
-    toSVGPathData() {
-        // var buffer: Array<string> = [];
-        // buffer.push("M ");
-        // buffer.push(this.startPoint.x.toString());
-        // buffer.push(" ");
-        // buffer.push(this.startPoint.y.toString());
-        // buffer.push(" C ");
-        // buffer.push(this.startControlPoint.x.toString());
-        // buffer.push(" ");
-        // buffer.push(this.startControlPoint.y.toString());
-        // buffer.push(" ");
-        // buffer.push(this.endControlPoint.x.toString());
-        // buffer.push(" ");
-        // buffer.push(this.endControlPoint.y.toString());
-        // buffer.push(" ");
-        // buffer.push(this.endPoint.x.toString());
-        // buffer.push(" ");
-        // buffer.push(this.endPoint.y.toString());
-        // return buffer.join("");
-        console.warn("[Deprecation] Warning: the CubicBezierCurve.toSVGPathData method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
-        return "";
     }
     /**
      * Convert this curve to a JSON string.
@@ -3488,19 +4109,201 @@ CubicBezierCurve.START_CONTROL_POINT = 1;
 CubicBezierCurve.END_CONTROL_POINT = 2;
 /** @constant {number} */
 CubicBezierCurve.END_POINT = 3;
+/**
+ * Helper utils.
+ */
+CubicBezierCurve.utils = {
+    evaluateT: (p0, p1, p2, p3, t) => {
+        return p0 * Math.pow(1.0 - t, 3) +
+            p1 * 3 * t * Math.pow(1.0 - t, 2) +
+            p2 * 3 * Math.pow(t, 2) * (1.0 - t) +
+            p3 * Math.pow(t, 3);
+    },
+    cubicPolyMinMax: (p0, p1, p2, p3) => {
+        // var polyX = CubicBezierCurve.utils.cubicPoly2(
+        //   p0, // P[0].X, // bezierCurve.startPoint.x,
+        //   p1, // P[1].X, // bezierCurve.startControlPoint.x,
+        //   p2, // P[2].X, // bezierCurve.endControlPoint.x,
+        //   p3 // P[3].X // bezierCurve.endPoint.x
+        // );
+        // var a = polyX.a;
+        // var b = polyX.b;
+        // var c = polyX.c;
+        // var disc = polyX.b * polyX.b - 4 * polyX.a * polyX.c;
+        var polyX = CubicBezierCurve.utils.cubicPoly(p0, // P[0].X, // bezierCurve.startPoint.x,
+        p1, // P[1].X, // bezierCurve.startControlPoint.x,
+        p2, // P[2].X, // bezierCurve.endControlPoint.x,
+        p3 // P[3].X // bezierCurve.endPoint.x
+        );
+        var a = polyX[0]; // .a;
+        var b = polyX[1]; // .b;
+        var c = polyX[2]; // .c;
+        //alert("a "+a+" "+b+" "+c);
+        // var disc = b * b - 4 * a * c;
+        var disc = polyX[1] * polyX[1] - 4 * polyX[0] * polyX[2];
+        // var polyX = CubicBezierCurve.utils.bezierCoeffs(p3,p2,p1,p0);
+        // var a = polyX[0]; //polyX.a;
+        // var b = polyX[1]; // .b;
+        // var c = polyX[2]; //.c;
+        // var disc = polyX[1] * polyX[1] - 4 * polyX[0] * polyX[2];
+        // var xl = Math.min(bCurve.endPoint.x, bCurve.startPoint.x); // P[0].X;
+        // var xh = Math.max(bCurve.endPoint.x, bCurve.startPoint.x); // P[0].X;
+        var xl = Math.min(p3, p0); // P[0].X;
+        var xh = Math.max(p3, p0); // P[0].X;
+        // if (P[3].X < xl) xl = P[3].X;
+        // if (P[3].X > xh) xh = P[3].X;
+        if (disc >= 0) {
+            var t1 = (-b + Math.sqrt(disc)) / (2 * a);
+            // alert("t1 " + t1);
+            if (t1 > 0 && t1 < 1) {
+                // var x1 = evalBez(PX, t1);
+                // var x1 = bCurve.getPointAt(t1).x;
+                var x1 = CubicBezierCurve.utils.evaluateT(p0, p1, p2, p3, t1); // bCurve.getPointAt(t1).x;
+                if (x1 < xl)
+                    xl = x1;
+                if (x1 > xh)
+                    xh = x1;
+            }
+            var t2 = (-b - Math.sqrt(disc)) / (2 * a);
+            // alert("t2 " + t2);
+            if (t2 > 0 && t2 < 1) {
+                // var x2 = evalBez(PX, t2);
+                // var x2 = bCurve.getPointAt(t2).x;
+                var x2 = CubicBezierCurve.utils.evaluateT(p0, p1, p2, p3, t2); //
+                if (x2 < xl)
+                    xl = x2;
+                if (x2 > xh)
+                    xh = x2;
+            }
+        }
+        return { min: xl, max: xh };
+    },
+    /**
+     * Get the points of a sub curve at the given start end end offsets (values between 0.0 and 1.0).
+     *
+     * tStart >= tEnd is allowed, you will get a reversed sub curve then.
+     *
+     * @method getSubCurvePointsAt
+     * @param {CubicBezierCurve} curve – The curve to get the sub curve points from.
+     * @param {number} tStart – The start offset of the desired sub curve (must be in [0..1]).
+     * @param {number} tEnd – The end offset if the desired cub curve (must be in [0..1]).
+     * @instance
+     * @memberof CubicBezierCurve
+     * @return {CubicBezierCurve} The sub curve as a new curve.
+     **/
+    getSubCurvePointsAt: (curve, tStart, tEnd) => {
+        const startVec = new _Vector__WEBPACK_IMPORTED_MODULE_3__.Vector(curve.getPointAt(tStart), curve.getTangentAt(tStart));
+        const endVec = new _Vector__WEBPACK_IMPORTED_MODULE_3__.Vector(curve.getPointAt(tEnd), curve.getTangentAt(tEnd).inv());
+        // Tangents are relative. Make absolute.
+        startVec.b.add(startVec.a);
+        endVec.b.add(endVec.a);
+        // This 'splits' the curve at the given point at t.
+        startVec.scale(0.33333333 * (tEnd - tStart));
+        endVec.scale(0.33333333 * (tEnd - tStart));
+        return [startVec.a, endVec.a, startVec.b, endVec.b];
+    },
+    /**
+     * Compute the cubic roots for the given cubic polynomial coefficients.
+     *
+     * Based on
+     *   http://mysite.verizon.net/res148h4j/javascript/script_exact_cubic.html#the%20source%20code
+     * Inspired by
+     *   https://www.particleincell.com/2013/cubic-line-intersection/
+     * Thanks to Stephan Schmitt and Particle-In-Cell!
+     *
+     * @param poly
+     * @returns
+     */
+    cubicRoots: (poly) => {
+        const a = poly[0];
+        const b = poly[1];
+        const c = poly[2];
+        const d = poly[3];
+        const A = b / a;
+        const B = c / a;
+        const C = d / a;
+        var S, T, Im;
+        const Q = (3 * B - Math.pow(A, 2)) / 9;
+        const R = (9 * A * B - 27 * C - 2 * Math.pow(A, 3)) / 54;
+        const D = Math.pow(Q, 3) + Math.pow(R, 2); // polynomial discriminant
+        const ts = []; // Array();
+        if (D >= 0) {
+            // complex or duplicate roots
+            S = CubicBezierCurve.utils.sgn(R + Math.sqrt(D)) * Math.pow(Math.abs(R + Math.sqrt(D)), 1 / 3);
+            T = CubicBezierCurve.utils.sgn(R - Math.sqrt(D)) * Math.pow(Math.abs(R - Math.sqrt(D)), 1 / 3);
+            ts[0] = -A / 3 + (S + T); // real root
+            ts[1] = -A / 3 - (S + T) / 2; // real part of complex root
+            ts[2] = -A / 3 - (S + T) / 2; // real part of complex root
+            Im = Math.abs((Math.sqrt(3) * (S - T)) / 2); // complex part of root pair
+            // Mark complex roots to be discarded
+            if (Im != 0) {
+                ts[1] = -1;
+                ts[2] = -1;
+            }
+        } // distinct real roots
+        else {
+            const th = Math.acos(R / Math.sqrt(-Math.pow(Q, 3)));
+            ts[0] = 2 * Math.sqrt(-Q) * Math.cos(th / 3) - A / 3;
+            ts[1] = 2 * Math.sqrt(-Q) * Math.cos((th + 2 * Math.PI) / 3) - A / 3;
+            ts[2] = 2 * Math.sqrt(-Q) * Math.cos((th + 4 * Math.PI) / 3) - A / 3;
+            Im = 0.0;
+        }
+        // Discard all t's out of spec and sort the rest
+        return ts.filter((t) => t >= 0 && t <= 1.0).sort();
+    },
+    /**
+     * Compute the Bézier coefficients from the given Bézier point coordinates.
+     *
+     * @param {number} p0 - The start point coordinate.
+     * @param {number} p1 - The start control point coordinate.
+     * @param {number} p2 - The end control point coordinate.
+     * @param {number} p3 - The end point coordinate.
+     * @returns {[number,number,number,number]}
+     */
+    bezierCoeffs: (p0, p1, p2, p3) => {
+        const coeffs = [NaN, NaN, NaN, NaN]; //Array(4);
+        coeffs[0] = -p0 + 3 * p1 + -3 * p2 + p3;
+        coeffs[1] = 3 * p0 - 6 * p1 + 3 * p2;
+        coeffs[2] = -3 * p0 + 3 * p1;
+        coeffs[3] = p0;
+        return coeffs;
+    },
+    /**
+     * Calculate the cubic polynomial coefficients used to find the bounding box.
+     *
+     * @param {number} p0 - The start point coordinate.
+     * @param {number} p1 - The start control point coordinate.
+     * @param {number} p2 - The end control point coordinate.
+     * @param {number} p3 - The end point coordinate.
+     * @returns {[number,number,number]}
+     */
+    cubicPoly: (p0, p1, p2, p3) => {
+        return [
+            3 * p3 - 9 * p2 + 9 * p1 - 3 * p0,
+            6 * p0 - 12 * p1 + 6 * p2,
+            3 * p1 - 3 * p0
+        ];
+    },
+    /**
+     * sign of number, but is division safe: no zero returned :)
+     */
+    sgn(x) {
+        return x < 0.0 ? -1 : 1;
+    }
+};
 //# sourceMappingURL=CubicBezierCurve.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/Grid.js":
+/***/ "./node_modules/plotboilerplate/src/esm/Grid.js"
 /*!******************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/Grid.js ***!
   \******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Grid": () => (/* binding */ Grid)
+/* harmony export */   Grid: () => (/* binding */ Grid)
 /* harmony export */ });
 /**
  * @author   Ikaros Kappler
@@ -3588,17 +4391,17 @@ Grid.utils = {
 };
 //# sourceMappingURL=Grid.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/KeyHandler.js":
+/***/ "./node_modules/plotboilerplate/src/esm/KeyHandler.js"
 /*!************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/KeyHandler.js ***!
   \************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "KeyHandler": () => (/* binding */ KeyHandler)
+/* harmony export */   KeyHandler: () => (/* binding */ KeyHandler)
 /* harmony export */ });
 /**
  * @author   Ikaros Kappler
@@ -3838,7 +4641,7 @@ class KeyHandler {
  */
 // prettier-ignore
 KeyHandler.KEY_CODES = {
-    'break': 3,
+    'break': 3, // alternate: 19
     'backspace': 8,
     // 'delete'	 : 8, // alternate: 46
     'tab': 9,
@@ -3854,12 +4657,12 @@ KeyHandler.KEY_CODES = {
     'hanja': 25,
     'escape': 27,
     'conversion': 28,
-    'non-conversion': 29,
+    'non-conversion': 29, // alternate: 235?
     'spacebar': 32,
     'pageup': 33,
     'pagedown': 34,
     'end': 35,
-    'home': 36,
+    'home': 36, // alternate: 172?
     'leftarrow': 37,
     'uparrow': 38,
     'rightarrow': 39,
@@ -3869,7 +4672,7 @@ KeyHandler.KEY_CODES = {
     'execute': 43,
     'printscreen': 44,
     'insert': 45,
-    'delete': 46,
+    'delete': 46, // alternate: 8
     'help': 47,
     '0': 48,
     '1': 49,
@@ -3915,11 +4718,11 @@ KeyHandler.KEY_CODES = {
     'y': 89,
     'z': 90,
     'windows': 91,
-    'leftcommand': 91,
+    'leftcommand': 91, // left ⌘
     'chromebooksearch': 91,
     'rightwindowkey': 92,
     'windowsmenu': 93,
-    'rightcommant': 93,
+    'rightcommant': 93, // right ⌘
     'sleep': 95,
     'numpad0': 96,
     'numpad1': 97,
@@ -3933,7 +4736,7 @@ KeyHandler.KEY_CODES = {
     'numpad9': 105,
     'multiply': 106,
     'add': 107,
-    'numpadperiod': 108,
+    'numpadperiod': 108, // firefox, 194 on chrome
     'subtract': 109,
     'decimalpoint': 110,
     'divide': 111,
@@ -3972,11 +4775,11 @@ KeyHandler.KEY_CODES = {
     'pagebackward': 166,
     'pageforward': 167,
     'refresh': 168,
-    'closingparen': 169,
+    'closingparen': 169, // (AZERTY)
     '*': 170,
     '~+*': 171,
     // 'home'	         : 172,
-    'minus': 173,
+    'minus': 173, // firefox
     // 'mute'           : 173,
     // 'unmute'	 : 173,
     'decreasevolumelevel': 174,
@@ -3986,8 +4789,8 @@ KeyHandler.KEY_CODES = {
     'stop': 178,
     'play/pause': 179,
     'email': 180,
-    'mute': 181,
-    'unmute': 181,
+    'mute': 181, // firefox, alternate: 173
+    'unmute': 181, // alternate: 173?
     //'decreasevolumelevel'	182 // firefox
     //'increasevolumelevel'	183 // firefox
     'semicolon': 186,
@@ -3997,7 +4800,7 @@ KeyHandler.KEY_CODES = {
     'dash': 189,
     'period': 190,
     'forwardslash': 191,
-    'ç': 191,
+    'ç': 191, // 231 alternate?
     'grave accent': 192,
     //'ñ' 192,
     'æ': 192,
@@ -4026,25 +4829,27 @@ KeyHandler.KEY_CODES = {
     'half-width': 243,
     'full-width': 243,
     'kanji': 244,
-    'unlocktrackpad': 251,
+    'unlocktrackpad': 251, // Chrome/Edge
     'toggletouchpad': 255
 };
 //# sourceMappingURL=KeyHandler.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/Line.js":
+/***/ "./node_modules/plotboilerplate/src/esm/Line.js"
 /*!******************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/Line.js ***!
   \******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Line": () => (/* binding */ Line)
+/* harmony export */   Line: () => (/* binding */ Line)
 /* harmony export */ });
-/* harmony import */ var _VertTuple__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VertTuple */ "./node_modules/plotboilerplate/src/esm/VertTuple.js");
-/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
+/* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Vector */ "./node_modules/plotboilerplate/src/esm/Vector.js");
+/* harmony import */ var _VertTuple__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./VertTuple */ "./node_modules/plotboilerplate/src/esm/VertTuple.js");
+/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
 /**
  * @author   Ikaros Kappler
  * @date     2016-03-12
@@ -4060,11 +4865,18 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-03-23 Ported to Typescript from JS.
  * @modified 2020-12-04 The `intersection` function returns undefined if both lines are parallel.
  * @modified 2022-02-02 Added the `destroy` method.
- * @version  2.2.0
+ * @modified 2022-10-09 Changed the actual return value of the `intersection` function to null (was undefined before).
+ * @modified 2022-10-17 Adding these methods from the `PathSegment` interface: getStartPoint, getEndPoint, revert.
+ * @modified 2023-09-25 Changed param type of `intersection()` from Line to VertTuple.
+ * @modified 2025-04-15 Class `Line` now implements interface `Intersectable`.
+ * @modified 2025-04-16 Class `Line` now implements interface `IBounded`.
+ * @version  2.4.0
  *
  * @file Line
  * @public
  **/
+
+
 
 
 /**
@@ -4075,7 +4887,7 @@ __webpack_require__.r(__webpack_exports__);
  *
  * @requires Vertex
  */
-class Line extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
+class Line extends _VertTuple__WEBPACK_IMPORTED_MODULE_2__.VertTuple {
     /**
      * Creates an instance of Line.
      *
@@ -4103,8 +4915,9 @@ class Line extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
     // !!! DO NOT MOVE TO VertTuple
     intersection(line) {
         const denominator = this.denominator(line);
-        if (denominator == 0)
+        if (denominator == 0) {
             return null;
+        }
         let a = this.a.y - line.a.y;
         let b = this.a.x - line.a.x;
         const numerator1 = (line.b.x - line.a.x) * a - (line.b.y - line.a.y) * b;
@@ -4115,53 +4928,138 @@ class Line extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
         const x = this.a.x + a * (this.b.x - this.a.x);
         const y = this.a.y + a * (this.b.y - this.a.y);
         if (isNaN(a) || isNaN(x) || isNaN(y)) {
-            return undefined;
+            return null;
         }
         // if we cast these lines infinitely in both directions, they intersect here:
-        return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(x, y);
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(x, y);
     }
+    //--- BEGIN --- Implement interface `IBounded`
     /**
-     * Create an SVG representation of this line.
+     * Get the bounding box (bounds) of this Line.
      *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGString
-     * @param {options} p - A set of options, like the 'classname' to use
-     *                      for the line object.
-     * @return {string} The SVG string representing this line.
+     * @method getBounds
      * @instance
      * @memberof Line
+     * @return {Bounds} The rectangular bounds of this Line.
      **/
-    toSVGString(options) {
-        // options = options || {};
-        // var buffer = [];
-        // buffer.push( '<line' );
-        // if( options.className )
-        // buffer.push( ' class="' + options.className + '"' );
-        // buffer.push( ' x1="' + this.a.x + '"' );
-        // buffer.push( ' y1="' + this.a.y + '"' );
-        // buffer.push( ' x2="' + this.b.x + '"' );
-        // buffer.push( ' y2="' + this.b.y + '"' );
-        // buffer.push( ' />' );
-        // return buffer.join('');
-        console.warn("[Deprecation] Warning: the Line.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
-        return "";
+    getBounds() {
+        return _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds.computeFromVertices([this.a, this.b]);
+    }
+    //--- END --- Implement interface `IBounded`
+    //--- Implement PathSegment ---
+    /**
+     * Get the start point of this path segment.
+     *
+     * @method getStartPoint
+     * @memberof PathSegment
+     * @return {Vertex} The start point of this path segment.
+     */
+    getStartPoint() {
+        return this.a;
+    }
+    /**
+     * Get the end point of this path segment.
+     *
+     * @method getEndPoint
+     * @memberof PathSegment
+     * @return {Vertex} The end point of this path segment.
+     */
+    getEndPoint() {
+        return this.b;
+    }
+    /**
+     * Get the tangent's end point at the start point of this segment.
+     *
+     * @method getStartTangent
+     * @memberof PathSegment
+     * @return {Vertex} The end point of the starting point's tangent.
+     */
+    getStartTangent() {
+        return this.b;
+    }
+    /**
+     * Get the tangent's end point at the end point of this segment.
+     *
+     * @method getEndTangent
+     * @memberof PathSegment
+     * @return {Vertex} The end point of the ending point's tangent.
+     */
+    getEndTangent() {
+        return this.a;
+    }
+    /**
+     * Inverse this path segment (in-place) and return this same instance (useful for chaining).
+     *
+     * @method reverse
+     * @memberof PathSegment
+     * @return {PathSegment} This path segment instance (for chaining).
+     */
+    reverse() {
+        var tmp = this.a;
+        this.a = this.b;
+        this.b = tmp;
+        return this;
+    }
+    //--- END Implement PathSegment ---
+    //--- BEGIN --- Implement interface `Intersectable`
+    /**
+     * Get all line intersections with this polygon.
+     *
+     * This method returns all intersections (as vertices) with this shape. The returned array of vertices is in no specific order.
+     *
+     * See demo `47-closest-vector-projection-on-polygon` for how it works.
+     *
+     * @param {VertTuple} line - The line to find intersections with.
+     * @param {boolean} inVectorBoundsOnly - If set to true only intersecion points on the passed vector are returned (located strictly between start and end vertex).
+     * @returns {Array<Vertex>} - An array of all intersections within the polygon bounds.
+     */
+    lineIntersections(line, inVectorBoundsOnly = false) {
+        // Find the intersections of all lines inside the edge bounds
+        const intersection = this.intersection(line);
+        if (!intersection) {
+            return []; // Both lines parallel
+        }
+        if (this.hasPoint(intersection, true) && (!inVectorBoundsOnly || line.hasPoint(intersection, inVectorBoundsOnly))) {
+            return [intersection];
+        }
+        else {
+            return [];
+        }
+    }
+    /**
+     * Get all line intersections of this polygon and their tangents along the shape.
+     *
+     * This method returns all intersection tangents (as vectors) with this shape. The returned array of vectors is in no specific order.
+     *
+     * @param line
+     * @param inVectorBoundsOnly
+     * @returns
+     */
+    lineIntersectionTangents(line, inVectorBoundsOnly = false) {
+        // Find the intersection tangents of all lines inside the edge bounds
+        const intersections = this.lineIntersections(line, inVectorBoundsOnly);
+        if (intersections.length === 0) {
+            return [];
+        }
+        const intrsctn = intersections[0];
+        return [new _Vector__WEBPACK_IMPORTED_MODULE_1__.Vector(this.a.clone(), this.b.clone()).moveTo(intrsctn)];
     }
 }
 //# sourceMappingURL=Line.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/MouseHandler.js":
+/***/ "./node_modules/plotboilerplate/src/esm/MouseHandler.js"
 /*!**************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/MouseHandler.js ***!
   \**************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "XMouseEvent": () => (/* binding */ XMouseEvent),
-/* harmony export */   "XWheelEvent": () => (/* binding */ XWheelEvent),
-/* harmony export */   "MouseHandler": () => (/* binding */ MouseHandler)
+/* harmony export */   MouseHandler: () => (/* binding */ MouseHandler),
+/* harmony export */   XMouseEvent: () => (/* binding */ XMouseEvent),
+/* harmony export */   XWheelEvent: () => (/* binding */ XWheelEvent)
 /* harmony export */ });
 /**
  * @author   Ikaros Kappler
@@ -4182,7 +5080,8 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-10-04 Added extended JSDoc comments.
  * @modified 2020-11-25 Added the `isTouchEvent` param.
  * @modified 2021-01-10 The mouse handler is now also working with SVGElements.
- * @version  1.2.0
+ * @modified 2022-08-16 Fixed a bug in the mouse button detection.
+ * @version  1.2.1
  *
  * @file MouseHandler
  * @public
@@ -4272,8 +5171,8 @@ class MouseHandler {
         // +-------------------------------------------------
         this.name = name;
         this.element = element;
-        this.mouseDownPos = null;
-        this.mouseDragPos = null;
+        this.mouseDownPos = undefined;
+        this.mouseDragPos = undefined;
         // this.mousePos     = null;
         this.mouseButton = -1;
         this.listeners = {};
@@ -4342,26 +5241,27 @@ class MouseHandler {
      * @memberof MouseHandler
      * @instance
      * @private
-     * @param {MouseEvent} e - The mouse event to get the relative position for.
+     * @param {MouseEvent} event - The mouse event to get the relative position for.
      * @param {string} eventName - The name of the firing event.
      * @return {XMouseEvent}
      */
-    mkParams(e, eventName) {
-        const rel = this.relPos(e);
-        const xEvent = e;
+    mkParams(event, eventName) {
+        var _a, _b;
+        const rel = this.relPos(event);
+        const xEvent = event;
         xEvent.params = {
             element: this.element,
             name: eventName,
             isTouchEvent: false,
             pos: rel,
-            button: this.mouseButton,
-            leftButton: this.mouseButton == 0,
-            middleButton: this.mouseButton == 1,
-            rightButton: this.mouseButton == 2,
-            mouseDownPos: this.mouseDownPos,
-            draggedFrom: this.mouseDragPos,
+            button: event.button, // this.mouseButton,
+            leftButton: event.button === 0, // this.mouseButton === 0,
+            middleButton: event.button === 1, // this.mouseButton === 1,
+            rightButton: event.button === 2, // this.mouseButton === 2,
+            mouseDownPos: (_a = this.mouseDownPos) !== null && _a !== void 0 ? _a : { x: NaN, y: NaN },
+            draggedFrom: (_b = this.mouseDragPos) !== null && _b !== void 0 ? _b : { x: NaN, y: NaN },
             wasDragged: this.mouseDownPos != null && (this.mouseDownPos.x != rel.x || this.mouseDownPos.y != rel.y),
-            dragAmount: this.mouseDownPos != null ? { x: rel.x - this.mouseDragPos.x, y: rel.y - this.mouseDragPos.y } : { x: 0, y: 0 }
+            dragAmount: this.mouseDragPos != null ? { x: rel.x - this.mouseDragPos.x, y: rel.y - this.mouseDragPos.y } : { x: 0, y: 0 }
         };
         return xEvent;
     }
@@ -4553,17 +5453,17 @@ class MouseHandler {
 }
 //# sourceMappingURL=MouseHandler.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/PBImage.js":
+/***/ "./node_modules/plotboilerplate/src/esm/PBImage.js"
 /*!*********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/PBImage.js ***!
   \*********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "PBImage": () => (/* binding */ PBImage)
+/* harmony export */   PBImage: () => (/* binding */ PBImage)
 /* harmony export */ });
 /* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
 /**
@@ -4611,20 +5511,6 @@ class PBImage {
         this.lowerRight = lowerRight;
     }
     /**
-     * Convert this vertex to SVG code.
-     *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGString
-     * @param {object=} options - An optional set of options, like 'className'.
-     * @return {string} A string representing the SVG code for this vertex.
-     * @instance
-     * @memberof PBImage
-     **/
-    toSVGString(options) {
-        console.warn("PBImage is not yet SVG serializable. Returning empty SVG string.");
-        return "";
-    }
-    /**
      * This function should invalidate any installed listeners and invalidate this object.
      * After calling this function the object might not hold valid data any more and
      * should not be used.
@@ -4637,17 +5523,17 @@ class PBImage {
 }
 //# sourceMappingURL=PBImage.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/PBText.js":
+/***/ "./node_modules/plotboilerplate/src/esm/PBText.js"
 /*!********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/PBText.js ***!
   \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "PBText": () => (/* binding */ PBText)
+/* harmony export */   PBText: () => (/* binding */ PBText)
 /* harmony export */ });
 /* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
 /* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
@@ -4655,7 +5541,8 @@ __webpack_require__.r(__webpack_exports__);
  * @author   Ikaros Kappler
  * @date     2021-11-16
  * @modified 2022-02-02 Added the `destroy` method.
- * @version  1.1.0
+ * @modified 2023-09-25 Fixed a type error in the constructor. Nothing vital.
+ * @version  1.1.1
  **/
 
 
@@ -4688,28 +5575,14 @@ class PBText {
         this.uid = _UIDGenerator__WEBPACK_IMPORTED_MODULE_0__.UIDGenerator.next();
         this.text = text;
         this.anchor = anchor !== null && anchor !== void 0 ? anchor : new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex();
-        this.color = options.color;
-        this.fontFamily = options.fontFamily;
-        this.fontSize = options.fontSize;
-        this.fontStyle = options.fontStyle;
-        this.fontWeight = options.fontWeight;
-        this.lineHeight = options.lineHeight;
-        this.textAlign = options.textAlign;
-        this.rotation = options.rotation;
-    }
-    /**
-     * Create an SVG representation of this circle.
-     *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGString
-     * @param {object=} options - An optional set of options, like 'className'.
-     * @return {string} A string representing the SVG code for this vertex.
-     * @instance
-     * @memberof Circle
-     */
-    toSVGString(options) {
-        console.warn("[PBText.toSVGString()] This function is not implemented as it defines a deprecated method. Use the 'drawutilssvg.text()' method instead.");
-        return "";
+        this.color = options === null || options === void 0 ? void 0 : options.color;
+        this.fontFamily = options === null || options === void 0 ? void 0 : options.fontFamily;
+        this.fontSize = options === null || options === void 0 ? void 0 : options.fontSize;
+        this.fontStyle = options === null || options === void 0 ? void 0 : options.fontStyle;
+        this.fontWeight = options === null || options === void 0 ? void 0 : options.fontWeight;
+        this.lineHeight = options === null || options === void 0 ? void 0 : options.lineHeight;
+        this.textAlign = options === null || options === void 0 ? void 0 : options.textAlign;
+        this.rotation = options === null || options === void 0 ? void 0 : options.rotation;
     }
     /**
      * This function should invalidate any installed listeners and invalidate this object.
@@ -4723,17 +5596,17 @@ class PBText {
 } // END class
 //# sourceMappingURL=PBText.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/PlotBoilerplate.js":
+/***/ "./node_modules/plotboilerplate/src/esm/PlotBoilerplate.js"
 /*!*****************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/PlotBoilerplate.js ***!
   \*****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "PlotBoilerplate": () => (/* binding */ PlotBoilerplate),
+/* harmony export */   PlotBoilerplate: () => (/* binding */ PlotBoilerplate),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var alloyfinger_typescript__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alloyfinger-typescript */ "./node_modules/alloyfinger-typescript/src/esm/index.js");
@@ -4833,12 +5706,34 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-03-29 Clearing `currentClassName` and `currentId` after drawing each drawable.
  * @modified 2021-04-25 Extending `remove` to accept arrays of drawables.
  * @modified 2021-11-16 Adding the `PBText` drawable.
- * @version  1.15.0
+ * @modified 2022-08-01 Added `title` to the params.
+ * @modified 2022-10-25 Added the `origin` to the default draw config.
+ * @modified 2022-11-06 Adding an XML declaration to the SVG export routine.
+ * @modified 2022-11-23 Added the `drawRaster` (default=true) option to the config/drawconfig.
+ * @modified 2023-02-04 Fixed a bug in the `drawDrawable` function; fill's current classname was not set.
+ * @modified 2023-02-10 Fixing an issue of the `style.position` setting when `fitToParent=true` from `absolute` to `static` (default).
+ * @modified 2023-02-10 Cleaning up most type errors in the main class (mostly null checks).
+ * @modified 2023-02-10 Adding `enableZoom` and `enablePan` (both default true) to have the option to disable these functions.
+ * @modified 2023-09-29 Adding proper dicionary key and value types to the params of `PlotBoilerplate.utils.safeMergeByKeys` (was `object` before).
+ * @modified 2024-07-08 Adding `PlotBoilerplate.getGUI()` to retrieve the GUI instance.
+ * @modified 2024-08-25 Extending main class `PlotBoilerplate` optional param `isBackdropFiltersEnabled`.
+ * @modified 2024-12-02 Adding the `triggerRedraw` to the `removeAll` method.
+ * @modified 2025-05-07 Changing the return type of `removeVertex` from `void` to `boolean`.
+ * @modified 2025-05-07 Handling content changes now with `contentChangeListeners`.
+ * @modified 2025-05-07 Added `PlogBoilerplate.addContentChangeListener` and `.removeContentChangeListener`.
+ * @modified 2025-05-07 Moving full vectors now by default when vector point a is moved.
+ * @modified 2025-05-20 Applying `lineWith` parameter in the draw routine for vectors (had been missing).
+ *
+ * @version  1.21.1
  *
  * @file PlotBoilerplate
  * @fileoverview The main class.
  * @public
  **/
+var __setFunctionName = (undefined && undefined.__setFunctionName) || function (f, name, prefix) {
+    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+};
 var _a;
 
 
@@ -4944,11 +5839,19 @@ class PlotBoilerplate {
      * @param {boolean=} [config.enableTouch=true] - Indicates if the application should handle touch events for you.
      * @param {boolean=} [config.enableKeys=true] - Indicates if the application should handle key events for you.
      * @param {boolean=} [config.enableMouseWheel=true] - Indicates if the application should handle mouse wheel events for you.
+     * @param {boolean=} [config.enablePan=true] - (default true) Set to false if you want to disable panning completely.
+     * @param {boolean=} [config.enableZoom=true] - (default true) Set to false if you want to disable zooming completely.
      * @param {boolean=} [config.enableGL=false] - Indicates if the application should use the experimental WebGL features (not recommended).
      * @param {boolean=} [config.enableSVGExport=true] - Indicates if the SVG export should be enabled (default is true).
      *                                                   Note that changes from the postDraw hook might not be visible in the export.
+     * @param {string=} [config.title=null] - Specify any hover tile here. It will be attached as a `title` attribute to the most elevated element.
      */
-    constructor(config) {
+    constructor(config, drawConfig) {
+        var _b, _c;
+        /**
+         * A list of content change listeners.
+         */
+        this.contentChangeListeners = [];
         /**
          * A discrete timestamp to identify single render cycles.
          * Note that using system time milliseconds is not a safe way to identify render frames, as on modern powerful machines
@@ -4959,6 +5862,10 @@ class PlotBoilerplate {
          * @private
          */
         this.renderTime = 0;
+        /**
+         * A storage variable for retrieving the GUI instance once it was created.
+         */
+        this._gui = null;
         // This should be in some static block ...
         _VertexAttr__WEBPACK_IMPORTED_MODULE_19__.VertexAttr.model = {
             bezierAutoAdjust: false,
@@ -4968,7 +5875,7 @@ class PlotBoilerplate {
             draggable: true,
             visible: true
         };
-        if (typeof config.canvas == "undefined") {
+        if (typeof config.canvas === "undefined") {
             throw "No canvas specified.";
         }
         /**
@@ -4988,6 +5895,7 @@ class PlotBoilerplate {
             offsetX: f.num(config, "offsetX", 0.0),
             offsetY: f.num(config, "offsetY", 0.0),
             rasterGrid: f.bool(config, "rasterGrid", true),
+            drawRaster: f.bool(config, "drawRaster", true),
             rasterScaleX: f.num(config, "rasterScaleX", 1.0),
             rasterScaleY: f.num(config, "rasterScaleY", 1.0),
             rasterAdjustFactor: f.num(config, "rasterAdjustdFactror", 2.0),
@@ -5021,8 +5929,11 @@ class PlotBoilerplate {
             enableTouch: f.bool(config, "enableTouch", true),
             enableKeys: f.bool(config, "enableKeys", true),
             enableMouseWheel: f.bool(config, "enableMouseWheel", true),
+            enableZoom: f.bool(config, "enableZoom", true), // default=true
+            enablePan: f.bool(config, "enablePan", true), // default=true
             // Experimental (and unfinished)
-            enableGL: f.bool(config, "enableGL", false)
+            enableGL: f.bool(config, "enableGL", false),
+            isBackdropFiltersEnabled: f.bool(config, "isBackdropFiltersEnabled", true)
         }; // END confog
         /**
          * Configuration for drawing things.
@@ -5038,6 +5949,7 @@ class PlotBoilerplate {
             drawHandleLines: f.bool(config, "drawHandleLines", true),
             drawHandlePoints: f.bool(config, "drawHandlePoints", true),
             drawGrid: f.bool(config, "drawGrid", true),
+            drawRaster: f.bool(config, "drawRaster", true),
             bezier: {
                 color: "#00a822",
                 lineWidth: 2,
@@ -5056,6 +5968,10 @@ class PlotBoilerplate {
                     fill: true
                 }
             },
+            // bezierPath: {
+            //   color: "#0022a8",
+            //   lineWidth: 1
+            // },
             polygon: {
                 color: "#0022a8",
                 lineWidth: 1
@@ -5105,6 +6021,9 @@ class PlotBoilerplate {
                 lineWidth: 1,
                 fill: true,
                 anchor: true
+            },
+            origin: {
+                color: "#000000"
             }
         }; // END drawConfig
         // +---------------------------------------------------------------------------------
@@ -5112,7 +6031,10 @@ class PlotBoilerplate {
         // +-------------------------------
         this.grid = new _Grid__WEBPACK_IMPORTED_MODULE_8__.Grid(new _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex(0, 0), new _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex(50, 50));
         this.canvasSize = { width: PlotBoilerplate.DEFAULT_CANVAS_WIDTH, height: PlotBoilerplate.DEFAULT_CANVAS_HEIGHT };
-        const canvasElement = typeof config.canvas == "string" ? document.querySelector(config.canvas) : config.canvas;
+        const canvasElement = typeof config.canvas === "string" ? document.querySelector(config.canvas) : config.canvas;
+        if (typeof canvasElement === "undefined") {
+            throw `Cannot initialize PlotBoilerplate with a null canvas (element "${config.canvas} not found).`;
+        }
         // Which renderer to use: Canvas2D, WebGL (experimental) or SVG?
         if (canvasElement.tagName.toLowerCase() === "canvas") {
             this.canvas = canvasElement;
@@ -5123,6 +6045,7 @@ class PlotBoilerplate {
                 this.config.enableGL = false;
             }
             if (this.config.enableGL) {
+                // Override the case 'null' here. If GL is not supported, well then nothing works.
                 const ctx = this.canvas.getContext("webgl"); // webgl-experimental?
                 this.draw = new _drawgl__WEBPACK_IMPORTED_MODULE_2__.drawutilsgl(ctx, false);
                 // PROBLEM: same instance of fill and draw when using WebGL.
@@ -5131,6 +6054,7 @@ class PlotBoilerplate {
                 console.warn("Initialized with experimental mode enableGL=true. Note that this is not yet fully implemented.");
             }
             else {
+                // Override the case 'null' here. If context creation is not supported, well then nothing works.
                 const ctx = this.canvas.getContext("2d");
                 this.draw = new _draw__WEBPACK_IMPORTED_MODULE_1__.drawutils(ctx, false);
                 this.fill = new _draw__WEBPACK_IMPORTED_MODULE_1__.drawutils(ctx, true);
@@ -5162,8 +6086,13 @@ class PlotBoilerplate {
         else {
             throw "Element is neither a canvas nor an svg element.";
         }
-        this.draw.scale.set(this.config.scaleX, this.config.scaleY);
-        this.fill.scale.set(this.config.scaleX, this.config.scaleY);
+        // At this point the event cacher element is deinfed and located at highest elevation.
+        // Set `title` attribut?
+        if (config.title) {
+            this.eventCatcher.setAttribute("title", config.title);
+        }
+        this.draw.scale.set((_b = this.config.scaleX) !== null && _b !== void 0 ? _b : 1.0, this.config.scaleY);
+        this.fill.scale.set((_c = this.config.scaleX) !== null && _c !== void 0 ? _c : 1.0, this.config.scaleY);
         this.vertices = [];
         this.selectPolygon = null;
         this.draggedElements = [];
@@ -5208,11 +6137,13 @@ class PlotBoilerplate {
         var tosvgFill = tosvgDraw.copyInstance(true); // fillShapes=true
         tosvgDraw.beginDrawCycle(0);
         tosvgFill.beginDrawCycle(0);
-        if (pb.config.preClear)
+        if (pb.config.preClear) {
             pb.config.preClear();
-        tosvgDraw.clear(pb.config.backgroundColor);
-        if (pb.config.preDraw)
+        }
+        tosvgDraw.clear(pb.config.backgroundColor || "white");
+        if (pb.config.preDraw) {
             pb.config.preDraw(tosvgDraw, tosvgFill);
+        }
         pb.drawAll(0, tosvgDraw, tosvgFill);
         pb.drawVertices(0, tosvgDraw);
         if (pb.config.postDraw)
@@ -5223,11 +6154,13 @@ class PlotBoilerplate {
         //    https://caniuse.com/xml-serializer
         var serializer = new XMLSerializer();
         var svgCode = serializer.serializeToString(svgNode);
-        var blob = new Blob([svgCode], { type: "image/svg;charset=utf-8" });
+        // Add: '<?xml version="1.0" encoding="utf-8"?>\n' ?
+        var blob = new Blob(['<?xml version="1.0" encoding="utf-8"?>\n' + svgCode], { type: "image/svg;charset=utf-8" });
         // See documentation for FileSaver.js for usage.
         //    https://github.com/eligrey/FileSaver.js
-        if (typeof globalThis["saveAs"] !== "function")
+        if (typeof globalThis["saveAs"] !== "function") {
             throw "Cannot save file; did you load the ./utils/savefile helper function and the eligrey/SaveFile library?";
+        }
         var _saveAs = globalThis["saveAs"];
         _saveAs(blob, "plotboilerplate.svg");
     }
@@ -5298,11 +6231,58 @@ class PlotBoilerplate {
      * @private
      **/
     updateCSSscale() {
+        var _b, _c, _d, _e;
         if (this.config.cssUniformScale) {
-            PlotBoilerplate.utils.setCSSscale(this.canvas, this.config.cssScaleX, this.config.cssScaleX);
+            PlotBoilerplate.utils.setCSSscale(this.canvas, (_b = this.config.cssScaleX) !== null && _b !== void 0 ? _b : 1.0, (_c = this.config.cssScaleX) !== null && _c !== void 0 ? _c : 1.0);
         }
         else {
-            PlotBoilerplate.utils.setCSSscale(this.canvas, this.config.cssScaleX, this.config.cssScaleY);
+            PlotBoilerplate.utils.setCSSscale(this.canvas, (_d = this.config.cssScaleX) !== null && _d !== void 0 ? _d : 1.0, (_e = this.config.cssScaleY) !== null && _e !== void 0 ? _e : 1.0);
+        }
+    }
+    /**
+     * Adds a new content change listener to this instance. Adding duplicates is not possible.
+     *
+     * @param {PBContentChangeListener} listener - The listenre to add.
+     * @method addContentChangeListener
+     * @instance
+     * @memberof PlotBoilerplate
+     * @returns {void}
+     */
+    addContentChangeListener(listener) {
+        for (var i in this.contentChangeListeners) {
+            if (this.contentChangeListeners[i] === listener) {
+                return;
+            }
+        }
+        this.contentChangeListeners.push(listener);
+    }
+    /**
+     * Removes an existing content change listener from this instance.
+     *
+     * @param {PBContentChangeListener} listener - The listenre to add.
+     * @method removeContentChangeListener
+     * @instance
+     * @memberof PlotBoilerplate
+     * @returns {void}
+     */
+    removeContentChangeListener(listener) {
+        for (var i = 0; i < this.contentChangeListeners.length; i++) {
+            if (this.contentChangeListeners[i] === listener) {
+                this.contentChangeListeners.splice(i, 1);
+                return;
+            }
+        }
+    }
+    _fireContentChanged(addedDrawables, removedDrawables) {
+        for (var i in this.contentChangeListeners) {
+            const listener = this.contentChangeListeners[i];
+            if (listener && typeof listener === "function") {
+                listener({
+                    type: addedDrawables.length > 0 ? "DRAWABLES_ADDED" : "DRAWABLES_REMOVED",
+                    addedDrawables: addedDrawables,
+                    removedDrawables: removedDrawables
+                });
+            }
         }
     }
     /**
@@ -5329,100 +6309,121 @@ class PlotBoilerplate {
      * @memberof PlotBoilerplate
      * @return {void}
      **/
-    add(drawable, redraw) {
+    add(drawable, redraw, doNotFireEvent) {
         if (Array.isArray(drawable)) {
             const arr = drawable;
             for (var i = 0; i < arr.length; i++) {
-                this.add(arr[i], false);
+                this.add(arr[i], false, doNotFireEvent);
             }
-        }
-        else if (drawable instanceof _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex) {
-            this.drawables.push(drawable);
-            this.vertices.push(drawable);
-        }
-        else if (drawable instanceof _Line__WEBPACK_IMPORTED_MODULE_10__.Line) {
-            // Add some lines
-            this.drawables.push(drawable);
-            this.vertices.push(drawable.a);
-            this.vertices.push(drawable.b);
-        }
-        else if (drawable instanceof _Vector__WEBPACK_IMPORTED_MODULE_17__.Vector) {
-            this.drawables.push(drawable);
-            this.vertices.push(drawable.a);
-            this.vertices.push(drawable.b);
-        }
-        else if (drawable instanceof _VEllipse__WEBPACK_IMPORTED_MODULE_15__.VEllipse) {
-            this.vertices.push(drawable.center);
-            this.vertices.push(drawable.axis);
-            this.drawables.push(drawable);
-            drawable.center.listeners.addDragListener((event) => {
-                drawable.axis.add(event.params.dragAmount);
-            });
-        }
-        else if (drawable instanceof _VEllipseSector__WEBPACK_IMPORTED_MODULE_16__.VEllipseSector) {
-            this.vertices.push(drawable.ellipse.center);
-            this.vertices.push(drawable.ellipse.axis);
-            this.drawables.push(drawable);
-            drawable.ellipse.center.listeners.addDragListener((event) => {
-                drawable.ellipse.axis.add(event.params.dragAmount);
-            });
-        }
-        else if (drawable instanceof _Circle__WEBPACK_IMPORTED_MODULE_6__.Circle) {
-            this.vertices.push(drawable.center);
-            this.drawables.push(drawable);
-        }
-        else if (drawable instanceof _CircleSector__WEBPACK_IMPORTED_MODULE_7__.CircleSector) {
-            this.vertices.push(drawable.circle.center);
-            this.drawables.push(drawable);
-        }
-        else if (drawable instanceof _Polygon__WEBPACK_IMPORTED_MODULE_13__.Polygon) {
-            this.drawables.push(drawable);
-            for (var i = 0; i < drawable.vertices.length; i++) {
-                this.vertices.push(drawable.vertices[i]);
-            }
-        }
-        else if (drawable instanceof _Triangle__WEBPACK_IMPORTED_MODULE_14__.Triangle) {
-            this.drawables.push(drawable);
-            this.vertices.push(drawable.a);
-            this.vertices.push(drawable.b);
-            this.vertices.push(drawable.c);
-        }
-        else if (drawable instanceof _BezierPath__WEBPACK_IMPORTED_MODULE_4__.BezierPath) {
-            this.drawables.push(drawable);
-            const bezierPath = drawable;
-            for (var i = 0; i < bezierPath.bezierCurves.length; i++) {
-                if (!drawable.adjustCircular && i == 0) {
-                    this.vertices.push(bezierPath.bezierCurves[i].startPoint);
-                }
-                this.vertices.push(bezierPath.bezierCurves[i].endPoint);
-                this.vertices.push(bezierPath.bezierCurves[i].startControlPoint);
-                this.vertices.push(bezierPath.bezierCurves[i].endControlPoint);
-                bezierPath.bezierCurves[i].startControlPoint.attr.selectable = false;
-                bezierPath.bezierCurves[i].endControlPoint.attr.selectable = false;
-            }
-            PlotBoilerplate.utils.enableBezierPathAutoAdjust(drawable);
-        }
-        else if (drawable instanceof _PBImage__WEBPACK_IMPORTED_MODULE_12__.PBImage) {
-            this.vertices.push(drawable.upperLeft);
-            this.vertices.push(drawable.lowerRight);
-            this.drawables.push(drawable);
-            // Todo: think about a IDragEvent interface
-            drawable.upperLeft.listeners.addDragListener((e) => {
-                drawable.lowerRight.add(e.params.dragAmount);
-            });
-            drawable.lowerRight.attr.selectable = false;
-        }
-        else if (drawable instanceof _PBText__WEBPACK_IMPORTED_MODULE_20__.PBText) {
-            this.vertices.push(drawable.anchor);
-            this.drawables.push(drawable);
-            drawable.anchor.attr.selectable = false;
+            // !doNotFireEvent && this._fireContentChanged(arr, []);
         }
         else {
-            throw "Cannot add drawable of unrecognized type: " + typeof drawable + ".";
+            const addedDrawables = [drawable];
+            if (drawable instanceof _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex) {
+                this.drawables.push(drawable);
+                this.vertices.push(drawable);
+            }
+            else if (drawable instanceof _Line__WEBPACK_IMPORTED_MODULE_10__.Line) {
+                // Add some lines
+                this.drawables.push(drawable);
+                this.vertices.push(drawable.a);
+                this.vertices.push(drawable.b);
+                addedDrawables.push(drawable.a, drawable.b);
+            }
+            else if (drawable instanceof _Vector__WEBPACK_IMPORTED_MODULE_17__.Vector) {
+                this.drawables.push(drawable);
+                this.vertices.push(drawable.a);
+                this.vertices.push(drawable.b);
+                addedDrawables.push(drawable.a, drawable.b);
+                drawable.a.listeners.addDragListener((event) => {
+                    drawable.b.add(event.params.dragAmount);
+                });
+            }
+            else if (drawable instanceof _VEllipse__WEBPACK_IMPORTED_MODULE_15__.VEllipse) {
+                this.vertices.push(drawable.center);
+                this.vertices.push(drawable.axis);
+                addedDrawables.push(drawable.center, drawable.axis);
+                this.drawables.push(drawable);
+                drawable.center.listeners.addDragListener((event) => {
+                    drawable.axis.add(event.params.dragAmount);
+                });
+            }
+            else if (drawable instanceof _VEllipseSector__WEBPACK_IMPORTED_MODULE_16__.VEllipseSector) {
+                this.vertices.push(drawable.ellipse.center);
+                this.vertices.push(drawable.ellipse.axis);
+                addedDrawables.push(drawable.ellipse.center, drawable.ellipse.axis);
+                this.drawables.push(drawable);
+                drawable.ellipse.center.listeners.addDragListener((event) => {
+                    drawable.ellipse.axis.add(event.params.dragAmount);
+                });
+            }
+            else if (drawable instanceof _Circle__WEBPACK_IMPORTED_MODULE_6__.Circle) {
+                this.vertices.push(drawable.center);
+                addedDrawables.push(drawable.center);
+                this.drawables.push(drawable);
+            }
+            else if (drawable instanceof _CircleSector__WEBPACK_IMPORTED_MODULE_7__.CircleSector) {
+                this.vertices.push(drawable.circle.center);
+                addedDrawables.push(drawable.circle.center);
+                this.drawables.push(drawable);
+            }
+            else if (drawable instanceof _Polygon__WEBPACK_IMPORTED_MODULE_13__.Polygon) {
+                this.drawables.push(drawable);
+                for (var i = 0; i < drawable.vertices.length; i++) {
+                    this.vertices.push(drawable.vertices[i]);
+                    addedDrawables.push(drawable.vertices[i]);
+                }
+            }
+            else if (drawable instanceof _Triangle__WEBPACK_IMPORTED_MODULE_14__.Triangle) {
+                this.drawables.push(drawable);
+                this.vertices.push(drawable.a);
+                this.vertices.push(drawable.b);
+                this.vertices.push(drawable.c);
+                addedDrawables.push(drawable.a, drawable.b, drawable.c);
+            }
+            else if (drawable instanceof _BezierPath__WEBPACK_IMPORTED_MODULE_4__.BezierPath) {
+                this.drawables.push(drawable);
+                const bezierPath = drawable;
+                for (var i = 0; i < bezierPath.bezierCurves.length; i++) {
+                    if (!drawable.adjustCircular && i == 0) {
+                        this.vertices.push(bezierPath.bezierCurves[i].startPoint);
+                        addedDrawables.push(bezierPath.bezierCurves[i].startPoint);
+                    }
+                    this.vertices.push(bezierPath.bezierCurves[i].endPoint);
+                    this.vertices.push(bezierPath.bezierCurves[i].startControlPoint);
+                    this.vertices.push(bezierPath.bezierCurves[i].endControlPoint);
+                    addedDrawables.push(bezierPath.bezierCurves[i].endPoint, bezierPath.bezierCurves[i].startControlPoint, bezierPath.bezierCurves[i].endControlPoint);
+                    bezierPath.bezierCurves[i].startControlPoint.attr.selectable = false;
+                    bezierPath.bezierCurves[i].endControlPoint.attr.selectable = false;
+                }
+                PlotBoilerplate.utils.enableBezierPathAutoAdjust(drawable);
+            }
+            else if (drawable instanceof _PBImage__WEBPACK_IMPORTED_MODULE_12__.PBImage) {
+                this.vertices.push(drawable.upperLeft);
+                this.vertices.push(drawable.lowerRight);
+                addedDrawables.push(drawable.upperLeft, drawable.lowerRight);
+                this.drawables.push(drawable);
+                // Todo: think about a IDragEvent interface
+                drawable.upperLeft.listeners.addDragListener((e) => {
+                    drawable.lowerRight.add(e.params.dragAmount);
+                });
+                drawable.lowerRight.attr.selectable = false;
+            }
+            else if (drawable instanceof _PBText__WEBPACK_IMPORTED_MODULE_20__.PBText) {
+                this.vertices.push(drawable.anchor);
+                addedDrawables.push(drawable.anchor);
+                this.drawables.push(drawable);
+                drawable.anchor.attr.selectable = false;
+            }
+            else {
+                throw "Cannot add drawable of unrecognized type: " + typeof drawable + ".";
+            }
+            !doNotFireEvent && this._fireContentChanged(addedDrawables, []);
         }
         // This is a workaround for backwards compatibility when the 'redraw' param was not yet present.
-        if (redraw || typeof redraw == "undefined")
+        if (redraw || typeof redraw == "undefined") {
             this.redraw();
+        }
     }
     /**
      * Remove a drawable object.<br>
@@ -5442,88 +6443,113 @@ class PlotBoilerplate {
      *
      * @param {Drawable|Array<Drawable>} drawable - The drawable (of one of the allowed class instance) to remove.
      * @param {boolean} [redraw=false]
+     * @param {removeWidth}
      * @method remove
      * @instance
      * @memberof PlotBoilerplate
      * @return {void}
      **/
-    remove(drawable, redraw, removeWithVertices) {
+    remove(drawable, redraw, removeWithVertices, doNotFireEvent) {
         if (Array.isArray(drawable)) {
+            const removedDrawables = [];
             for (var i = 0; i < drawable.length; i++) {
-                this.remove(drawable[i], false, removeWithVertices);
+                if (this.remove(drawable[i], false, removeWithVertices, true)) {
+                    removedDrawables.push(drawable[i]);
+                }
             }
             if (redraw) {
                 this.redraw();
             }
-            return;
+            !doNotFireEvent && this._fireContentChanged([], removedDrawables);
+            return removedDrawables.length > 0;
         }
         if (drawable instanceof _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex) {
-            this.removeVertex(drawable, false);
+            const wasRemoved = this.removeVertex(drawable, false, false);
             if (redraw) {
                 this.redraw();
             }
+            !doNotFireEvent && this._fireContentChanged([], [drawable]);
+            return wasRemoved;
         }
+        let wasRemoved = false;
+        const removedDrawables = [];
         for (var i = 0; i < this.drawables.length; i++) {
             if (this.drawables[i] === drawable || this.drawables[i].uid === drawable.uid) {
                 this.drawables.splice(i, 1);
+                removedDrawables.push(drawable);
                 if (removeWithVertices) {
                     // Check if some listeners need to be removed
                     if (drawable instanceof _Line__WEBPACK_IMPORTED_MODULE_10__.Line) {
                         // Add some lines
-                        this.removeVertex(drawable.a, false);
-                        this.removeVertex(drawable.b, false);
+                        this.removeVertex(drawable.a, false, true);
+                        this.removeVertex(drawable.b, false, true);
+                        removedDrawables.push(drawable.a, drawable.b);
                     }
                     else if (drawable instanceof _Vector__WEBPACK_IMPORTED_MODULE_17__.Vector) {
-                        this.removeVertex(drawable.a, false);
-                        this.removeVertex(drawable.b, false);
+                        this.removeVertex(drawable.a, false, true);
+                        this.removeVertex(drawable.b, false, true);
+                        removedDrawables.push(drawable.a, drawable.b);
                     }
                     else if (drawable instanceof _VEllipse__WEBPACK_IMPORTED_MODULE_15__.VEllipse) {
-                        this.removeVertex(drawable.center, false);
-                        this.removeVertex(drawable.axis, false);
+                        this.removeVertex(drawable.center, false, true);
+                        this.removeVertex(drawable.axis, false, true);
+                        removedDrawables.push(drawable.center, drawable.axis);
                     }
                     else if (drawable instanceof _VEllipseSector__WEBPACK_IMPORTED_MODULE_16__.VEllipseSector) {
-                        this.removeVertex(drawable.ellipse.center);
-                        this.removeVertex(drawable.ellipse.axis);
+                        this.removeVertex(drawable.ellipse.center, false, true);
+                        this.removeVertex(drawable.ellipse.axis, false, true);
+                        removedDrawables.push(drawable.ellipse.center, drawable.ellipse.axis);
                     }
                     else if (drawable instanceof _Circle__WEBPACK_IMPORTED_MODULE_6__.Circle) {
-                        this.removeVertex(drawable.center, false);
+                        this.removeVertex(drawable.center, false, true);
                     }
                     else if (drawable instanceof _CircleSector__WEBPACK_IMPORTED_MODULE_7__.CircleSector) {
-                        this.removeVertex(drawable.circle.center, false);
+                        this.removeVertex(drawable.circle.center, false, true);
+                        removedDrawables.push(drawable.circle.center);
                     }
                     else if (drawable instanceof _Polygon__WEBPACK_IMPORTED_MODULE_13__.Polygon) {
                         // for( var i in drawable.vertices )
-                        for (var i = 0; i < drawable.vertices.length; i++)
-                            this.removeVertex(drawable.vertices[i], false);
+                        for (var i = 0; i < drawable.vertices.length; i++) {
+                            this.removeVertex(drawable.vertices[i], false, true);
+                            removedDrawables.push(drawable.vertices[i]);
+                        }
                     }
                     else if (drawable instanceof _Triangle__WEBPACK_IMPORTED_MODULE_14__.Triangle) {
-                        this.removeVertex(drawable.a, false);
-                        this.removeVertex(drawable.b, false);
-                        this.removeVertex(drawable.c, false);
+                        this.removeVertex(drawable.a, false, true);
+                        this.removeVertex(drawable.b, false, true);
+                        this.removeVertex(drawable.c, false, true);
+                        removedDrawables.push(drawable.a, drawable.b, drawable.c);
                     }
                     else if (drawable instanceof _BezierPath__WEBPACK_IMPORTED_MODULE_4__.BezierPath) {
                         for (var i = 0; i < drawable.bezierCurves.length; i++) {
-                            this.removeVertex(drawable.bezierCurves[i].startPoint, false);
-                            this.removeVertex(drawable.bezierCurves[i].startControlPoint, false);
-                            this.removeVertex(drawable.bezierCurves[i].endControlPoint, false);
+                            this.removeVertex(drawable.bezierCurves[i].startPoint, false, true);
+                            this.removeVertex(drawable.bezierCurves[i].startControlPoint, false, true);
+                            this.removeVertex(drawable.bezierCurves[i].endControlPoint, false, true);
+                            removedDrawables.push(drawable.bezierCurves[i].startPoint, drawable.bezierCurves[i].startControlPoint, drawable.bezierCurves[i].endControlPoint);
                             if (i + 1 == drawable.bezierCurves.length) {
-                                this.removeVertex(drawable.bezierCurves[i].endPoint, false);
+                                this.removeVertex(drawable.bezierCurves[i].endPoint, false, true);
+                                removedDrawables.push(drawable.bezierCurves[i].endPoint);
                             }
                         }
                     }
                     else if (drawable instanceof _PBImage__WEBPACK_IMPORTED_MODULE_12__.PBImage) {
-                        this.removeVertex(drawable.upperLeft, false);
-                        this.removeVertex(drawable.lowerRight, false);
+                        this.removeVertex(drawable.upperLeft, false, true);
+                        this.removeVertex(drawable.lowerRight, false, true);
+                        removedDrawables.push(drawable.upperLeft, drawable.lowerRight);
                     }
                     else if (drawable instanceof _PBText__WEBPACK_IMPORTED_MODULE_20__.PBText) {
-                        this.removeVertex(drawable.anchor, false);
+                        this.removeVertex(drawable.anchor, false, true);
+                        removedDrawables.push(drawable.anchor);
                     }
                 } // END removeWithVertices
                 if (redraw) {
                     this.redraw();
                 }
-            }
-        }
+                !doNotFireEvent && this._fireContentChanged([], removedDrawables);
+                wasRemoved = true;
+            } // END if
+        } // END for
+        return wasRemoved;
     }
     /**
      * Remove a vertex from the vertex list.<br>
@@ -5533,18 +6559,20 @@ class PlotBoilerplate {
      * @method removeVertex
      * @instance
      * @memberof PlotBoilerplate
-     * @return {void}
+     * @return {boolean}
      **/
-    removeVertex(vert, redraw) {
+    removeVertex(vert, redraw, doNotFireEvent) {
         for (var i = 0; i < this.vertices.length; i++) {
             if (this.vertices[i] === vert) {
                 this.vertices.splice(i, 1);
                 if (redraw) {
                     this.redraw();
                 }
-                return;
+                !doNotFireEvent && this._fireContentChanged([], [vert]);
+                return true;
             }
         }
+        return false;
     }
     /**
      * Remove all elements.
@@ -5553,16 +6581,22 @@ class PlotBoilerplate {
      *
      * @method removeAll
      * @param {boolean=false} keepVertices
+     * @param {boolean=true} triggerRedraw - By default this method triggers the redraw routine; passing `false` will suppress redrawing.
      * @instance
      * @memberof PlotBoilerplate
      * @return {void}
      */
-    removeAll(keepVertices) {
+    removeAll(keepVertices, triggerRedraw) {
+        let removedDrawables = this.drawables;
         this.drawables = [];
         if (!Boolean(keepVertices)) {
+            removedDrawables = removedDrawables.concat(this.vertices);
             this.vertices = [];
         }
-        this.redraw();
+        if (triggerRedraw || typeof triggerRedraw === "undefined") {
+            this.redraw();
+        }
+        removedDrawables.length > 0 && this._fireContentChanged([], removedDrawables);
     }
     /**
      * Find the vertex near the given position.
@@ -5575,7 +6609,8 @@ class PlotBoilerplate {
      * @return The vertex near the given position or undefined if none was found there.
      **/
     getVertexNear(pixelPosition, pixelTolerance) {
-        var p = this.locatePointNear(this.transformMousePosition(pixelPosition.x, pixelPosition.y), pixelTolerance / Math.min(this.config.cssScaleX, this.config.cssScaleY));
+        var _b, _c;
+        const p = this.locatePointNear(this.transformMousePosition(pixelPosition.x, pixelPosition.y), pixelTolerance / Math.min((_b = this.config.cssScaleX) !== null && _b !== void 0 ? _b : 1.0, (_c = this.config.cssScaleY) !== null && _c !== void 0 ? _c : 1.0));
         if (p && p.typeName == "vertex") {
             return this.vertices[p.vindex];
         }
@@ -5641,7 +6676,7 @@ class PlotBoilerplate {
     drawOrigin(draw) {
         // Add a crosshair to mark the origin
         draw.setCurrentId("origin");
-        draw.crosshair({ x: 0, y: 0 }, 10, "#000000");
+        draw.crosshair({ x: 0, y: 0 }, 10, this.drawConfig.origin.color);
     }
     /**
      * This is just a tiny helper function to determine the render color of vertices.
@@ -5669,7 +6704,7 @@ class PlotBoilerplate {
             this.draw.setCurrentId(d.uid);
             this.fill.setCurrentId(d.uid);
             this.draw.setCurrentClassName(d.className);
-            this.draw.setCurrentClassName(d.className);
+            this.fill.setCurrentClassName(d.className);
             this.drawDrawable(d, renderTime, draw, fill);
         }
     }
@@ -5690,7 +6725,13 @@ class PlotBoilerplate {
      **/
     drawDrawable(d, renderTime, draw, fill) {
         if (d instanceof _BezierPath__WEBPACK_IMPORTED_MODULE_4__.BezierPath) {
+            var curveIndex = 0;
             for (var c in d.bezierCurves) {
+                // Restore these settings again in each loop (will be overwritten)
+                this.draw.setCurrentId(`${d.uid}-${curveIndex}`);
+                this.fill.setCurrentId(`${d.uid}-${curveIndex}`);
+                this.draw.setCurrentClassName(d.className);
+                this.fill.setCurrentClassName(d.className);
                 draw.cubicBezier(d.bezierCurves[c].startPoint, d.bezierCurves[c].endPoint, d.bezierCurves[c].startControlPoint, d.bezierCurves[c].endControlPoint, this.drawConfig.bezier.color, this.drawConfig.bezier.lineWidth);
                 if (this.drawConfig.drawBezierHandlePoints && this.drawConfig.drawHandlePoints) {
                     if (d.bezierCurves[c].startPoint.attr.visible) {
@@ -5742,12 +6783,13 @@ class PlotBoilerplate {
                 if (this.drawConfig.drawBezierHandleLines && this.drawConfig.drawHandleLines) {
                     draw.setCurrentId(`${d.uid}_l0`);
                     draw.setCurrentClassName(`${d.className}-start-line`);
-                    draw.line(d.bezierCurves[c].startPoint, d.bezierCurves[c].startControlPoint, this.drawConfig.bezier.handleLine.color, this.drawConfig.bezier.handleLine.lineWidth);
+                    draw.handleLine(d.bezierCurves[c].startPoint, d.bezierCurves[c].startControlPoint);
                     draw.setCurrentId(`${d.uid}_l1`);
                     draw.setCurrentClassName(`${d.className}-end-line`);
-                    draw.line(d.bezierCurves[c].endPoint, d.bezierCurves[c].endControlPoint, this.drawConfig.bezier.handleLine.color, this.drawConfig.bezier.handleLine.lineWidth);
+                    draw.handleLine(d.bezierCurves[c].endPoint, d.bezierCurves[c].endControlPoint);
                 }
-            }
+                curveIndex++;
+            } // END for
         }
         else if (d instanceof _Polygon__WEBPACK_IMPORTED_MODULE_13__.Polygon) {
             draw.polygon(d, this.drawConfig.polygon.color, this.drawConfig.polygon.lineWidth);
@@ -5759,19 +6801,18 @@ class PlotBoilerplate {
         }
         else if (d instanceof _Triangle__WEBPACK_IMPORTED_MODULE_14__.Triangle) {
             draw.polyline([d.a, d.b, d.c], false, this.drawConfig.triangle.color, this.drawConfig.triangle.lineWidth);
-            if (!this.drawConfig.drawHandlePoints)
+            if (!this.drawConfig.drawHandlePoints) {
                 d.a.attr.renderTime = d.b.attr.renderTime = d.c.attr.renderTime = renderTime;
+            }
         }
         else if (d instanceof _VEllipse__WEBPACK_IMPORTED_MODULE_15__.VEllipse) {
             if (this.drawConfig.drawHandleLines) {
                 draw.setCurrentId(`${d.uid}_e0`);
                 draw.setCurrentClassName(`${d.className}-v-line`);
-                // draw.line( d.center.clone().add(0,d.axis.y-d.center.y), d.axis, '#c8c8c8' );
-                draw.line(d.center.clone().add(0, d.signedRadiusV()).rotate(d.rotation, d.center), d.axis, "#c8c8c8");
+                draw.handleLine(d.center.clone().add(0, d.signedRadiusV()).rotate(d.rotation, d.center), d.axis); // , "#c8c8c8");
                 draw.setCurrentId(`${d.uid}_e1`);
                 draw.setCurrentClassName(`${d.className}-h-line`);
-                // draw.line( d.center.clone().add(d.axis.x-d.center.x,0), d.axis, '#c8c8c8' );
-                draw.line(d.center.clone().add(d.signedRadiusH(), 0).rotate(d.rotation, d.center), d.axis, "#c8c8c8");
+                draw.handleLine(d.center.clone().add(d.signedRadiusH(), 0).rotate(d.rotation, d.center), d.axis); // , "#c8c8c8");
             }
             draw.setCurrentId(d.uid);
             draw.setCurrentClassName(`${d.className}`);
@@ -5786,12 +6827,6 @@ class PlotBoilerplate {
         else if (d instanceof _VEllipseSector__WEBPACK_IMPORTED_MODULE_16__.VEllipseSector) {
             draw.setCurrentId(d.uid);
             draw.setCurrentClassName(`${d.className}`);
-            /* draw.ellipse( d.center,
-                    // Math.abs(d.axis.x-d.center.x), Math.abs(d.axis.y-d.center.y),
-                    d.radiusH(), d.radiusV(),
-                    this.drawConfig.ellipse.color,
-                    this.drawConfig.ellipse.lineWidth,
-                    d.rotation ); */
             const data = _VEllipseSector__WEBPACK_IMPORTED_MODULE_16__.VEllipseSector.ellipseSectorUtils.describeSVGArc(d.ellipse.center.x, d.ellipse.center.y, d.ellipse.radiusH(), d.ellipse.radiusV(), d.startAngle, d.endAngle, d.ellipse.rotation, { moveToStart: true });
             draw.path(data, this.drawConfig.ellipseSector.color, this.drawConfig.ellipseSector.lineWidth);
         }
@@ -5816,7 +6851,7 @@ class PlotBoilerplate {
                 d.b.attr.renderTime = renderTime;
         }
         else if (d instanceof _Vector__WEBPACK_IMPORTED_MODULE_17__.Vector) {
-            draw.arrow(d.a, d.b, this.drawConfig.vector.color);
+            draw.arrow(d.a, d.b, this.drawConfig.vector.color, this.drawConfig.vector.lineWidth);
             if (this.drawConfig.drawHandlePoints && d.b.attr.selectable && d.b.attr.visible) {
                 draw.setCurrentId(`${d.uid}_h0`);
                 draw.setCurrentClassName(`${d.className}-handle`);
@@ -5940,16 +6975,19 @@ class PlotBoilerplate {
      * @return {void}
      **/
     drawAll(renderTime, draw, fill) {
-        this.drawGrid(draw);
-        if (this.config.drawOrigin)
+        if (this.config.drawRaster) {
+            this.drawGrid(draw);
+        }
+        if (this.config.drawOrigin) {
             this.drawOrigin(draw);
+        }
         this.drawDrawables(renderTime, draw, fill);
         this.drawVertices(renderTime, draw);
         this.drawSelectPolygon(draw);
         // Clear IDs and classnames (postDraw hook might draw somthing and the do not want
         // to interfered with that).
-        draw.setCurrentId(undefined);
-        draw.setCurrentClassName(undefined);
+        draw.setCurrentId(null);
+        draw.setCurrentClassName(null);
     } // END redraw
     /**
      * This function clears the canvas with the configured background color.<br>
@@ -5964,7 +7002,7 @@ class PlotBoilerplate {
      **/
     clear() {
         // Note that elements might have an alpha channel. Clear the scene first.
-        this.draw.clear(this.config.backgroundColor);
+        this.draw.clear(this.config.backgroundColor || "white");
     }
     /**
      * Clear the selection.<br>
@@ -5994,7 +7032,8 @@ class PlotBoilerplate {
      * @return {Bounds} The current viewport.
      **/
     viewport() {
-        return new _Bounds__WEBPACK_IMPORTED_MODULE_5__.Bounds(this.transformMousePosition(0, 0), this.transformMousePosition(this.canvasSize.width * this.config.cssScaleX, this.canvasSize.height * this.config.cssScaleY));
+        var _b, _c;
+        return new _Bounds__WEBPACK_IMPORTED_MODULE_5__.Bounds(this.transformMousePosition(0, 0), this.transformMousePosition(this.canvasSize.width * ((_b = this.config.cssScaleX) !== null && _b !== void 0 ? _b : 1.0), this.canvasSize.height * ((_c = this.config.cssScaleY) !== null && _c !== void 0 ? _c : 1.0)));
     }
     /**
      * Trigger the saveFile.hook.
@@ -6042,10 +7081,12 @@ class PlotBoilerplate {
      * @return {void}
      **/
     resizeCanvas() {
+        var _b, _c, _d, _e, _f, _g;
         const _self = this;
         const _setSize = (w, h) => {
-            w *= _self.config.canvasWidthFactor;
-            h *= _self.config.canvasHeightFactor;
+            var _b, _c;
+            w *= (_b = _self.config.canvasWidthFactor) !== null && _b !== void 0 ? _b : 1.0;
+            h *= (_c = _self.config.canvasHeightFactor) !== null && _c !== void 0 ? _c : 1.0;
             _self.canvasSize.width = w;
             _self.canvasSize.height = h;
             if (_self.canvas instanceof HTMLCanvasElement) {
@@ -6074,26 +7115,26 @@ class PlotBoilerplate {
             var width = globalThis.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
             var height = globalThis.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             _self.canvas.style.position = "absolute";
-            _self.canvas.style.width = _self.config.canvasWidthFactor * width + "px";
-            _self.canvas.style.height = _self.config.canvasWidthFactor * height + "px";
+            _self.canvas.style.width = ((_b = _self.config.canvasWidthFactor) !== null && _b !== void 0 ? _b : 1.0) * width + "px";
+            _self.canvas.style.height = ((_c = _self.config.canvasWidthFactor) !== null && _c !== void 0 ? _c : 1.0) * height + "px";
             _self.canvas.style.top = "0px";
             _self.canvas.style.left = "0px";
             _setSize(width, height);
         }
         else if (_self.config.fitToParent) {
             // Set editor size
-            _self.canvas.style.position = "absolute";
+            _self.canvas.style.position = "static";
             const space = this.getAvailableContainerSpace();
-            _self.canvas.style.width = _self.config.canvasWidthFactor * space.width + "px";
-            _self.canvas.style.height = _self.config.canvasHeightFactor * space.height + "px";
-            _self.canvas.style.top = null;
-            _self.canvas.style.left = null;
+            _self.canvas.style.width = ((_d = _self.config.canvasWidthFactor) !== null && _d !== void 0 ? _d : 1.0) * space.width + "px";
+            _self.canvas.style.height = ((_e = _self.config.canvasHeightFactor) !== null && _e !== void 0 ? _e : 1.0) * space.height + "px";
+            _self.canvas.style.top = "";
+            _self.canvas.style.left = "";
             _setSize(space.width, space.height);
         }
         else {
-            _self.canvas.style.width = null;
-            _self.canvas.style.height = null;
-            _setSize(_self.config.defaultCanvasWidth, _self.config.defaultCanvasHeight);
+            _self.canvas.style.width = "";
+            _self.canvas.style.height = "";
+            _setSize((_f = _self.config.defaultCanvasWidth) !== null && _f !== void 0 ? _f : 1024, (_g = _self.config.defaultCanvasHeight) !== null && _g !== void 0 ? _g : 768);
         }
         if (_self.config.redrawOnResize)
             _self.redraw();
@@ -6153,24 +7194,24 @@ class PlotBoilerplate {
      **/
     handleClick(e) {
         const _self = this;
-        var p = this.locatePointNear(_self.transformMousePosition(e.params.pos.x, e.params.pos.y), PlotBoilerplate.DEFAULT_CLICK_TOLERANCE / Math.min(_self.config.cssScaleX, _self.config.cssScaleY));
-        if (p) {
-            _self.vertices[p.vindex].listeners.fireClickEvent(e);
+        var point = this.locatePointNear(_self.transformMousePosition(e.params.pos.x, e.params.pos.y), PlotBoilerplate.DEFAULT_CLICK_TOLERANCE / Math.min(_self.config.cssScaleX || 1.0, _self.config.cssScaleY || 1.0));
+        if (point) {
+            _self.vertices[point.vindex].listeners.fireClickEvent(e);
             if (this.keyHandler && this.keyHandler.isDown("shift")) {
-                if (p.typeName == "bpath") {
-                    let vert = _self.paths[p.pindex].bezierCurves[p.cindex].getPointByID(p.pid);
+                if (point.typeName == "bpath") {
+                    let vert = _self.paths[point.pindex].bezierCurves[point.cindex].getPointByID(point.pid);
                     if (vert.attr.selectable)
                         vert.attr.isSelected = !vert.attr.isSelected;
                 }
-                else if (p.typeName == "vertex") {
-                    let vert = _self.vertices[p.vindex];
+                else if (point.typeName == "vertex") {
+                    let vert = _self.vertices[point.vindex];
                     if (vert.attr.selectable)
                         vert.attr.isSelected = !vert.attr.isSelected;
                 }
                 _self.redraw();
             }
-            else if (this.keyHandler.isDown("y")) {
-                _self.vertices[p.vindex].attr.bezierAutoAdjust = !_self.vertices[p.vindex].attr.bezierAutoAdjust;
+            else if (this.keyHandler && this.keyHandler.isDown("y")) {
+                _self.vertices[point.vindex].attr.bezierAutoAdjust = !_self.vertices[point.vindex].attr.bezierAutoAdjust;
                 _self.redraw();
             }
         }
@@ -6237,11 +7278,11 @@ class PlotBoilerplate {
         const _self = this;
         if (e.button != 0)
             return; // Only react on left mouse or touch events
-        var p = _self.locatePointNear(_self.transformMousePosition(e.params.pos.x, e.params.pos.y), PlotBoilerplate.DEFAULT_CLICK_TOLERANCE / Math.min(_self.config.cssScaleX, _self.config.cssScaleY));
-        if (!p)
+        var draggablePoint = _self.locatePointNear(_self.transformMousePosition(e.params.pos.x, e.params.pos.y), PlotBoilerplate.DEFAULT_CLICK_TOLERANCE / Math.min(_self.config.cssScaleX, _self.config.cssScaleY));
+        if (!draggablePoint)
             return;
         // Drag all selected elements?
-        if (p.typeName == "vertex" && _self.vertices[p.vindex].attr.isSelected) {
+        if (draggablePoint.typeName == "vertex" && _self.vertices[draggablePoint.vindex].attr.isSelected) {
             // Multi drag
             // for( var i in _self.vertices ) {
             for (var i = 0; i < _self.vertices.length; i++) {
@@ -6253,13 +7294,15 @@ class PlotBoilerplate {
         }
         else {
             // Single drag
-            if (!_self.vertices[p.vindex].attr.draggable)
+            if (!_self.vertices[draggablePoint.vindex].attr.draggable)
                 return;
-            _self.draggedElements.push(p);
-            if (p.typeName == "bpath")
-                _self.paths[p.pindex].bezierCurves[p.cindex].getPointByID(p.pid).listeners.fireDragStartEvent(e);
-            else if (p.typeName == "vertex")
-                _self.vertices[p.vindex].listeners.fireDragStartEvent(e);
+            _self.draggedElements.push(draggablePoint);
+            if (draggablePoint.typeName == "bpath")
+                _self.paths[draggablePoint.pindex].bezierCurves[draggablePoint.cindex]
+                    .getPointByID(draggablePoint.pid)
+                    .listeners.fireDragStartEvent(e);
+            else if (draggablePoint.typeName == "vertex")
+                _self.vertices[draggablePoint.vindex].listeners.fireDragStartEvent(e);
         }
         _self.redraw();
     }
@@ -6286,7 +7329,10 @@ class PlotBoilerplate {
         //            not this one. So this tab will never receive any [Ctrl-down] events
         //            until next keypress; the implication is, that [Ctrl] would still
         //            considered to be pressed which is not true.
-        if (this.keyHandler.isDown("alt") || this.keyHandler.isDown("spacebar")) {
+        if (this.keyHandler && (this.keyHandler.isDown("alt") || this.keyHandler.isDown("spacebar"))) {
+            if (!this.config.enablePan) {
+                return;
+            }
             _self.setOffset(_self.draw.offset.clone().add(e.params.dragAmount));
             _self.redraw();
         }
@@ -6355,6 +7401,9 @@ class PlotBoilerplate {
      * @return {void}
      **/
     mouseWheelHandler(e) {
+        if (!this.config.enableZoom) {
+            return;
+        }
         var zoomStep = 1.25; // Make configurable?
         // CHANGED replaced _self by this
         const _self = this;
@@ -6453,7 +7502,8 @@ class PlotBoilerplate {
                 return { x: pos.x - bounds.left, y: pos.y - bounds.top };
             };
             // Make PB work together with both, AlloyFinger as a esm module or a commonjs function.
-            if (typeof globalThis["AlloyFinger"] === "function" || typeof globalThis["createAlloyFinger"] === "function") {
+            if (typeof globalThis["AlloyFinger"] === "function" ||
+                typeof globalThis["createAlloyFinger"] === "function") {
                 try {
                     var touchMovePos = null;
                     var touchDownPos = null;
@@ -6494,6 +7544,9 @@ class PlotBoilerplate {
                             if (evt.touches.length == 1 && draggedElement) {
                                 evt.preventDefault();
                                 evt.stopPropagation();
+                                if (!touchDownPos || !touchMovePos) {
+                                    return;
+                                }
                                 var rel = relPos({ x: evt.touches[0].clientX, y: evt.touches[0].clientY });
                                 var trans = _self.transformMousePosition(rel.x, rel.y);
                                 var diff = new _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex(_self.transformMousePosition(touchMovePos.x, touchMovePos.y)).difference(trans);
@@ -6518,6 +7571,9 @@ class PlotBoilerplate {
                                 touchMovePos = new _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex(rel);
                             }
                             else if (evt.touches.length == 2) {
+                                if (!this.config.enablePan) {
+                                    return;
+                                }
                                 // If at least two fingers touch and move, then change the draw offset (panning).
                                 evt.preventDefault();
                                 evt.stopPropagation();
@@ -6530,6 +7586,9 @@ class PlotBoilerplate {
                         touchEnd: (evt) => {
                             // Note: e.touches.length is 0 here
                             if (draggedElement && draggedElement.typeName == "vertex") {
+                                if (!touchDownPos) {
+                                    return;
+                                }
                                 var draggingVertex = _self.vertices[draggedElement.vindex];
                                 var fakeEvent = {
                                     isTouchEvent: true,
@@ -6562,16 +7621,26 @@ class PlotBoilerplate {
                             multiTouchStartScale = null;
                         },
                         pinch: (evt) => {
+                            if (!this.config.enableZoom) {
+                                return;
+                            }
+                            const touchItem0 = evt.touches.item(0);
+                            const touchItem1 = evt.touches.item(1);
+                            if (!evt.touches || !multiTouchStartScale || !touchItem0 || !touchItem1) {
+                                return;
+                            }
                             // For pinching there must be at least two touch items
-                            const fingerA = new _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex(evt.touches.item(0).clientX, evt.touches.item(0).clientY);
-                            const fingerB = new _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex(evt.touches.item(1).clientX, evt.touches.item(1).clientY);
+                            const fingerA = new _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex(touchItem0.clientX, touchItem0.clientY);
+                            const fingerB = new _Vertex__WEBPACK_IMPORTED_MODULE_18__.Vertex(touchItem1.clientX, touchItem1.clientY);
                             const center = new _Line__WEBPACK_IMPORTED_MODULE_10__.Line(fingerA, fingerB).vertAt(0.5);
                             _self.setZoom(multiTouchStartScale.x * evt.zoom, multiTouchStartScale.y * evt.zoom, center);
                             _self.redraw();
                         }
                     }; // END afProps
                     if (window["createAlloyFinger"]) {
-                        window["createAlloyFinger"](this.eventCatcher ? this.eventCatcher : this.canvas, afProps);
+                        // window["createAlloyFinger"](this.eventCatcher ? this.eventCatcher : this.canvas, afProps);
+                        const createAlloyFinger = window["createAlloyFinger"];
+                        createAlloyFinger(this.eventCatcher ? this.eventCatcher : this.canvas, afProps);
                     }
                     else {
                         /* tslint:disable-next-line */
@@ -6629,10 +7698,23 @@ class PlotBoilerplate {
     createGUI(props) {
         // This function moved to the helper utils.
         // We do not want to include the whole dat.GUI package.
-        if (globalThis["utils"] && typeof globalThis["utils"].createGUI == "function")
-            return globalThis["utils"].createGUI(this, props);
-        else
-            throw "Cannot create dat.GUI instance; did you load the ./utils/creategui helper function an the dat.GUI library?";
+        const utils = globalThis["utils"];
+        // if (globalThis["utils"] && typeof globalThis["utils"].createGUI == "function") {
+        //   return (globalThis["utils" as keyof Object] as any as ({createGUI : (pb:PlotBoilerplate,props:DatGuiProps|undefined)=>GUI })).createGUI(this, props);
+        if (utils && typeof utils.createGUI === "function") {
+            return (this._gui = utils.createGUI(this, props));
+        }
+        else {
+            throw "Cannot create dat.GUI or lil-gui instance; did you load the ./utils/creategui helper function an the dat.GUI/lil-gui library?";
+        }
+    }
+    /**
+     * Retriebe the GUI once it was created. If the `createGUI` method was not called or failed to create any
+     * GUI then null is returned.
+     * @returns {GUI | null}
+     */
+    getGUI() {
+        return this._gui;
     }
 } // END class PlotBoilerplate
 /** @constant {number} */
@@ -6660,6 +7742,7 @@ PlotBoilerplate.Draggable = (_a = class {
             return this;
         }
     },
+    __setFunctionName(_a, "Draggable"),
     _a.VERTEX = "vertex",
     _a);
 /**
@@ -6676,22 +7759,35 @@ PlotBoilerplate.utils = {
      **/
     safeMergeByKeys: (base, extension) => {
         for (var k in extension) {
-            if (!extension.hasOwnProperty(k))
+            if (!extension.hasOwnProperty(k)) {
                 continue;
+            }
             if (base.hasOwnProperty(k)) {
-                var typ = typeof base[k];
+                const typ = typeof base[k];
+                const extVal = extension[k];
                 try {
-                    if (typ == "boolean")
-                        base[k] = !!JSON.parse(extension[k]);
-                    else if (typ == "number")
-                        base[k] = JSON.parse(extension[k]) * 1;
-                    else if (typ == "function" && typeof extension[k] == "function")
+                    if (typ == "boolean") {
+                        if (typeof extVal === "string")
+                            base[k] = Boolean(!!JSON.parse(extVal));
+                        else
+                            base[k] = extVal;
+                    }
+                    else if (typ == "number") {
+                        if (typeof extVal === "string")
+                            base[k] = Number(JSON.parse(extVal) * 1);
+                        else
+                            base[k] = extension[k];
+                    }
+                    else if (typ == "function" && typeof extVal == "function") {
                         base[k] = extension[k];
-                    else
+                    }
+                    else {
+                        // Probably a sting
                         base[k] = extension[k];
+                    }
                 }
                 catch (e) {
-                    console.error("error in key ", k, extension[k], e);
+                    console.error("error in key ", k, extVal, e);
                 }
             }
             else {
@@ -6700,6 +7796,31 @@ PlotBoilerplate.utils = {
         }
         return base;
     },
+    /*
+    __safeMergeByKeys: <KeyType extends string | number | symbol, ValueType extends boolean | number | string | Function>(
+      base: Record<KeyType, ValueType>,
+      extension: Record<KeyType, string>
+    ): Record<KeyType, ValueType> => {
+      for (var k in extension) {
+        if (!extension.hasOwnProperty(k)) continue;
+        if (base.hasOwnProperty(k)) {
+          var typ = typeof base[k];
+          try {
+            if (typ == "boolean") base[k] = !!JSON.parse(extension[k]);
+            else if (typ == "number") base[k] = JSON.parse(extension[k]) * 1;
+            else if (typ == "function" && typeof extension[k] == "function") base[k] = extension[k];
+            else base[k] = extension[k];
+          } catch (e) {
+            console.error("error in key ", k, extension[k], e);
+          }
+        } else {
+          base[k] = extension[k];
+        }
+      }
+      return base;
+    },
+    *()
+
     /**
      * A helper function to scale elements (usually the canvas) using CSS.
      *
@@ -6711,9 +7832,12 @@ PlotBoilerplate.utils = {
      * @return {void}
      **/
     setCSSscale: (element, scaleX, scaleY) => {
-        element.style["transform-origin"] = "0 0";
-        if (scaleX == 1.0 && scaleY == 1.0)
-            element.style.transform = null;
+        // element.style["transform-origin"] = "0 0";
+        element.style.transformOrigin = "0 0";
+        if (scaleX == 1.0 && scaleY == 1.0) {
+            // element.style.transform = null;
+            element.style.removeProperty("transform");
+        }
         else
             element.style.transform = "scale(" + scaleX + "," + scaleY + ")";
     },
@@ -6792,7 +7916,7 @@ PlotBoilerplate.utils = {
                 return fallback;
             return obj[key];
         }
-    },
+    }, // END fetch
     /**
      * Installs vertex listeners to the path's vertices so that controlpoints
      * move with their path points when dragged.
@@ -6846,22 +7970,26 @@ PlotBoilerplate.utils = {
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PlotBoilerplate);
 //# sourceMappingURL=PlotBoilerplate.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/Polygon.js":
+/***/ "./node_modules/plotboilerplate/src/esm/Polygon.js"
 /*!*********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/Polygon.js ***!
   \*********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Polygon": () => (/* binding */ Polygon)
+/* harmony export */   Polygon: () => (/* binding */ Polygon)
 /* harmony export */ });
 /* harmony import */ var _BezierPath__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BezierPath */ "./node_modules/plotboilerplate/src/esm/BezierPath.js");
 /* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
-/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
-/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
+/* harmony import */ var _Line__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Line */ "./node_modules/plotboilerplate/src/esm/Line.js");
+/* harmony import */ var _Triangle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Triangle */ "./node_modules/plotboilerplate/src/esm/Triangle.js");
+/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Vector */ "./node_modules/plotboilerplate/src/esm/Vector.js");
+/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
+/* harmony import */ var _geomutils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./geomutils */ "./node_modules/plotboilerplate/src/esm/geomutils.js");
 /**
  * @author   Ikaros Kappler
  * @date     2018-04-14
@@ -6887,11 +8015,30 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-12-16 Added the `getEvenDistributionPolygon()` function.
  * @modified 2022-02-02 Added the `destroy` method.
  * @modified 2022-02-02 Cleared the `Polygon.toSVGString` function (deprecated). Use `drawutilssvg` instead.
- * @version 1.9.0
+ * @modified 2022-03-08 Added the `Polygon.clone()` function.
+ * @modified 2023-09-25 Added the `Polygon.getInterpolationPolygon(number)` function.
+ * @modified 2023-09-25 Added the `Polygon.lineIntersections(Line,boolean)` function.
+ * @modified 2023-09-29 Added the `Polygon.closestLineIntersection(Line,boolean)` function.
+ * @modified 2023-11-24 Added the `Polygon.containsPolygon(Polygon)' function.
+ * @modified 2024-10-12 Added the `getEdgeAt` method.
+ * @modified 2024-10-30 Added the `getEdges` method.
+ * @modified 2024-12-02 Added the `elimitateColinearEdges` method.
+ * @modified 2025-02-12 Added the `containsVerts` method to test multiple vertices for containment.
+ * @modified 2025-03-28 Added the `Polygon.utils.locateLineIntersecion` static helper method.
+ * @modified 2025-03-28 Added the `Polygon.lineIntersectionTangents` method.
+ * @modified 2025-04-09 Added the `Polygon.getCentroid` method.
+ * @modified 2025-05-16 Class `Polygon` now implements `IBounded`.
+ * @modified 2025-05-20 Tweaking `Polygon.getInnerAngleAt` and `Polygo.isAngleAcute` to handle indices out of array bounds as well.
+ * @modified 2025-06-07 Adding `Polygon.closestLineIntersectionIndex` to determine line intersections plus detected edge index.
+ * @version 1.16.0
  *
  * @file Polygon
  * @public
  **/
+
+
+
+
 
 
 
@@ -6921,22 +8068,125 @@ class Polygon {
          * Required to generate proper CSS classes and other class related IDs.
          **/
         this.className = "Polygon";
-        this.uid = _UIDGenerator__WEBPACK_IMPORTED_MODULE_2__.UIDGenerator.next();
-        if (typeof vertices == "undefined")
+        this.uid = _UIDGenerator__WEBPACK_IMPORTED_MODULE_4__.UIDGenerator.next();
+        if (typeof vertices == "undefined") {
             vertices = [];
+        }
         this.vertices = vertices;
-        this.isOpen = isOpen;
+        this.isOpen = isOpen || false;
     }
     /**
      * Add a vertex to the end of the `vertices` array.
      *
-     * @method addVert
+     * @method addVertex
      * @param {Vertex} vert - The vertex to add.
      * @instance
      * @memberof Polygon
      **/
     addVertex(vert) {
         this.vertices.push(vert);
+    }
+    /**
+     * Add a vertex at a particular position of the `vertices` array.
+     *
+     * @method addVertexAt
+     * @param {Vertex} vert - The vertex to add.
+     * @param {number} index - The position to add the vertex at. Will be handled modulo.
+     * @instance
+     * @memberof Polygon
+     **/
+    addVertexAt(vert, index) {
+        // var moduloIndex = index % (this.vertices.length + 1);
+        this.vertices.splice(index, 0, vert);
+    }
+    /**
+     * Get a new instance of the line at the given start index. The returned line will consist
+     * of the vertex at `vertIndex` and `vertIndex+1` (will be handled modulo).
+     *
+     * @method getEdgeAt
+     * @param {number} vertIndex - The vertex index of the line to start.
+     * @instance
+     * @memberof Polygon
+     * @return {Line}
+     **/
+    getEdgeAt(vertIndex) {
+        return new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(this.getVertexAt(vertIndex), this.getVertexAt(vertIndex + 1));
+    }
+    /**
+     * Converts this polygon into a sequence of lines. Please note that each time
+     * this method is called new lines are created. The underlying line vertices are no clones
+     * (instances).
+     *
+     * @method getEdges
+     * @instance
+     * @memberof Polygon
+     * @return {Array<Line>}
+     */
+    getEdges() {
+        const lines = [];
+        for (var i = 0; i + 1 < this.vertices.length; i++) {
+            // var line = this.getLineAt(i).clone();
+            lines.push(this.getEdgeAt(i));
+        }
+        if (!this.isOpen && this.vertices.length > 0) {
+            lines.push(this.getEdgeAt(this.vertices.length - 1));
+        }
+        return lines;
+    }
+    /**
+     * Checks if the angle at the given polygon vertex (index) is acute. Please not that this is
+     * only working for clockwise polygons. If this polygon is not clockwise please use the
+     * `isClockwise` method and reverse polygon vertices if needed.
+     *
+     * @method isAngleAcute
+     * @instance
+     * @memberof Polygon
+     * @param {number} vertIndex - The index of the polygon vertex to check.
+     * @returns {boolean} `true` is angle is acute, `false` is obtuse.
+     */
+    getInnerAngleAt(vertIndex) {
+        const p2 = this.vertices[vertIndex % this.vertices.length];
+        const p1 = this.vertices[(vertIndex + this.vertices.length - 1) % this.vertices.length].clone();
+        const p3 = this.vertices[(vertIndex + 1) % this.vertices.length].clone();
+        // See
+        //    https://math.stackexchange.com/questions/149959/how-to-find-the-interior-angle-of-an-irregular-pentagon-or-polygon
+        // π−arccos((P2−P1)⋅(P3−P2)|P2−P1||P3−P2|)
+        // Check if triangle is acute (will be used later)
+        // Acute angles and obtuse angles need to be handled differently.
+        const isAcute = this.isAngleAcute(vertIndex);
+        // Differences
+        const zero = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(0, 0);
+        const p2mp1 = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(p2.x - p1.x, p2.y - p1.y);
+        const p3mp2 = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(p3.x - p2.x, p3.y - p2.y);
+        const p2mp1_len = zero.distance(p2mp1);
+        const p3mp2_len = zero.distance(p3mp2);
+        // Dot products
+        const dotProduct = _geomutils__WEBPACK_IMPORTED_MODULE_7__.geomutils.dotProduct(p2mp1, p3mp2);
+        const lengthProduct = p2mp1_len * p3mp2_len;
+        if (isAcute) {
+            return Math.PI - Math.acos(dotProduct / lengthProduct);
+        }
+        else {
+            return Math.PI + Math.acos(dotProduct / lengthProduct);
+        }
+    }
+    /**
+     * Checks if the angle at the given polygon vertex (index) is acute.
+     *
+     * @method isAngleAcute
+     * @instance
+     * @memberof Polygon
+     * @param {number} vertIndex - The index of the polygon vertex to check.
+     * @returns {boolean} `true` is angle is acute, `false` is obtuse.
+     */
+    isAngleAcute(vertIndex) {
+        const A = this.vertices[(vertIndex + this.vertices.length - 1) % this.vertices.length].clone();
+        const B = this.vertices[vertIndex % this.vertices.length];
+        const C = this.vertices[(vertIndex + 1) % this.vertices.length].clone();
+        // Find local winding number for triangle A B C
+        const windingNumber = _Triangle__WEBPACK_IMPORTED_MODULE_3__.Triangle.utils.determinant(A, B, C);
+        // console.log("vertIndex", vertIndex, "windingNumber", windingNumber);
+        return windingNumber < 0;
     }
     /**
      * Get the polygon vertex at the given position (index).
@@ -6948,17 +8198,19 @@ class Polygon {
      *  - getVertexAt( vertices.length + k ) == getVertexAt( k )
      *  - getVertexAt( -k )                  == getVertexAt( vertices.length -k )
      *
-     * @metho getVertexAt
+     * @method getVertexAt
      * @param {number} index - The index of the desired vertex.
      * @instance
      * @memberof Polygon
      * @return {Vertex} At the given index.
      **/
     getVertexAt(index) {
-        if (index < 0)
+        if (index < 0) {
             return this.vertices[this.vertices.length - (Math.abs(index) % this.vertices.length)];
-        else
+        }
+        else {
             return this.vertices[index % this.vertices.length];
+        }
     }
     /**
      * Move the polygon's vertices by the given amount.
@@ -6969,9 +8221,9 @@ class Polygon {
      * @memberof Polygon
      * @return {Polygon} this for chaining
      **/
-    move(vert) {
+    move(amount) {
         for (var i in this.vertices) {
-            this.vertices[i].add(vert);
+            this.vertices[i].add(amount);
         }
         return this;
     }
@@ -6982,7 +8234,7 @@ class Polygon {
      *    https://stackoverflow.com/questions/22521982/check-if-point-inside-a-polygon
      *
      * @method containsVert
-     * @param {XYCoords} vert - The vertex to check. The new x-component.
+     * @param {XYCoords} vert - The vertex to check.
      * @return {boolean} True if the passed vertex is inside this polygon. The polygon is considered closed.
      * @instance
      * @memberof Polygon
@@ -6995,10 +8247,53 @@ class Polygon {
             let xi = this.vertices[i].x, yi = this.vertices[i].y;
             let xj = this.vertices[j].x, yj = this.vertices[j].y;
             var intersect = yi > vert.y != yj > vert.y && vert.x < ((xj - xi) * (vert.y - yi)) / (yj - yi) + xi;
-            if (intersect)
+            if (intersect) {
                 inside = !inside;
+            }
         }
         return inside;
+    }
+    /**
+     * Check if all given vertices are inside this polygon.<br>
+     * <br>
+     * This method just uses the `Polygon.containsVert` method.
+     *
+     * @method containsVerts
+     * @param {XYCoords[]} verts - The vertices to check.
+     * @return {boolean} True if all passed vertices are inside this polygon. The polygon is considered closed.
+     * @instance
+     * @memberof Polygon
+     **/
+    containsVerts(verts) {
+        return verts.every((vert) => this.containsVert(vert));
+    }
+    /**
+     * Check if the passed polygon is completly contained inside this polygon.
+     *
+     * This means:
+     *  - all polygon's vertices must be inside this polygon.
+     *  - the polygon has no edge intersections with this polygon.
+     *
+     * @param {Polygon} polygon - The polygon to check if contained.
+     * @return {boolean}
+     */
+    containsPolygon(polygon) {
+        for (var i = 0; i < polygon.vertices.length; i++) {
+            if (!this.containsVert(polygon.vertices[i])) {
+                return false;
+            }
+        }
+        // All vertices are inside; check for intersections
+        const lineSegment = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(), new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex());
+        for (var i = 0; i < polygon.vertices.length; i++) {
+            lineSegment.a.set(polygon.vertices[i]);
+            lineSegment.b.set(polygon.vertices[(i + 1) % polygon.vertices.length]);
+            if (this.lineIntersections(lineSegment, true).length > 0) {
+                // Current segment has intersection(s) with this polygon.
+                return false;
+            }
+        }
+        return true;
     }
     /**
      * Calculate the area of the given polygon (unsigned).
@@ -7034,7 +8329,8 @@ class Polygon {
      * @return {boolean}
      */
     isClockwise() {
-        return Polygon.utils.signedArea(this.vertices) < 0;
+        // return Polygon.utils.signedArea(this.vertices) < 0;
+        return Polygon.utils.isClockwise(this.vertices);
     }
     /**
      * Get the perimeter of this polygon.
@@ -7094,6 +8390,189 @@ class Polygon {
         return this;
     }
     /**
+     * Get the mean `center` of this polygon by calculating the mean value of all vertices.
+     *
+     * Mean: (v[0] + v[1] + ... v[n-1]) / n
+     *
+     * @method getMeanCenter
+     * @instance
+     * @memberof Polygon
+     * @return {Vertex|null} `null` is no vertices are available.
+     */
+    getMeanCenter() {
+        if (this.vertices.length === 0) {
+            return null;
+        }
+        const center = this.vertices[0].clone();
+        for (var i = 1; i < this.vertices.length; i++) {
+            center.add(this.vertices[i]);
+        }
+        center.x /= this.vertices.length;
+        center.y /= this.vertices.length;
+        return center;
+    }
+    /**
+     * Get centroid.
+     * Centroids define the barycenter of any non self-intersecting convex polygon.
+     *
+     * If the polygon is self intersecting or non konvex then the barycenter is not well defined.
+     *
+     * https://mathworld.wolfram.com/PolygonCentroid.html
+     *
+     * @method getCentroid
+     * @instance
+     * @memberof Polygon
+     * @returns {Vertex|null}
+     */
+    getCentroid() {
+        if (this.vertices.length === 0) {
+            return null;
+        }
+        const center = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(0.0, 0.0);
+        const n = this.vertices.length;
+        for (var i = 0; i < n; i++) {
+            // center.add(this.vertices[i]);
+            const cur = this.vertices[i];
+            const next = this.vertices[(i + 1) % n];
+            var factor = cur.x * next.y - next.x * cur.y;
+            center.x += (cur.x + next.x) * factor;
+            center.y += (cur.y + next.y) * factor;
+        }
+        const area = this.area();
+        center.x *= 1 / (6 * area);
+        center.y *= 1 / (6 * area);
+        return center;
+    }
+    //--- BEGIN --- Implement interface `Intersectable`
+    /**
+     * Get all line intersections with this polygon.
+     *
+     * This method returns all intersections (as vertices) with this shape. The returned array of vertices is in no specific order.
+     *
+     * See demo `47-closest-vector-projection-on-polygon` for how it works.
+     *
+     * @param {VertTuple} line - The line to find intersections with.
+     * @param {boolean} inVectorBoundsOnly - If set to true only intersecion points on the passed vector are returned (located strictly between start and end vertex).
+     * @returns {Array<Vertex>} - An array of all intersections within the polygon bounds.
+     */
+    lineIntersections(line, inVectorBoundsOnly = false) {
+        // Find the intersections of all lines inside the edge bounds
+        return Polygon.utils
+            .locateLineIntersecion(line, this.vertices, this.isOpen, inVectorBoundsOnly)
+            .map(intersectionTuple => intersectionTuple.intersection);
+    }
+    /**
+     * Get all line intersections of this polygon and their tangents along the shape.
+     *
+     * This method returns all intersection tangents (as vectors) with this shape. The returned array of vectors is in no specific order.
+     *
+     * @param line
+     * @param inVectorBoundsOnly
+     * @returns
+     */
+    lineIntersectionTangents(line, inVectorBoundsOnly = false) {
+        // Find the intersection tangents of all lines inside the edge bounds
+        return Polygon.utils.locateLineIntersecion(line, this.vertices, this.isOpen, inVectorBoundsOnly).map(intersectionTuple => {
+            const polyLine = this.getEdgeAt(intersectionTuple.edgeIndex);
+            return new _Vector__WEBPACK_IMPORTED_MODULE_5__.Vector(polyLine.a.clone(), polyLine.b.clone()).moveTo(intersectionTuple.intersection);
+        });
+    }
+    //--- END --- Implement interface `Intersectable`
+    /**
+     * Get all line intersections of this polygon and their tangents along the shape.
+     *
+     * This method returns all intersection tangents (as vectors) with this shape. The returned array of vectors is in no specific order.
+     *
+     * @param line
+     * @param inVectorBoundsOnly
+     * @returns
+     */
+    lineIntersectionTangentsIndices(line, inVectorBoundsOnly = false) {
+        // Find the intersection tangents of all lines inside the edge bounds
+        return Polygon.utils.locateLineIntersecion(line, this.vertices, this.isOpen, inVectorBoundsOnly).map(intersectionTuple => {
+            const polyLine = this.getEdgeAt(intersectionTuple.edgeIndex);
+            return {
+                intersection: new _Vector__WEBPACK_IMPORTED_MODULE_5__.Vector(polyLine.a.clone(), polyLine.b.clone()).moveTo(intersectionTuple.intersection),
+                edgeIndex: intersectionTuple.edgeIndex
+            };
+        });
+    }
+    /**
+     * Get the closest line-polygon-intersection point (closest the line point A).
+     *
+     * See demo `47-closest-vector-projection-on-polygon` for how it works.
+     *
+     * @param {VertTuple} line - The line to find intersections with.
+     * @param {boolean} inVectorBoundsOnly - If set to true only intersecion points on the passed vector are considered (located strictly between start and end vertex).
+     * @returns {Vertex | null} - The intersection point within the polygon bounds.
+     */
+    closestLineIntersection(line, inVectorBoundsOnly = false) {
+        var closestInterSectionIndex = this.closestLineIntersectionIndex(line, inVectorBoundsOnly);
+        if (closestInterSectionIndex) {
+            return closestInterSectionIndex.intersection;
+        }
+        else {
+            return null;
+        }
+    }
+    /**
+     * Get the closest line-polygon-intersection point (closest the line point A) plus the edge index..
+     *
+     * See demo `63-measure-angles-on-polygon` for how it works.
+     *
+     * @param {VertTuple} line - The line to find intersections with.
+     * @param {boolean} inVectorBoundsOnly - If set to true only intersecion points on the passed vector are considered (located strictly between start and end vertex).
+     * @returns {PolygonIntersectionTuple| null} - A pair containing the intersection point and the affected polygon edge index.
+     */
+    closestLineIntersectionIndex(line, inVectorBoundsOnly = false) {
+        const allIntersections = this.lineIntersections(line, inVectorBoundsOnly);
+        if (allIntersections.length <= 0) {
+            // Empty polygon -> no intersections
+            return null;
+        }
+        // Find the closest intersection
+        let closestIntersection = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(Number.MAX_VALUE, Number.MAX_VALUE);
+        let closestInterSectionIndex = -1;
+        let curDist = Number.MAX_VALUE;
+        for (var i = 0; i < allIntersections.length; i++) {
+            const curVert = allIntersections[i];
+            const dist = curVert.distance(line.a);
+            if (dist < curDist) {
+                // && line.hasPoint(curVert)) {
+                curDist = dist;
+                closestIntersection = curVert;
+                closestInterSectionIndex = i;
+            }
+        }
+        // return [closestIntersection, closestInterSectionIndex];
+        return { edgeIndex: closestInterSectionIndex, intersection: closestIntersection };
+    }
+    /**
+     * Construct a new polygon from this polygon with more vertices on each edge. The
+     * interpolation count determines the number of additional vertices on each edge.
+     * An interpolation count of `0` will return a polygon that equals the source
+     * polygon.
+     *
+     * @param {number} interpolationCount
+     * @returns {Polygon} A polygon with `interpolationCount` more vertices (as as factor).
+     */
+    getInterpolationPolygon(interpolationCount) {
+        const verts = [];
+        for (var i = 0; i < this.vertices.length; i++) {
+            const curVert = this.vertices[i];
+            const nextVert = this.vertices[(i + 1) % this.vertices.length];
+            verts.push(curVert.clone());
+            // Add interpolation points
+            if (!this.isOpen || i + 1 !== this.vertices.length) {
+                const lerpAmount = 1.0 / (interpolationCount + 1);
+                for (var j = 1; j <= interpolationCount; j++) {
+                    verts.push(curVert.clone().lerp(nextVert, lerpAmount * j));
+                }
+            }
+        }
+        return new Polygon(verts, this.isOpen);
+    }
+    /**
      * Convert this polygon into a new polygon with n evenly distributed vertices.
      *
      * @param {number} pointCount - Must not be negative.
@@ -7107,7 +8586,7 @@ class Polygon {
             return result;
         }
         // Fetch and add the start point from the source polygon
-        let polygonPoint = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(this.vertices[0]);
+        let polygonPoint = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(this.vertices[0]);
         result.vertices.push(polygonPoint);
         if (this.vertices.length === 1) {
             return result;
@@ -7116,7 +8595,7 @@ class Polygon {
         const stepSize = perimeter / pointCount;
         const n = this.vertices.length;
         let polygonIndex = 1;
-        let nextPolygonPoint = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(this.vertices[1]);
+        let nextPolygonPoint = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(this.vertices[1]);
         let segmentLength = polygonPoint.distance(nextPolygonPoint);
         let loopMax = this.isOpen ? n : n + 1;
         let curSegmentU = stepSize;
@@ -7132,13 +8611,14 @@ class Polygon {
             else {
                 polygonIndex++;
                 polygonPoint = nextPolygonPoint;
-                nextPolygonPoint = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(this.vertices[polygonIndex % n]);
+                nextPolygonPoint = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(this.vertices[polygonIndex % n]);
                 curSegmentU = curSegmentU - segmentLength;
                 segmentLength = polygonPoint.distance(nextPolygonPoint);
             }
         }
         return result;
     }
+    //--- BEGIN --- Implement interface `IBounded`
     /**
      * Get the bounding box (bounds) of this polygon.
      *
@@ -7149,6 +8629,67 @@ class Polygon {
      **/
     getBounds() {
         return _Bounds__WEBPACK_IMPORTED_MODULE_1__.Bounds.computeFromVertices(this.vertices);
+    }
+    //--- END --- Implement interface `IBounded`
+    /**
+     * Create a deep copy of this polygon.
+     *
+     * @method clone
+     * @instance
+     * @memberof Polygon
+     * @return {Polygon} The cloned polygon.
+     */
+    clone() {
+        return new Polygon(this.vertices.map(vert => vert.clone()), this.isOpen);
+    }
+    /**
+     * Create a new polygon without colinear adjacent edges. This method does not midify the current polygon
+     * but creates a new one.
+     *
+     * Please note that this method does NOT create deep clones of the vertices. Use Polygon.clone() if you need to.
+     *
+     * Please also note that the `tolerance` may become really large here, as the denominator of two closely
+     * parallel lines is usually pretty large. See the demo `57-eliminate-colinear-polygon-edges` to get
+     * an impression of how denominators work.
+     *
+     * @method elimitateColinearEdges
+     * @instance
+     * @memberof Polygon
+     * @param {number?} tolerance - (default is 1.0) The epsilon to detect co-linear edges.
+     * @return {Polygon} A new polygon without co-linear adjacent edges – respective the given epsilon.
+     */
+    elimitateColinearEdges(tolerance) {
+        const eps = typeof tolerance === "undefined" ? 1.0 : tolerance;
+        const verts = this.vertices.slice(); // Creates a shallow copy
+        let i = 0;
+        var lineA = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(), new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex());
+        var lineB = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(), new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex());
+        while (i + 1 < verts.length && verts.length > 2) {
+            const vertA = verts[i];
+            const vertB = verts[(i + 1) % verts.length];
+            lineA.a = vertA;
+            lineA.b = vertB;
+            lineB.a = vertB;
+            let areColinear = false;
+            let j = i + 2;
+            do {
+                let vertC = verts[j % verts.length];
+                lineB.b = vertC;
+                areColinear = lineA.colinear(lineB, eps);
+                // console.log("are colinear?", i, i + 1, j, areColinear);
+                if (areColinear) {
+                    j++;
+                }
+            } while (areColinear);
+            // Now j points to the first vertex that's NOT colinear to the current lineA
+            // -> delete all vertices in between
+            if (j - i > 2) {
+                // Means: there have been 'colinear vertices' in between
+                verts.splice(i + 1, j - i - 2);
+            }
+            i++;
+        }
+        return new Polygon(verts, this.isOpen);
     }
     /**
      * Convert this polygon to a sequence of quadratic Bézier curves.<br>
@@ -7168,13 +8709,13 @@ class Polygon {
         var qbezier = [];
         var cc0 = this.vertices[0];
         var cc1 = this.vertices[1];
-        var edgeCenter = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(cc0.x + (cc1.x - cc0.x) / 2, cc0.y + (cc1.y - cc0.y) / 2);
+        var edgeCenter = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(cc0.x + (cc1.x - cc0.x) / 2, cc0.y + (cc1.y - cc0.y) / 2);
         qbezier.push(edgeCenter);
         var limit = this.isOpen ? this.vertices.length : this.vertices.length + 1;
         for (var t = 1; t < limit; t++) {
             cc0 = this.vertices[t % this.vertices.length];
             cc1 = this.vertices[(t + 1) % this.vertices.length];
-            var edgeCenter = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(cc0.x + (cc1.x - cc0.x) / 2, cc0.y + (cc1.y - cc0.y) / 2);
+            var edgeCenter = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(cc0.x + (cc1.x - cc0.x) / 2, cc0.y + (cc1.y - cc0.y) / 2);
             qbezier.push(cc0);
             qbezier.push(edgeCenter);
             cc0 = cc1;
@@ -7222,17 +8763,17 @@ class Polygon {
         var cbezier = [];
         var a = this.vertices[0];
         var b = this.vertices[1];
-        var edgeCenter = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(a.x + (b.x - a.x) / 2, a.y + (b.y - a.y) / 2);
+        var edgeCenter = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(a.x + (b.x - a.x) / 2, a.y + (b.y - a.y) / 2);
         cbezier.push(edgeCenter);
         var limit = this.isOpen ? this.vertices.length - 1 : this.vertices.length;
         for (var t = 0; t < limit; t++) {
             var a = this.vertices[t % this.vertices.length];
             var b = this.vertices[(t + 1) % this.vertices.length];
             var c = this.vertices[(t + 2) % this.vertices.length];
-            var aCenter = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(a.x + (b.x - a.x) / 2, a.y + (b.y - a.y) / 2);
-            var bCenter = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(b.x + (c.x - b.x) / 2, b.y + (c.y - b.y) / 2);
-            var a2 = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(aCenter.x + (b.x - aCenter.x) * threshold, aCenter.y + (b.y - aCenter.y) * threshold);
-            var b0 = new _Vertex__WEBPACK_IMPORTED_MODULE_3__.Vertex(bCenter.x + (b.x - bCenter.x) * threshold, bCenter.y + (b.y - bCenter.y) * threshold);
+            var aCenter = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(a.x + (b.x - a.x) / 2, a.y + (b.y - a.y) / 2);
+            var bCenter = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(b.x + (c.x - b.x) / 2, b.y + (c.y - b.y) / 2);
+            var a2 = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(aCenter.x + (b.x - aCenter.x) * threshold, aCenter.y + (b.y - aCenter.y) * threshold);
+            var b0 = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(bCenter.x + (b.x - bCenter.x) * threshold, bCenter.y + (b.y - bCenter.y) * threshold);
             cbezier.push(a2);
             cbezier.push(b0);
             cbezier.push(bCenter);
@@ -7249,8 +8790,9 @@ class Polygon {
      **/
     toCubicBezierSVGString(threshold) {
         var qdata = this.toCubicBezierData(threshold);
-        if (qdata.length == 0)
+        if (qdata.length == 0) {
             return "";
+        }
         var buffer = ["M " + qdata[0].x + " " + qdata[0].y];
         for (var i = 1; i < qdata.length; i += 3) {
             buffer.push("C " +
@@ -7287,42 +8829,6 @@ class Polygon {
         return _BezierPath__WEBPACK_IMPORTED_MODULE_0__.BezierPath.fromArray(pathdata);
     }
     /**
-     * Create an SVG representation of this polygon.
-     *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGString
-     * @param {object=} options - An optional set of options, like 'className'.
-     * @return {string} The SVG string.
-     * @instance
-     * @memberof Polygon
-     **/
-    toSVGString(options) {
-        // options = options || {};
-        // var buffer: Array<string> = [];
-        // buffer.push("<path");
-        // if (options.className) buffer.push(' class="' + options.className + '"');
-        // buffer.push(' d="');
-        // if (this.vertices.length > 0) {
-        //   buffer.push("M ");
-        //   buffer.push(this.vertices[0].x.toString());
-        //   buffer.push(" ");
-        //   buffer.push(this.vertices[0].y.toString());
-        //   for (var i = 1; i < this.vertices.length; i++) {
-        //     buffer.push(" L ");
-        //     buffer.push(this.vertices[i].x.toString());
-        //     buffer.push(" ");
-        //     buffer.push(this.vertices[i].y.toString());
-        //   }
-        //   if (!this.isOpen) {
-        //     buffer.push(" Z");
-        //   }
-        // }
-        // buffer.push('" />');
-        // return buffer.join("");
-        console.warn("[Deprecation] Warning: the Polygon.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
-        return "";
-    }
-    /**
      * This function should invalidate any installed listeners and invalidate this object.
      * After calling this function the object might not hold valid data any more and
      * should not be used.
@@ -7357,6 +8863,9 @@ Polygon.utils = {
         }
         return Math.abs(total);
     },
+    isClockwise(vertices) {
+        return Polygon.utils.signedArea(vertices) < 0;
+    },
     /**
      * Calulate the signed polyon area by interpreting the polygon as a matrix
      * and calculating its determinant.
@@ -7372,137 +8881,56 @@ Polygon.utils = {
             sum += (vertices[j].x - vertices[i].x) * (vertices[i].y + vertices[j].y);
         }
         return sum;
+    },
+    /**
+     * Find intersections of a line with a polygon (vertices).
+     *
+     * @param {VertTuple<any>} line - The line to find intersections with.
+     * @param {Array<Vertex>} vertices - The polygon's vertices.
+     * @param {boolean} isOpen - True if the polygon is open, false otherwise.
+     * @param {boolean} inVectorBoundsOnly - If only intersections in strict vector bounds should be returned.
+     * @returns
+     */
+    locateLineIntersecion(line, vertices, isOpen, inVectorBoundsOnly) {
+        // Find the intersections of all lines inside the edge bounds
+        const intersectionPoints = [];
+        var n = isOpen ? vertices.length - 1 : vertices.length;
+        for (var i = 0; i < n; i++) {
+            const polyLine = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(vertices[i % n], vertices[(i + 1) % n]);
+            const intersection = polyLine.intersection(line);
+            // true => only inside bounds
+            // ignore last edge if open
+            if (intersection !== null &&
+                polyLine.hasPoint(intersection, true) &&
+                (!inVectorBoundsOnly || line.hasPoint(intersection, inVectorBoundsOnly))) {
+                intersectionPoints.push({ edgeIndex: i, intersection: intersection });
+            }
+        }
+        return intersectionPoints;
     }
 };
 //# sourceMappingURL=Polygon.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/SVGBuilder.js":
-/*!************************************************************!*\
-  !*** ./node_modules/plotboilerplate/src/esm/SVGBuilder.js ***!
-  \************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "SVGBuilder": () => (/* binding */ SVGBuilder)
-/* harmony export */ });
-/**
- * Todos:
- *  + use a Drawable interface
- *  + use a SVGSerializable interface
- *
- * @require Vertex
- *
- * @deprecated THIS CLASS IS DEPRECATED. Please use the new `drawutilssvg` instead.
- *
- * @author   Ikaros Kappler
- * @date     2018-12-04
- * @modified 2019-11-07 Added the 'Triangle' style class.
- * @modified 2019-11-13 Added the <?xml ...?> tag.
- * @modified 2020-03-25 Ported this class from vanilla-JS to Typescript.
- * @modified 2020-12-17 Added Circle and CircleSection style classes.
- * @modified 2021-01-26 DEPRECATION
- * @version  1.0.5
- **/
-/**
- * @classdesc A default SVG builder.
- *
- * @requires SVGSerializable
- * @requires Vertex
- */
-class SVGBuilder {
-    /**
-     * @constructor
-     **/
-    constructor() {
-        console.warn("THIS CLASS IS DEPRECATED. Please use the new 'drawutilssvg' instead.");
-    }
-    ;
-    /**
-     *  Builds the SVG code from the given list of drawables.
-     *
-     * @param {object[]} drawables - The drawable elements (should implement Drawable) to be converted (each must have a toSVGString-function).
-     * @param {object}   options  - { canvasSize, zoom, offset }
-     * @return {string}
-     **/
-    build(drawables, options) {
-        var nl = '\n';
-        var indent = '  ';
-        var buffer = [];
-        buffer.push('<?xml version="1.0" encoding="UTF-8"?>' + nl);
-        buffer.push('<svg width="' + options.canvasSize.width + '" height="' + options.canvasSize.height + '"');
-        buffer.push(' viewBox="');
-        buffer.push('0');
-        buffer.push(' ');
-        buffer.push('0');
-        buffer.push(' ');
-        buffer.push(options.canvasSize.width.toString());
-        buffer.push(' ');
-        buffer.push(options.canvasSize.height.toString());
-        buffer.push('"');
-        buffer.push(' xmlns="http://www.w3.org/2000/svg">' + nl);
-        buffer.push(indent + '<defs>' + nl);
-        buffer.push(indent + '<style>' + nl);
-        buffer.push(indent + indent + ' .Vertex { fill : blue; stroke : none; } ' + nl);
-        buffer.push(indent + indent + ' .Triangle { fill : none; stroke : turquoise; stroke-width : 1px; } ' + nl);
-        buffer.push(indent + indent + ' .Polygon { fill : none; stroke : green; stroke-width : 2px; } ' + nl);
-        buffer.push(indent + indent + ' .BezierPath { fill : none; stroke : blue; stroke-width : 2px; } ' + nl);
-        buffer.push(indent + indent + ' .VEllipse { fill : none; stroke : black; stroke-width : 1px; } ' + nl);
-        buffer.push(indent + indent + ' .Line { fill : none; stroke : purple; stroke-width : 1px; } ' + nl);
-        buffer.push(indent + indent + ' .Circle { fill : none; stroke : purple; stroke-width : 1px; } ' + nl);
-        buffer.push(indent + indent + ' .CircleSector { fill : none; stroke : purple; stroke-width : 1px; } ' + nl);
-        buffer.push(indent + '</style>' + nl);
-        buffer.push(indent + '</defs>' + nl);
-        buffer.push(indent + '<g class="main-g"');
-        if (options.zoom || options.offset) {
-            buffer.push(' transform="');
-            if (options.zoom)
-                buffer.push('scale(' + options.zoom.x + ',' + options.zoom.y + ')');
-            if (options.offset)
-                buffer.push(' translate(' + options.offset.x + ',' + options.offset.y + ')');
-            buffer.push('"');
-        }
-        buffer.push('>' + nl);
-        for (var i in drawables) {
-            var d = drawables[i];
-            if (typeof d.toSVGString == 'function') {
-                buffer.push(indent + indent);
-                buffer.push(d.toSVGString({ 'className': d.className }));
-                buffer.push(nl);
-            }
-            else {
-                console.warn('Unrecognized drawable type has no toSVGString()-function. Ignoring: ' + d.className);
-            }
-        }
-        buffer.push(indent + '</g>' + nl);
-        buffer.push('</svg>' + nl);
-        return buffer.join('');
-    }
-    ;
-}
-//# sourceMappingURL=SVGBuilder.js.map
-
-/***/ }),
-
-/***/ "./node_modules/plotboilerplate/src/esm/Triangle.js":
+/***/ "./node_modules/plotboilerplate/src/esm/Triangle.js"
 /*!**********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/Triangle.js ***!
   \**********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Triangle": () => (/* binding */ Triangle)
+/* harmony export */   Triangle: () => (/* binding */ Triangle)
 /* harmony export */ });
 /* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
 /* harmony import */ var _Circle__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Circle */ "./node_modules/plotboilerplate/src/esm/Circle.js");
 /* harmony import */ var _Line__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Line */ "./node_modules/plotboilerplate/src/esm/Line.js");
 /* harmony import */ var _Polygon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Polygon */ "./node_modules/plotboilerplate/src/esm/Polygon.js");
 /* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
-/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
-/* harmony import */ var _geomutils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./geomutils */ "./node_modules/plotboilerplate/src/esm/geomutils.js");
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Vector */ "./node_modules/plotboilerplate/src/esm/Vector.js");
+/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
+/* harmony import */ var _geomutils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./geomutils */ "./node_modules/plotboilerplate/src/esm/geomutils.js");
 /**
  * @author    Ikaros Kappler
  * @date_init 2012-10-17 (Wrote a first version of this in that year).
@@ -7526,12 +8954,19 @@ __webpack_require__.r(__webpack_exports__);
  * @modified  2021-01-22 Always updating circumcircle when retieving it.
  * @modified  2022-02-02 Added the `destroy` method.
  * @modified  2022-02-02 Cleared the `Triangle.toSVGString` function (deprecated). Use `drawutilssvg` instead.
- * @version   2.6.0
+ * @modified  2024-11-22 Added static utility function Triangle.utils.determinant; adapted method `determinant`.
+ * @modified  2024-11-22 Changing visibility of `Triangle.utils` from `private` to `public`.
+ * @modified  2025-14-16 Class `Triangle` now implements interface `Intersectable`.
+ * @modified  2025-14-16 Class `Triangle` now implements interface `IBounded`.
+ * @modified  2025-14-16 Class `Triangle` now implements interface `Intersectable`.
+ * @modified  2025-14-16 Added method `Triangle.move`.
+ * @version   2.10.0
  *
  * @file Triangle
  * @fileoverview A simple triangle class: three vertices.
  * @public
  **/
+
 
 
 
@@ -7620,7 +9055,7 @@ class Triangle {
      * @memberof Triangle
      **/
     getCentroid() {
-        return new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex((this.a.x + this.b.x + this.c.x) / 3, (this.a.y + this.b.y + this.c.y) / 3);
+        return new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex((this.a.x + this.b.x + this.c.x) / 3, (this.a.y + this.b.y + this.c.y) / 3);
     }
     /**
      * Scale the triangle towards its centroid.
@@ -7636,6 +9071,35 @@ class Triangle {
         this.a.scale(factor, centroid);
         this.b.scale(factor, centroid);
         this.c.scale(factor, centroid);
+        return this;
+    }
+    //--- BEGIN --- Implement interface `IBounded`
+    /**
+     * Get the bounding box (bounds) of this Triangle.
+     *
+     * @method getBounds
+     * @instance
+     * @memberof Triangle
+     * @return {Bounds} The rectangular bounds of this Triangle.
+     **/
+    getBounds() {
+        // return Bounds.computeFromVertices([this.a, this.b, this.c]);
+        return this.bounds();
+    }
+    //--- END --- Implement interface `IBounded`
+    /**
+     * Move the Triangle's vertices by the given amount.
+     *
+     * @method move
+     * @param {XYCoords} amount - The amount to move.
+     * @instance
+     * @memberof Triangle
+     * @return {Triangle} this for chaining
+     **/
+    move(amount) {
+        this.a.add(amount);
+        this.b.add(amount);
+        this.c.add(amount);
         return this;
     }
     /**
@@ -7722,14 +9186,14 @@ class Triangle {
         if (Math.abs(G) < Triangle.EPSILON) {
             // Collinear - find extremes and use the midpoint
             const bounds = this.bounds();
-            this.center = new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex((bounds.min.x + bounds.max.x) / 2, (bounds.min.y + bounds.max.y) / 2);
+            this.center = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex((bounds.min.x + bounds.max.x) / 2, (bounds.min.y + bounds.max.y) / 2);
             dx = this.center.x - bounds.min.x;
             dy = this.center.y - bounds.min.y;
         }
         else {
             const cx = (D * E - B * F) / G;
             const cy = (A * F - C * E) / G;
-            this.center = new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex(cx, cy);
+            this.center = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(cx, cy);
             dx = this.center.x - this.a.x;
             dy = this.center.y - this.a.y;
         }
@@ -7761,7 +9225,49 @@ class Triangle {
      * @memberof Triangle
      */
     bounds() {
-        return new _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds(new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex(Triangle.utils.min3(this.a.x, this.b.x, this.c.x), Triangle.utils.min3(this.a.y, this.b.y, this.c.y)), new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex(Triangle.utils.max3(this.a.x, this.b.x, this.c.x), Triangle.utils.max3(this.a.y, this.b.y, this.c.y)));
+        return new _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds(new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(Triangle.utils.min3(this.a.x, this.b.x, this.c.x), Triangle.utils.min3(this.a.y, this.b.y, this.c.y)), new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(Triangle.utils.max3(this.a.x, this.b.x, this.c.x), Triangle.utils.max3(this.a.y, this.b.y, this.c.y)));
+    }
+    //--- BEGIN --- Implement interface `Intersectable`
+    /**
+     * Get all line intersections with this polygon.
+     *
+     * This method returns all intersections (as vertices) with this shape. The returned array of vertices is in no specific order.
+     *
+     * See demo `47-closest-vector-projection-on-polygon` for how it works.
+     *
+     * @param {VertTuple} line - The line to find intersections with.
+     * @param {boolean} inVectorBoundsOnly - If set to true only intersecion points on the passed vector are returned (located strictly between start and end vertex).
+     * @returns {Array<Vertex>} - An array of all intersections within the polygon bounds.
+     */
+    lineIntersections(line, inVectorBoundsOnly = false) {
+        // Find the intersections of all lines inside the edge bounds
+        return _Polygon__WEBPACK_IMPORTED_MODULE_3__.Polygon.utils
+            .locateLineIntersecion(line, [this.a, this.b, this.c], false, inVectorBoundsOnly)
+            .map(intersectionTuple => intersectionTuple.intersection);
+    }
+    /**
+     * Get all line intersections of this polygon and their tangents along the shape.
+     *
+     * This method returns all intersection tangents (as vectors) with this shape. The returned array of vectors is in no specific order.
+     *
+     * @param line
+     * @param inVectorBoundsOnly
+     * @returns
+     */
+    lineIntersectionTangents(line, inVectorBoundsOnly = false) {
+        // Find the intersection tangents of all lines inside the edge bounds
+        return _Polygon__WEBPACK_IMPORTED_MODULE_3__.Polygon.utils
+            .locateLineIntersecion(line, [this.a, this.b, this.c], false, inVectorBoundsOnly)
+            .map(intersectionTuple => {
+            // const polyLine = this.getEdgeAt(intersectionTuple.edgeIndex);
+            const polyLine = this.getEdgeAt(intersectionTuple.edgeIndex);
+            return new _Vector__WEBPACK_IMPORTED_MODULE_5__.Vector(polyLine.a.clone(), polyLine.b.clone()).moveTo(intersectionTuple.intersection);
+        });
+    }
+    //--- END --- Implement interface `Intersectable`
+    getEdgeAt(edgeIndex) {
+        var modIndex = edgeIndex % 3;
+        return modIndex === 0 ? new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(this.a, this.b) : modIndex === 1 ? new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(this.b, this.c) : new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(this.c, this.a);
     }
     /**
      * Convert this triangle to a polygon instance.
@@ -7786,7 +9292,8 @@ class Triangle {
      */
     determinant() {
         // (b.y - a.y)*(c.x - b.x) - (c.y - b.y)*(b.x - a.x);
-        return (this.b.y - this.a.y) * (this.c.x - this.b.x) - (this.c.y - this.b.y) * (this.b.x - this.a.x);
+        // return (this.b.y - this.a.y) * (this.c.x - this.b.x) - (this.c.y - this.b.y) * (this.b.x - this.a.x);
+        return Triangle.utils.determinant(this.a, this.b, this.c);
     }
     /**
      * Checks if the passed vertex (p) is inside this triangle.
@@ -7811,8 +9318,9 @@ class Triangle {
         const lineA = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(this.a, this.b);
         const lineB = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(this.b, this.c);
         const lineC = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(this.c, this.a);
-        const bisector1 = _geomutils__WEBPACK_IMPORTED_MODULE_6__.geomutils.nsectAngle(this.b, this.a, this.c, 2)[0]; // bisector of first angle (in b)
-        const bisector2 = _geomutils__WEBPACK_IMPORTED_MODULE_6__.geomutils.nsectAngle(this.c, this.b, this.a, 2)[0]; // bisector of second angle (in c)
+        const bisector1 = _geomutils__WEBPACK_IMPORTED_MODULE_7__.geomutils.nsectAngle(this.b, this.a, this.c, 2)[0]; // bisector of first angle (in b)
+        const bisector2 = _geomutils__WEBPACK_IMPORTED_MODULE_7__.geomutils.nsectAngle(this.c, this.b, this.a, 2)[0]; // bisector of second angle (in c)
+        // Cast to non-null here because we know there _is_ an intersection
         const intersection = bisector1.intersection(bisector2);
         // Find the closest points on one of the polygon lines (all have same distance by construction)
         const circleIntersA = lineA.getClosestPoint(intersection);
@@ -7854,43 +9362,6 @@ class Triangle {
      */
     toString() {
         return "{ a : " + this.a.toString() + ", b : " + this.b.toString() + ", c : " + this.c.toString() + "}";
-    }
-    /**
-     * Create an SVG representation of this triangle.
-     *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGString
-     * @param {object=} options - An optional set of options, like 'className'.
-     * @return {string} The SVG string.
-     * @instance
-     * @memberof Triangle
-     **/
-    toSVGString(options) {
-        // options = options || {};
-        // var buffer = [];
-        // buffer.push("<path");
-        // if (options.className) buffer.push(' class="' + options.className + '"');
-        // buffer.push(' d="');
-        // var vertices = [this.a, this.b, this.c];
-        // if (vertices.length > 0) {
-        //   buffer.push("M ");
-        //   buffer.push(vertices[0].x);
-        //   buffer.push(" ");
-        //   buffer.push(vertices[0].y);
-        //   for (var i = 1; i < vertices.length; i++) {
-        //     buffer.push(" L ");
-        //     buffer.push(vertices[i].x);
-        //     buffer.push(" ");
-        //     buffer.push(vertices[i].y);
-        //   }
-        //   //if( !this.isOpen ) {
-        //   buffer.push(" Z");
-        //   //}
-        // }
-        // buffer.push('" />');
-        // return buffer.join("");
-        console.warn("[Deprecation] Warning: the Triangle.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
-        return "";
     }
     /**
      * This function should invalidate any installed listeners and invalidate this object.
@@ -7936,21 +9407,31 @@ Triangle.utils = {
         var s = (1 / (2 * area)) * (p0y * p2x - p0x * p2y + (p2y - p0y) * px + (p0x - p2x) * py);
         var t = (1 / (2 * area)) * (p0x * p1y - p0y * p1x + (p0y - p1y) * px + (p1x - p0x) * py);
         return s > 0 && t > 0 && 1 - s - t > 0;
+    },
+    /**
+     * Calculate the determinant of the three vertices a, b and c (in this order).
+     * @param {XYCords} a - The first vertex.
+     * @param {XYCords} b - The first vertex.
+     * @param {XYCords} c - The first vertex.
+     * @returns {nmber}
+     */
+    determinant(a, b, c) {
+        return (b.y - a.y) * (c.x - b.x) - (c.y - b.y) * (b.x - a.x);
     }
 };
 //# sourceMappingURL=Triangle.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js":
+/***/ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js"
 /*!**************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/UIDGenerator.js ***!
   \**************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "UIDGenerator": () => (/* binding */ UIDGenerator)
+/* harmony export */   UIDGenerator: () => (/* binding */ UIDGenerator)
 /* harmony export */ });
 /**
  * @classdesc A static UIDGenerator.
@@ -7967,23 +9448,25 @@ class UIDGenerator {
 UIDGenerator.current = 0;
 //# sourceMappingURL=UIDGenerator.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/VEllipse.js":
+/***/ "./node_modules/plotboilerplate/src/esm/VEllipse.js"
 /*!**********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/VEllipse.js ***!
   \**********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "VEllipse": () => (/* binding */ VEllipse)
+/* harmony export */   VEllipse: () => (/* binding */ VEllipse)
 /* harmony export */ });
 /* harmony import */ var _Line__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Line */ "./node_modules/plotboilerplate/src/esm/Line.js");
 /* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Vector */ "./node_modules/plotboilerplate/src/esm/Vector.js");
 /* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
 /* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
 /* harmony import */ var _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./CubicBezierCurve */ "./node_modules/plotboilerplate/src/esm/CubicBezierCurve.js");
+/* harmony import */ var _Circle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Circle */ "./node_modules/plotboilerplate/src/esm/Circle.js");
+/* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
 /**
  * @author   Ikaros Kappler
  * @date     2018-11-28
@@ -8001,11 +9484,17 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-03-19 Added the `VEllipse.rotate` function.
  * @modified 2022-02-02 Added the `destroy` method.
  * @modified 2022-02-02 Cleared the `VEllipse.toSVGString` function (deprecated). Use `drawutilssvg` instead.
- * @version  1.3.0
+ * @modified 2025-03-31 ATTENTION: modified the winding direction of the `tangentAt` method to match with the Circle method. This is a breaking change!
+ * @modified 2025-03-31 Adding the `VEllipse.move(amount: XYCoords)` method.
+ * @modified 2025-04-19 Adding the `VEllipse.getBounds()` method.
+ * @modified 2025-04-24 Adding the `VEllipse.getExtremePoints()` method for calculating minima and maxima.
+ * @version  1.4.0
  *
  * @file VEllipse
  * @fileoverview Ellipses with a center and an x- and a y-axis (stored as a vertex).
  **/
+
+
 
 
 
@@ -8092,10 +9581,95 @@ class VEllipse {
      * @return {number} The signed vertical radius of this ellipse.
      */
     signedRadiusV() {
-        // return Math.abs(this.axis.y - this.center.y);
         // Rotate axis back to origin before calculating radius
-        // return Math.abs(new Vertex(this.axis).rotate(-this.rotation,this.center).y - this.center.y);
         return new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(this.axis).rotate(-this.rotation, this.center).y - this.center.y;
+    }
+    /**
+     * Get the the minima and maxima (points) of this (rotated) ellipse.
+     *
+     * @method getExtremePoints
+     * @instance
+     * @memberof VEllipse
+     * @return {[Vertex, Vertex, Vertex, Vertex]} Get the the minima and maxima (points) of this (rotated) ellipse.
+     */
+    getExtremePoints() {
+        const a = this.radiusH();
+        const b = this.radiusV();
+        // Calculate t_x values
+        const t_x1 = Math.atan2(-b * Math.sin(this.rotation), a * Math.cos(this.rotation));
+        const t_x2 = t_x1 + Math.PI;
+        // Calculate x values at t_x
+        const x_x1 = this.center.x + a * Math.cos(t_x1) * Math.cos(this.rotation) - b * Math.sin(t_x1) * Math.sin(this.rotation);
+        const y_x1 = this.center.y + a * Math.cos(t_x1) * Math.sin(this.rotation) + b * Math.sin(t_x1) * Math.cos(this.rotation);
+        const x_x2 = this.center.x + a * Math.cos(t_x2) * Math.cos(this.rotation) - b * Math.sin(t_x2) * Math.sin(this.rotation);
+        const y_x2 = this.center.y + a * Math.cos(t_x2) * Math.sin(this.rotation) + b * Math.sin(t_x2) * Math.cos(this.rotation);
+        let x_max, x_min;
+        if (x_x1 > x_x2) {
+            x_max = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(x_x1, y_x1);
+            x_min = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(x_x2, y_x2);
+        }
+        else {
+            x_max = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(x_x2, y_x2);
+            x_min = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(x_x1, y_x1);
+        }
+        // Calculate t_y values
+        const t_y1 = Math.atan2(b * Math.cos(this.rotation), a * Math.sin(this.rotation));
+        const t_y2 = t_y1 + Math.PI;
+        // Calculate y values at t_y
+        const x_y1 = this.center.x + a * Math.cos(t_y1) * Math.cos(this.rotation) - b * Math.sin(t_y1) * Math.sin(this.rotation);
+        const y_y1 = this.center.y + a * Math.cos(t_y1) * Math.sin(this.rotation) + b * Math.sin(t_y1) * Math.cos(this.rotation);
+        const x_y2 = this.center.x + a * Math.cos(t_y2) * Math.cos(this.rotation) - b * Math.sin(t_y2) * Math.sin(this.rotation);
+        const y_y2 = this.center.y + a * Math.cos(t_y2) * Math.sin(this.rotation) + b * Math.sin(t_y2) * Math.cos(this.rotation);
+        let y_max, y_min;
+        if (y_y1 > y_y2) {
+            y_max = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(x_y1, y_y1);
+            y_min = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(x_y2, y_y2);
+        }
+        else {
+            y_max = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(x_y2, y_y2);
+            y_min = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(x_y1, y_y1);
+        }
+        return [x_max, x_min, y_max, y_min];
+    }
+    //--- BEGIN --- Implement interface `IBounded`
+    /**
+     * Get the bounds of this ellipse.
+     *
+     * The bounds are approximated by the underlying segment buffer; the more segment there are,
+     * the more accurate will be the returned bounds.
+     *
+     * @method getBounds
+     * @instance
+     * @memberof VEllipse
+     * @return {Bounds} The bounds of this ellipse.
+     **/
+    getBounds() {
+        // Thanks to Cuixiping
+        //    https://stackoverflow.com/questions/87734/how-do-you-calculate-the-axis-aligned-bounding-box-of-an-ellipse
+        const r1 = this.radiusH();
+        const r2 = this.radiusV();
+        const ux = r1 * Math.cos(this.rotation);
+        const uy = r1 * Math.sin(this.rotation);
+        const vx = r2 * Math.cos(this.rotation + Math.PI / 2);
+        const vy = r2 * Math.sin(this.rotation + Math.PI / 2);
+        const bbox_halfwidth = Math.sqrt(ux * ux + vx * vx);
+        const bbox_halfheight = Math.sqrt(uy * uy + vy * vy);
+        return new _Bounds__WEBPACK_IMPORTED_MODULE_6__.Bounds({ x: this.center.x - bbox_halfwidth, y: this.center.y - bbox_halfheight }, { x: this.center.x + bbox_halfwidth, y: this.center.y + bbox_halfheight });
+    }
+    //--- BEGIN --- Implement interface `IBounded`
+    /**
+     * Move the ellipse by the given amount. This is equivalent by moving the `center` and `axis` points.
+     *
+     * @method move
+     * @param {XYCoords} amount - The amount to move.
+     * @instance
+     * @memberof VEllipse
+     * @return {VEllipse} this for chaining
+     **/
+    move(amount) {
+        this.center.add(amount);
+        this.axis.add(amount);
+        return this;
     }
     /**
      * Scale this ellipse by the given factor from the center point. The factor will be applied to both radii.
@@ -8154,7 +9728,7 @@ class VEllipse {
      * @param {number=1.0} length - [optional, default=1] The length of the returned vector.
      */
     normalAt(angle, length) {
-        const point = this.vertAt(angle);
+        const point = this.vertAt(angle - this.rotation); // HERE IS THE CORRECT BEHAVIOR!
         const foci = this.getFoci();
         // Calculate the angle between [point,focusA] and [point,focusB]
         const angleA = new _Line__WEBPACK_IMPORTED_MODULE_0__.Line(point, foci[0]).angle();
@@ -8166,12 +9740,13 @@ class VEllipse {
             .addX(50)
             .clone()
             .rotate(Math.PI + centerAngle, point);
-        if (this.center.distance(endPointA) < this.center.distance(endPointB)) {
-            return new _Vector__WEBPACK_IMPORTED_MODULE_1__.Vector(point, endPointB);
+        const resultVector = this.center.distance(endPointA) < this.center.distance(endPointB)
+            ? new _Vector__WEBPACK_IMPORTED_MODULE_1__.Vector(point, endPointB)
+            : new _Vector__WEBPACK_IMPORTED_MODULE_1__.Vector(point, endPointA);
+        if (typeof length === "number") {
+            resultVector.setLength(length);
         }
-        else {
-            return new _Vector__WEBPACK_IMPORTED_MODULE_1__.Vector(point, endPointA);
-        }
+        return resultVector;
     }
     /**
      * Get the tangent vector at the given angle.
@@ -8190,9 +9765,7 @@ class VEllipse {
      */
     tangentAt(angle, length) {
         const normal = this.normalAt(angle, length);
-        // Rotate the normal by 90 degrees, then it is the tangent.
-        normal.b.rotate(Math.PI / 2, normal.a);
-        return normal;
+        return normal.inv().perp();
     }
     /**
      * Get the perimeter of this ellipse.
@@ -8243,6 +9816,8 @@ class VEllipse {
     /**
      * Get equally distributed points on the outline of this ellipse.
      *
+     * @method getEquidistantVertices
+     * @instance
      * @param {number} pointCount - The number of points.
      * @returns {Array<Vertex>}
      */
@@ -8254,6 +9829,75 @@ class VEllipse {
         }
         return result;
     }
+    //--- BEGIN --- Implement interface `Intersectable`
+    /**
+     * Get the line intersections as vectors with this ellipse.
+     *
+     * @method lineIntersections
+     * @instance
+     * @param {VertTuple<Vector> ray - The line/ray to intersect this ellipse with.
+     * @param {boolean} inVectorBoundsOnly - (default=false) Set to true if only intersections within the vector bounds are of interest.
+     * @returns
+     */
+    lineIntersections(ray, inVectorBoundsOnly = false) {
+        // Question: what happens to extreme versions when ellipse is a line (width or height is zero)?
+        //           This would result in a Division_by_Zero exception!
+        // Step A: create clones for operations (keep originals unchanged)
+        const ellipseCopy = this.clone(); // VEllipse
+        const rayCopy = ray.clone(); // Vector
+        // Step B: move both so ellipse's center is located at (0,0)
+        const moveAmount = ellipseCopy.center.clone().inv();
+        ellipseCopy.move(moveAmount);
+        rayCopy.add(moveAmount);
+        // Step C: rotate eclipse backwards it's rotation, so that rotation is zero (0.0).
+        //         Rotate together with ray!
+        const rotationAmount = -ellipseCopy.rotation;
+        ellipseCopy.rotate(rotationAmount); // Rotation around (0,0) = center of translated ellipse
+        rayCopy.a.rotate(rotationAmount, ellipseCopy.center);
+        rayCopy.b.rotate(rotationAmount, ellipseCopy.center);
+        // Step D: find x/y factors to use for scaling to transform the ellipse to a circle.
+        //         Scale together with vector ray.
+        const radiusH = ellipseCopy.radiusH();
+        const radiusV = ellipseCopy.radiusV();
+        const scalingFactors = radiusH > radiusV ? { x: radiusV / radiusH, y: 1.0 } : { x: 1.0, y: radiusH / radiusV };
+        // Step E: scale ellipse AND ray by calculated factors.
+        ellipseCopy.axis.scaleXY(scalingFactors);
+        rayCopy.a.scaleXY(scalingFactors);
+        rayCopy.b.scaleXY(scalingFactors);
+        // Intermediate result: now the ellipse is transformed to a circle and we can calculate intersections :)
+        // Step F: calculate circle+line intersecions
+        const tmpCircle = new _Circle__WEBPACK_IMPORTED_MODULE_5__.Circle(new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(), ellipseCopy.radiusH()); // radiusH() === radiusV()
+        const intersections = tmpCircle.lineIntersections(rayCopy, inVectorBoundsOnly);
+        // Step G: transform intersecions back to original configuration
+        intersections.forEach(function (intersectionPoint) {
+            // Reverse transformation from above.
+            intersectionPoint.scaleXY({ x: 1 / scalingFactors.x, y: 1 / scalingFactors.y }, ellipseCopy.center);
+            intersectionPoint.rotate(-rotationAmount, ellipseCopy.center);
+            intersectionPoint.sub(moveAmount);
+        });
+        return intersections;
+    }
+    /**
+     * Get all line intersections of this polygon and their tangents along the shape.
+     *
+     * This method returns all intersection tangents (as vectors) with this shape. The returned array of vectors is in no specific order.
+     *
+     * @param line
+     * @param lineIntersectionTangents
+     * @returns
+     */
+    lineIntersectionTangents(line, inVectorBoundsOnly = false) {
+        // Find the intersections of all lines plus their tangents inside the circle bounds
+        const interSectionPoints = this.lineIntersections(line, inVectorBoundsOnly);
+        return interSectionPoints.map((vert) => {
+            // Calculate angle
+            const lineFromCenter = new _Line__WEBPACK_IMPORTED_MODULE_0__.Line(this.center, vert);
+            const angle = lineFromCenter.angle();
+            // Calculate tangent at angle
+            return this.tangentAt(angle);
+        });
+    }
+    //--- END --- Implement interface `Intersectable`
     /**
      * Convert this ellipse into cubic Bézier curves.
      *
@@ -8266,7 +9910,7 @@ class VEllipse {
         // Math by Luc Maisonobe
         //    http://www.spaceroots.org/documents/ellipse/node22.html
         // Note that ellipses with radiusH=0 or radiusV=0 cannot be represented as Bézier curves.
-        // Return a single line here (as a Bézier curve)
+        // Return a single line here (as a Bézier curve)?
         // if (Math.abs(this.radiusV()) < 0.00001) {
         //   const radiusH = this.radiusH();
         //   return [
@@ -8296,10 +9940,10 @@ class VEllipse {
         const radiusV = this.radiusV();
         const curves = [];
         const angles = VEllipse.utils.equidistantVertAngles(radiusH, radiusV, segmentCount);
-        let curAngle = angles[0];
+        let curAngle = angles[0] + this.rotation;
         let startPoint = this.vertAt(curAngle);
         for (var i = 0; i < angles.length; i++) {
-            let nextAngle = angles[(i + 1) % angles.length];
+            let nextAngle = angles[(i + 1) % angles.length] + this.rotation;
             let endPoint = this.vertAt(nextAngle);
             if (Math.abs(radiusV) < 0.0001 || Math.abs(radiusH) < 0.0001) {
                 // Distorted ellipses can only be approximated by linear Bézier segments
@@ -8308,9 +9952,9 @@ class VEllipse {
                 curves.push(curve);
             }
             else {
-                let startTangent = this.tangentAt(curAngle);
-                let endTangent = this.tangentAt(nextAngle);
-                // Find intersection
+                let startTangent = this.tangentAt(curAngle + this.rotation);
+                let endTangent = this.tangentAt(nextAngle + this.rotation);
+                // Find intersection (ignore that the result might be null in some extreme cases)
                 let intersection = startTangent.intersection(endTangent);
                 // What if intersection is undefined?
                 // --> This *can* not happen if segmentCount > 2 and height and width of the ellipse are not zero.
@@ -8323,27 +9967,6 @@ class VEllipse {
             curAngle = nextAngle;
         }
         return curves;
-    }
-    /**
-     * Create an SVG representation of this ellipse.
-     *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @param {object} options { className?:string }
-     * @return string The SVG string
-     */
-    toSVGString(options) {
-        // options = options || {};
-        // var buffer: Array<string> = [];
-        // buffer.push("<ellipse");
-        // if (options.className) buffer.push(' class="' + options.className + '"');
-        // buffer.push(' cx="' + this.center.x + '"');
-        // buffer.push(' cy="' + this.center.y + '"');
-        // buffer.push(' rx="' + this.axis.x + '"');
-        // buffer.push(' ry="' + this.axis.y + '"');
-        // buffer.push(" />");
-        // return buffer.join("");
-        console.warn("[Deprecation] Warning: the VEllipse.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
-        return "";
     }
     /**
      * This function should invalidate any installed listeners and invalidate this object.
@@ -8415,33 +10038,43 @@ VEllipse.utils = {
 }; // END utils
 //# sourceMappingURL=VEllipse.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/VEllipseSector.js":
+/***/ "./node_modules/plotboilerplate/src/esm/VEllipseSector.js"
 /*!****************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/VEllipseSector.js ***!
   \****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "VEllipseSector": () => (/* binding */ VEllipseSector)
+/* harmony export */   VEllipseSector: () => (/* binding */ VEllipseSector)
 /* harmony export */ });
-/* harmony import */ var _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CubicBezierCurve */ "./node_modules/plotboilerplate/src/esm/CubicBezierCurve.js");
-/* harmony import */ var _geomutils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./geomutils */ "./node_modules/plotboilerplate/src/esm/geomutils.js");
-/* harmony import */ var _Line__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Line */ "./node_modules/plotboilerplate/src/esm/Line.js");
-/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
-/* harmony import */ var _VEllipse__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./VEllipse */ "./node_modules/plotboilerplate/src/esm/VEllipse.js");
-/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
+/* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
+/* harmony import */ var _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CubicBezierCurve */ "./node_modules/plotboilerplate/src/esm/CubicBezierCurve.js");
+/* harmony import */ var _geomutils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./geomutils */ "./node_modules/plotboilerplate/src/esm/geomutils.js");
+/* harmony import */ var _Line__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Line */ "./node_modules/plotboilerplate/src/esm/Line.js");
+/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
+/* harmony import */ var _VEllipse__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./VEllipse */ "./node_modules/plotboilerplate/src/esm/VEllipse.js");
+/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
 /**
  * Implementation of elliptic sectors.
  * Note that sectors are constructed in clockwise direction.
  *
- * @author  Ikaros Kappler
- * @date    2021-02-26
+ * @author   Ikaros Kappler
+ * @date     2021-02-26
  * @modified 2022-02-02 Added the `destroy` method.
- * @version 1.1.0
+ * @modified 2022-11-01 Tweaked the `endpointToCenterParameters` function to handle negative values, too, without errors.
+ * @modified 2025-04-01 Adapting a the `toCubicBezier` calculation to match an underlying change in the vertAt and tangentAt calculation of ellipses (was required to hamonize both methods with circles).
+ * @modified 2025-04-02 Adding `VEllipseSector.containsAngle` method.
+ * @modified 2025-04-02 Adding `VEllipseSector.lineIntersections` and `VEllipseSector.lineIntersectionTangents` and implementing `Intersectable`.
+ * @modified 2025-04-07 Adding value wrapping (0 to TWO_PI) to the `VEllipseSector.containsAngle` method.
+ * @modified 2025-04-09 Adding the `VEllipseSector.move` method.
+ * @modified 2025-04-19 Added the `VEllipseSector.getStartPoint` and `getEndPoint` methods.
+ * @modified 2025-04-23 Added the `VEllipseSector.getBounds` method.
+ * @version  1.2.0
  */
+
 
 
 
@@ -8477,11 +10110,142 @@ class VEllipseSector {
          * Required to generate proper CSS classes and other class related IDs.
          **/
         this.className = "VEllipseSector";
-        this.uid = _UIDGenerator__WEBPACK_IMPORTED_MODULE_3__.UIDGenerator.next();
+        this.uid = _UIDGenerator__WEBPACK_IMPORTED_MODULE_4__.UIDGenerator.next();
         this.ellipse = ellipse;
-        this.startAngle = _geomutils__WEBPACK_IMPORTED_MODULE_1__.geomutils.wrapMinMax(startAngle, 0, Math.PI * 2);
-        this.endAngle = _geomutils__WEBPACK_IMPORTED_MODULE_1__.geomutils.wrapMinMax(endAngle, 0, Math.PI * 2);
+        this.startAngle = _geomutils__WEBPACK_IMPORTED_MODULE_2__.geomutils.wrapMinMax(startAngle, 0, Math.PI * 2);
+        this.endAngle = _geomutils__WEBPACK_IMPORTED_MODULE_2__.geomutils.wrapMinMax(endAngle, 0, Math.PI * 2);
     }
+    /**
+     * Move the ellipse sector by the given amount.
+     *
+     * @method move
+     * @param {XYCoords} amount - The amount to move.
+     * @instance
+     * @memberof VEllipseSector
+     * @return {VEllipseSector} this for chaining
+     **/
+    move(amount) {
+        this.ellipse.move(amount);
+        return this;
+    }
+    /**
+     * Checks wether the given angle (must be inside 0 and PI*2) is contained inside this sector.
+     *
+     * @param {number} angle - The numeric angle to check.
+     * @method containsAngle
+     * @instance
+     * @memberof VEllipseSectpr
+     * @return {boolean} True if (and only if) this sector contains the given angle.
+     */
+    containsAngle(angle) {
+        angle = _geomutils__WEBPACK_IMPORTED_MODULE_2__.geomutils.mapAngleTo2PI(angle); // wrapMinMax(angle, 0, Math.PI * 2);
+        const sAngle = _geomutils__WEBPACK_IMPORTED_MODULE_2__.geomutils.mapAngleTo2PI(this.startAngle);
+        const eAngle = _geomutils__WEBPACK_IMPORTED_MODULE_2__.geomutils.mapAngleTo2PI(this.endAngle);
+        // TODO: cleanup
+        // if (this.startAngle <= this.endAngle) {
+        //   return angle >= this.startAngle && angle < this.endAngle;
+        // } else {
+        //   // startAngle > endAngle
+        //   return angle >= this.startAngle || angle < this.endAngle;
+        // }
+        if (sAngle <= eAngle) {
+            return angle >= sAngle && angle < eAngle;
+        }
+        else {
+            // startAngle > endAngle
+            return angle >= sAngle || angle < eAngle;
+        }
+    }
+    /**
+     * Get the sectors starting point (on the underlying ellipse, located at the start angle).
+     *
+     * @method getStartPoint
+     * @instance
+     * @memberof VEllipseSector
+     * @return {Vertex} The sector's stating point.
+     */
+    getStartPoint() {
+        return this.ellipse.vertAt(this.startAngle);
+    }
+    /**
+     * Get the sectors ending point (on the underlying ellipse, located at the end angle).
+     *
+     * @method getEndPoint
+     * @instance
+     * @memberof VEllipseSector
+     * @return {Vertex} The sector's ending point.
+     */
+    getEndPoint() {
+        return this.ellipse.vertAt(this.endAngle);
+    }
+    //--- BEGIN --- Implement interface `IBounded`
+    /**
+     * Get the bounds of this elliptic sector.
+     *
+     * The bounds are approximated by the underlying segment buffer; the more segment there are,
+     * the more accurate will be the returned bounds.
+     *
+     * @method getBounds
+     * @instance
+     * @memberof VEllipse
+     * @return {Bounds} The bounds of this elliptic sector.
+     **/
+    getBounds() {
+        // Calculage angles from east, west, north and south box points and check if they are inside
+        const extremes = this.ellipse.getExtremePoints();
+        const candidates = extremes.filter(point => {
+            const angle = new _Line__WEBPACK_IMPORTED_MODULE_3__.Line(this.ellipse.center, point).angle() - this.ellipse.rotation;
+            return this.containsAngle(angle);
+        });
+        return _Bounds__WEBPACK_IMPORTED_MODULE_0__.Bounds.computeFromVertices([this.getStartPoint(), this.getEndPoint()].concat(candidates));
+    }
+    //--- BEGIN --- Implement interface `Intersectable`
+    /**
+     * Get the line intersections as vectors with this ellipse.
+     *
+     * @method lineIntersections
+     * @instance
+     * @memberof VEllipseSectpr
+     * @param {VertTuple<Vector>} ray - The line/ray to intersect this ellipse with.
+     * @param {boolean} inVectorBoundsOnly - (default=false) Set to true if only intersections within the vector bounds are of interest.
+     * @returns
+     */
+    lineIntersections(ray, inVectorBoundsOnly = false) {
+        // First get all line intersections from underlying ellipse.
+        const ellipseIntersections = this.ellipse.lineIntersections(ray, inVectorBoundsOnly);
+        // Drop all intersection points that are not contained in the circle sectors bounds.
+        const tmpLine = new _Line__WEBPACK_IMPORTED_MODULE_3__.Line(this.ellipse.center, new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex());
+        return ellipseIntersections.filter((intersectionPoint) => {
+            tmpLine.b.set(intersectionPoint);
+            const lineAngle = tmpLine.angle();
+            return this.containsAngle(lineAngle - this.ellipse.rotation);
+        });
+    }
+    /**
+     * Get all line intersections of this polygon and their tangents along the shape.
+     *
+     * This method returns all intersection tangents (as vectors) with this shape. The returned array of vectors is in no specific order.
+     *
+     * @method lineIntersections
+     * @memberof VEllipseSectpr
+     * @param line
+     * @param lineIntersectionTangents
+     * @returns
+     */
+    lineIntersectionTangents(line, inVectorBoundsOnly = false) {
+        // Find the intersections of all lines plus their tangents inside the circle bounds
+        const interSectionPoints = this.lineIntersections(line, inVectorBoundsOnly);
+        return interSectionPoints.map((vert) => {
+            // Calculate angle
+            const lineFromCenter = new _Line__WEBPACK_IMPORTED_MODULE_3__.Line(this.ellipse.center, vert);
+            const angle = lineFromCenter.angle();
+            // console.log("angle", (angle / Math.PI) * 180.0);
+            // const angle = Math.random() * Math.PI * 2; // TODO
+            // Calculate tangent at angle
+            return this.ellipse.tangentAt(angle);
+        });
+    }
+    //--- END --- Implement interface `Intersectable`
     /**
      * Convert this elliptic sector into cubic Bézier curves.
      *
@@ -8509,12 +10273,12 @@ class VEllipseSector {
         for (var i = 0; i + 1 < angles.length; i++) {
             let nextAngle = angles[(i + 1) % angles.length];
             let endPoint = this.ellipse.vertAt(nextAngle);
-            let startTangent = this.ellipse.tangentAt(curAngle);
-            let endTangent = this.ellipse.tangentAt(nextAngle);
+            let startTangent = this.ellipse.tangentAt(curAngle + this.ellipse.rotation);
+            let endTangent = this.ellipse.tangentAt(nextAngle + this.ellipse.rotation);
             // Distorted ellipses can only be approximated by linear Bézier segments
             if (Math.abs(radiusV) < 0.0001 || Math.abs(radiusH) < 0.0001) {
                 let diff = startPoint.difference(endPoint);
-                let curve = new _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_0__.CubicBezierCurve(startPoint.clone(), endPoint.clone(), startPoint.clone().addXY(diff.x * 0.333, diff.y * 0.333), endPoint.clone().addXY(-diff.x * 0.333, -diff.y * 0.333));
+                let curve = new _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_1__.CubicBezierCurve(startPoint.clone(), endPoint.clone(), startPoint.clone().addXY(diff.x * 0.333, diff.y * 0.333), endPoint.clone().addXY(-diff.x * 0.333, -diff.y * 0.333));
                 curves.push(curve);
             }
             else {
@@ -8522,10 +10286,14 @@ class VEllipseSector {
                 let intersection = startTangent.intersection(endTangent);
                 // What if intersection is undefined?
                 // --> This *can* not happen if segmentCount > 2 and height and width of the ellipse are not zero.
-                let startDiff = startPoint.difference(intersection);
-                let endDiff = endPoint.difference(intersection);
-                let curve = new _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_0__.CubicBezierCurve(startPoint.clone(), endPoint.clone(), startPoint.clone().add(startDiff.scale(threshold)), endPoint.clone().add(endDiff.scale(threshold)));
-                curves.push(curve);
+                if (intersection) {
+                    // It's VERY LIKELY hat this ALWAYS happens; it's just a typesave variant.
+                    // Intersection cannot be null.
+                    let startDiff = startPoint.difference(intersection);
+                    let endDiff = endPoint.difference(intersection);
+                    let curve = new _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_1__.CubicBezierCurve(startPoint.clone(), endPoint.clone(), startPoint.clone().add(startDiff.scale(threshold)), endPoint.clone().add(endDiff.scale(threshold)));
+                    curves.push(curve);
+                }
             }
             startPoint = endPoint;
             curAngle = nextAngle;
@@ -8560,12 +10328,12 @@ VEllipseSector.ellipseSectorUtils = {
         // one whole circle [x,x+2*PI].
         // Revelations of more than 2*PI might result in unexpected arcs.
         // -> Use the geomutils.wrapMax( angle, 2*PI )
-        startAngle = _geomutils__WEBPACK_IMPORTED_MODULE_1__.geomutils.wrapMax(startAngle, Math.PI * 2);
-        endAngle = _geomutils__WEBPACK_IMPORTED_MODULE_1__.geomutils.wrapMax(endAngle, Math.PI * 2);
+        startAngle = _geomutils__WEBPACK_IMPORTED_MODULE_2__.geomutils.wrapMax(startAngle, Math.PI * 2);
+        endAngle = _geomutils__WEBPACK_IMPORTED_MODULE_2__.geomutils.wrapMax(endAngle, Math.PI * 2);
         // Find the start- and end-point on the rotated ellipse
         // XYCoords to Vertex (for rotation)
-        var end = new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex(_VEllipse__WEBPACK_IMPORTED_MODULE_4__.VEllipse.utils.polarToCartesian(x, y, radiusH, radiusV, endAngle));
-        var start = new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex(_VEllipse__WEBPACK_IMPORTED_MODULE_4__.VEllipse.utils.polarToCartesian(x, y, radiusH, radiusV, startAngle));
+        var end = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(_VEllipse__WEBPACK_IMPORTED_MODULE_5__.VEllipse.utils.polarToCartesian(x, y, radiusH, radiusV, endAngle));
+        var start = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(_VEllipse__WEBPACK_IMPORTED_MODULE_5__.VEllipse.utils.polarToCartesian(x, y, radiusH, radiusV, startAngle));
         end.rotate(rotation, { x: x, y: y });
         start.rotate(rotation, { x: x, y: y });
         // Boolean stored as integers (0|1).
@@ -8586,7 +10354,7 @@ VEllipseSector.ellipseSectorUtils = {
         const r2d = 180 / Math.PI;
         pathData.push("A", radiusH, radiusV, rotation * r2d, largeArcFlag, sweepFlag, end.x, end.y);
         return pathData;
-    },
+    }, // END function describeSVGArc
     /**
      * Helper function to find second-kind elliptic angles, so that the euclidean distance along the the
      * elliptic sector is the same for all.
@@ -8608,22 +10376,22 @@ VEllipseSector.ellipseSectorUtils = {
      * @return {Array<number>} An array of n angles inside startAngle and endAngle (where n <= fullEllipsePointCount).
      */
     equidistantVertAngles: (radiusH, radiusV, startAngle, endAngle, fullEllipsePointCount) => {
-        var ellipseAngles = _VEllipse__WEBPACK_IMPORTED_MODULE_4__.VEllipse.utils.equidistantVertAngles(radiusH, radiusV, fullEllipsePointCount);
+        var ellipseAngles = _VEllipse__WEBPACK_IMPORTED_MODULE_5__.VEllipse.utils.equidistantVertAngles(radiusH, radiusV, fullEllipsePointCount);
         ellipseAngles = ellipseAngles.map((angle) => VEllipseSector.ellipseSectorUtils.normalizeAngle(angle));
-        var angleIsInRange = (angle) => {
+        const angleIsInRange = (angle) => {
             if (startAngle < endAngle)
                 return angle >= startAngle && angle <= endAngle;
             else
                 return angle >= startAngle || (angle <= endAngle && angle >= 0);
         };
         // Drop all angles outside the sector
-        var ellipseAngles = ellipseAngles.filter(angleIsInRange);
+        ellipseAngles = ellipseAngles.filter(angleIsInRange);
         // Now we need to sort the angles to the first one in the array is the closest to startAngle.
         // --> find the angle that is closest to the start angle
-        var startIndex = VEllipseSector.ellipseSectorUtils.findClosestToStartAngle(startAngle, endAngle, ellipseAngles);
+        const startIndex = VEllipseSector.ellipseSectorUtils.findClosestToStartAngle(startAngle, endAngle, ellipseAngles);
         // Bring all angles into the correct order
         //    Idea: use splice or slice here?
-        var angles = [];
+        const angles = [];
         for (var i = 0; i < ellipseAngles.length; i++) {
             angles.push(ellipseAngles[(startIndex + i) % ellipseAngles.length]);
         }
@@ -8634,7 +10402,7 @@ VEllipseSector.ellipseSectorUtils = {
         if (startAngle > endAngle) {
             const n = ellipseAngles.length;
             for (var i = 0; i < n; i++) {
-                const ea = _geomutils__WEBPACK_IMPORTED_MODULE_1__.geomutils.wrapMinMax(ellipseAngles[i], 0, Math.PI * 2);
+                const ea = _geomutils__WEBPACK_IMPORTED_MODULE_2__.geomutils.wrapMinMax(ellipseAngles[i], 0, Math.PI * 2);
                 if (ea >= startAngle && ea >= endAngle) {
                     return i;
                 }
@@ -8689,34 +10457,36 @@ VEllipseSector.ellipseSectorUtils = {
         }
         // Step 2 + 3: compute center
         const sign = fa === fs ? -1 : 1;
-        const M = sqrt((prx * pry - prx * py - pry * px) / (prx * py + pry * px)) * sign;
+        // const M: number = sqrt((prx * pry - prx * py - pry * px) / (prx * py + pry * px)) * sign;
+        const M = sqrt(Math.abs((prx * pry - prx * py - pry * px) / (prx * py + pry * px))) * sign;
         const _cx = (M * (rx * y)) / ry;
         const _cy = (M * (-ry * x)) / rx;
         const cx = cosphi * _cx - sinphi * _cy + (x1 + x2) / 2;
         const cy = sinphi * _cx + cosphi * _cy + (y1 + y2) / 2;
         // Step 4: Compute start and end angle
-        const center = new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex(cx, cy);
+        const center = new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(cx, cy);
         const axis = center.clone().addXY(rx, ry);
-        const ellipse = new _VEllipse__WEBPACK_IMPORTED_MODULE_4__.VEllipse(center, axis, 0);
+        const ellipse = new _VEllipse__WEBPACK_IMPORTED_MODULE_5__.VEllipse(center, axis, 0);
+        // console.log("VELLIPSE::::::", ellipse);
         ellipse.rotate(phi);
-        const startAngle = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(ellipse.center, new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex(x1, y1)).angle();
-        const endAngle = new _Line__WEBPACK_IMPORTED_MODULE_2__.Line(ellipse.center, new _Vertex__WEBPACK_IMPORTED_MODULE_5__.Vertex(x2, y2)).angle();
+        const startAngle = new _Line__WEBPACK_IMPORTED_MODULE_3__.Line(ellipse.center, new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(x1, y1)).angle();
+        const endAngle = new _Line__WEBPACK_IMPORTED_MODULE_3__.Line(ellipse.center, new _Vertex__WEBPACK_IMPORTED_MODULE_6__.Vertex(x2, y2)).angle();
         return new VEllipseSector(ellipse, startAngle - phi, endAngle - phi);
     }
 }; // END ellipseSectorUtils
 //# sourceMappingURL=VEllipseSector.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/Vector.js":
+/***/ "./node_modules/plotboilerplate/src/esm/Vector.js"
 /*!********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/Vector.js ***!
   \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Vector": () => (/* binding */ Vector)
+/* harmony export */   Vector: () => (/* binding */ Vector)
 /* harmony export */ });
 /* harmony import */ var _VertTuple__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VertTuple */ "./node_modules/plotboilerplate/src/esm/VertTuple.js");
 /* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
@@ -8733,7 +10503,9 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-01-20 Added UID.
  * @modified 2022-02-02 Added the `destroy` method.
  * @modified 2022-02-02 Cleared the `Vector.toSVGString` function (deprecated). Use `drawutilssvg` instead.
- * @version  1.4.0
+ * @modified 2022-10-25 Added the `getOrthogonal` method.
+ * @modified 2025-04-14 Added the `Vector.rotate(number)` method.
+ * @version  1.6.0
  *
  * @file Vector
  * @public
@@ -8769,7 +10541,6 @@ class Vector extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
     /**
      * Get the perpendicular of this vector which is located at a.
      *
-     * @param {Number} t The position on the vector.
      * @return {Vector} A new vector being the perpendicular of this vector sitting on a.
      **/
     perp() {
@@ -8781,7 +10552,7 @@ class Vector extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
         return v;
     }
     /**
-     * The inverse of a vector is a vector witht the same magnitude but oppose direction.
+     * The inverse of a vector is a vector with the same magnitude but oppose direction.
      *
      * Please not that the origin of this vector changes here: a->b becomes b->a.
      *
@@ -8828,40 +10599,35 @@ class Vector extends _VertTuple__WEBPACK_IMPORTED_MODULE_0__.VertTuple {
         return new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(this.a.x + a * (this.b.x - this.a.x), this.a.y + a * (this.b.y - this.a.y));
     }
     /**
-     * Create an SVG representation of this line.
+     * Get the orthogonal "vector" of this vector (rotated by 90° clockwise).
      *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGString
-     * @override
-     * @param {object=} options - A set of options, like 'className'.
-     * @return {string} The SVG string representation.
+     * @name getOrthogonal
+     * @method getOrthogonal
+     * @return {Vector} A new vector with the same length that stands on this vector's point a.
      * @instance
      * @memberof Vector
      **/
-    toSVGString(options) {
-        // options = options || {};
-        // var buffer = [];
-        // var vertices = Vector.utils.buildArrowHead(this.a, this.b, 8, 1.0, 1.0);
-        // buffer.push("<g");
-        // if (options.className) buffer.push(' class="' + options.className + '"');
-        // buffer.push(">");
-        // buffer.push("   <line");
-        // buffer.push(' x1="' + this.a.x + '"');
-        // buffer.push(' y1="' + this.a.y + '"');
-        // buffer.push(' x2="' + vertices[0].x + '"');
-        // buffer.push(' y2="' + vertices[0].y + '"');
-        // buffer.push(" />");
-        // // Add arrow head
-        // buffer.push('   <polygon points="');
-        // for (var i = 0; i < vertices.length; i++) {
-        //   if (i > 0) buffer.push(" ");
-        //   buffer.push("" + vertices[i].x + "," + vertices[i].y);
-        // }
-        // buffer.push('"/>');
-        // buffer.push("</g>");
-        // return buffer.join("");
-        console.warn("[Deprecation] Warning: the Vector.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
-        return "";
+    getOrthogonal() {
+        // Orthogonal of vector (0,0)->(x,y) is (0,0)->(-y,x)
+        const linePoint = this.a.clone();
+        const startPoint = this.b.clone().sub(this.a);
+        const tmp = startPoint.x;
+        startPoint.x = -startPoint.y;
+        startPoint.y = tmp;
+        return new Vector(linePoint, startPoint.add(this.a));
+    }
+    /**
+     * Rotate this vector by the given angle around the first point `a`.
+     *
+     * @name rotate
+     * @method rotate
+     * @return {Vector} this - for chaining.
+     * @instance
+     * @memberof Vector
+     */
+    rotate(angle) {
+        this.b.rotate(angle, this.a);
+        return this;
     }
 }
 Vector.utils = {
@@ -8884,15 +10650,15 @@ Vector.utils = {
      * Example:
      *    buildArrowHead( new Vertex(0,0), new Vertex(50,100), 8, 1.0, 1.0 )
      *
-     * @param {Vertex} zA - The start vertex of the vector to calculate the arrow head for.
-     * @param {Vertex} zB - The end vertex of the vector.
+     * @param {XYCoords} zA - The start vertex of the vector to calculate the arrow head for.
+     * @param {XYCoords} zB - The end vertex of the vector.
      * @param {number} headlen - The length of the arrow head (along the vector direction. A good value is 12).
      * @param {number} scaleX  - The horizontal scaling during draw.
      * @param {number} scaleY  - the vertical scaling during draw.
      **/
     buildArrowHead: (zA, zB, headlen, scaleX, scaleY) => {
-        var angle = Math.atan2((zB.y - zA.y) * scaleY, (zB.x - zA.x) * scaleX);
-        var vertices = [];
+        const angle = Math.atan2((zB.y - zA.y) * scaleY, (zB.x - zA.x) * scaleX);
+        const vertices = [];
         vertices.push(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(zB.x * scaleX - headlen * Math.cos(angle), zB.y * scaleY - headlen * Math.sin(angle)));
         vertices.push(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(zB.x * scaleX - headlen * 1.35 * Math.cos(angle - Math.PI / 8), zB.y * scaleY - headlen * 1.35 * Math.sin(angle - Math.PI / 8)));
         vertices.push(new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(zB.x * scaleX, zB.y * scaleY));
@@ -8902,17 +10668,17 @@ Vector.utils = {
 };
 //# sourceMappingURL=Vector.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/VertTuple.js":
+/***/ "./node_modules/plotboilerplate/src/esm/VertTuple.js"
 /*!***********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/VertTuple.js ***!
   \***********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "VertTuple": () => (/* binding */ VertTuple)
+/* harmony export */   VertTuple: () => (/* binding */ VertTuple)
 /* harmony export */ });
 /* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
 /* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
@@ -8927,7 +10693,14 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-12-04 Added the `hasPoint(XYCoords)` function.
  * @modified 2021-01-20 Added UID.
  * @modified 2022-02-02 Added the `destroy` method.
- * @version 1.2.0
+ * @modified 2023-09-29 Fixed a calculation error in the VertTuple.hasPoint() function; distance measure was broken!
+ * @modified 2024-09-10 Chaging the first param of `pointDistance` from `Vertex` to less strict type `XYCoords`. This should not break anything.
+ * @modified 2024-09-10 Adding the optional `epsilon` param to the `hasPoint` method.
+ * @modified 2024-12-02 Added the `epsilon` param to the `colinear` method. Default is 1.0e-6.
+ * @modified 2025-03-31 Added the `VertTuple.revert` method.
+ * @modified 2025-04-15 Changed param of `VertTuple.moveTo` method from `Vertex` to `XYCoords`.
+ * @modified 2025-04-15 Added method `VertTuple.move` method.
+ * @version 1.4.0
  */
 
 
@@ -8994,13 +10767,29 @@ class VertTuple {
      *
      * @method add
      * @param {XYCoords} amount The amount (x,y) to add.
-     * @return {Line} this
      * @instance
      * @memberof VertTuple
+     * @return {VertTuple<T>} this
      **/
     add(amount) {
         this.a.add(amount);
         this.b.add(amount);
+        return this;
+    }
+    /**
+     * Reverse this vertex tuple: a becomes b, and b becomes a.
+     * This operation is in-place.
+     *
+     * @method add
+     * @param {XYCoords} amount The amount (x,y) to add.
+     * @instance
+     * @memberof VertTuple
+     * @return {VertTuple<T>} this
+     */
+    revert() {
+        const tmp = this.a;
+        this.a = this.b;
+        this.b = tmp;
         return this;
     }
     /**
@@ -9032,7 +10821,7 @@ class VertTuple {
      * Move this line to a new location.
      *
      * @method moveTo
-     * @param {Vertex} newA - The new desired location of 'a'. Vertex 'b' will be moved, too.
+     * @param {XYCoords} newA - The new desired location of 'a'. Vertex 'b' will be moved, too.
      * @return {VertTuple} this
      * @instance
      * @memberof VertTuple
@@ -9041,6 +10830,20 @@ class VertTuple {
         let diff = this.a.difference(newA);
         this.a.add(diff);
         this.b.add(diff);
+        return this;
+    }
+    /**
+     * Move this line by the given amount
+     *
+     * @method move
+     * @param {XYCoords} amount - The amount to move both point of this tuple.
+     * @return {VertTuple} this
+     * @instance
+     * @memberof VertTuple
+     **/
+    move(amount) {
+        this.a.add(amount);
+        this.b.add(amount);
         return this;
     }
     /**
@@ -9100,12 +10903,13 @@ class VertTuple {
      *
      * @method colinear
      * @param {VertTuple} line
+     * @param {epsilon?=1.0e-6} epsilon - The epsilon to use (default is 1.0e-6).
      * @instance
      * @memberof VertTuple
      * @return true if both lines are co-linear.
      */
-    colinear(line) {
-        return Math.abs(this.denominator(line)) < _Vertex__WEBPACK_IMPORTED_MODULE_0__.Vertex.EPSILON;
+    colinear(line, epsilon) {
+        return Math.abs(this.denominator(line)) < (typeof epsilon === "undefined" ? _Vertex__WEBPACK_IMPORTED_MODULE_0__.Vertex.EPSILON : epsilon);
     }
     /**
      * Get the closest position T from this line to the specified point.
@@ -9134,21 +10938,22 @@ class VertTuple {
      * that point is located between point `a` and `b`.
      *
      * @method hasPoint
-     * @param {Vertex} point The point to check.
-     * @param {boolean=} insideBoundsOnly If set to to true (default=false) the point must be between start and end point of the line.
+     * @param {Vertex} point - The point to check.
+     * @param {boolean=} insideBoundsOnly - [optional] If set to to true (default=false) the point must be between start and end point of the line.
+     * @param {number=Vertex.EPSILON} epsilon - [optional] A tolerance.
      * @return {boolean} True if the given point is on this line.
      * @instance
      * @memberof VertTuple
      */
-    hasPoint(point, insideBoundsOnly) {
+    hasPoint(point, insideBoundsOnly, epsilon) {
         const t = this.getClosestT(point);
         // Compare to pointDistance?
+        const distance = Math.sqrt(VertTuple.vtutils.dist2(point, this.vertAt(t)));
         if (typeof insideBoundsOnly !== "undefined" && insideBoundsOnly) {
-            const distance = Math.sqrt(VertTuple.vtutils.dist2(point, this.vertAt(t)));
-            return distance < _Vertex__WEBPACK_IMPORTED_MODULE_0__.Vertex.EPSILON && t >= 0 && t <= 1;
+            return distance < (epsilon !== null && epsilon !== void 0 ? epsilon : _Vertex__WEBPACK_IMPORTED_MODULE_0__.Vertex.EPSILON) && t >= 0 && t <= 1;
         }
         else {
-            return t >= 0 && t <= 1;
+            return distance < (epsilon !== null && epsilon !== void 0 ? epsilon : _Vertex__WEBPACK_IMPORTED_MODULE_0__.Vertex.EPSILON); // t >= 0 && t <= 1;
         }
     }
     /**
@@ -9168,7 +10973,7 @@ class VertTuple {
      * The the minimal distance between this line and the specified point.
      *
      * @method pointDistance
-     * @param {Vertex} p The point (vertex) to measre the distance to.
+     * @param {XYCoords} p The point (vertex) to measre the distance to.
      * @return {number} The absolute minimal distance.
      * @instance
      * @memberof VertTuple
@@ -9221,21 +11026,23 @@ VertTuple.vtutils = {
 };
 //# sourceMappingURL=VertTuple.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/Vertex.js":
+/***/ "./node_modules/plotboilerplate/src/esm/Vertex.js"
 /*!********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/Vertex.js ***!
   \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Vertex": () => (/* binding */ Vertex)
+/* harmony export */   Vertex: () => (/* binding */ Vertex)
 /* harmony export */ });
 /* harmony import */ var _VertexAttr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VertexAttr */ "./node_modules/plotboilerplate/src/esm/VertexAttr.js");
 /* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
 /* harmony import */ var _VertexListeners__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./VertexListeners */ "./node_modules/plotboilerplate/src/esm/VertexListeners.js");
+/* harmony import */ var _geomutils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./geomutils */ "./node_modules/plotboilerplate/src/esm/geomutils.js");
+/* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
 /**
  * @author   Ikaros Kappler
  * @date     2012-10-17
@@ -9266,11 +11073,21 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2022-01-31 Added `Vertex.utils.arrayToJSON`.
  * @modified 2022-02-02 Added the `destroy` method.
  * @modified 2022-02-02 Cleared the `Vertex.toSVGString` function (deprecated). Use `drawutilssvg` instead.
- * @version  2.7.0
+ * @modified 2022-11-28 Added the `subXY`, `subX` and `subY` methods to the `Vertex` class.
+ * @modified 2023-09-29 Downgraded types for the `Vertex.utils.buildArrowHead` function (replacing Vertex params by more generic XYCoords type).
+ * @modified 2023-09-29 Added the `Vertex.abs()` method as it seems useful.
+ * @modified 2024-03-08 Added the optional `precision` param to the `toString` method.
+ * @modified 2024-12-17 Outsourced the euclidean distance calculation of `Vertex.distance` to `geomutils.dist4`.
+ * @modified 2025-03-24 Making the second parameter `center` of the `Vertex.rotate` method optional.
+ * @modified 2025-04-13 Adding the `Vertex.move(amount: XYCoords)` method (does the same as `add`, added by naming convention).
+ * @modified 2025-05-07 Class `Vertex` is now implementing interface `IBounded` (to meet convention).
+ * @version  2.11.0
  *
  * @file Vertex
  * @public
  **/
+
+
 
 
 
@@ -9461,6 +11278,21 @@ class Vertex {
         return this;
     }
     /**
+     * Move this point by the given amount.
+     *
+     * This method just calls `add(amount).
+     *
+     *
+     * @method move
+     * @param {Vertex} amount - The amount to move this vertex.
+     * @return {Vertex} this - For chaining.
+     * @instance
+     * @memberof Vertex
+     */
+    move(amount) {
+        return this.add(amount);
+    }
+    /**
      * Add the passed amounts to the x- and y- components of this vertex.
      *
      * @method addXY
@@ -9539,6 +11371,47 @@ class Vertex {
         return this;
     }
     /**
+     * Substract the passed amounts from the x- and y- components of this vertex.
+     *
+     * @method subXY
+     * @param {number} x - The amount to substract from x.
+     * @param {number} y - The amount to substract from y.
+     * @return {Vertex} this
+     * @instance
+     * @memberof Vertex
+     **/
+    subXY(amountX, amountY) {
+        this.x -= amountX;
+        this.y -= amountY;
+        return this;
+    }
+    /**
+     * Substract the passed amounts from the x-component of this vertex.
+     *
+     * @method addX
+     * @param {number} x - The amount to substract from x.
+     * @return {Vertex} this
+     * @instance
+     * @memberof Vertex
+     **/
+    subX(amountX) {
+        this.x -= amountX;
+        return this;
+    }
+    /**
+     * Substract the passed amounts from the y-component of this vertex.
+     *
+     * @method subY
+     * @param {number} y - The amount to substract from y.
+     * @return {Vertex} this
+     * @instance
+     * @memberof Vertex
+     **/
+    subY(amountY) {
+        this.y -= amountY;
+        return this;
+    }
+    /**
      * Check if this vertex equals the passed one.
      * <br>
      * This function uses an internal epsilon as tolerance.
@@ -9576,7 +11449,8 @@ class Vertex {
      * @memberof Vertex
      **/
     distance(vert) {
-        return Math.sqrt(Math.pow(vert.x - this.x, 2) + Math.pow(vert.y - this.y, 2));
+        // return Math.sqrt(Math.pow(vert.x - this.x, 2) + Math.pow(vert.y - this.y, 2));
+        return _geomutils__WEBPACK_IMPORTED_MODULE_3__.geomutils.dist4(this.x, this.y, vert.x, vert.y);
     }
     /**
      * Get the angle of this point (relative to (0,0) or to the given other origin point).
@@ -9745,6 +11619,34 @@ class Vertex {
         return this;
     }
     /**
+     * Set both coordinates of this vertex to their absolute value (abs(x), abs(y)).
+     *
+     * @method abs
+     * @return {Vertex} this
+     * @instance
+     * @memberof Vertex
+     */
+    abs() {
+        this.x = Math.abs(this.x);
+        this.y = Math.abs(this.y);
+        return this;
+    }
+    //--- BEGIN --- Implement interface `IBounded`
+    /**
+     * Get the bounding box (bounds) of this Vertex.
+     * This is just by convention – any vertex is just a position without any useful with or height (0).
+     *
+     * @method getBounds
+     * @instance
+     * @memberof Vertex
+     * @return {Bounds} The rectangular bounds of this Vertex (width and height are zero).
+     **/
+    getBounds() {
+        // return Bounds.computeFromVertices([this.a, this.b, this.c]);
+        return _Bounds__WEBPACK_IMPORTED_MODULE_4__.Bounds.computeFromVertices([this]);
+    }
+    //--- END --- Implement interface `IBounded`
+    /**
      * Get a string representation of this vertex.
      *
      * @method toString
@@ -9752,34 +11654,14 @@ class Vertex {
      * @instance
      * @memberof Vertex
      **/
-    toString() {
-        return "(" + this.x + "," + this.y + ")";
+    toString(precision) {
+        if (typeof precision === "undefined") {
+            return "(" + this.x + "," + this.y + ")";
+        }
+        else {
+            return "(" + this.x.toFixed(precision) + "," + this.y.toFixed(precision) + ")";
+        }
     }
-    /**
-     * Convert this vertex to SVG code.
-     *
-     * @deprecated DEPRECATION Please use the drawutilssvg library and an XMLSerializer instead.
-     * @method toSVGString
-     * @param {object=} options - An optional set of options, like 'className'.
-     * @return {string} A string representing the SVG code for this vertex.
-     * @instance
-     * @memberof Vertex
-     * @deprecated
-     **/
-    toSVGString(options) {
-        // options = options || {};
-        // var buffer = [];
-        // buffer.push("<circle");
-        // if (options.className) buffer.push(' class="' + options.className + '"');
-        // buffer.push(' cx="' + this.x + '"');
-        // buffer.push(' cy="' + this.y + '"');
-        // buffer.push(' r="2"');
-        // buffer.push(" />");
-        // return buffer.join("");
-        console.warn("[Deprecation] Warning: the Vertex.toSVGString method is deprecated and does not return and valid SVG data any more. Please use `drawutilssvg` instead.");
-        return "";
-    }
-    // END Vertex
     /**
      * This function should invalidate any installed listeners and invalidate this object.
      * After calling this function the object might not hold valid data any more and
@@ -9827,15 +11709,15 @@ Vertex.utils = {
      * Example:
      *    buildArrowHead( new Vertex(0,0), new Vertex(50,100), 8, 1.0, 1.0 )
      *
-     * @param {Vertex} zA - The start vertex of the vector to calculate the arrow head for.
-     * @param {Vertex} zB - The end vertex of the vector.
+     * @param {XYCoords} zA - The start vertex of the vector to calculate the arrow head for.
+     * @param {XYCoords} zB - The end vertex of the vector.
      * @param {number} headlen - The length of the arrow head (along the vector direction. A good value is 12).
      * @param {number} scaleX  - The horizontal scaling during draw.
      * @param {number} scaleY  - the vertical scaling during draw.
      **/
     // @DEPRECATED: use Vector.utils.buildArrowHead instead!!!
     buildArrowHead: (zA, zB, headlen, scaleX, scaleY) => {
-        // console.warn('This function is deprecated! Use Vector.utils.buildArrowHead instead!');
+        console.warn("[DEPRECATION] Vertex.utils.buildArrowHead is deprecated. Please use Vector.utils.buildArrowHead instead.");
         var angle = Math.atan2((zB.y - zA.y) * scaleY, (zB.x - zA.x) * scaleX);
         var vertices = [];
         vertices.push(new Vertex(zB.x * scaleX - headlen * Math.cos(angle), zB.y * scaleY - headlen * Math.sin(angle)));
@@ -9860,17 +11742,17 @@ Vertex.utils = {
 };
 //# sourceMappingURL=Vertex.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/VertexAttr.js":
+/***/ "./node_modules/plotboilerplate/src/esm/VertexAttr.js"
 /*!************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/VertexAttr.js ***!
   \************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "VertexAttr": () => (/* binding */ VertexAttr)
+/* harmony export */   VertexAttr: () => (/* binding */ VertexAttr)
 /* harmony export */ });
 /**
  * @author   Ikaros Kappler
@@ -9880,7 +11762,8 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2019-03-20 Added JSDoc tags.
  * @modified 2020-02-29 Added the 'selectable' attribute.
  * @modified 2020-03-23 Ported to Typescript from JS.
- * @version  1.1.1
+ * @modified 2024-03-10 Fixed some types for Typescript 5 compatibility.
+ * @version  1.1.2
  *
  * @file VertexAttr
  * @public
@@ -9926,17 +11809,17 @@ VertexAttr.model = {
 };
 //# sourceMappingURL=VertexAttr.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/VertexListeners.js":
+/***/ "./node_modules/plotboilerplate/src/esm/VertexListeners.js"
 /*!*****************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/VertexListeners.js ***!
   \*****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "VertexListeners": () => (/* binding */ VertexListeners)
+/* harmony export */   VertexListeners: () => (/* binding */ VertexListeners)
 /* harmony export */ });
 /**
  * @author   Ikaros Kappler
@@ -10201,21 +12084,22 @@ class VertexListeners {
 }
 //# sourceMappingURL=VertexListeners.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/draw.js":
+/***/ "./node_modules/plotboilerplate/src/esm/draw.js"
 /*!******************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/draw.js ***!
   \******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "drawutils": () => (/* binding */ drawutils)
+/* harmony export */   drawutils: () => (/* binding */ drawutils)
 /* harmony export */ });
 /* harmony import */ var _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CubicBezierCurve */ "./node_modules/plotboilerplate/src/esm/CubicBezierCurve.js");
 /* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
 /* harmony import */ var _drawutilssvg__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./drawutilssvg */ "./node_modules/plotboilerplate/src/esm/drawutilssvg.js");
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Vector */ "./node_modules/plotboilerplate/src/esm/Vector.js");
 /**
  * @author   Ikaros Kappler
  * @date     2018-04-22
@@ -10257,8 +12141,27 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-05-31 Added the `setConfiguration` function from `DrawLib`.
  * @modified 2021-11-12 Adding more parameters tot the `text()` function: fontSize, textAlign, fontFamily, lineHeight.
  * @modified 2021-11-19 Added the `color` param to the `label(...)` function.
- * @version  1.10.0
+ * @modified 2022-02-03 Added the `lineWidth` param to the `crosshair` function.
+ * @modified 2022-02-03 Added the `cross(...)` function.
+ * @modified 2022-03-27 Added the `texturedPoly` function.
+ * @modified 2022-06-01 Tweaked the `polyline` function; lineWidth now scales with scale.x.
+ * @modified 2022-07-26 Adding `alpha` to the `image(...)` function.
+ * @modified 2022-08-23 Fixed a type issue in the `polyline` function.
+ * @modified 2022-08-23 Fixed a type issue in the `setConfiguration` function.
+ * @modified 2022-08-23 Fixed a type issue in the `path` function.
+ * @modified 2023-02-10 The methods `setCurrentClassName` and `setCurrentId` also accept `null` now.
+ * @modified 2023-09-29 Removed unused method stub for texturedPoly helper function (cleanup).
+ * @modified 2023-09-29 Downgrading all `Vertex` param type to the more generic `XYCoords` type in these render functions: line, arrow, texturedPoly, cubicBezier, cubicBezierPath, handle, handleLine, dot, point, circle, circleArc, ellipse, grid, raster.
+ * @modified 2023-09-29 Added the `headLength` parameter to the 'DrawLib.arrow()` function.
+ * @modified 2023-09-29 Added the `arrowHead(...)` function to the 'DrawLib.arrow()` interface.
+ * @modified 2023-09-29 Added the `cubicBezierArrow(...)` function to the 'DrawLib.arrow()` interface.
+ * @modified 2023-09-29 Added the `lineDashes` attribute.
+ * @modified 2023-09-30 Adding `strokeOptions` param to these draw function: line, arrow, cubicBezierArrow, cubicBezier, cubicBezierPath, circle, circleArc, ellipse, square, rect, polygon, polyline.
+ * @modified 2023-10-07 Adding the optional `arrowHeadBasePositionBuffer` param to the arrowHead(...) method.
+ * @modified 2024-09-13 Remoed the scaling of `lineWidth` in the `polygon` and `polyline` methods. This makes no sense here and doesn't match up with the behavior of other line functions.
+ * @version  1.13.0
  **/
+
 
 
 
@@ -10282,9 +12185,46 @@ class drawutils {
      **/
     constructor(context, fillShapes) {
         this.ctx = context;
+        // this.lineDash = [];
         this.offset = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(0, 0);
         this.scale = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(1, 1);
         this.fillShapes = fillShapes;
+    }
+    /**
+     * A private helper method to apply stroke options to the current
+     * context.
+     * @param {StrokeOptions=} strokeOptions -
+     */
+    applyStrokeOpts(strokeOptions) {
+        var _a, _b;
+        this.ctx.setLineDash(((_a = strokeOptions === null || strokeOptions === void 0 ? void 0 : strokeOptions.dashArray) !== null && _a !== void 0 ? _a : []).map((dashArrayElem) => {
+            // Note assume scale.x === scale.y
+            // Invariant scale makes funny stuff anyway.
+            return dashArrayElem * this.scale.x;
+        }));
+        this.ctx.lineDashOffset = ((_b = strokeOptions === null || strokeOptions === void 0 ? void 0 : strokeOptions.dashOffset) !== null && _b !== void 0 ? _b : 0) * this.scale.x;
+    }
+    // +---------------------------------------------------------------------------------
+    // | This is the final helper function for drawing and filling stuff. It is not
+    // | intended to be used from the outside.
+    // |
+    // | When in draw mode it draws the current shape.
+    // | When in fill mode it fills the current shape.
+    // |
+    // | This function is usually only called internally.
+    // |
+    // | @param color A stroke/fill color to use.
+    // +-------------------------------
+    // TODO: convert this to a STATIC function.
+    _fillOrDraw(color) {
+        if (this.fillShapes) {
+            this.ctx.fillStyle = color;
+            this.ctx.fill();
+        }
+        else {
+            this.ctx.strokeStyle = color;
+            this.ctx.stroke();
+        }
     }
     /**
      * Called before each draw cycle.
@@ -10314,15 +12254,29 @@ class drawutils {
      * @param {DrawLibConfiguration} configuration - The new configuration settings to use for the next render methods.
      */
     setConfiguration(configuration) {
-        this.ctx.globalCompositeOperation = configuration.blendMode;
+        this.ctx.globalCompositeOperation = configuration.blendMode || "source-over";
     }
+    // /**
+    //  * Set or clear the line-dash configuration. Pass `null` for un-dashed lines.
+    //  *
+    //  * See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray
+    //  * and https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash
+    //  * for how line dashes work.
+    //  *
+    //  * @method
+    //  * @param {Array<number> lineDashes - The line-dash array configuration.
+    //  * @returns {void}
+    //  */
+    // setLineDash(lineDash: Array<number>) {
+    //   this.lineDash = lineDash;
+    // }
     /**
      * This method shouled be called each time the currently drawn `Drawable` changes.
      * It is used by some libraries for identifying elemente on re-renders.
      *
      * @name setCurrentId
      * @method
-     * @param {UID} uid - A UID identifying the currently drawn element(s).
+     * @param {UID|null} uid - A UID identifying the currently drawn element(s).
      **/
     setCurrentId(uid) {
         // NOOP
@@ -10333,7 +12287,7 @@ class drawutils {
      *
      * @name setCurrentClassName
      * @method
-     * @param {string} className - A class name for further custom use cases.
+     * @param {string|null} className - A class name for further custom use cases.
      **/
     setCurrentClassName(className) {
         // NOOP
@@ -10342,17 +12296,20 @@ class drawutils {
      * Draw the line between the given two points with the specified (CSS-) color.
      *
      * @method line
-     * @param {Vertex} zA - The start point of the line.
-     * @param {Vertex} zB - The end point of the line.
+     * @param {XYCoords} zA - The start point of the line.
+     * @param {XYCoords} zB - The end point of the line.
      * @param {string} color - Any valid CSS color string.
      * @param {number} lineWidth? - [optional] The line's width.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutils
      **/
-    line(zA, zB, color, lineWidth) {
+    line(zA, zB, color, lineWidth, strokeOptions) {
         this.ctx.save();
         this.ctx.beginPath();
+        this.applyStrokeOpts(strokeOptions);
         this.ctx.moveTo(this.offset.x + zA.x * this.scale.x, this.offset.y + zA.y * this.scale.y);
         this.ctx.lineTo(this.offset.x + zB.x * this.scale.x, this.offset.y + zB.y * this.scale.y);
         this.ctx.strokeStyle = color;
@@ -10364,22 +12321,74 @@ class drawutils {
      * Draw a line and an arrow at the end (zB) of the given line with the specified (CSS-) color.
      *
      * @method arrow
-     * @param {Vertex} zA - The start point of the arrow-line.
-     * @param {Vertex} zB - The end point of the arrow-line.
+     * @param {XYCoords} zA - The start point of the arrow-line.
+     * @param {XYCoords} zB - The end point of the arrow-line.
      * @param {string} color - Any valid CSS color string.
      * @param {number=} lineWidth - (optional) The line width to use; default is 1.
+     * @param {headLength=8} headLength - (optional) The length of the arrow head (default is 8 units).
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutils
      **/
-    arrow(zA, zB, color, lineWidth) {
-        var headlen = 8; // length of head in pixels
-        // var vertices = PlotBoilerplate.utils.buildArrowHead( zA, zB, headlen, this.scale.x, this.scale.y );
-        // var vertices : Array<Vertex> = Vertex.utils.buildArrowHead( zA, zB, headlen, this.scale.x, this.scale.y );
+    arrow(zA, zB, color, lineWidth, headLength = 8, strokeOptions) {
+        const arrowHeadBasePosition = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(0, 0);
+        this.arrowHead(zA, zB, color, lineWidth, headLength, undefined, arrowHeadBasePosition); // Will NOT use dash configuration
+        this.line(zA, arrowHeadBasePosition, color, lineWidth, strokeOptions); // Will use dash configuration
+    }
+    /**
+     * Draw a cubic Bézier curve and and an arrow at the end (endControlPoint) of the given line width the specified (CSS-) color and arrow size.
+     *
+     * @method cubicBezierArrow
+     * @param {XYCoords} startPoint - The start point of the cubic Bézier curve
+     * @param {XYCoords} endPoint   - The end point the cubic Bézier curve.
+     * @param {XYCoords} startControlPoint - The start control point the cubic Bézier curve.
+     * @param {XYCoords} endControlPoint   - The end control point the cubic Bézier curve.
+     * @param {string} color - The CSS color to draw the curve with.
+     * @param {number} lineWidth - (optional) The line width to use.
+     * @param {headLength=8} headLength - (optional) The length of the arrow head (default is 8 units).
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
+     * @return {void}
+     * @instance
+     * @memberof DrawLib
+     */
+    cubicBezierArrow(startPoint, endPoint, startControlPoint, endControlPoint, color, lineWidth, headLength, strokeOptions) {
+        const arrowHeadBasePosition = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(0, 0);
+        // Will NOT use dash configuration
+        this.arrowHead(endControlPoint, endPoint, color, lineWidth, headLength, undefined, arrowHeadBasePosition);
+        const diff = arrowHeadBasePosition.difference(endPoint);
+        // Will use dash configuration
+        this.cubicBezier(startPoint, { x: endPoint.x - diff.x, y: endPoint.y - diff.y }, startControlPoint, { x: endControlPoint.x - diff.x, y: endControlPoint.y - diff.y }, color, lineWidth, strokeOptions);
+    }
+    /**
+     * Draw just an arrow head a the end of an imaginary line (zB) of the given line width the specified (CSS-) color and size.
+     *
+     * @method arrow
+     * @param {XYCoords} zA - The start point of the arrow-line.
+     * @param {XYCoords} zB - The end point of the arrow-line.
+     * @param {string} color - Any valid CSS color string.
+     * @param {number=1} lineWidth - (optional) The line width to use; default is 1.
+     * @param {number=8} headLength - (optional) The length of the arrow head (default is 8 pixels).
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     * @param {XYCoords=} arrowHeadBasePositionBuffer - (optional) If not null, then this position will contain the arrow head's start point (after execution). Some sort of OUT variable.
+     *
+     * @return {void}
+     * @instance
+     * @memberof DrawLib
+     **/
+    arrowHead(zA, zB, color, lineWidth, headLength = 8, strokeOptions, arrowHeadBasePositionBuffer) {
+        // var headLength: number = 8; // length of head in pixels
         this.ctx.save();
         this.ctx.beginPath();
-        var vertices = _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex.utils.buildArrowHead(zA, zB, headlen, this.scale.x, this.scale.y);
-        this.ctx.moveTo(this.offset.x + zA.x * this.scale.x, this.offset.y + zA.y * this.scale.y);
+        this.applyStrokeOpts(strokeOptions);
+        var vertices = _Vector__WEBPACK_IMPORTED_MODULE_3__.Vector.utils.buildArrowHead(zA, zB, headLength, this.scale.x, this.scale.y);
+        if (arrowHeadBasePositionBuffer) {
+            arrowHeadBasePositionBuffer.x = vertices[0].x / this.scale.x;
+            arrowHeadBasePositionBuffer.y = vertices[0].y / this.scale.y;
+        }
+        this.ctx.moveTo(this.offset.x + vertices[0].x, this.offset.y + vertices[0].y);
         for (var i = 0; i < vertices.length; i++) {
             this.ctx.lineTo(this.offset.x + vertices[i].x, this.offset.y + vertices[i].y);
         }
@@ -10395,18 +12404,20 @@ class drawutils {
      *
      * @method image
      * @param {Image} image - The image object to draw.
-     * @param {Vertex} position - The position to draw the the upper left corner at.
-     * @param {Vertex} size - The x/y-size to draw the image with.
+     * @param {XYCoords} position - The position to draw the the upper left corner at.
+     * @param {XYCoords} size - The x/y-size to draw the image with.
+     * @param {number=0.0} alpha - (optional, default=0.0) The transparency (1.0=opaque, 0.0=transparent).
      * @return {void}
      * @instance
      * @memberof drawutils
      **/
-    image(image, position, size) {
+    image(image, position, size, alpha = 1.0) {
         if (!image.complete || !image.naturalWidth) {
             // Avoid drawing un-unloaded or broken images
             return;
         }
         this.ctx.save();
+        this.ctx.globalAlpha = alpha;
         // Note that there is a Safari bug with the 3 or 5 params variant.
         // Only the 9-param varaint works.
         this.ctx.drawImage(image, 0, 0, image.naturalWidth - 1, // There is this horrible Safari bug (fixed in newer versions)
@@ -10415,6 +12426,126 @@ class drawutils {
         this.ctx.restore();
     }
     /**
+     * Draw an image at the given position with the given size.<br>
+     * <br>
+     * Note: SVG images may have resizing issues at the moment.Draw a line and an arrow at the end (zB) of the given line with the specified (CSS-) color.
+     *
+     * @method texturedPoly
+     * @param {Image} textureImage - The image object to draw.
+     * @param {Bounds} textureSize - The texture size to use; these are the original bounds to map the polygon vertices to.
+     * @param {Polygon} polygon - The polygon to use as clip path.
+     * @param {XYCoords} polygonPosition - The polygon's position (relative), measured at the bounding box's center.
+     * @param {number} rotation - The rotation to use for the polygon (and for the texture).
+     * @param {XYCoords={x:0,y:0}} rotationCenter - (optional) The rotational center; default is center of bounding box.
+     * @return {void}
+     * @instance
+     * @memberof drawutils
+     **/
+    texturedPoly(textureImage, textureSize, polygon, polygonPosition, rotation) {
+        var basePolygonBounds = polygon.getBounds();
+        // var targetCenterDifference = polygonPosition.clone().difference(basePolygonBounds.getCenter());
+        var targetCenterDifference = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(polygonPosition.x, polygonPosition.y).difference(basePolygonBounds.getCenter());
+        // var tileCenter = basePolygonBounds.getCenter().sub(targetCenterDifference);
+        // Get the position offset of the polygon
+        var targetTextureSize = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(textureSize.width, textureSize.height);
+        // var targetTextureOffset = new Vertex(-textureSize.width / 2, -textureSize.height / 2).sub(targetCenterDifference);
+        var targetTextureOffset = new _Vertex__WEBPACK_IMPORTED_MODULE_1__.Vertex(textureSize.min.x, textureSize.min.y).sub(polygonPosition);
+        this.ctx.save();
+        // this.ctx.translate(this.offset.x + rotationCenter.x * this.scale.x, this.offset.y + rotationCenter.y * this.scale.y);
+        this.ctx.translate(this.offset.x + polygonPosition.x * this.scale.x, this.offset.y + polygonPosition.y * this.scale.y);
+        drawutils.helpers.clipPoly(this.ctx, {
+            x: -polygonPosition.x * this.scale.x,
+            y: -polygonPosition.y * this.scale.y
+        }, this.scale, polygon.vertices);
+        this.ctx.scale(this.scale.x, this.scale.y);
+        this.ctx.rotate(rotation);
+        this.ctx.drawImage(textureImage, 0, 0, textureImage.naturalWidth - 1, // There is this horrible Safari bug (fixed in newer versions)
+        textureImage.naturalHeight - 1, // To avoid errors substract 1 here.
+        targetTextureOffset.x, // * this.scale.x,
+        targetTextureOffset.y, // * this.scale.y,
+        targetTextureSize.x, //  * this.scale.x,
+        targetTextureSize.y // * this.scale.y
+        );
+        this.ctx.restore();
+    }
+    /*
+    _texturedPoly(
+      textureImage: HTMLImageElement,
+      textureSize: Bounds,
+      polygon: Polygon,
+      polygonPosition: XYCoords,
+      rotation: number,
+      rotationCenter: XYCoords = { x: 0, y: 0 }
+    ): void {
+      var basePolygonBounds = polygon.getBounds();
+      var targetCenterDifference = polygonPosition.clone().difference(basePolygonBounds.getCenter());
+      var rotationalOffset = rotationCenter ? polygonPosition.difference(rotationCenter) : { x: 0, y: 0 };
+      // var rotationalOffset = { x: 0, y: 0 };
+      var tileCenter = basePolygonBounds.getCenter().sub(targetCenterDifference);
+  
+      // Get the position offset of the polygon
+      var targetTextureSize = new Vertex(textureSize.width, textureSize.height);
+      var targetTextureOffset = new Vertex(-textureSize.width / 2, -textureSize.height / 2).sub(targetCenterDifference);
+  
+      this.ctx.save();
+  
+      // this.ctx.translate(
+      //   this.offset.x + (tileCenter.x - rotationalOffset.x * 0 + targetTextureOffset.x * 0.0) * this.scale.x,
+      //   this.offset.y + (tileCenter.y - rotationalOffset.y * 0 + targetTextureOffset.y * 0.0) * this.scale.y
+      // );
+      this.ctx.translate(
+        this.offset.x + (tileCenter.x - rotationalOffset.x * 0 + targetTextureOffset.x * 0.0) * this.scale.x,
+        this.offset.y + (tileCenter.y - rotationalOffset.y * 0 + targetTextureOffset.y * 0.0) * this.scale.y
+      );
+      this.ctx.rotate(rotation);
+  
+      drawutils.helpers.clipPoly(
+        this.ctx,
+        {
+          x: (-targetCenterDifference.x * 1 - tileCenter.x - rotationalOffset.x) * this.scale.x,
+          y: (-targetCenterDifference.y * 1 - tileCenter.y - rotationalOffset.y) * this.scale.y
+        },
+        this.scale,
+        polygon.vertices
+      );
+      this.ctx.drawImage(
+        textureImage,
+        0,
+        0,
+        textureImage.naturalWidth - 1, // There is this horrible Safari bug (fixed in newer versions)
+        textureImage.naturalHeight - 1, // To avoid errors substract 1 here.
+        (-polygonPosition.x + targetTextureOffset.x * 1 - rotationalOffset.x * 1) * this.scale.x,
+        (-polygonPosition.y + targetTextureOffset.y * 1 - rotationalOffset.y * 1) * this.scale.y,
+        targetTextureSize.x * this.scale.x,
+        targetTextureSize.y * this.scale.y
+      );
+  
+      // const scaledTextureSize = new Bounds(
+      //   new Vertex(
+      //     -polygonPosition.x + targetTextureOffset.x - rotationalOffset.x,
+      //     -polygonPosition.y + targetTextureOffset.y - rotationalOffset.y
+      //   ).scaleXY(this.scale, rotationCenter),
+      //   new Vertex(
+      //     -polygonPosition.x + targetTextureOffset.x - rotationalOffset.x + targetTextureSize.x,
+      //     -polygonPosition.y + targetTextureOffset.y - rotationalOffset.y + targetTextureSize.y
+      //   ).scaleXY(this.scale, rotationCenter)
+      // );
+      // this.ctx.drawImage(
+      //   textureImage,
+      //   0,
+      //   0,
+      //   textureImage.naturalWidth - 1, // There is this horrible Safari bug (fixed in newer versions)
+      //   textureImage.naturalHeight - 1, // To avoid errors substract 1 here.
+      //   scaledTextureSize.min.x,
+      //   scaledTextureSize.min.y,
+      //   scaledTextureSize.width,
+      //   scaledTextureSize.height
+      // );
+  
+      this.ctx.restore();
+    }
+    */
+    /**
      * Draw a rectangle.
      *
      * @param {XYCoords} position - The upper left corner of the rectangle.
@@ -10422,10 +12553,16 @@ class drawutils {
      * @param {number} height - The height of the rectangle.
      * @param {string} color - The color to use.
      * @param {number=1} lineWidth - (optional) The line with to use (default is 1).
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
+     * @return {void}
+     * @instance
+     * @memberof drawutils
      **/
-    rect(position, width, height, color, lineWidth) {
+    rect(position, width, height, color, lineWidth, strokeOptions) {
         this.ctx.save();
         this.ctx.beginPath();
+        this.applyStrokeOpts(strokeOptions);
         this.ctx.moveTo(this.offset.x + position.x * this.scale.x, this.offset.y + position.y * this.scale.y);
         this.ctx.lineTo(this.offset.x + (position.x + width) * this.scale.x, this.offset.y + position.y * this.scale.y);
         this.ctx.lineTo(this.offset.x + (position.x + width) * this.scale.x, this.offset.y + (position.y + height) * this.scale.y);
@@ -10436,43 +12573,23 @@ class drawutils {
         this._fillOrDraw(color);
         this.ctx.restore();
     }
-    // +---------------------------------------------------------------------------------
-    // | This is the final helper function for drawing and filling stuff. It is not
-    // | intended to be used from the outside.
-    // |
-    // | When in draw mode it draws the current shape.
-    // | When in fill mode it fills the current shape.
-    // |
-    // | This function is usually only called internally.
-    // |
-    // | @param color A stroke/fill color to use.
-    // +-------------------------------
-    // TODO: convert this to a STATIC function.
-    _fillOrDraw(color) {
-        if (this.fillShapes) {
-            this.ctx.fillStyle = color;
-            this.ctx.fill();
-        }
-        else {
-            this.ctx.strokeStyle = color;
-            this.ctx.stroke();
-        }
-    }
     /**
      * Draw the given (cubic) bézier curve.
      *
      * @method cubicBezier
-     * @param {Vertex} startPoint - The start point of the cubic Bézier curve
-     * @param {Vertex} endPoint   - The end point the cubic Bézier curve.
-     * @param {Vertex} startControlPoint - The start control point the cubic Bézier curve.
-     * @param {Vertex} endControlPoint   - The end control point the cubic Bézier curve.
+     * @param {XYCoords} startPoint - The start point of the cubic Bézier curve
+     * @param {XYCoords} endPoint   - The end point the cubic Bézier curve.
+     * @param {XYCoords} startControlPoint - The start control point the cubic Bézier curve.
+     * @param {XYCoords} endControlPoint   - The end control point the cubic Bézier curve.
      * @param {string} color - The CSS color to draw the curve with.
      * @param {number} lineWidth - (optional) The line width to use.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutils
      */
-    cubicBezier(startPoint, endPoint, startControlPoint, endControlPoint, color, lineWidth) {
+    cubicBezier(startPoint, endPoint, startControlPoint, endControlPoint, color, lineWidth, strokeOptions) {
         if (startPoint instanceof _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_0__.CubicBezierCurve) {
             this.cubicBezier(startPoint.startPoint, startPoint.endPoint, startPoint.startControlPoint, startPoint.endControlPoint, color, lineWidth);
             return;
@@ -10480,6 +12597,7 @@ class drawutils {
         // Draw curve
         this.ctx.save();
         this.ctx.beginPath();
+        this.applyStrokeOpts(strokeOptions);
         this.ctx.moveTo(this.offset.x + startPoint.x * this.scale.x, this.offset.y + startPoint.y * this.scale.y);
         this.ctx.bezierCurveTo(this.offset.x + startControlPoint.x * this.scale.x, this.offset.y + startControlPoint.y * this.scale.y, this.offset.x + endControlPoint.x * this.scale.x, this.offset.y + endControlPoint.y * this.scale.y, this.offset.x + endPoint.x * this.scale.x, this.offset.y + endPoint.y * this.scale.y);
         //this.ctx.closePath();
@@ -10491,19 +12609,22 @@ class drawutils {
      * Draw the given (quadratic) bézier curve.
      *
      * @method quadraticBezier
-     * @param {Vertex} startPoint   - The start point of the cubic Bézier curve
-     * @param {Vertex} controlPoint - The control point the cubic Bézier curve.
-     * @param {Vertex} endPoint     - The end control point the cubic Bézier curve.
+     * @param {XYCoords} startPoint   - The start point of the cubic Bézier curve
+     * @param {XYCoords} controlPoint - The control point the cubic Bézier curve.
+     * @param {XYCoords} endPoint     - The end control point the cubic Bézier curve.
      * @param {string} color        - The CSS color to draw the curve with.
      * @param {number|string} lineWidth - (optional) The line width to use.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutils
      */
-    quadraticBezier(startPoint, controlPoint, endPoint, color, lineWidth) {
+    quadraticBezier(startPoint, controlPoint, endPoint, color, lineWidth, strokeOptions) {
         // Draw curve
         this.ctx.save();
         this.ctx.beginPath();
+        this.applyStrokeOpts(strokeOptions);
         this.ctx.moveTo(this.offset.x + startPoint.x * this.scale.x, this.offset.y + startPoint.y * this.scale.y);
         this.ctx.quadraticCurveTo(this.offset.x + controlPoint.x * this.scale.x, this.offset.y + controlPoint.y * this.scale.y, this.offset.x + endPoint.x * this.scale.x, this.offset.y + endPoint.y * this.scale.y);
         this.ctx.lineWidth = lineWidth || 2;
@@ -10518,22 +12639,26 @@ class drawutils {
      * <pre> [ point1, point1_startControl, point2_endControl, point2, point2_startControl, point3_endControl, point3, ... pointN_endControl, pointN ]</pre>
      *
      * @method cubicBezierPath
-     * @param {Vertex[]} path - The cubic bezier path as described above.
+     * @param {XYCoords[]} path - The cubic bezier path as described above.
      * @param {string} color - The CSS colot to draw the path with.
      * @param {number=1} lineWidth - (optional) The line width to use.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutils
      */
-    cubicBezierPath(path, color, lineWidth) {
-        if (!path || path.length == 0)
+    cubicBezierPath(path, color, lineWidth, strokeOptions) {
+        if (!path || path.length == 0) {
             return;
+        }
         // Draw curve
         this.ctx.save();
         this.ctx.beginPath();
         var endPoint;
         var startControlPoint;
         var endControlPoint;
+        this.applyStrokeOpts(strokeOptions);
         this.ctx.moveTo(this.offset.x + path[0].x * this.scale.x, this.offset.y + path[0].y * this.scale.y);
         for (var i = 1; i < path.length; i += 3) {
             startControlPoint = path[i];
@@ -10552,8 +12677,8 @@ class drawutils {
      * The colors for this are fixed and cannot be specified.
      *
      * @method handle
-     * @param {Vertex} startPoint - The start of the handle.
-     * @param {Vertex} endPoint - The end point of the handle.
+     * @param {XYCoords} startPoint - The start of the handle.
+     * @param {XYCoords} endPoint - The end point of the handle.
      * @return {void}
      * @instance
      * @memberof drawutils
@@ -10568,21 +12693,21 @@ class drawutils {
      * Draw a handle line (with a light grey).
      *
      * @method handleLine
-     * @param {Vertex} startPoint - The start point to draw the handle at.
-     * @param {Vertex} endPoint - The end point to draw the handle at.
+     * @param {XYCoords} startPoint - The start point to draw the handle at.
+     * @param {XYCoords} endPoint - The end point to draw the handle at.
      * @return {void}
      * @instance
      * @memberof drawutils
      */
     handleLine(startPoint, endPoint) {
         // Draw handle lines
-        this.line(startPoint, endPoint, "rgb(192,192,192)");
+        this.line(startPoint, endPoint, "rgba(128,128,128, 0.5)", undefined);
     }
     /**
      * Draw a 1x1 dot with the specified (CSS-) color.
      *
      * @method dot
-     * @param {Vertex} p - The position to draw the dot at.
+     * @param {XYCoords} p - The position to draw the dot at.
      * @param {string} color - The CSS color to draw the dot with.
      * @return {void}
      * @instance
@@ -10591,6 +12716,7 @@ class drawutils {
     dot(p, color) {
         this.ctx.save();
         this.ctx.beginPath();
+        this.ctx.setLineDash([]); // Clear line-dash settings
         this.ctx.moveTo(Math.round(this.offset.x + this.scale.x * p.x), Math.round(this.offset.y + this.scale.y * p.y));
         this.ctx.lineTo(Math.round(this.offset.x + this.scale.x * p.x + 1), Math.round(this.offset.y + this.scale.y * p.y + 1));
         this.ctx.closePath();
@@ -10602,7 +12728,7 @@ class drawutils {
      * Draw the given point with the specified (CSS-) color and radius 3.
      *
      * @method point
-     * @param {Vertex} p - The position to draw the point at.
+     * @param {XYCoords} p - The position to draw the point at.
      * @param {string} color - The CSS color to draw the point with.
      * @return {void}
      * @instance
@@ -10610,6 +12736,7 @@ class drawutils {
      */
     point(p, color) {
         var radius = 3;
+        this.ctx.setLineDash([]); // Clear line-dash settings
         this.ctx.beginPath();
         this.ctx.arc(this.offset.x + p.x * this.scale.x, this.offset.y + p.y * this.scale.y, radius, 0, 2 * Math.PI, false);
         this.ctx.closePath();
@@ -10622,15 +12749,18 @@ class drawutils {
      * Note that if the x- and y- scales are different the result will be an ellipse rather than a circle.
      *
      * @method circle
-     * @param {Vertex} center - The center of the circle.
+     * @param {XYCoords} center - The center of the circle.
      * @param {number} radius - The radius of the circle.
      * @param {string} color - The CSS color to draw the circle with.
      * @param {number} lineWidth - The line width (optional, default=1).
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutils
      */
-    circle(center, radius, color, lineWidth) {
+    circle(center, radius, color, lineWidth, strokeOptions) {
+        this.applyStrokeOpts(strokeOptions);
         this.ctx.beginPath();
         this.ctx.ellipse(this.offset.x + center.x * this.scale.x, this.offset.y + center.y * this.scale.y, radius * this.scale.x, radius * this.scale.y, 0.0, 0.0, Math.PI * 2);
         this.ctx.closePath();
@@ -10638,24 +12768,28 @@ class drawutils {
         this._fillOrDraw(color);
     }
     /**
-       * Draw a circular arc (section of a circle) with the given CSS color.
-       *
-       * @method circleArc
-       * @param {Vertex} center - The center of the circle.
-       * @param {number} radius - The radius of the circle.
-       * @param {number} startAngle - The angle to start at.
-       * @param {number} endAngle - The angle to end at.
-       * @param {string=#000000} color - The CSS color to draw the circle with.
-       * @param {number=1} lineWidth - The line width to use
-       // * @param {boolean=false} options.asSegment - If `true` then no beginPath and no draw will be applied (as part of larger path).
-       * @return {void}
-       * @instance
-       * @memberof drawutils
-       */
+     * Draw a circular arc (section of a circle) with the given CSS color.
+     *
+     * @method circleArc
+     * @param {XYCoords} center - The center of the circle.
+     * @param {number} radius - The radius of the circle.
+     * @param {number} startAngle - The angle to start at.
+     * @param {number} endAngle - The angle to end at.
+     * @param {string=#000000} color - The CSS color to draw the circle with.
+     * @param {number=1} lineWidth - The line width to use
+     * @param {boolean=false} options.asSegment - If `true` then no beginPath and no draw will be applied (as part of larger path).
+     * @param {number=} options.dashOffset - (optional) `See StrokeOptions`.
+     * @param {number=[]} options.dashArray - (optional) `See StrokeOptions`.
+     *
+     * @return {void}
+     * @instance
+     * @memberof drawutils
+     */
     circleArc(center, radius, startAngle, endAngle, color, lineWidth, options) {
         if (!options || !options.asSegment) {
             this.ctx.beginPath();
         }
+        this.applyStrokeOpts(options);
         this.ctx.ellipse(this.offset.x + center.x * this.scale.x, this.offset.y + center.y * this.scale.y, radius * this.scale.x, radius * this.scale.y, 0.0, startAngle, endAngle, false);
         if (!options || !options.asSegment) {
             // this.ctx.closePath();
@@ -10667,20 +12801,23 @@ class drawutils {
      * Draw an ellipse with the specified (CSS-) color and thw two radii.
      *
      * @method ellipse
-     * @param {Vertex} center - The center of the ellipse.
+     * @param {XYCoords} center - The center of the ellipse.
      * @param {number} radiusX - The radius of the ellipse.
      * @param {number} radiusY - The radius of the ellipse.
      * @param {string} color - The CSS color to draw the ellipse with.
      * @param {number} lineWidth=1 - An optional line width param (default is 1).
      * @param {number=} rotation - (optional, default=0) The rotation of the ellipse.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutils
      */
-    ellipse(center, radiusX, radiusY, color, lineWidth, rotation) {
+    ellipse(center, radiusX, radiusY, color, lineWidth, rotation, strokeOptions) {
         if (typeof rotation === "undefined") {
             rotation = 0.0;
         }
+        this.applyStrokeOpts(strokeOptions);
         this.ctx.beginPath();
         this.ctx.ellipse(this.offset.x + center.x * this.scale.x, this.offset.y + center.y * this.scale.y, radiusX * this.scale.x, radiusY * this.scale.y, rotation, 0.0, Math.PI * 2);
         this.ctx.closePath();
@@ -10697,11 +12834,14 @@ class drawutils {
      * @param {number} size - The size of the square.
      * @param {string} color - The CSS color to draw the square with.
      * @param {number} lineWidth - The line with to use (optional, default is 1).
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutils
      */
-    square(center, size, color, lineWidth) {
+    square(center, size, color, lineWidth, strokeOptions) {
+        this.applyStrokeOpts(strokeOptions);
         this.ctx.beginPath();
         this.ctx.rect(this.offset.x + (center.x - size / 2.0) * this.scale.x, this.offset.y + (center.y - size / 2.0) * this.scale.y, size * this.scale.x, size * this.scale.y);
         this.ctx.closePath();
@@ -10712,7 +12852,7 @@ class drawutils {
      * Draw a grid of horizontal and vertical lines with the given (CSS-) color.
      *
      * @method grid
-     * @param {Vertex} center - The center of the grid.
+     * @param {XYCoords} center - The center of the grid.
      * @param {number} width - The total width of the grid (width/2 each to the left and to the right).
      * @param {number} height - The total height of the grid (height/2 each to the top and to the bottom).
      * @param {number} sizeX - The horizontal grid size.
@@ -10723,6 +12863,7 @@ class drawutils {
      * @memberof drawutils
      */
     grid(center, width, height, sizeX, sizeY, color) {
+        this.ctx.setLineDash([]); // Clear line-dash settings
         this.ctx.beginPath();
         var yMin = -Math.ceil((height * 0.5) / sizeY) * sizeY;
         var yMax = height / 2;
@@ -10747,7 +12888,7 @@ class drawutils {
      * This works analogue to the grid() function
      *
      * @method raster
-     * @param {Vertex} center - The center of the raster.
+     * @param {XYCoords} center - The center of the raster.
      * @param {number} width - The total width of the raster (width/2 each to the left and to the right).
      * @param {number} height - The total height of the raster (height/2 each to the top and to the bottom).
      * @param {number} sizeX - The horizontal raster size.
@@ -10759,6 +12900,7 @@ class drawutils {
      */
     raster(center, width, height, sizeX, sizeY, color) {
         this.ctx.save();
+        this.ctx.setLineDash([]); // Clear line-dash settings
         this.ctx.beginPath();
         for (var x = -Math.ceil((width * 0.5) / sizeX) * sizeX; x < width / 2; x += sizeX) {
             for (var y = -Math.ceil((height * 0.5) / sizeY) * sizeY; y < height / 2; y += sizeY) {
@@ -10783,14 +12925,15 @@ class drawutils {
      * as even shaped diamonds.
      *
      * @method diamondHandle
-     * @param {Vertex} center - The center of the diamond.
-     * @param {Vertex} size - The x/y-size of the diamond.
+     * @param {XYCoords} center - The center of the diamond.
+     * @param {number} size - The x/y-size of the diamond.
      * @param {string} color - The CSS color to draw the diamond with.
      * @return {void}
      * @instance
      * @memberof drawutils
      */
     diamondHandle(center, size, color) {
+        this.ctx.setLineDash([]); // Clear line-dash settings
         this.ctx.beginPath();
         this.ctx.moveTo(this.offset.x + center.x * this.scale.x - size / 2.0, this.offset.y + center.y * this.scale.y);
         this.ctx.lineTo(this.offset.x + center.x * this.scale.x, this.offset.y + center.y * this.scale.y - size / 2.0);
@@ -10808,14 +12951,15 @@ class drawutils {
      * as even shaped squares.
      *
      * @method squareHandle
-     * @param {Vertex} center - The center of the square.
-     * @param {Vertex} size - The x/y-size of the square.
+     * @param {XYCoords} center - The center of the square.
+     * @param {number} size - The x/y-size of the square.
      * @param {string} color - The CSS color to draw the square with.
      * @return {void}
      * @instance
      * @memberof drawutils
      */
     squareHandle(center, size, color) {
+        this.ctx.setLineDash([]); // Clear line-dash settings
         this.ctx.beginPath();
         this.ctx.rect(this.offset.x + center.x * this.scale.x - size / 2.0, this.offset.y + center.y * this.scale.y - size / 2.0, size, size);
         this.ctx.closePath();
@@ -10830,7 +12974,7 @@ class drawutils {
      * as even shaped circles.
      *
      * @method circleHandle
-     * @param {Vertex} center - The center of the circle.
+     * @param {XYCoords} center - The center of the circle.
      * @param {number} radius - The radius of the circle.
      * @param {string} color - The CSS color to draw the circle with.
      * @return {void}
@@ -10839,6 +12983,7 @@ class drawutils {
      */
     circleHandle(center, radius, color) {
         radius = radius || 3;
+        this.ctx.setLineDash([]); // Clear line-dash settings
         this.ctx.beginPath();
         this.ctx.arc(this.offset.x + center.x * this.scale.x, this.offset.y + center.y * this.scale.y, radius, 0, 2 * Math.PI, false);
         this.ctx.closePath();
@@ -10854,19 +12999,49 @@ class drawutils {
      * @param {XYCoords} center - The center of the crosshair.
      * @param {number} radius - The radius of the crosshair.
      * @param {string} color - The CSS color to draw the crosshair with.
+     * @param {number=0.5} lineWidth - (optional, default=0.5) The line width to use.
      * @return {void}
      * @instance
      * @memberof drawutils
      */
-    crosshair(center, radius, color) {
+    crosshair(center, radius, color, lineWidth) {
         this.ctx.save();
+        this.ctx.setLineDash([]); // Clear line-dash settings
         this.ctx.beginPath();
         this.ctx.moveTo(this.offset.x + center.x * this.scale.x - radius, this.offset.y + center.y * this.scale.y);
         this.ctx.lineTo(this.offset.x + center.x * this.scale.x + radius, this.offset.y + center.y * this.scale.y);
         this.ctx.moveTo(this.offset.x + center.x * this.scale.x, this.offset.y + center.y * this.scale.y - radius);
         this.ctx.lineTo(this.offset.x + center.x * this.scale.x, this.offset.y + center.y * this.scale.y + radius);
         this.ctx.strokeStyle = color;
-        this.ctx.lineWidth = 0.5;
+        this.ctx.lineWidth = lineWidth || 0.5;
+        this.ctx.stroke();
+        this.ctx.closePath();
+        this.ctx.restore();
+    }
+    /**
+     * Draw a cross with diagonal axes with given radius, color and lineWidth at the given position.<br>
+     * <br>
+     * Note that the x's radius will not be affected by scaling.
+     *
+     * @method crosshair
+     * @param {XYCoords} center - The center of the crosshair.
+     * @param {number} radius - The radius of the crosshair.
+     * @param {string} color - The CSS color to draw the crosshair with.
+     * @param {number=1} lineWidth - (optional, default=1.0) The line width to use.
+     * @return {void}
+     * @instance
+     * @memberof drawutils
+     */
+    cross(center, radius, color, lineWidth) {
+        this.ctx.save();
+        this.ctx.setLineDash([]); // Clear line-dash settings
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.offset.x + center.x * this.scale.x - radius, this.offset.y + center.y * this.scale.y - radius);
+        this.ctx.lineTo(this.offset.x + center.x * this.scale.x + radius, this.offset.y + center.y * this.scale.y + radius);
+        this.ctx.moveTo(this.offset.x + center.x * this.scale.x - radius, this.offset.y + center.y * this.scale.y + radius);
+        this.ctx.lineTo(this.offset.x + center.x * this.scale.x + radius, this.offset.y + center.y * this.scale.y - radius);
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = lineWidth || 1.0;
         this.ctx.stroke();
         this.ctx.closePath();
         this.ctx.restore();
@@ -10878,29 +13053,35 @@ class drawutils {
      * @param {Polygon}  polygon - The polygon to draw.
      * @param {string}   color - The CSS color to draw the polygon with.
      * @param {string}   lineWidth - The line width to use.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutils
      */
-    polygon(polygon, color, lineWidth) {
-        this.polyline(polygon.vertices, polygon.isOpen, color, lineWidth);
+    polygon(polygon, color, lineWidth, strokeOptions) {
+        this.polyline(polygon.vertices, polygon.isOpen, color, lineWidth, strokeOptions);
     }
     /**
      * Draw a polygon line (alternative function to the polygon).
      *
      * @method polyline
-     * @param {Vertex[]} vertices   - The polygon vertices to draw.
+     * @param {XYCoords[]} vertices - The polygon vertices to draw.
      * @param {boolan}   isOpen     - If true the polyline will not be closed at its end.
      * @param {string}   color      - The CSS color to draw the polygon with.
      * @param {number}   lineWidth  - The line width (default is 1.0);
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutils
      */
-    polyline(vertices, isOpen, color, lineWidth) {
-        if (vertices.length <= 1)
+    polyline(vertices, isOpen, color, lineWidth, strokeOptions) {
+        if (vertices.length <= 1) {
             return;
+        }
         this.ctx.save();
+        this.applyStrokeOpts(strokeOptions);
         this.ctx.beginPath();
         this.ctx.lineWidth = lineWidth || 1.0;
         this.ctx.moveTo(this.offset.x + vertices[0].x * this.scale.x, this.offset.y + vertices[0].y * this.scale.y);
@@ -11012,6 +13193,8 @@ class drawutils {
      * @param {string=null} color - (optional) The color to draw this path with (default is null).
      * @param {number=1} lineWidth - (optional) the line width to use (default is 1).
      * @param {boolean=false} options.inplace - (optional) If set to true then path transforamtions (scale and translate) will be done in-place in the array. This can boost the performance.
+     * @param {number=} options.dashOffset - (optional) `See StrokeOptions`.
+     * @param {number=[]} options.dashArray - (optional) `See StrokeOptions`.
      * @instance
      * @memberof drawutils
      * @return {R} An instance representing the drawn path.
@@ -11019,14 +13202,21 @@ class drawutils {
     path(pathData, color, lineWidth, options) {
         const d = options && options.inplace ? pathData : _drawutilssvg__WEBPACK_IMPORTED_MODULE_2__.drawutilssvg.copyPathData(pathData);
         _drawutilssvg__WEBPACK_IMPORTED_MODULE_2__.drawutilssvg.transformPathData(d, this.offset, this.scale);
-        this.ctx.strokeStyle = color;
+        if (color) {
+            this.ctx.strokeStyle = color;
+        }
         this.ctx.lineWidth = lineWidth || 1;
+        this.applyStrokeOpts(options);
         if (this.fillShapes) {
-            this.ctx.fillStyle = color;
+            if (color) {
+                this.ctx.fillStyle = color;
+            }
             this.ctx.fill(new Path2D(d.join(" ")));
         }
         else {
-            this.ctx.strokeStyle = color;
+            if (color) {
+                this.ctx.strokeStyle = color;
+            }
             this.ctx.stroke(new Path2D(d.join(" ")));
         }
     }
@@ -11044,19 +13234,34 @@ class drawutils {
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 }
+drawutils.helpers = {
+    // A helper function to define the clipping path.
+    // This could be a candidate for the draw library.
+    clipPoly: (ctx, offset, scale, vertices) => {
+        ctx.beginPath();
+        // Set clip mask
+        ctx.moveTo(offset.x + vertices[0].x * scale.x, offset.y + vertices[0].y * scale.y);
+        for (var i = 1; i < vertices.length; i++) {
+            const vert = vertices[i];
+            ctx.lineTo(offset.x + vert.x * scale.x, offset.y + vert.y * scale.y);
+        }
+        ctx.closePath();
+        ctx.clip();
+    }
+};
 //# sourceMappingURL=draw.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/drawgl.js":
+/***/ "./node_modules/plotboilerplate/src/esm/drawgl.js"
 /*!********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/drawgl.js ***!
   \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "drawutilsgl": () => (/* binding */ drawutilsgl)
+/* harmony export */   drawutilsgl: () => (/* binding */ drawutilsgl)
 /* harmony export */ });
 /* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
 /**
@@ -11067,7 +13272,17 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2020-10-15 Re-added the text() function.
  * @modified 2021-01-24 Added the `setCurrentId` function.
  * @modified 2021-05-31 Added the `setConfiguration` function from `DrawLib`.
- * @version  0.0.5
+ * @modified 2022-02-03 Added the `lineWidth` param to the `crosshair` function.
+ * @modified 2022-02-03 Added the `cross(...)` function.
+ * @modified 2022-03-27 Added the `texturedPoly` function.
+ * @modified 2022-07-26 Adding `alpha` to the `image(...)` function.
+ * @modified 2023-02-10 The methods `setCurrentClassName` and `setCurrentId` also accept `null` now.
+ * @modified 2023-09-29 Downgrading all `Vertex` param type to the more generic `XYCoords` type in these render functions: line, arrow, texturedPoly, cubicBezier, cubicBezierPath, handle, handleLine, dot, point, circle, circleArc, ellipse, grid, raster.
+ * @modified 2023-09-29 Added the `headLength` parameter to the 'DrawLib.arrow()` function.
+ * @modified 2023-09-29 Added the `arrowHead(...)` function to the 'DrawLib.arrow()` interface.
+ * @modified 2023-09-29 Added the `cubicBezierArrow(...)` function to the 'DrawLib.arrow()` interface.
+ * @modified 2023-09-29 Added the `lineDashes` attribute.
+ * @version  0.0.10
  **/
 
 /**
@@ -11086,7 +13301,7 @@ class drawutilsgl {
      *
      * @constructor
      * @name drawutils
-     * @param {WebGLRenderingContext} context - The drawing context.
+     * @param {WebGLRenderingContext|null} context - The drawing context.
      * @param {boolean} fillShaped - Indicates if the constructed drawutils should fill all drawn shapes (if possible).
      **/
     constructor(context, fillShapes) {
@@ -11162,13 +13377,27 @@ class drawutilsgl {
     setConfiguration(configuration) {
         // TODO
     }
+    // /**
+    //  * Set or clear the line-dash configuration. Pass `null` for un-dashed lines.
+    //  *
+    //  * See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray
+    //  * and https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash
+    //  * for how line dashes work.
+    //  *
+    //  * @method
+    //  * @param {Array<number> lineDashes - The line-dash array configuration.
+    //  * @returns {void}
+    //  */
+    // setLineDash(lineDashes: Array<number>) {
+    //   // TODO
+    // }
     /**
      * This method shouled be called each time the currently drawn `Drawable` changes.
      * It is used by some libraries for identifying elemente on re-renders.
      *
      * @name setCurrentId
      * @method
-     * @param {UID} uid - A UID identifying the currently drawn element(s).es.
+     * @param {UID|null} uid - A UID identifying the currently drawn element(s).es.
      **/
     setCurrentId(uid) {
         // NOOP
@@ -11180,7 +13409,7 @@ class drawutilsgl {
      *
      * @name setCurrentClassName
      * @method
-     * @param {string} className - A class name for further custom use cases.
+     * @param {string|null} className - A class name for further custom use cases.
      **/
     setCurrentClassName(className) {
         // NOOP
@@ -11189,8 +13418,8 @@ class drawutilsgl {
      * Draw the line between the given two points with the specified (CSS-) color.
      *
      * @method line
-     * @param {Vertex} zA - The start point of the line.
-     * @param {Vertex} zB - The end point of the line.
+     * @param {XYCoords} zA - The start point of the line.
+     * @param {XYCoords} zB - The end point of the line.
      * @param {string} color - Any valid CSS color string.
      * @return {void}
      * @instance
@@ -11239,14 +13468,50 @@ class drawutilsgl {
      * Draw a line and an arrow at the end (zB) of the given line with the specified (CSS-) color.
      *
      * @method arrow
-     * @param {Vertex} zA - The start point of the arrow-line.
-     * @param {Vertex} zB - The end point of the arrow-line.
+     * @param {XYCoords} zA - The start point of the arrow-line.
+     * @param {XYCoords} zB - The end point of the arrow-line.
      * @param {string} color - Any valid CSS color string.
+     * @param {headLength=8} headLength - (optional) The length of the arrow head (default is 8 units).
      * @return {void}
      * @instance
      * @memberof drawutils
      **/
     arrow(zA, zB, color) {
+        // NOT YET IMPLEMENTED
+    }
+    /**
+     * Draw a cubic Bézier curve and and an arrow at the end (endControlPoint) of the given line width the specified (CSS-) color and arrow size.
+     *
+     * @method cubicBezierArrow
+     * @param {XYCoords} startPoint - The start point of the cubic Bézier curve
+     * @param {XYCoords} endPoint   - The end point the cubic Bézier curve.
+     * @param {XYCoords} startControlPoint - The start control point the cubic Bézier curve.
+     * @param {XYCoords} endControlPoint   - The end control point the cubic Bézier curve.
+     * @param {string} color - The CSS color to draw the curve with.
+     * @param {number} lineWidth - (optional) The line width to use.
+     * @param {headLength=8} headLength - (optional) The length of the arrow head (default is 8 units).
+     *
+     * @return {void}
+     * @instance
+     * @memberof DrawLib
+     */
+    cubicBezierArrow(startPoint, endPoint, startControlPoint, endControlPoint, color, lineWidth, headLength) {
+        // NOT YET IMPLEMENTED
+    }
+    /**
+     * Draw just an arrow head a the end of an imaginary line (zB) of the given line width the specified (CSS-) color and size.
+     *
+     * @method arrow
+     * @param {XYCoords} zA - The start point of the arrow-line.
+     * @param {XYCoords} zB - The end point of the arrow-line.
+     * @param {string} color - Any valid CSS color string.
+     * @param {number=1} lineWidth - (optional) The line width to use; default is 1.
+     * @param {number=8} headLength - (optional) The length of the arrow head (default is 8 pixels).
+     * @return {void}
+     * @instance
+     * @memberof DrawLib
+     **/
+    arrowHead(zA, zB, color, lineWidth, headLength) {
         // NOT YET IMPLEMENTED
     }
     /**
@@ -11256,13 +13521,32 @@ class drawutilsgl {
      *
      * @method image
      * @param {Image} image - The image object to draw.
-     * @param {Vertex} position - The position to draw the the upper left corner at.
-     * @param {Vertex} size - The x/y-size to draw the image with.
+     * @param {XYCoords} position - The position to draw the the upper left corner at.
+     * @param {XYCoords} size - The x/y-size to draw the image with.
+     * @param {number=0.0} alpha - (optional, default=0.0) The transparency (0.0=opaque, 1.0=transparent).
      * @return {void}
      * @instance
      * @memberof drawutils
      **/
-    image(image, position, size) {
+    image(image, position, size, alpha = 0.0) {
+        // NOT YET IMPLEMENTED
+    }
+    /**
+     * Draw an image at the given position with the given size.<br>
+     * <br>
+     * Note: SVG images may have resizing issues at the moment.Draw a line and an arrow at the end (zB) of the given line with the specified (CSS-) color.
+     *
+     * @method texturedPoly
+     * @param {Image} textureImage - The image object to draw.
+     * @param {Bounds} textureSize - The texture size to use; these are the original bounds to map the polygon vertices to.
+     * @param {Polygon} polygon - The polygon to use as clip path.
+     * @param {XYCoords} polygonPosition - The polygon's position (relative), measured at the bounding box's center.
+     * @param {number} rotation - The rotation to use for the polygon (and for the texture).
+     * @return {void}
+     * @instance
+     * @memberof drawutilsgl
+     **/
+    texturedPoly(textureImage, textureSize, polygon, polygonPosition, rotation) {
         // NOT YET IMPLEMENTED
     }
     // +---------------------------------------------------------------------------------
@@ -11283,10 +13567,10 @@ class drawutilsgl {
      * Draw the given (cubic) bézier curve.
      *
      * @method cubicBezier
-     * @param {Vertex} startPoint - The start point of the cubic Bézier curve
-     * @param {Vertex} endPoint   - The end point the cubic Bézier curve.
-     * @param {Vertex} startControlPoint - The start control point the cubic Bézier curve.
-     * @param {Vertex} endControlPoint   - The end control point the cubic Bézier curve.
+     * @param {XYCoords} startPoint - The start point of the cubic Bézier curve
+     * @param {XYCoords} endPoint   - The end point the cubic Bézier curve.
+     * @param {XYCoords} startControlPoint - The start control point the cubic Bézier curve.
+     * @param {VertXYCoordsex} endControlPoint   - The end control point the cubic Bézier curve.
      * @param {string} color - The CSS color to draw the curve with.
      * @param {number=} lineWidth - (optional) The line width to use; default is 1.
      * @return {void}
@@ -11304,7 +13588,7 @@ class drawutilsgl {
      * <pre> [ point1, point1_startControl, point2_endControl, point2, point2_startControl, point3_endControl, point3, ... pointN_endControl, pointN ]</pre>
      *
      * @method cubicBezierPath
-     * @param {Vertex[]} path - The cubic bezier path as described above.
+     * @param {XYCoords[]} path - The cubic bezier path as described above.
      * @param {string} color - The CSS colot to draw the path with.
      * @param {number=} lineWidth - (optional) The line width to use; default is 1.
      * @return {void}
@@ -11320,8 +13604,8 @@ class drawutilsgl {
      * The colors for this are fixed and cannot be specified.
      *
      * @method handle
-     * @param {Vertex} startPoint - The start of the handle.
-     * @param {Vertex} endPoint - The end point of the handle.
+     * @param {XYCoords} startPoint - The start of the handle.
+     * @param {XYCoords} endPoint - The end point of the handle.
      * @return {void}
      * @instance
      * @memberof drawutils
@@ -11333,8 +13617,8 @@ class drawutilsgl {
      * Draw a handle line (with a light grey).
      *
      * @method handleLine
-     * @param {Vertex} startPoint - The start point to draw the handle at.
-     * @param {Vertex} endPoint - The end point to draw the handle at.
+     * @param {XYCoords} startPoint - The start point to draw the handle at.
+     * @param {XYCoords} endPoint - The end point to draw the handle at.
      * @return {void}
      * @instance
      * @memberof drawutils
@@ -11346,7 +13630,7 @@ class drawutilsgl {
      * Draw a 1x1 dot with the specified (CSS-) color.
      *
      * @method dot
-     * @param {Vertex} p - The position to draw the dot at.
+     * @param {XYCoords} p - The position to draw the dot at.
      * @param {string} color - The CSS color to draw the dot with.
      * @return {void}
      * @instance
@@ -11359,7 +13643,7 @@ class drawutilsgl {
      * Draw the given point with the specified (CSS-) color and radius 3.
      *
      * @method point
-     * @param {Vertex} p - The position to draw the point at.
+     * @param {XYCoords} p - The position to draw the point at.
      * @param {string} color - The CSS color to draw the point with.
      * @return {void}
      * @instance
@@ -11374,7 +13658,7 @@ class drawutilsgl {
      * Note that if the x- and y- scales are different the result will be an ellipse rather than a circle.
      *
      * @method circle
-     * @param {Vertex} center - The center of the circle.
+     * @param {XYCoords} center - The center of the circle.
      * @param {number} radius - The radius of the circle.
      * @param {string} color - The CSS color to draw the circle with.
      * @param {number=} lineWidth - (optional) The line width to use; default is 1.
@@ -11389,7 +13673,7 @@ class drawutilsgl {
      * Draw a circular arc (section of a circle) with the given CSS color.
      *
      * @method circleArc
-     * @param {Vertex} center - The center of the circle.
+     * @param {XYCoords} center - The center of the circle.
      * @param {number} radius - The radius of the circle.
      * @param {number} startAngle - The angle to start at.
      * @param {number} endAngle - The angle to end at.
@@ -11405,7 +13689,7 @@ class drawutilsgl {
      * Draw an ellipse with the specified (CSS-) color and thw two radii.
      *
      * @method ellipse
-     * @param {Vertex} center - The center of the ellipse.
+     * @param {XYCoords} center - The center of the ellipse.
      * @param {number} radiusX - The radius of the ellipse.
      * @param {number} radiusY - The radius of the ellipse.
      * @param {string} color - The CSS color to draw the ellipse with.
@@ -11425,7 +13709,7 @@ class drawutilsgl {
      *
      * @method square
      * @param {XYCords} center - The center of the square.
-     * @param {Vertex} size - The size of the square.
+     * @param {number} size - The size of the square.
      * @param {string} color - The CSS color to draw the square with.
      * @param {number=} lineWidth - (optional) The line width to use; default is 1.
      * @return {void}
@@ -11451,7 +13735,7 @@ class drawutilsgl {
      * Draw a grid of horizontal and vertical lines with the given (CSS-) color.
      *
      * @method grid
-     * @param {Vertex} center - The center of the grid.
+     * @param {XYCoords} center - The center of the grid.
      * @param {number} width - The total width of the grid (width/2 each to the left and to the right).
      * @param {number} height - The total height of the grid (height/2 each to the top and to the bottom).
      * @param {number} sizeX - The horizontal grid size.
@@ -11470,7 +13754,7 @@ class drawutilsgl {
      * This works analogue to the grid() function
      *
      * @method raster
-     * @param {Vertex} center - The center of the raster.
+     * @param {XYCoords} center - The center of the raster.
      * @param {number} width - The total width of the raster (width/2 each to the left and to the right).
      * @param {number} height - The total height of the raster (height/2 each to the top and to the bottom).
      * @param {number} sizeX - The horizontal raster size.
@@ -11491,8 +13775,8 @@ class drawutilsgl {
      * as even shaped diamonds.
      *
      * @method diamondHandle
-     * @param {Vertex} center - The center of the diamond.
-     * @param {Vertex} size - The x/y-size of the diamond.
+     * @param {XYCoords} center - The center of the diamond.
+     * @param {number} size - The x/y-size of the diamond.
      * @param {string} color - The CSS color to draw the diamond with.
      * @return {void}
      * @instance
@@ -11509,8 +13793,8 @@ class drawutilsgl {
      * as even shaped squares.
      *
      * @method squareHandle
-     * @param {Vertex} center - The center of the square.
-     * @param {Vertex} size - The x/y-size of the square.
+     * @param {XYCoords} center - The center of the square.
+     * @param {number} size - The x/y-size of the square.
      * @param {string} color - The CSS color to draw the square with.
      * @return {void}
      * @instance
@@ -11527,7 +13811,7 @@ class drawutilsgl {
      * as even shaped circles.
      *
      * @method circleHandle
-     * @param {Vertex} center - The center of the circle.
+     * @param {XYCoords} center - The center of the circle.
      * @param {number} radius - The radius of the circle.
      * @param {string} color - The CSS color to draw the circle with.
      * @return {void}
@@ -11546,11 +13830,29 @@ class drawutilsgl {
      * @param {XYCoords} center - The center of the crosshair.
      * @param {number} radius - The radius of the crosshair.
      * @param {string} color - The CSS color to draw the crosshair with.
+     * @param {number=0.5} lineWidth - (optional, default=0.5) The line width to use.
      * @return {void}
      * @instance
      * @memberof drawutils
      */
-    crosshair(center, radius, color) {
+    crosshair(center, radius, color, lineWidth) {
+        // NOT YET IMPLEMENTED
+    }
+    /**
+     * Draw a cross with diagonal axes with given radius, color and lineWidth at the given position.<br>
+     * <br>
+     * Note that the x's radius will not be affected by scaling.
+     *
+     * @method crosshair
+     * @param {XYCoords} center - The center of the crosshair.
+     * @param {number} radius - The radius of the crosshair.
+     * @param {string} color - The CSS color to draw the crosshair with.
+     * @param {number=1} lineWidth - (optional, default=1.0) The line width to use.
+     * @return {void}
+     * @instance
+     * @memberof drawutils
+     */
+    cross(center, radius, color, lineWidth) {
         // NOT YET IMPLEMENTED
     }
     /**
@@ -11605,7 +13907,7 @@ class drawutilsgl {
      * Draw a polygon line (alternative function to the polygon).
      *
      * @method polyline
-     * @param {Vertex[]} vertices - The polygon vertices to draw.
+     * @param {XYCoords[]} vertices - The polygon vertices to draw.
      * @param {boolan}   isOpen   - If true the polyline will not be closed at its end.
      * @param {string}   color    - The CSS color to draw the polygon with.
      * @param {number=}  lineWidth - (optional) The line width to use; default is 1.
@@ -11770,21 +14072,23 @@ class GLU {
 }
 //# sourceMappingURL=drawgl.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/drawutilssvg.js":
+/***/ "./node_modules/plotboilerplate/src/esm/drawutilssvg.js"
 /*!**************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/drawutilssvg.js ***!
   \**************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "drawutilssvg": () => (/* binding */ drawutilssvg)
+/* harmony export */   drawutilssvg: () => (/* binding */ drawutilssvg)
 /* harmony export */ });
 /* harmony import */ var _CircleSector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CircleSector */ "./node_modules/plotboilerplate/src/esm/CircleSector.js");
 /* harmony import */ var _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CubicBezierCurve */ "./node_modules/plotboilerplate/src/esm/CubicBezierCurve.js");
 /* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
+/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Vector */ "./node_modules/plotboilerplate/src/esm/Vector.js");
 /**
  * Draws elements into an SVG node.
  *
@@ -11816,8 +14120,29 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-11-15 Adding more parameters tot the `text()` function: fontSize, textAlign, fontFamily, lineHeight.
  * @modified 2021-11-19 Fixing the `label(text,x,y)` position.
  * @modified 2021-11-19 Added the `color` param to the `label(...)` function.
- * @version  1.4.0
+ * @modified 2022-02-03 Added the `lineWidth` param to the `crosshair` function.
+ * @modified 2022-02-03 Added the `cross(...)` function.
+ * @modified 2022-03-26 Added the private `nodeDefs` and `bufferedNodeDefs` attributes.
+ * @modified 2022-03-26 Added the `texturedPoly` function to draw textures polygons.
+ * @modified 2022-07-26 Adding `alpha` to the `image(...)` function.
+ * @modified 2022-11-10 Tweaking some type issues.
+ * @modified 2023-02-04 Fixed a typo in the CSS classname for cubic Bézier paths: cubicBezier (was cubierBezier).
+ * @modified 2023-02-10 The methods `setCurrentClassName` and `setCurrentId` also accept `null` now.
+ * @modified 2023-09-29 Added initialization checks for null parameters.
+ * @modified 2023-09-29 Added a missing implementation to the `drawurilssvg.do(XYCoords,string)` function. Didn't draw anything.
+ * @modified 2023-09-29 Downgrading all `Vertex` param type to the more generic `XYCoords` type in these render functions: line, arrow, texturedPoly, cubicBezier, cubicBezierPath, handle, handleLine, dot, point, circle, circleArc, ellipse, grid, raster.
+ * @modified 2023-09-29 Added the `headLength` parameter to the 'DrawLib.arrow()` function.
+ * @modified 2023-09-29 Added the `arrowHead(...)` function to the 'DrawLib.arrow()` interface.
+ * @modified 2023-09-29 Added the `cubicBezierArrow(...)` function to the 'DrawLib.arrow()` interface.
+ * @modified 2023-10-04 Adding `strokeOptions` param to these draw function: line, arrow, cubicBezierArrow, cubicBezier, cubicBezierPath, circle, circleArc, ellipse, square, rect, polygon, polyline.
+ * @modified 2024-01-30 Fixing an issue with immutable style sets; changes to the global draw config did not reflect here (do now).
+ * @modified 2024-03-10 Fixing some types for Typescript 5 compatibility.
+ * @modified 2024-07-24 Caching custom style defs in a private buffer variable.
+ * @modified 2025-11-14 Fixing a bug in the CSS `mix-blend-mode` property handling (caused a runtime error).
+ * @version  1.6.11
  **/
+
+
 
 
 
@@ -11833,6 +14158,10 @@ const RAD_TO_DEG = 180 / Math.PI;
  */
 class drawutilssvg {
     /**
+     * Passed from primary to secondary instance.
+     */
+    //private nodeStyle: SVGStyleElement;
+    /**
      * The constructor.
      *
      * @constructor
@@ -11846,32 +14175,58 @@ class drawutilssvg {
      * @param {boolean=} isSecondary - (optional) Indicates if this is the primary or secondary instance. Only primary instances manage child nodes.
      * @param {SVGGElement=} gNode - (optional) Primary and seconday instances share the same &lt;g> node.
      **/
-    constructor(svgNode, offset, scale, canvasSize, fillShapes, drawConfig, isSecondary, gNode, bufferGNode) {
+    constructor(svgNode, offset, scale, canvasSize, fillShapes, drawConfig, isSecondary, gNode, bufferGNode, nodeDefs, bufferNodeDefs, nodeStyle) {
         this.svgNode = svgNode;
         this.offset = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(0, 0).set(offset);
         this.scale = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(1, 1).set(scale);
         this.fillShapes = fillShapes;
-        this.isSecondary = isSecondary;
+        this.isSecondary = Boolean(isSecondary);
+        this.drawConfig = drawConfig;
         this.drawlibConfiguration = {};
         this.cache = new Map();
         this.setSize(canvasSize);
         if (isSecondary) {
+            if (!gNode || !bufferGNode || !nodeDefs || !bufferNodeDefs) {
+                throw "Cannot create secondary svg draw lib with undefinde gNode|bufferGNode|nodeDefs|bufferNodeDefs.";
+            }
             this.gNode = gNode;
             this.bufferGNode = bufferGNode;
+            this.nodeDefs = nodeDefs;
+            this.bufferedNodeDefs = bufferNodeDefs;
+            if (nodeStyle) {
+                this.nodeStyle = nodeStyle;
+            }
         }
         else {
             this.addStyleDefs(drawConfig);
+            this.addDefsNode();
             this.gNode = this.createSVGNode("g");
             this.bufferGNode = this.createSVGNode("g");
             this.svgNode.appendChild(this.gNode);
         }
     }
+    /**
+     * Adds a default style defintion based on the passed DrawConfig.
+     * Twaek the draw config to change default colors or line thicknesses.
+     *
+     * @param {DrawConfig} drawConfig
+     */
     addStyleDefs(drawConfig) {
         this.nodeStyle = this.createSVGNode("style");
         this.svgNode.appendChild(this.nodeStyle);
+        this.rebuildStyleDefs(drawConfig);
+    }
+    /**
+     * This method is required to re-define the global style defs. It is needed
+     * if any value in the DrawConfig changed in the meantime.
+     * @param drawConfig
+     */
+    rebuildStyleDefs(drawConfig) {
         // Which default styles to add? -> All from the DrawConfig.
         // Compare with DrawConfig interface
         const keys = {
+            "bezier": "CubicBezierCurve",
+            //"bezierPath": "BezierPath", // TODO: is this correct?
             "polygon": "Polygon",
             "triangle": "Triangle",
             "ellipse": "Ellipse",
@@ -11886,6 +14241,7 @@ class drawutilssvg {
         };
         // Question: why isn't this working if the svgNode is created dynamically? (nodeStyle.sheet is null)
         const rules = [];
+        // console.log("drawConfig", drawConfig);
         for (var k in keys) {
             const className = keys[k];
             const drawSettings = drawConfig[k];
@@ -11896,7 +14252,23 @@ class drawutilssvg {
                 console.warn(`Warning: your draw config is missing the key '${k}' which is required.`);
             }
         }
+        if (this.customStyleDefs) {
+            rules.push("\n/* Custom styles */\n");
+            this.customStyleDefs.forEach((value, key) => {
+                rules.push(key + " { " + value + " }");
+            });
+            // this.nodeStyle.innerHTML += "\n/* Custom styles */\n" + rules.join("\n");
+        }
         this.nodeStyle.innerHTML = rules.join("\n");
+    }
+    /**
+     * Adds the internal <defs> node.
+     */
+    addDefsNode() {
+        this.nodeDefs = this.createSVGNode("defs");
+        // this.svgNode.appendChild(this.nodeDefs);
+        this.bufferedNodeDefs = this.createSVGNode("defs");
+        this.svgNode.appendChild(this.nodeDefs);
     }
     /**
      * This is a simple way to include custom CSS class mappings to the style defs of the generated SVG.
@@ -11910,11 +14282,7 @@ class drawutilssvg {
      * @param {Map<string,string>} defs
      */
     addCustomStyleDefs(defs) {
-        const buffer = [];
-        defs.forEach((value, key) => {
-            buffer.push(key + " { " + value + " }");
-        });
-        this.nodeStyle.innerHTML += "\n/* Custom styles */\n" + buffer.join("\n");
+        this.customStyleDefs = defs;
     }
     /**
      * Retieve an old (cached) element.
@@ -11928,6 +14296,9 @@ class drawutilssvg {
      * @param {string} nodeName - The expected node name.
      */
     findElement(key, nodeName) {
+        if (!key) {
+            return null;
+        }
         var node = this.cache.get(key);
         if (node && node.nodeName.toUpperCase() === nodeName.toUpperCase()) {
             this.cache.delete(key);
@@ -11971,8 +14342,17 @@ class drawutilssvg {
             node = this.createSVGNode(nodeName);
         }
         if (this.drawlibConfiguration.blendMode) {
-            node.style["mix-blend-mode"] = this.drawlibConfiguration.blendMode;
+            const blendMode = node.style["mix-blend-mode"];
+            if (typeof blendMode === "function") {
+                blendMode(this.drawlibConfiguration.blendMode);
+            }
+            else {
+                node.style["mix-blend-mode"] = this.drawlibConfiguration.blendMode;
+            }
         }
+        // if (this.lineDashEnabled && this.lineDash && this.lineDash.length > 0 && drawutilssvg.nodeSupportsLineDash(nodeName)) {
+        //   node.setAttribute("stroke-dasharray", this.lineDash.join(" "));
+        // }
         return node;
     }
     /**
@@ -11995,23 +14375,58 @@ class drawutilssvg {
      * @param {number=1} lineWidth - (optional) A line width to use for drawing (default is 1).
      * @return {SVGElement} The node itself (for chaining).
      */
-    _bindFillDraw(node, className, color, lineWidth) {
+    _bindFillDraw(node, className, color, lineWidth, strokeOptions) {
+        this._configureNode(node, className, this.fillShapes, color, lineWidth, strokeOptions);
+        return this._bindNode(node, undefined);
+    }
+    /**
+     * Bind this given node to a parent. If no parent is passed then the global
+     * node buffer will be used.
+     *
+     * @method _bindNode
+     * @private
+     * @instance
+     * @memberof drawutilssvg
+     * @param {SVGElement} node - The SVG node to bind.
+     * @param {SVGElement=} bindingParent - (optional) You may pass node other than the glober buffer node.
+     * @returns {SVGElement} The passed node itself.
+     */
+    _bindNode(node, bindingParent) {
+        if (!node.parentNode) {
+            // Attach to DOM only if not already attached
+            (bindingParent !== null && bindingParent !== void 0 ? bindingParent : this.bufferGNode).appendChild(node);
+        }
+        return node;
+    }
+    /**
+     * Add custom CSS class names and the globally defined CSS classname to the
+     * given node.
+     *
+     * @method addCSSClasses
+     * @private
+     * @instance
+     * @memberof drawutilssvg
+     * @param {SVGElement} node - The SVG node to bind.
+     * @param {string} className - The additional custom classname to add.
+     * @returns {void}
+     */
+    _addCSSClasses(node, className) {
         if (this.curClassName) {
             node.setAttribute("class", `${className} ${this.curClassName}`);
         }
         else {
             node.setAttribute("class", className);
         }
-        node.setAttribute("fill", this.fillShapes ? color : "none");
-        node.setAttribute("stroke", this.fillShapes ? "none" : color);
+    }
+    _configureNode(node, className, fillMode, color, lineWidth, strokeOptions) {
+        this._addCSSClasses(node, className);
+        node.setAttribute("fill", fillMode && color ? color : "none");
+        node.setAttribute("stroke", fillMode ? "none" : color || "none");
         node.setAttribute("stroke-width", `${lineWidth || 1}`);
         if (this.curId) {
             node.setAttribute("id", `${this.curId}`); // Maybe React-style 'key' would be better?
         }
-        if (!node.parentNode) {
-            // Attach to DOM only if not already attached
-            this.bufferGNode.appendChild(node);
-        }
+        this.applyStrokeOpts(node, strokeOptions);
         return node;
     }
     /**
@@ -12033,9 +14448,9 @@ class drawutilssvg {
      * that under the hood the same gl context and gl program will be used.
      */
     copyInstance(fillShapes) {
-        var copy = new drawutilssvg(this.svgNode, this.offset, this.scale, this.canvasSize, fillShapes, null, // no DrawConfig
+        var copy = new drawutilssvg(this.svgNode, this.offset, this.scale, this.canvasSize, fillShapes, this.drawConfig, // null as any as DrawConfig, // no DrawConfig – this will work as long as `isSecondary===true`
         true, // isSecondary
-        this.gNode, this.bufferGNode);
+        this.gNode, this.bufferGNode, this.nodeDefs, this.bufferedNodeDefs, this.nodeStyle);
         return copy;
     }
     /**
@@ -12054,7 +14469,7 @@ class drawutilssvg {
      *
      * @name setCurrentId
      * @method
-     * @param {UID} uid - A UID identifying the currently drawn element(s).
+     * @param {UID|null} uid - A UID identifying the currently drawn element(s).
      * @instance
      * @memberof drawutilssvg
      **/
@@ -12067,7 +14482,7 @@ class drawutilssvg {
      *
      * @name setCurrentClassName
      * @method
-     * @param {string} className - A class name for further custom use cases.
+     * @param {string|null} className - A class name for further custom use cases.
      * @instance
      * @memberof drawutilssvg
      **/
@@ -12107,16 +14522,41 @@ class drawutilssvg {
      * @instance
      **/
     endDrawCycle(renderTime) {
+        this.rebuildStyleDefs(this.drawConfig);
         if (!this.isSecondary) {
             // All elements are drawn into the buffer; they are NOT yet visible, not did the browser perform any
             // layout updates.
             // Replace the old <g>-node with the buffer node.
             //   https://stackoverflow.com/questions/27442464/how-to-update-a-svg-image-without-seeing-a-blinking
+            this.svgNode.replaceChild(this.bufferedNodeDefs, this.nodeDefs);
             this.svgNode.replaceChild(this.bufferGNode, this.gNode);
         }
-        let tmp = this.gNode;
+        const tmpGNode = this.gNode;
         this.gNode = this.bufferGNode;
-        this.bufferGNode = tmp;
+        this.bufferGNode = tmpGNode;
+        const tmpDefsNode = this.nodeDefs;
+        this.nodeDefs = this.bufferedNodeDefs;
+        this.bufferedNodeDefs = tmpDefsNode;
+    }
+    /**
+     * A private helper method to apply stroke options to the current
+     * context.
+     * @param {StrokeOptions=} strokeOptions -
+     */
+    applyStrokeOpts(node, strokeOptions) {
+        if (strokeOptions &&
+            strokeOptions.dashArray &&
+            strokeOptions.dashArray.length > 0 &&
+            drawutilssvg.nodeSupportsLineDash(node.tagName)) {
+            node.setAttribute("stroke-dasharray", strokeOptions.dashArray
+                .map((dashArayElem) => {
+                return dashArayElem * this.scale.x;
+            })
+                .join(" "));
+            if (strokeOptions.dashOffset) {
+                node.setAttribute("stroke-dashoffset", `${strokeOptions.dashOffset * this.scale.x}`);
+            }
+        }
     }
     _x(x) {
         return this.offset.x + this.scale.x * x;
@@ -12128,47 +14568,101 @@ class drawutilssvg {
      * Draw the line between the given two points with the specified (CSS-) color.
      *
      * @method line
-     * @param {Vertex} zA - The start point of the line.
-     * @param {Vertex} zB - The end point of the line.
+     * @param {XYCoords} zA - The start point of the line.
+     * @param {XYCoords} zB - The end point of the line.
      * @param {string} color - Any valid CSS color string.
      * @param {number=1} lineWidth? - [optional] The line's width.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      **/
-    line(zA, zB, color, lineWidth) {
-        const line = this.makeNode("line");
-        line.setAttribute("x1", `${this._x(zA.x)}`);
-        line.setAttribute("y1", `${this._y(zA.y)}`);
-        line.setAttribute("x2", `${this._x(zB.x)}`);
-        line.setAttribute("y2", `${this._y(zB.y)}`);
-        return this._bindFillDraw(line, "line", color, lineWidth || 1);
+    line(zA, zB, color, lineWidth, strokeOptions) {
+        // const line: SVGElement = this.makeNode("line");
+        // this.applyStrokeOpts(line, strokeOptions);
+        // line.setAttribute("x1", `${this._x(zA.x)}`);
+        // line.setAttribute("y1", `${this._y(zA.y)}`);
+        // line.setAttribute("x2", `${this._x(zB.x)}`);
+        // line.setAttribute("y2", `${this._y(zB.y)}`);
+        const line = this.makeLineNode(zA, zB, color, lineWidth, strokeOptions);
+        return this._bindFillDraw(line, "line", color, lineWidth || 1, strokeOptions);
     }
     /**
      * Draw a line and an arrow at the end (zB) of the given line with the specified (CSS-) color.
      *
      * @method arrow
-     * @param {Vertex} zA - The start point of the arrow-line.
-     * @param {Vertex} zB - The end point of the arrow-line.
+     * @param {XYCoords} zA - The start point of the arrow-line.
+     * @param {XYCoords} zB - The end point of the arrow-line.
      * @param {string} color - Any valid CSS color string.
      * @param {number=} lineWidth - (optional) The line width to use; default is 1.
+     * @param {headLength=8} headLength - (optional) The length of the arrow head (default is 8 units).
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      **/
-    arrow(zA, zB, color, lineWidth) {
-        const node = this.makeNode("path");
-        var headlen = 8; // length of head in pixels
-        var vertices = _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex.utils.buildArrowHead(zA, zB, headlen, this.scale.x, this.scale.y);
-        const d = ["M", this._x(zA.x), this._y(zA.y)];
-        for (var i = 0; i <= vertices.length; i++) {
-            d.push("L");
-            // Note: only use offset here (the vertices are already scaled)
-            d.push(this.offset.x + vertices[i % vertices.length].x);
-            d.push(this.offset.y + vertices[i % vertices.length].y);
-        }
-        node.setAttribute("d", d.join(" "));
-        return this._bindFillDraw(node, "arrow", color, lineWidth || 1);
+    arrow(zA, zB, color, lineWidth, headLength = 8, strokeOptions) {
+        const group = this.makeNode("g");
+        const arrowHeadBasePosition = { x: 0, y: 0 };
+        // Just create the child nodes, don't bind them to the root node.
+        const arrowHead = this.makeArrowHeadNode(zA, zB, color, lineWidth, headLength, undefined, arrowHeadBasePosition);
+        const line = this.makeLineNode(zA, arrowHeadBasePosition, color, lineWidth, strokeOptions);
+        group.appendChild(line);
+        group.appendChild(arrowHead);
+        this._addCSSClasses(group, "linear-arrow");
+        this._bindNode(group, undefined);
+        return group;
+    }
+    /**
+     * Draw a cubic Bézier curve and and an arrow at the end (endControlPoint) of the given line width the specified (CSS-) color and arrow size.
+     *
+     * @method cubicBezierArrow
+     * @param {XYCoords} startPoint - The start point of the cubic Bézier curve
+     * @param {XYCoords} endPoint   - The end point the cubic Bézier curve.
+     * @param {XYCoords} startControlPoint - The start control point the cubic Bézier curve.
+     * @param {XYCoords} endControlPoint   - The end control point the cubic Bézier curve.
+     * @param {string} color - The CSS color to draw the curve with.
+     * @param {number} lineWidth - (optional) The line width to use.
+     * @param {headLength=8} headLength - (optional) The length of the arrow head (default is 8 units).
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
+     * @return {void}
+     * @instance
+     * @memberof DrawLib
+     */
+    cubicBezierArrow(startPoint, endPoint, startControlPoint, endControlPoint, color, lineWidth, headLength = 8, strokeOptions) {
+        const group = this.makeNode("g");
+        // Just create the child nodes, don't bind them to the root node.
+        const arrowHeadBasePosition = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(0, 0);
+        const arrowHead = this.makeArrowHeadNode(endControlPoint, endPoint, color, lineWidth, headLength, undefined, arrowHeadBasePosition);
+        const diff = arrowHeadBasePosition.difference(endPoint);
+        const bezier = this.makeCubicBezierNode(startPoint, { x: endPoint.x - diff.x, y: endPoint.y - diff.y }, startControlPoint, { x: endControlPoint.x - diff.x, y: endControlPoint.y - diff.y }, color, lineWidth, strokeOptions);
+        group.appendChild(bezier);
+        group.appendChild(arrowHead);
+        this._addCSSClasses(group, "cubicbezier-arrow");
+        this._bindNode(group, undefined);
+        return group;
+    }
+    /**
+     * Draw just an arrow head a the end of an imaginary line (zB) of the given line width the specified (CSS-) color and size.
+     *
+     * @method arrow
+     * @param {XYCoords} zA - The start point of the arrow-line.
+     * @param {XYCoords} zB - The end point of the arrow-line.
+     * @param {string} color - Any valid CSS color string.
+     * @param {number=1} lineWidth - (optional) The line width to use; default is 1.
+     * @param {number=8} headLength - (optional) The length of the arrow head (default is 8 pixels).
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
+     * @return {void}
+     * @instance
+     * @memberof DrawLib
+     **/
+    arrowHead(zA, zB, color, lineWidth, headLength = 8, strokeOptions) {
+        const node = this.makeArrowHeadNode(zA, zB, color, lineWidth, headLength, strokeOptions);
+        return this._bindFillDraw(node, "arrowhead", color, lineWidth || 1, strokeOptions);
     }
     /**
      * Draw an image at the given position with the given size.<br>
@@ -12177,13 +14671,14 @@ class drawutilssvg {
      *
      * @method image
      * @param {Image} image - The image object to draw.
-     * @param {Vertex} position - The position to draw the the upper left corner at.
-     * @param {Vertex} size - The x/y-size to draw the image with.
+     * @param {XYCoords} position - The position to draw the the upper left corner at.
+     * @param {XYCoords} size - The x/y-size to draw the image with.
+     * @param {number=0.0} alpha - (optional, default=0.0) The transparency (1.0=opaque, 0.0=transparent).
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      **/
-    image(image, position, size) {
+    image(image, position, size, alpha = 1.0) {
         const node = this.makeNode("image");
         // We need to re-adjust the image if it was not yet fully loaded before.
         const setImageSize = (image) => {
@@ -12193,6 +14688,9 @@ class drawutilssvg {
                 node.setAttribute("width", `${image.naturalWidth * this.scale.x}`);
                 node.setAttribute("height", `${image.naturalHeight * this.scale.y}`);
                 node.setAttribute("display", null); // Dislay when loaded
+                // if (alpha) {
+                node.setAttribute("opacity", `${alpha}`);
+                // }
                 node.setAttribute("transform", `translate(${this._x(position.x)} ${this._y(position.y)}) scale(${ratioX} ${ratioY})`);
             }
         };
@@ -12209,39 +14707,93 @@ class drawutilssvg {
         return this._bindFillDraw(node, "image", null, null);
     }
     /**
+     * Draw an image at the given position with the given size.<br>
+     * <br>
+     * Note: SVG images may have resizing issues at the moment.Draw a line and an arrow at the end (zB) of the given line with the specified (CSS-) color.
+     *
+     * @method texturedPoly
+     * @param {Image} textureImage - The image object to draw.
+     * @param {Bounds} textureSize - The texture size to use; these are the original bounds to map the polygon vertices to.
+     * @param {Polygon} polygon - The polygon to use as clip path.
+     * @param {XYCoords} polygonPosition - The polygon's position (relative), measured at the bounding box's center.
+     * @param {number} rotation - The rotation to use for the polygon (and for the texture).
+     * @return {void}
+     * @instance
+     * @memberof drawutilssvg
+     **/
+    texturedPoly(textureImage, textureSize, polygon, polygonPosition, rotation) {
+        // const basePolygonBounds: Bounds = polygon.getBounds();
+        const rotatedScalingOrigin = new _Vertex__WEBPACK_IMPORTED_MODULE_2__.Vertex(textureSize.min).clone().rotate(rotation, polygonPosition);
+        // const rotationCenter = polygonPosition.clone().add(rotatedScalingOrigin.difference(textureSize.min).inv());
+        // Create something like this
+        // ...
+        //    <defs>
+        //       <clipPath id="shape">
+        //         <path fill="none" d="..."/>
+        //       </clipPath>
+        //    </defs>
+        //    ...
+        //    <g clip-path="url(#shape)">
+        //       <g transform="scale(...)">
+        //          <image width="643" height="643" transform="rotate(...)" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/222579/beagle400.jpg" >
+        //       </g>
+        //    </g>
+        //    </image>
+        // ...
+        const clipPathNode = this.makeNode("clipPath");
+        const clipPathId = `clippath_${_UIDGenerator__WEBPACK_IMPORTED_MODULE_3__.UIDGenerator.next()}`; // TODO: use a better UUID generator here?
+        clipPathNode.setAttribute("id", clipPathId);
+        const gNode = this.makeNode("g");
+        const imageNode = this.makeNode("image");
+        imageNode.setAttribute("x", `${this._x(rotatedScalingOrigin.x)}`);
+        imageNode.setAttribute("y", `${this._y(rotatedScalingOrigin.y)}`);
+        imageNode.setAttribute("width", `${textureSize.width}`);
+        imageNode.setAttribute("height", `${textureSize.height}`);
+        imageNode.setAttribute("href", textureImage.src);
+        // imageNode.setAttribute("opacity", "0.5");
+        // SVG rotations in degrees
+        imageNode.setAttribute("transform", `rotate(${rotation * RAD_TO_DEG}, ${this._x(rotatedScalingOrigin.x)}, ${this._y(rotatedScalingOrigin.y)})`);
+        const pathNode = this.makeNode("path");
+        const pathData = [];
+        if (polygon.vertices.length > 0) {
+            const self = this;
+            pathData.push("M", `${this._x(polygon.vertices[0].x)}`, `${this._y(polygon.vertices[0].y)}`);
+            for (var i = 1; i < polygon.vertices.length; i++) {
+                pathData.push("L", `${this._x(polygon.vertices[i].x)}`, `${this._y(polygon.vertices[i].y)}`);
+            }
+        }
+        pathNode.setAttribute("d", pathData.join(" "));
+        clipPathNode.appendChild(pathNode);
+        this.bufferedNodeDefs.appendChild(clipPathNode);
+        gNode.appendChild(imageNode);
+        gNode.setAttribute("transform-origin", `${this._x(rotatedScalingOrigin.x)} ${this._y(rotatedScalingOrigin.y)}`);
+        gNode.setAttribute("transform", `scale(${this.scale.x}, ${this.scale.y})`);
+        const clipNode = this.makeNode("g");
+        clipNode.appendChild(gNode);
+        clipNode.setAttribute("clip-path", `url(#${clipPathId})`);
+        // TODO: check if the image class is correct here or if we should use a 'clippedImage' class here
+        this._bindFillDraw(clipNode, "image", null, null); // No color, no lineWidth
+        return clipNode;
+    }
+    /**
      * Draw the given (cubic) bézier curve.
      *
      * @method cubicBezier
-     * @param {Vertex} startPoint - The start point of the cubic Bézier curve
-     * @param {Vertex} endPoint   - The end point the cubic Bézier curve.
-     * @param {Vertex} startControlPoint - The start control point the cubic Bézier curve.
-     * @param {Vertex} endControlPoint   - The end control point the cubic Bézier curve.
+     * @param {XYCoords} startPoint - The start point of the cubic Bézier curve
+     * @param {XYCoords} endPoint   - The end point the cubic Bézier curve.
+     * @param {XYCoords} startControlPoint - The start control point the cubic Bézier curve.
+     * @param {XYCoords} endControlPoint   - The end control point the cubic Bézier curve.
      * @param {string} color - The CSS color to draw the curve with.
      * @param {number} lineWidth - (optional) The line width to use.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      */
-    cubicBezier(startPoint, endPoint, startControlPoint, endControlPoint, color, lineWidth) {
-        if (startPoint instanceof _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_1__.CubicBezierCurve) {
-            return this.cubicBezier(startPoint.startPoint, startPoint.endPoint, startPoint.startControlPoint, startPoint.endControlPoint, color, lineWidth);
-        }
-        const node = this.makeNode("path");
-        // Draw curve
-        const d = [
-            "M",
-            this._x(startPoint.x),
-            this._y(startPoint.y),
-            "C",
-            this._x(startControlPoint.x),
-            this._y(startControlPoint.y),
-            this._x(endControlPoint.x),
-            this._y(endControlPoint.y),
-            this._x(endPoint.x),
-            this._y(endPoint.y)
-        ];
-        node.setAttribute("d", d.join(" "));
-        return this._bindFillDraw(node, "cubierBezier", color, lineWidth);
+    cubicBezier(startPoint, endPoint, startControlPoint, endControlPoint, color, lineWidth, strokeOptions) {
+        const node = this.makeCubicBezierNode(startPoint, endPoint, startControlPoint, endControlPoint, color, lineWidth, strokeOptions);
+        return this._bindNode(node, undefined);
     }
     /**
      * Draw the given (cubic) Bézier path.
@@ -12251,17 +14803,21 @@ class drawutilssvg {
      * <pre> [ point1, point1_startControl, point2_endControl, point2, point2_startControl, point3_endControl, point3, ... pointN_endControl, pointN ]</pre>
      *
      * @method cubicBezierPath
-     * @param {Vertex[]} path - The cubic bezier path as described above.
+     * @param {XYCoords[]} path - The cubic bezier path as described above.
      * @param {string} color - The CSS colot to draw the path with.
      * @param {number=1} lineWidth - (optional) The line width to use.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      */
-    cubicBezierPath(path, color, lineWidth) {
+    cubicBezierPath(path, color, lineWidth, strokeOptions) {
         const node = this.makeNode("path");
-        if (!path || path.length == 0)
+        this.applyStrokeOpts(node, strokeOptions);
+        if (!path || path.length == 0) {
             return node;
+        }
         // Draw curve
         const d = ["M", this._x(path[0].x), this._y(path[0].y)];
         // Draw curve path
@@ -12298,20 +14854,20 @@ class drawutilssvg {
      * Draw a handle line (with a light grey).
      *
      * @method handleLine
-     * @param {Vertex} startPoint - The start point to draw the handle at.
-     * @param {Vertex} endPoint - The end point to draw the handle at.
+     * @param {XYCoords} startPoint - The start point to draw the handle at.
+     * @param {XYCoords} endPoint - The end point to draw the handle at.
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      */
     handleLine(startPoint, endPoint) {
-        this.line(startPoint, endPoint, "rgb(192,192,192)");
+        this.line(startPoint, endPoint, "rgb(128,128,128,0.5)");
     }
     /**
      * Draw a 1x1 dot with the specified (CSS-) color.
      *
      * @method dot
-     * @param {Vertex} p - The position to draw the dot at.
+     * @param {XYCoords} p - The position to draw the dot at.
      * @param {string} color - The CSS color to draw the dot with.
      * @return {void}
      * @instance
@@ -12319,13 +14875,17 @@ class drawutilssvg {
      */
     dot(p, color) {
         const node = this.makeNode("line");
+        node.setAttribute("x1", `${this._x(p.x)}`);
+        node.setAttribute("y1", `${this._y(p.y)}`);
+        node.setAttribute("x2", `${this._x(p.x)}`);
+        node.setAttribute("y2", `${this._y(p.y)}`);
         return this._bindFillDraw(node, "dot", color, 1);
     }
     /**
      * Draw the given point with the specified (CSS-) color and radius 3.
      *
      * @method point
-     * @param {Vertex} p - The position to draw the point at.
+     * @param {XYCoords} p - The position to draw the point at.
      * @param {string} color - The CSS color to draw the point with.
      * @return {void}
      * @instance
@@ -12345,17 +14905,20 @@ class drawutilssvg {
      * Note that if the x- and y- scales are different the result will be an ellipse rather than a circle.
      *
      * @method circle
-     * @param {Vertex} center - The center of the circle.
+     * @param {XYCoords} center - The center of the circle.
      * @param {number} radius - The radius of the circle.
      * @param {string} color - The CSS color to draw the circle with.
      * @param {number=} lineWidth - (optional) The line width to use; default is 1.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      */
-    circle(center, radius, color, lineWidth) {
+    circle(center, radius, color, lineWidth, strokeOptions) {
         // Todo: draw ellipse when scalex!=scaley
         const node = this.makeNode("circle");
+        this.applyStrokeOpts(node, strokeOptions);
         node.setAttribute("cx", `${this._x(center.x)}`);
         node.setAttribute("cy", `${this._y(center.y)}`);
         node.setAttribute("r", `${radius * this.scale.x}`); // y?
@@ -12365,17 +14928,20 @@ class drawutilssvg {
      * Draw a circular arc (section of a circle) with the given CSS color.
      *
      * @method circleArc
-     * @param {Vertex} center - The center of the circle.
+     * @param {XYCoords} center - The center of the circle.
      * @param {number} radius - The radius of the circle.
      * @param {number} startAngle - The angle to start at.
      * @param {number} endAngle - The angle to end at.
      * @param {string} color - The CSS color to draw the circle with.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      */
-    circleArc(center, radius, startAngle, endAngle, color, lineWidth) {
+    circleArc(center, radius, startAngle, endAngle, color, lineWidth, strokeOptions) {
         const node = this.makeNode("path");
+        this.applyStrokeOpts(node, strokeOptions);
         const arcData = _CircleSector__WEBPACK_IMPORTED_MODULE_0__.CircleSector.circleSectorUtils.describeSVGArc(this._x(center.x), this._y(center.y), radius * this.scale.x, // y?
         startAngle, endAngle);
         node.setAttribute("d", arcData.join(" "));
@@ -12385,21 +14951,24 @@ class drawutilssvg {
      * Draw an ellipse with the specified (CSS-) color and thw two radii.
      *
      * @method ellipse
-     * @param {Vertex} center - The center of the ellipse.
+     * @param {XYCoords} center - The center of the ellipse.
      * @param {number} radiusX - The radius of the ellipse.
      * @param {number} radiusY - The radius of the ellipse.
      * @param {string} color - The CSS color to draw the ellipse with.
      * @param {number=} lineWidth - (optional) The line width to use; default is 1.
      * @param {number=} rotation - (optional, default=0) The rotation of the ellipse.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      */
-    ellipse(center, radiusX, radiusY, color, lineWidth, rotation) {
+    ellipse(center, radiusX, radiusY, color, lineWidth, rotation, strokeOptions) {
         if (typeof rotation === "undefined") {
             rotation = 0.0;
         }
         const node = this.makeNode("ellipse");
+        this.applyStrokeOpts(node, strokeOptions);
         node.setAttribute("cx", `${this._x(center.x)}`);
         node.setAttribute("cy", `${this._y(center.y)}`);
         node.setAttribute("rx", `${radiusX * this.scale.x}`);
@@ -12415,15 +14984,18 @@ class drawutilssvg {
      *
      * @method square
      * @param {XYCoords} center - The center of the square.
-     * @param {Vertex} size - The size of the square.
+     * @param {number} size - The size of the square.
      * @param {string} color - The CSS color to draw the square with.
      * @param {number=} lineWidth - (optional) The line width to use; default is 1.
-     * @return {void}
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
+     * @return {SVGElement}
      * @instance
      * @memberof drawutilssvg
      */
-    square(center, size, color, lineWidth) {
+    square(center, size, color, lineWidth, strokeOptions) {
         const node = this.makeNode("rectangle");
+        this.applyStrokeOpts(node, strokeOptions);
         node.setAttribute("x", `${this._x(center.x - size / 2.0)}`);
         node.setAttribute("y", `${this._y(center.y - size / 2.0)}`);
         node.setAttribute("width", `${size * this.scale.x}`);
@@ -12438,9 +15010,15 @@ class drawutilssvg {
      * @param {number} height - The height of the rectangle.
      * @param {string} color - The color to use.
      * @param {number=1} lineWidth - (optional) The line with to use (default is 1).
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
+     * @return {SVGElement}
+     * @instance
+     * @memberof drawutilssvg
      **/
-    rect(position, width, height, color, lineWidth) {
+    rect(position, width, height, color, lineWidth, strokeOptions) {
         const node = this.makeNode("rect");
+        this.applyStrokeOpts(node, strokeOptions);
         node.setAttribute("x", `${this._x(position.x)}`);
         node.setAttribute("y", `${this._y(position.y)}`);
         node.setAttribute("width", `${width * this.scale.x}`);
@@ -12451,7 +15029,7 @@ class drawutilssvg {
      * Draw a grid of horizontal and vertical lines with the given (CSS-) color.
      *
      * @method grid
-     * @param {Vertex} center - The center of the grid.
+     * @param {XYCoords} center - The center of the grid.
      * @param {number} width - The total width of the grid (width/2 each to the left and to the right).
      * @param {number} height - The total height of the grid (height/2 each to the top and to the bottom).
      * @param {number} sizeX - The horizontal grid size.
@@ -12462,6 +15040,30 @@ class drawutilssvg {
      * @memberof drawutilssvg
      */
     grid(center, width, height, sizeX, sizeY, color) {
+        // console.log("grid");
+        // const node: SVGElement = this.makeNode("pattern");
+        // var patternId = "pattern_id_" + Math.floor(Math.random() * 65365);
+        // node.setAttribute("id", patternId);
+        // node.setAttribute("viewBox", `0,0,${sizeX},${sizeY}`);
+        // node.setAttribute("width", `${sizeX}`);
+        // node.setAttribute("height", `${sizeX}`);
+        // var pattern: SVGElement = this.makeNode("path");
+        // const d: SVGPathParams = [];
+        // d.push("M", sizeX / 2.0, 0);
+        // d.push("L", sizeX / 2.0, sizeY);
+        // d.push("M", 0, sizeY / 2.0);
+        // d.push("L", sizeX, sizeY / 2.0);
+        // node.setAttribute("d", d.join(" "));
+        // this.bufferedNodeDefs.append(pattern);
+        // const fillNode: SVGElement = this.makeNode("rect");
+        // // For some strange reason SVG rotation transforms use degrees instead of radians
+        // // Note that the background does not scale with the zoom level (always covers full element)
+        // fillNode.setAttribute("x", "0");
+        // fillNode.setAttribute("y", "0");
+        // fillNode.setAttribute("width", `${this.canvasSize.width}`);
+        // fillNode.setAttribute("height", `${this.canvasSize.height}`);
+        // fillNode.setAttribute("fill", `url(#${patternId})`);
+        // return this._bindFillDraw(fillNode, "grid", "red", 1);
         const node = this.makeNode("path");
         const d = [];
         var yMin = -Math.ceil((height * 0.5) / sizeY) * sizeY;
@@ -12485,7 +15087,7 @@ class drawutilssvg {
      * This works analogue to the grid() function
      *
      * @method raster
-     * @param {Vertex} center - The center of the raster.
+     * @param {XYCoords} center - The center of the raster.
      * @param {number} width - The total width of the raster (width/2 each to the left and to the right).
      * @param {number} height - The total height of the raster (height/2 each to the top and to the bottom).
      * @param {number} sizeX - The horizontal raster size.
@@ -12518,8 +15120,8 @@ class drawutilssvg {
      * as even shaped diamonds.
      *
      * @method diamondHandle
-     * @param {Vertex} center - The center of the diamond.
-     * @param {Vertex} size - The x/y-size of the diamond.
+     * @param {XYCoords} center - The center of the diamond.
+     * @param {number} size - The x/y-size of the diamond.
      * @param {string} color - The CSS color to draw the diamond with.
      * @return {void}
      * @instance
@@ -12553,8 +15155,8 @@ class drawutilssvg {
      * as even shaped squares.
      *
      * @method squareHandle
-     * @param {Vertex} center - The center of the square.
-     * @param {Vertex} size - The x/y-size of the square.
+     * @param {XYCoords} center - The center of the square.
+     * @param {XYCoords} size - The x/y-size of the square.
      * @param {string} color - The CSS color to draw the square with.
      * @return {void}
      * @instance
@@ -12576,7 +15178,7 @@ class drawutilssvg {
      * as even shaped circles.
      *
      * @method circleHandle
-     * @param {Vertex} center - The center of the circle.
+     * @param {XYCoords} center - The center of the circle.
      * @param {number} radius - The radius of the circle.
      * @param {string} color - The CSS color to draw the circle with.
      * @return {void}
@@ -12600,11 +15202,12 @@ class drawutilssvg {
      * @param {XYCoords} center - The center of the crosshair.
      * @param {number} radius - The radius of the crosshair.
      * @param {string} color - The CSS color to draw the crosshair with.
+     * @param {number=0.5} lineWidth - (optional, default=0.5) The line width to use.
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      */
-    crosshair(center, radius, color) {
+    crosshair(center, radius, color, lineWidth) {
         const node = this.makeNode("path");
         const d = [
             "M",
@@ -12621,7 +15224,40 @@ class drawutilssvg {
             this._y(center.y) + radius
         ];
         node.setAttribute("d", d.join(" "));
-        return this._bindFillDraw(node, "crosshair", color, 0.5);
+        return this._bindFillDraw(node, "crosshair", color, lineWidth || 0.5);
+    }
+    /**
+     * Draw a cross with diagonal axes with given radius, color and lineWidth at the given position.<br>
+     * <br>
+     * Note that the x's radius will not be affected by scaling.
+     *
+     * @method crosshair
+     * @param {XYCoords} center - The center of the crosshair.
+     * @param {number} radius - The radius of the crosshair.
+     * @param {string} color - The CSS color to draw the crosshair with.
+     * @param {number=1} lineWidth - (optional, default=1.0) The line width to use.
+     * @return {void}
+     * @instance
+     * @memberof drawutils
+     */
+    cross(center, radius, color, lineWidth) {
+        const node = this.makeNode("path");
+        const d = [
+            "M",
+            this._x(center.x) - radius,
+            this._y(center.y) - radius,
+            "L",
+            this._x(center.x) + radius,
+            this._y(center.y) + radius,
+            "M",
+            this._x(center.x) - radius,
+            this._y(center.y) + radius,
+            "L",
+            this._x(center.x) + radius,
+            this._y(center.y) - radius
+        ];
+        node.setAttribute("d", d.join(" "));
+        return this._bindFillDraw(node, "cross", color, lineWidth || 1.0);
     }
     /**
      * Draw a polygon.
@@ -12641,18 +15277,22 @@ class drawutilssvg {
      * Draw a polygon line (alternative function to the polygon).
      *
      * @method polyline
-     * @param {Vertex[]} vertices - The polygon vertices to draw.
+     * @param {XYCoords[]} vertices - The polygon vertices to draw.
      * @param {boolan}   isOpen   - If true the polyline will not be closed at its end.
      * @param {string}   color    - The CSS color to draw the polygon with.
      * @param {number=} lineWidth - (optional) The line width to use; default is 1.
+     * @param {StrokeOptions=} strokeOptions - (optional) Stroke settings to use.
+     *
      * @return {void}
      * @instance
      * @memberof drawutilssvg
      */
-    polyline(vertices, isOpen, color, lineWidth) {
+    polyline(vertices, isOpen, color, lineWidth, strokeOptions) {
         const node = this.makeNode("path");
-        if (vertices.length == 0)
+        this.applyStrokeOpts(node, strokeOptions);
+        if (vertices.length == 0) {
             return node;
+        }
         // Draw curve
         const d = ["M", this._x(vertices[0].x), this._y(vertices[0].y)];
         var n = vertices.length;
@@ -12684,7 +15324,7 @@ class drawutilssvg {
      * @memberof drawutils
      */
     text(text, x, y, options) {
-        var _a, _b;
+        var _a, _b, _c;
         options = options || {};
         const color = options.color || "black";
         const lineHeight = ((_b = (_a = options.lineHeight) !== null && _a !== void 0 ? _a : options.fontSize) !== null && _b !== void 0 ? _b : 0) * this.scale.x;
@@ -12709,10 +15349,10 @@ class drawutilssvg {
         this.curId = curId + "_text";
         const textNode = this.makeNode("text");
         node.appendChild(textNode);
-        textNode.setAttribute("font-family", options.fontFamily); // May be undefined
-        textNode.setAttribute("font-size", options.fontSize ? `${options.fontSize * this.scale.x}` : null);
-        textNode.setAttribute("font-style", options.fontStyle ? `${options.fontStyle}` : null);
-        textNode.setAttribute("font-weight", options.fontWeight ? `${options.fontWeight}` : null);
+        textNode.setAttribute("font-family", (_c = options.fontFamily) !== null && _c !== void 0 ? _c : ""); // May be undefined
+        textNode.setAttribute("font-size", options.fontSize ? `${options.fontSize * this.scale.x}` : "");
+        textNode.setAttribute("font-style", options.fontStyle ? `${options.fontStyle}` : "");
+        textNode.setAttribute("font-weight", options.fontWeight ? `${options.fontWeight}` : "");
         textNode.setAttribute("text-anchor", textAlign);
         textNode.setAttribute("transform-origin", "0 0");
         textNode.setAttribute("transform", rotate);
@@ -12755,12 +15395,16 @@ class drawutilssvg {
      * @param {string=null} color - (optional) The color to draw this path with (default is null).
      * @param {number=1} lineWidth - (optional) the line width to use (default is 1).
      * @param {boolean=false} options.inplace - (optional) If set to true then path transforamtions (scale and translate) will be done in-place in the array. This can boost the performance.
+     * @param {number=} options.dashOffset - (optional) `See StrokeOptions`.
+     * @param {number=[]} options.dashArray - (optional) `See StrokeOptions`.
+     *
      * @instance
      * @memberof drawutils
      * @return {R} An instance representing the drawn path.
      */
     path(pathData, color, lineWidth, options) {
         const node = this.makeNode("path");
+        this.applyStrokeOpts(node, options);
         // Transform the path: in-place (fast) or copy (slower)
         const d = options && options.inplace ? pathData : drawutilssvg.copyPathData(pathData);
         drawutilssvg.transformPathData(d, this.offset, this.scale);
@@ -12784,17 +15428,9 @@ class drawutilssvg {
         if (this.isSecondary) {
             return;
         }
-        // // Clearing an SVG is equivalent to removing all its child elements.
-        // for (var i = 0; i < this.gNode.childNodes.length; i++) {
-        //   // Hide all nodes here. Don't throw them away.
-        //   // We can probably re-use them in the next draw cycle.
-        //   var child: SVGElement = this.gNode.childNodes[i] as SVGElement;
-        //   this.cache.set(child.getAttribute("id"), child);
-        // }
-        // this.removeAllChildNodes();
         // Add a covering rect with the given background color
         this.curId = "background";
-        this.curClassName = undefined;
+        this.curClassName = null; // undefined;
         const node = this.makeNode("rect");
         // For some strange reason SVG rotation transforms use degrees instead of radians
         // Note that the background does not scale with the zoom level (always covers full element)
@@ -12806,7 +15442,7 @@ class drawutilssvg {
         this._bindFillDraw(node, this.curId, null, null);
         node.setAttribute("fill", typeof color === "undefined" ? "none" : color);
         // Clear the current ID again
-        this.curId = undefined;
+        this.curId = null; // undefined;
     }
     /**
      * A private helper function to clear all SVG nodes from the &gt;g> node.
@@ -12816,6 +15452,9 @@ class drawutilssvg {
     removeAllChildNodes() {
         while (this.bufferGNode.lastChild) {
             this.bufferGNode.removeChild(this.bufferGNode.lastChild);
+        }
+        while (this.bufferedNodeDefs.lastChild) {
+            this.bufferedNodeDefs.removeChild(this.bufferedNodeDefs.lastChild);
         }
     }
     /**
@@ -12868,19 +15507,6 @@ class drawutilssvg {
         };
         const _sy = (index) => {
             data[index] = scale.y * Number(data[index]);
-        };
-        const stx = (value) => {
-            return offset.x + scale.x * value;
-        };
-        const sty = (value) => {
-            return offset.y + scale.y * value;
-        };
-        // scale only {x,y}
-        const sx = (value) => {
-            return scale.x * value;
-        };
-        const sy = (value) => {
-            return scale.y * value;
         };
         var i = 0;
         var lastPoint = { x: NaN, y: NaN };
@@ -13021,6 +15647,126 @@ class drawutilssvg {
             }
         } // END while
     } // END transformPathData
+    static nodeSupportsLineDash(nodeName) {
+        return ["line", "path", "circle", "ellipse", "rectangle", "rect"].includes(nodeName);
+    }
+    /**
+     * Creates a basic <line> node with start and end coordinates. The created node will not
+     * be bound to any root node.
+     *
+     * @private
+     * @method makeLineNode
+     * @param {XYCoords} zA - The line's start position.
+     * @param {XYCoords} zB - The line's start position.
+     * @param {string} color - The CSS color to draw the point with.
+     * @param {number=1} lineWidth - (optional) The line width to use.
+     * @param {StrokeOptions=} strokeOptions - (optional) Additional stroke options to use.
+     * @param {string=} classNameOverride - (optional) If nothing is passed the default classname 'path' will be used.
+     * @return {SVGLineElement}
+     * @instance
+     * @memberof drawutilssvg
+     */
+    makeLineNode(zA, zB, color, lineWidth, strokeOptions, classNameOverride) {
+        const line = this.makeNode("line");
+        line.setAttribute("x1", `${this._x(zA.x)}`);
+        line.setAttribute("y1", `${this._y(zA.y)}`);
+        line.setAttribute("x2", `${this._x(zB.x)}`);
+        line.setAttribute("y2", `${this._y(zB.y)}`);
+        this._configureNode(line, classNameOverride !== null && classNameOverride !== void 0 ? classNameOverride : "line", this.fillShapes, color, lineWidth || 1, strokeOptions);
+        return line;
+    }
+    /**
+     * Creates a basic <path> node with given path string data. The created node will not
+     * be bound to any root node.
+     *
+     * @private
+     * @method makePathNode
+     * @param {string} pathString - The path data (must be a valid path data string).
+     * @param {string} color - The CSS color to draw the point with.
+     * @param {number=1} lineWidth - (optional) The line width to use.
+     * @param {StrokeOptions=} strokeOptions - (optional) Additional stroke options to use.
+     * @param {string=} classNameOverride - (optional) If nothing is passed the default classname 'path' will be used.
+     * @return {SVGPathElement}
+     * @instance
+     * @memberof drawutilssvg
+     */
+    makePathNode(pathString, color, lineWidth, strokeOptions, classNameOverride) {
+        const path = this.makeNode("path");
+        path.setAttribute("d", pathString);
+        this._configureNode(path, classNameOverride !== null && classNameOverride !== void 0 ? classNameOverride : "path", this.fillShapes, color, lineWidth || 1, strokeOptions);
+        return path;
+    }
+    /**
+     * Creates a basic arrow head node (<path> node) at the end of the given line coordinates. The created node will not
+     * be bound to any root node.
+     *
+     * @private
+     * @method makeArrowHeadNode
+     * @param {string} pathString - The path data (must be a valid path data string).
+     * @param {string} color - The CSS color to draw the point with.
+     * @param {number=1} lineWidth - (optional) The line width to use.
+     * @param {number=8} headLength - (optional) The length of the arrow head; if none is specified then the head will be 8 absolute units long.
+     * @param {StrokeOptions=} strokeOptions - (optional) Additional stroke options to use.
+     * @param {XYCoords=} arrowHeadBasePositionBuffer - (optional) If not null, then this position will contain the arrow head's start point (after execution). Some sort of OUT variable.
+     * @return {SVGPathElement}
+     * @instance
+     * @memberof drawutilssvg
+     */
+    makeArrowHeadNode(zA, zB, color, lineWidth, headLength = 8, strokeOptions, arrowHeadBasePositionBuffer) {
+        var vertices = _Vector__WEBPACK_IMPORTED_MODULE_4__.Vector.utils.buildArrowHead(zA, zB, headLength, this.scale.x, this.scale.y);
+        const d = ["M", this.offset.x + vertices[0].x, this.offset.y + vertices[0].y];
+        if (arrowHeadBasePositionBuffer) {
+            arrowHeadBasePositionBuffer.x = vertices[0].x / this.scale.x;
+            arrowHeadBasePositionBuffer.y = vertices[0].y / this.scale.y;
+        }
+        for (var i = 1; i <= vertices.length; i++) {
+            d.push("L");
+            // Note: only use offset here (the vertices are already scaled)
+            d.push(this.offset.x + vertices[i % vertices.length].x);
+            d.push(this.offset.y + vertices[i % vertices.length].y);
+        }
+        const node = this.makePathNode(d.join(" "), color, lineWidth, strokeOptions, "arrowhead");
+        return node;
+    }
+    /**
+     * Creates a basic cubic Bézier path node (<path> node) with the given cubic Bézier data. The created node will not
+     * be bound to any root node.
+     *
+     * @private
+     * @method makeCubicBezierNode
+     * @param {XYCoords} startPoint - The start point of the cubic Bézier curve
+     * @param {XYCoords} endPoint   - The end point the cubic Bézier curve.
+     * @param {XYCoords} startControlPoint - The start control point the cubic Bézier curve.
+     * @param {XYCoords} endControlPoint   - The end control point the cubic Bézier curve.
+     * @param {string} color - The CSS color to draw the point with.
+     * @param {number=1} lineWidth - (optional) The line width to use.
+     * @param {StrokeOptions=} strokeOptions - (optional) Additional stroke options to use.
+     * @param {string=} classNameOverride - (optional) If nothing is passed the default classname 'path' will be used.
+     * @param {XYCoords=} arrowHeadBasePositionBuffer - (optional) If not null, then this position will contain the arrow head's start point (after execution). Some sort of OUT variable.
+     * @return {SVGPathElement}
+     * @instance
+     * @memberof drawutilssvg
+     */
+    makeCubicBezierNode(startPoint, endPoint, startControlPoint, endControlPoint, color, lineWidth, strokeOptions) {
+        if (startPoint instanceof _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_1__.CubicBezierCurve) {
+            return this.cubicBezier(startPoint.startPoint, startPoint.endPoint, startPoint.startControlPoint, startPoint.endControlPoint, color, lineWidth);
+        }
+        // Draw curve
+        const d = [
+            "M",
+            this._x(startPoint.x),
+            this._y(startPoint.y),
+            "C",
+            this._x(startControlPoint.x),
+            this._y(startControlPoint.y),
+            this._x(endControlPoint.x),
+            this._y(endControlPoint.y),
+            this._x(endPoint.x),
+            this._y(endPoint.y)
+        ];
+        const node = this.makePathNode(d.join(" "), color, lineWidth, strokeOptions, "cubicBezier");
+        return node;
+    }
 }
 drawutilssvg.HEAD_XML = [
     '<?xml version="1.0" encoding="UTF-8" standalone="no"?>',
@@ -13030,17 +15776,17 @@ drawutilssvg.HEAD_XML = [
 ].join("\n");
 //# sourceMappingURL=drawutilssvg.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/geomutils.js":
+/***/ "./node_modules/plotboilerplate/src/esm/geomutils.js"
 /*!***********************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/geomutils.js ***!
   \***********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "geomutils": () => (/* binding */ geomutils)
+/* harmony export */   geomutils: () => (/* binding */ geomutils)
 /* harmony export */ });
 /* harmony import */ var _Line__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Line */ "./node_modules/plotboilerplate/src/esm/Line.js");
 /* harmony import */ var _Triangle__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Triangle */ "./node_modules/plotboilerplate/src/esm/Triangle.js");
@@ -13048,7 +15794,10 @@ __webpack_require__.r(__webpack_exports__);
  * @author   Ikaros Kappler
  * @date     2019-02-03
  * @modified 2021-03-01 Added `wrapMax` function.
- * @version  1.1.0
+ * @modified 2024-11-15 Adding helper function `geomutils.mapAngleTo2PI(number)` for mapping any value into the interval [0,2*PI).
+ * @modified 2024-11-22 Adding helper function `geomutils.dotProduct(number)` for calculating the dot product of two vertices (as vectors).
+ *
+ * @version  1.2.0
  **/
 
 
@@ -13058,6 +15807,49 @@ __webpack_require__.r(__webpack_exports__);
  * @global
  **/
 const geomutils = {
+    /**
+     * Map any angle (any numeric value) to [0, Math.PI).
+     *
+     * @param {number} angle - The numeric value to map.
+     * @return {number} The mapped angle inside [0,PI*2].
+     **/
+    mapAngleTo2PI(angle) {
+        // Source: https://forums.codeguru.com/showthread.php?384172-get-angle-into-range-0-2*pi
+        const new_angle = Math.asin(Math.sin(angle));
+        if (Math.cos(angle) < 0) {
+            return Math.PI - new_angle;
+        }
+        else if (new_angle < 0) {
+            return new_angle + 2 * Math.PI;
+        }
+        else {
+            return new_angle;
+        }
+    },
+    /**
+     * Calculate the euclidean distance between two points given by four coordinates (two coordinates each).
+     *
+     * @param {number} x1
+     * @param {number} y1
+     * @param {number} x2
+     * @param {number} y2
+     * @returns {number}
+     */
+    dist4(x1, y1, x2, y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y1 - y2, 2));
+    },
+    /**
+     * Map any angle (any numeric value) to [0, Math.PI).
+     *
+     * A × B := (A.x * B.x) + (A.y * B.y)
+     *
+     * @param {XYCoords} vertA - The first vertex.
+     * @param {XYCoords} vertB - The second vertex.
+     * @return {number} The dot product of the two vertices.
+     **/
+    dotProduct(vertA, vertB) {
+        return vertA.x * vertB.x + vertA.y * vertB.y;
+    },
     /**
      * Compute the n-section of the angle – described as a triangle (A,B,C) – in point A.
      *
@@ -13082,14 +15874,14 @@ const geomutils = {
         if (insideAngle < 0)
             insideAngle = 2 * Math.PI + insideAngle;
         if (!clockwise)
-            insideAngle = (2 * Math.PI - insideAngle) * (-1);
+            insideAngle = (2 * Math.PI - insideAngle) * -1;
         // Scale the rotated lines to the max leg length (looks better)
         const lineLength = Math.max(lineAB.length(), lineAC.length());
         const scaleFactor = lineLength / lineAB.length();
         var result = [];
         for (var i = 1; i < n; i++) {
             // Compute the i-th inner sector line
-            result.push(new _Line__WEBPACK_IMPORTED_MODULE_0__.Line(pA, pB.clone().rotate((-i * (insideAngle / n)), pA)).scale(scaleFactor));
+            result.push(new _Line__WEBPACK_IMPORTED_MODULE_0__.Line(pA, pB.clone().rotate(-i * (insideAngle / n), pA)).scale(scaleFactor));
         }
         return result;
     },
@@ -13122,45 +15914,44 @@ const geomutils = {
 };
 //# sourceMappingURL=geomutils.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/index.js":
+/***/ "./node_modules/plotboilerplate/src/esm/index.js"
 /*!*******************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/index.js ***!
   \*******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "BezierPath": () => (/* reexport safe */ _BezierPath__WEBPACK_IMPORTED_MODULE_0__.BezierPath),
-/* harmony export */   "Bounds": () => (/* reexport safe */ _Bounds__WEBPACK_IMPORTED_MODULE_1__.Bounds),
-/* harmony export */   "Circle": () => (/* reexport safe */ _Circle__WEBPACK_IMPORTED_MODULE_2__.Circle),
-/* harmony export */   "CircleSector": () => (/* reexport safe */ _CircleSector__WEBPACK_IMPORTED_MODULE_3__.CircleSector),
-/* harmony export */   "CubicBezierCurve": () => (/* reexport safe */ _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_4__.CubicBezierCurve),
-/* harmony export */   "drawutils": () => (/* reexport safe */ _draw__WEBPACK_IMPORTED_MODULE_5__.drawutils),
-/* harmony export */   "drawutilsgl": () => (/* reexport safe */ _drawgl__WEBPACK_IMPORTED_MODULE_6__.drawutilsgl),
-/* harmony export */   "drawutilssvg": () => (/* reexport safe */ _drawutilssvg__WEBPACK_IMPORTED_MODULE_7__.drawutilssvg),
-/* harmony export */   "geomutils": () => (/* reexport safe */ _geomutils__WEBPACK_IMPORTED_MODULE_8__.geomutils),
-/* harmony export */   "Grid": () => (/* reexport safe */ _Grid__WEBPACK_IMPORTED_MODULE_9__.Grid),
-/* harmony export */   "KeyHandler": () => (/* reexport safe */ _KeyHandler__WEBPACK_IMPORTED_MODULE_11__.KeyHandler),
-/* harmony export */   "Line": () => (/* reexport safe */ _Line__WEBPACK_IMPORTED_MODULE_12__.Line),
-/* harmony export */   "MouseHandler": () => (/* reexport safe */ _MouseHandler__WEBPACK_IMPORTED_MODULE_13__.MouseHandler),
-/* harmony export */   "XMouseEvent": () => (/* reexport safe */ _MouseHandler__WEBPACK_IMPORTED_MODULE_13__.XMouseEvent),
-/* harmony export */   "XWheelEvent": () => (/* reexport safe */ _MouseHandler__WEBPACK_IMPORTED_MODULE_13__.XWheelEvent),
-/* harmony export */   "PBImage": () => (/* reexport safe */ _PBImage__WEBPACK_IMPORTED_MODULE_14__.PBImage),
-/* harmony export */   "PBText": () => (/* reexport safe */ _PBText__WEBPACK_IMPORTED_MODULE_15__.PBText),
-/* harmony export */   "PlotBoilerplate": () => (/* reexport safe */ _PlotBoilerplate__WEBPACK_IMPORTED_MODULE_16__.PlotBoilerplate),
-/* harmony export */   "Polygon": () => (/* reexport safe */ _Polygon__WEBPACK_IMPORTED_MODULE_17__.Polygon),
-/* harmony export */   "SVGBuilder": () => (/* reexport safe */ _SVGBuilder__WEBPACK_IMPORTED_MODULE_18__.SVGBuilder),
-/* harmony export */   "Triangle": () => (/* reexport safe */ _Triangle__WEBPACK_IMPORTED_MODULE_19__.Triangle),
-/* harmony export */   "UIDGenerator": () => (/* reexport safe */ _UIDGenerator__WEBPACK_IMPORTED_MODULE_20__.UIDGenerator),
-/* harmony export */   "Vector": () => (/* reexport safe */ _Vector__WEBPACK_IMPORTED_MODULE_21__.Vector),
-/* harmony export */   "VEllipse": () => (/* reexport safe */ _VEllipse__WEBPACK_IMPORTED_MODULE_22__.VEllipse),
-/* harmony export */   "VEllipseSector": () => (/* reexport safe */ _VEllipseSector__WEBPACK_IMPORTED_MODULE_23__.VEllipseSector),
-/* harmony export */   "Vertex": () => (/* reexport safe */ _Vertex__WEBPACK_IMPORTED_MODULE_24__.Vertex),
-/* harmony export */   "VertexAttr": () => (/* reexport safe */ _VertexAttr__WEBPACK_IMPORTED_MODULE_25__.VertexAttr),
-/* harmony export */   "VertexListeners": () => (/* reexport safe */ _VertexListeners__WEBPACK_IMPORTED_MODULE_26__.VertexListeners),
-/* harmony export */   "VertTuple": () => (/* reexport safe */ _VertTuple__WEBPACK_IMPORTED_MODULE_27__.VertTuple)
+/* harmony export */   BezierPath: () => (/* reexport safe */ _BezierPath__WEBPACK_IMPORTED_MODULE_0__.BezierPath),
+/* harmony export */   Bounds: () => (/* reexport safe */ _Bounds__WEBPACK_IMPORTED_MODULE_1__.Bounds),
+/* harmony export */   Circle: () => (/* reexport safe */ _Circle__WEBPACK_IMPORTED_MODULE_2__.Circle),
+/* harmony export */   CircleSector: () => (/* reexport safe */ _CircleSector__WEBPACK_IMPORTED_MODULE_3__.CircleSector),
+/* harmony export */   CubicBezierCurve: () => (/* reexport safe */ _CubicBezierCurve__WEBPACK_IMPORTED_MODULE_4__.CubicBezierCurve),
+/* harmony export */   Grid: () => (/* reexport safe */ _Grid__WEBPACK_IMPORTED_MODULE_9__.Grid),
+/* harmony export */   KeyHandler: () => (/* reexport safe */ _KeyHandler__WEBPACK_IMPORTED_MODULE_11__.KeyHandler),
+/* harmony export */   Line: () => (/* reexport safe */ _Line__WEBPACK_IMPORTED_MODULE_12__.Line),
+/* harmony export */   MouseHandler: () => (/* reexport safe */ _MouseHandler__WEBPACK_IMPORTED_MODULE_13__.MouseHandler),
+/* harmony export */   PBImage: () => (/* reexport safe */ _PBImage__WEBPACK_IMPORTED_MODULE_14__.PBImage),
+/* harmony export */   PBText: () => (/* reexport safe */ _PBText__WEBPACK_IMPORTED_MODULE_15__.PBText),
+/* harmony export */   PlotBoilerplate: () => (/* reexport safe */ _PlotBoilerplate__WEBPACK_IMPORTED_MODULE_16__.PlotBoilerplate),
+/* harmony export */   Polygon: () => (/* reexport safe */ _Polygon__WEBPACK_IMPORTED_MODULE_17__.Polygon),
+/* harmony export */   Triangle: () => (/* reexport safe */ _Triangle__WEBPACK_IMPORTED_MODULE_18__.Triangle),
+/* harmony export */   UIDGenerator: () => (/* reexport safe */ _UIDGenerator__WEBPACK_IMPORTED_MODULE_19__.UIDGenerator),
+/* harmony export */   VEllipse: () => (/* reexport safe */ _VEllipse__WEBPACK_IMPORTED_MODULE_21__.VEllipse),
+/* harmony export */   VEllipseSector: () => (/* reexport safe */ _VEllipseSector__WEBPACK_IMPORTED_MODULE_22__.VEllipseSector),
+/* harmony export */   Vector: () => (/* reexport safe */ _Vector__WEBPACK_IMPORTED_MODULE_20__.Vector),
+/* harmony export */   VertTuple: () => (/* reexport safe */ _VertTuple__WEBPACK_IMPORTED_MODULE_26__.VertTuple),
+/* harmony export */   Vertex: () => (/* reexport safe */ _Vertex__WEBPACK_IMPORTED_MODULE_23__.Vertex),
+/* harmony export */   VertexAttr: () => (/* reexport safe */ _VertexAttr__WEBPACK_IMPORTED_MODULE_24__.VertexAttr),
+/* harmony export */   VertexListeners: () => (/* reexport safe */ _VertexListeners__WEBPACK_IMPORTED_MODULE_25__.VertexListeners),
+/* harmony export */   XMouseEvent: () => (/* reexport safe */ _MouseHandler__WEBPACK_IMPORTED_MODULE_13__.XMouseEvent),
+/* harmony export */   XWheelEvent: () => (/* reexport safe */ _MouseHandler__WEBPACK_IMPORTED_MODULE_13__.XWheelEvent),
+/* harmony export */   drawutils: () => (/* reexport safe */ _draw__WEBPACK_IMPORTED_MODULE_5__.drawutils),
+/* harmony export */   drawutilsgl: () => (/* reexport safe */ _drawgl__WEBPACK_IMPORTED_MODULE_6__.drawutilsgl),
+/* harmony export */   drawutilssvg: () => (/* reexport safe */ _drawutilssvg__WEBPACK_IMPORTED_MODULE_7__.drawutilssvg),
+/* harmony export */   geomutils: () => (/* reexport safe */ _geomutils__WEBPACK_IMPORTED_MODULE_8__.geomutils)
 /* harmony export */ });
 /* harmony import */ var _BezierPath__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BezierPath */ "./node_modules/plotboilerplate/src/esm/BezierPath.js");
 /* harmony import */ var _Bounds__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Bounds */ "./node_modules/plotboilerplate/src/esm/Bounds.js");
@@ -13180,17 +15971,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _PBText__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./PBText */ "./node_modules/plotboilerplate/src/esm/PBText.js");
 /* harmony import */ var _PlotBoilerplate__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./PlotBoilerplate */ "./node_modules/plotboilerplate/src/esm/PlotBoilerplate.js");
 /* harmony import */ var _Polygon__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Polygon */ "./node_modules/plotboilerplate/src/esm/Polygon.js");
-/* harmony import */ var _SVGBuilder__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./SVGBuilder */ "./node_modules/plotboilerplate/src/esm/SVGBuilder.js");
-/* harmony import */ var _Triangle__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./Triangle */ "./node_modules/plotboilerplate/src/esm/Triangle.js");
-/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
-/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./Vector */ "./node_modules/plotboilerplate/src/esm/Vector.js");
-/* harmony import */ var _VEllipse__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./VEllipse */ "./node_modules/plotboilerplate/src/esm/VEllipse.js");
-/* harmony import */ var _VEllipseSector__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./VEllipseSector */ "./node_modules/plotboilerplate/src/esm/VEllipseSector.js");
-/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
-/* harmony import */ var _VertexAttr__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./VertexAttr */ "./node_modules/plotboilerplate/src/esm/VertexAttr.js");
-/* harmony import */ var _VertexListeners__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./VertexListeners */ "./node_modules/plotboilerplate/src/esm/VertexListeners.js");
-/* harmony import */ var _VertTuple__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./VertTuple */ "./node_modules/plotboilerplate/src/esm/VertTuple.js");
-
+/* harmony import */ var _Triangle__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./Triangle */ "./node_modules/plotboilerplate/src/esm/Triangle.js");
+/* harmony import */ var _UIDGenerator__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./UIDGenerator */ "./node_modules/plotboilerplate/src/esm/UIDGenerator.js");
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./Vector */ "./node_modules/plotboilerplate/src/esm/Vector.js");
+/* harmony import */ var _VEllipse__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./VEllipse */ "./node_modules/plotboilerplate/src/esm/VEllipse.js");
+/* harmony import */ var _VEllipseSector__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./VEllipseSector */ "./node_modules/plotboilerplate/src/esm/VEllipseSector.js");
+/* harmony import */ var _Vertex__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./Vertex */ "./node_modules/plotboilerplate/src/esm/Vertex.js");
+/* harmony import */ var _VertexAttr__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./VertexAttr */ "./node_modules/plotboilerplate/src/esm/VertexAttr.js");
+/* harmony import */ var _VertexListeners__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./VertexListeners */ "./node_modules/plotboilerplate/src/esm/VertexListeners.js");
+/* harmony import */ var _VertTuple__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./VertTuple */ "./node_modules/plotboilerplate/src/esm/VertTuple.js");
 
 
 
@@ -13220,13 +16009,13 @@ __webpack_require__.r(__webpack_exports__);
 
 //# sourceMappingURL=index.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/interfaces/DrawLib.js":
+/***/ "./node_modules/plotboilerplate/src/esm/interfaces/DrawLib.js"
 /*!********************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/interfaces/DrawLib.js ***!
   \********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /**
@@ -13246,17 +16035,39 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-11-12 Added `text()` params fontSize, fontFamily, rotation, textAlign.
  * @modified 2021-11-16 Added `text()` params fontWeight and fontStyle.
  * @modified 2021-11-19 Added the `color` param to the `label(...)` function.
+ * @modified 2022-02-03 Added the `lineWidth` param to the `crosshair` function.
+ * @modified 2022-02-03 Added the `cross(...)` function.
+ * @modified 2022-07-26 Adding `alpha` to the `image(...)` function.
+ * @modified 2023-02-10 The methods `setCurrentClassName` and `setCurrentId` also accept `null` now.
+ * @modified 2023-09-29 Downgrading all `Vertex` param type to the more generic `XYCoords` type in these render functions: line, arrow, texturedPoly, cubicBezier, cubicBezierPath, handle, handleLine, dot, point, circle, circleArc, ellipse, grid, raster.
+ * @modified 2023-09-29 Added the `headLength` parameter to the 'DrawLib.arrow()` function.
+ * @modified 2023-09-29 Added the `arrowHead(...)` function to the 'DrawLib.arrow()` interface.
+ * @modified 2023-09-29 Added the `cubicBezierArrow(...)` function to the 'DrawLib.arrow()` interface.
+ * @modified 2023-09-29 Added the `lineDashes` attribute.
+ * @modified 2023-09-30 Adding `strokeOptions` param to these draw function: line, arrow, cubicBezierArrow, cubicBezier, cubicBezierPath, circle, circleArc, ellipse, square, rect, polygon, polyline.
  **/
 
 //# sourceMappingURL=DrawLib.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/interfaces/core.js":
+/***/ "./node_modules/plotboilerplate/src/esm/interfaces/additionals.js"
+/*!************************************************************************!*\
+  !*** ./node_modules/plotboilerplate/src/esm/interfaces/additionals.js ***!
+  \************************************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+
+//# sourceMappingURL=additionals.js.map
+
+/***/ },
+
+/***/ "./node_modules/plotboilerplate/src/esm/interfaces/core.js"
 /*!*****************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/interfaces/core.js ***!
   \*****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /**
@@ -13275,17 +16086,27 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-05-31 Splitted the large interfaces.ts file into this one and others.
  * @modified 2021-06-21 Added `IBounds.getCenter()`.
  * @modified 2021-11-16 Added `text` options to the `DrawConfig`.
+ * @modified 2022-08-01 Added `title` param to the `PBParams` interface.
+ * @modified 2022-10-25 Added `origin` param to the `DrawConfig` interface.
+ * @modified 2022-11-23 Added `drawRaster` to the `Config` interface.
+ * @modified 2023-02-10 All non-function attributes of the `Config` interface are now mandatory.
+ * @modified 2023-09-29 Added the `randomPoint(...)` function declaration to the IBounds interface.
+ * @modified 2024-08-25 Added the `CSSBackdropFilterParams` params to the global params (all optional).
+ * @modified 2025-03-29 Added interface `Intersectable`.
+ * @modified 2025-04-16 Added interface `IBounded`.
+ * @modified 2025-05-07 Added callback `onContentChanged` to PB to track if the drawable content changed.
+ * @modified 2025-06-07 Adding helper type `PolygonIntersectionTuple` for re-usability.
  **/
 
 //# sourceMappingURL=core.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/interfaces/externals.js":
+/***/ "./node_modules/plotboilerplate/src/esm/interfaces/externals.js"
 /*!**********************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/interfaces/externals.js ***!
   \**********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /**
@@ -13296,46 +16117,48 @@ __webpack_require__.r(__webpack_exports__);
 
 //# sourceMappingURL=externals.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/interfaces/index.js":
+/***/ "./node_modules/plotboilerplate/src/esm/interfaces/index.js"
 /*!******************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/interfaces/index.js ***!
   \******************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core */ "./node_modules/plotboilerplate/src/esm/interfaces/core.js");
 /* harmony import */ var _DrawLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DrawLib */ "./node_modules/plotboilerplate/src/esm/interfaces/DrawLib.js");
 /* harmony import */ var _externals__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./externals */ "./node_modules/plotboilerplate/src/esm/interfaces/externals.js");
+/* harmony import */ var _additionals__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./additionals */ "./node_modules/plotboilerplate/src/esm/interfaces/additionals.js");
+
 
 
 
 //# sourceMappingURL=index.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/utils/WebColors.js":
+/***/ "./node_modules/plotboilerplate/src/esm/utils/WebColors.js"
 /*!*****************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/utils/WebColors.js ***!
   \*****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Red": () => (/* binding */ Red),
-/* harmony export */   "Pink": () => (/* binding */ Pink),
-/* harmony export */   "Purple": () => (/* binding */ Purple),
-/* harmony export */   "DeepPurple": () => (/* binding */ DeepPurple),
-/* harmony export */   "Indigo": () => (/* binding */ Indigo),
-/* harmony export */   "Blue": () => (/* binding */ Blue),
-/* harmony export */   "LightBlue": () => (/* binding */ LightBlue),
-/* harmony export */   "Cyan": () => (/* binding */ Cyan),
-/* harmony export */   "Teal": () => (/* binding */ Teal),
-/* harmony export */   "Green": () => (/* binding */ Green),
-/* harmony export */   "LightGreen": () => (/* binding */ LightGreen),
-/* harmony export */   "WebColors": () => (/* binding */ WebColors),
-/* harmony export */   "shuffleWebColors": () => (/* binding */ shuffleWebColors)
+/* harmony export */   Blue: () => (/* binding */ Blue),
+/* harmony export */   Cyan: () => (/* binding */ Cyan),
+/* harmony export */   DeepPurple: () => (/* binding */ DeepPurple),
+/* harmony export */   Green: () => (/* binding */ Green),
+/* harmony export */   Indigo: () => (/* binding */ Indigo),
+/* harmony export */   LightBlue: () => (/* binding */ LightBlue),
+/* harmony export */   LightGreen: () => (/* binding */ LightGreen),
+/* harmony export */   Pink: () => (/* binding */ Pink),
+/* harmony export */   Purple: () => (/* binding */ Purple),
+/* harmony export */   Red: () => (/* binding */ Red),
+/* harmony export */   Teal: () => (/* binding */ Teal),
+/* harmony export */   WebColors: () => (/* binding */ WebColors),
+/* harmony export */   shuffleWebColors: () => (/* binding */ shuffleWebColors)
 /* harmony export */ });
 /* harmony import */ var _datastructures_Color__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./datastructures/Color */ "./node_modules/plotboilerplate/src/esm/utils/datastructures/Color.js");
 /**
@@ -13391,17 +16214,17 @@ const shuffleWebColors = (order) => {
 };
 //# sourceMappingURL=WebColors.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/utils/WebColorsContrast.js":
+/***/ "./node_modules/plotboilerplate/src/esm/utils/WebColorsContrast.js"
 /*!*************************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/utils/WebColorsContrast.js ***!
   \*************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "WebColorsContrast": () => (/* binding */ WebColorsContrast)
+/* harmony export */   WebColorsContrast: () => (/* binding */ WebColorsContrast)
 /* harmony export */ });
 /* harmony import */ var _WebColors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./WebColors */ "./node_modules/plotboilerplate/src/esm/utils/WebColors.js");
 /**
@@ -13414,17 +16237,17 @@ const ORDER_CONTRAST = [8, 0, 6, 4, 1, 9, 2, 10, 3, 7, 5];
 const WebColorsContrast = (0,_WebColors__WEBPACK_IMPORTED_MODULE_0__.shuffleWebColors)(ORDER_CONTRAST);
 //# sourceMappingURL=WebColorsContrast.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/utils/WebColorsMalachite.js":
+/***/ "./node_modules/plotboilerplate/src/esm/utils/WebColorsMalachite.js"
 /*!**************************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/utils/WebColorsMalachite.js ***!
   \**************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "WebColorsMalachite": () => (/* binding */ WebColorsMalachite)
+/* harmony export */   WebColorsMalachite: () => (/* binding */ WebColorsMalachite)
 /* harmony export */ });
 /* harmony import */ var _datastructures_Color__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./datastructures/Color */ "./node_modules/plotboilerplate/src/esm/utils/datastructures/Color.js");
 /**
@@ -13453,17 +16276,17 @@ const WebColorsMalachite = [
 ];
 //# sourceMappingURL=WebColorsMalachite.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/plotboilerplate/src/esm/utils/datastructures/Color.js":
+/***/ "./node_modules/plotboilerplate/src/esm/utils/datastructures/Color.js"
 /*!****************************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/utils/datastructures/Color.js ***!
   \****************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Color": () => (/* binding */ Color)
+/* harmony export */   Color: () => (/* binding */ Color)
 /* harmony export */ });
 /**
  * @author Extended, bugfixed and ported to TypeScript by Ikaros Kappler.
@@ -13481,7 +16304,16 @@ __webpack_require__.r(__webpack_exports__);
  * @modified 2021-11-07 Did the same with `saturate` and `desaturate`.
  * @modified 2021-11-07 Did the same with the `fadein` and `fadeout` functions.
  * @modified 2021-11-07 Added setRed, setGreen, setBlue, setHue, setSaturation, setLiminance functions.
- * @version 0.0.10
+ * @modified 2022-05-11 Modified the `clone` function by just copying the numeric calues, not re-calculating the whole color.
+ * @modified 2022-05-11 Fixed the `interpolate` function.
+ * @modified 2023-01-23 Added `Color.set(Color)` function to set all values (r,g,b,h,s,l,a) simultanoeusly.
+ * @modified 2024-03-10 Fixed some NaN type check for Typescript 5 compatibility.
+ * @modified 2025-08-08 Fixed an issue in the static `makeRGB` method: values in [0..1] are now correctly reconized (1.0 was excluded).
+ * @modified 2025-08-08 Added static color instances (singletons): Color.Red, Color.Gold, Color.Yellow, Color.Green, Color.LimeGreen, Color.Blue, Color.MediumBlue, Color.Purple.
+ * @modified 2025-09-01 Adding all standard web colors. Source: https://en.wikipedia.org/wiki/Web_colors
+ * @modified 2025-09-01 Modifying the `Sanitizer.RGB` helper method: recognoizing 0 to 255 as valid values (not only 1 to 255).
+ * @modified 2025-09-01 Modifying the `Color.parse` method: recognizing CSS color strings now.
+ * @version 0.0.14
  **/
 /**
  * @classdesc A color class, inspired by neolitec's Javascript class.
@@ -13563,6 +16395,16 @@ class Color {
      */
     blue() {
         return this.b;
+    }
+    set(color) {
+        this.r = color.r;
+        this.g = color.g;
+        this.b = color.b;
+        this.a = color.a;
+        this.h = color.h;
+        this.s = color.s;
+        this.l = color.l;
+        return this;
     }
     setRed(r) {
         this.r = r;
@@ -13708,7 +16550,8 @@ class Color {
     //     return this;
     //   }
     saturate(v) {
-        if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        // if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        if ("string" == typeof v && v.indexOf("%") > -1 && !Number.isNaN((v = parseInt(v)))) {
             this.s += (1 - this.s) * (v / 100);
         }
         else if ("number" == typeof v) {
@@ -13732,7 +16575,8 @@ class Color {
         return this;
     }
     desaturate(v) {
-        if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        // if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        if ("string" == typeof v && v.indexOf("%") > -1 && !Number.isNaN((v = parseInt(v)))) {
             this.s -= v / 100;
         }
         else if ("number" == typeof v) {
@@ -13775,7 +16619,8 @@ class Color {
     //     return this;
     //   }
     lighten(v) {
-        if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        // if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        if ("string" == typeof v && v.indexOf("%") > -1 && !Number.isNaN((v = parseInt(v)))) {
             this.l += (1 - this.l) * (v / 100);
         }
         else if ("number" == typeof v) {
@@ -13799,7 +16644,8 @@ class Color {
         return this;
     }
     darken(v) {
-        if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        // if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        if ("string" == typeof v && v.indexOf("%") > -1 && !Number.isNaN((v = parseInt(v)))) {
             this.l -= this.l * (v / 100);
         }
         else if ("number" == typeof v) {
@@ -13823,7 +16669,8 @@ class Color {
         return this;
     }
     fadein(v) {
-        if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        // if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        if ("string" == typeof v && v.indexOf("%") > -1 && !Number.isNaN((v = parseInt(v)))) {
             this.a += (1 - this.a) * (v / 100);
         }
         else if ("number" == typeof v) {
@@ -13848,7 +16695,8 @@ class Color {
         return this;
     }
     fadeout(v) {
-        if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        // if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) {
+        if ("string" == typeof v && v.indexOf("%") > -1 && !Number.isNaN((v = parseInt(v)))) {
             this.a -= v / 100;
         }
         else if ("number" == typeof v) {
@@ -13872,13 +16720,17 @@ class Color {
         return this;
     }
     spin(v) {
-        if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN)
+        // if ("string" == typeof v && v.indexOf("%") > -1 && (v = parseInt(v)) != NaN) this.h += v / 100;
+        if ("string" == typeof v && v.indexOf("%") > -1 && !Number.isNaN((v = parseInt(v)))) {
             this.h += v / 100;
-        else if ("number" == typeof v)
+        }
+        else if ("number" == typeof v) {
             // range 360
             this.h += v / 360;
-        else
+        }
+        else {
             throw new Error("error: bad modifier format (percent or number)");
+        }
         if (this.h > 1)
             this.h = 1;
         else if (this.h < 0)
@@ -13889,14 +16741,15 @@ class Color {
     static makeRGB(...args) {
         const c = new Color();
         let sanitized;
-        if (arguments.length < 3 || arguments.length > 4)
+        if (args.length < 3 || args.length > 4) {
             throw new Error("error: 3 or 4 arguments");
-        sanitized = Color.Sanitizer.RGB(arguments[0], arguments[1], arguments[2]);
+        }
+        sanitized = Color.Sanitizer.RGB(args[0], args[1], args[2]);
         c.r = sanitized[0];
         c.g = sanitized[1];
         c.b = sanitized[2];
-        if (arguments.length == 4) {
-            c.a = arguments[3];
+        if (args.length == 4) {
+            c.a = args[3];
         }
         else {
             c.a = 1.0;
@@ -13907,16 +16760,19 @@ class Color {
     static makeHSL(...args) {
         const c = new Color();
         let sanitized;
-        if (arguments.length < 3 || arguments.length > 4)
+        if (args.length < 3 || args.length > 4) {
             throw new Error("error: 3 or 4 arguments");
-        sanitized = Color.Sanitizer.HSL(arguments[0], arguments[1], arguments[2]);
+        }
+        sanitized = Color.Sanitizer.HSL(args[0], args[1], args[2]);
         c.h = sanitized[0];
         c.s = sanitized[1];
         c.l = sanitized[2];
-        if (arguments.length == 4)
-            c.a = arguments[3];
-        else
+        if (args.length == 4) {
+            c.a = typeof args[3] === "string" ? Number.parseFloat(args[3]) : args[3];
+        }
+        else {
             c.a = 1.0;
+        }
         Color.Converter.HSLToRGB(c);
         return c;
     }
@@ -13924,8 +16780,9 @@ class Color {
         var c = new Color(), sanitized;
         // Edit Ika 2018-0308
         // Allow leading '#'
-        if (value && value.startsWith("#"))
+        if (value && value.startsWith("#")) {
             value = value.substr(1);
+        }
         Color.Validator.checkHEX(value);
         if (value.length == 3) {
             sanitized = Color.Sanitizer.RGB(parseInt(value.substr(0, 1) + value.substr(0, 1), 16), parseInt(value.substr(1, 1) + value.substr(1, 1), 16), parseInt(value.substr(2, 1) + value.substr(2, 1), 16));
@@ -13933,8 +16790,9 @@ class Color {
         else if (value.length == 6) {
             sanitized = Color.Sanitizer.RGB(parseInt(value.substr(0, 2), 16), parseInt(value.substr(2, 2), 16), parseInt(value.substr(4, 2), 16));
         }
-        else
+        else {
             throw new Error("error: 3 or 6 arguments");
+        }
         c.r = sanitized[0];
         c.g = sanitized[1];
         c.b = sanitized[2];
@@ -13952,12 +16810,15 @@ class Color {
      * @return {Color} The color instance that's represented by the given string.
      */
     static parse(str) {
-        if (typeof str == "undefined")
+        if (typeof str == "undefined") {
             return null;
-        if ((str = str.trim().toLowerCase()).length == 0)
+        }
+        if ((str = str.trim().toLowerCase()).length == 0) {
             return null;
-        if (str.startsWith("#"))
+        }
+        if (str.startsWith("#")) {
             return Color.makeHEX(str.substring(1, str.length));
+        }
         if (str.startsWith("rgb")) {
             var parts = str.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,?\s*(\d*(?:\.\d+\s*)?)\)$/);
             if (!parts) {
@@ -13972,9 +16833,23 @@ class Color {
                 return Color.makeRGB(parts[1], parts[2], parts[3], Number(parts[4]));
             }
         }
-        else {
-            throw "Unrecognized color format (1): " + str;
+        // Try to locate by CSS color name
+        const keys = Object.keys(Color.CSS_COLORS);
+        const cssColorKey = keys.reduce((prevKey, curKey) => {
+            if (curKey && curKey.toLowerCase() === str.toLowerCase()) {
+                return curKey;
+            }
+            return prevKey;
+        }, null);
+        if (cssColorKey) {
+            const cssColor = Color.CSS_COLORS[cssColorKey];
+            // console.log("cssColor?", cssColor, str, cssColorKey);
+            if (cssColor) {
+                // console.log("CONSTRUCTOR?", cssColor.constructor);
+                return cssColor.clone();
+            }
         }
+        throw "Unrecognized color format (1): " + str;
     }
     /**
      * Create a clone of this color (RGB).
@@ -13985,7 +16860,16 @@ class Color {
      * @return {Color} A clone of this color (in RGB mode).
      */
     clone() {
-        return Color.makeRGB(this.r, this.g, this.b, this.a);
+        // return Color.makeRGB(this.r, this.g, this.b, this.a);
+        const col = new Color();
+        col.r = this.r;
+        col.g = this.g;
+        col.b = this.b;
+        col.a = this.a;
+        col.h = this.h;
+        col.s = this.s;
+        col.l = this.l;
+        return col;
     }
     /**
      * Interpolate this color on the RGB scale.
@@ -13998,42 +16882,45 @@ class Color {
      * @return {Color} A clone of this color (in RGB mode).
      */
     interpolate(c, t) {
-        this.r += (c.r - c.r) * t;
-        this.g += (c.g - c.g) * t;
-        this.b += (c.b - c.b) * t;
-        this.a += (c.a - c.a) * t;
+        this.r += (c.r - this.r) * t;
+        this.g += (c.g - this.g) * t;
+        this.b += (c.b - this.b) * t;
+        this.a += (c.a - this.a) * t;
         return this;
     }
 } // END class
 Color.Sanitizer = {
-    RGB: function (...args) {
+    RGB: (...args) => {
         var o = [];
-        if (arguments.length == 0) {
+        if (args.length == 0) {
             return [];
         }
         // const allAreFrac = Color.testFrac( arguments );
-        for (var i = 0; i < arguments.length; i++) {
-            var c = arguments[i];
+        for (var i = 0; i < args.length; i++) {
+            var c = args[i];
             if ("string" == typeof c && c.indexOf("%") > -1) {
-                if ((c = parseInt(c)) == NaN)
+                // if ((c = parseInt(c)) == NaN) throw new Error("Bad format");
+                if (Number.isNaN((c = parseInt(c)))) {
                     throw new Error("Bad format");
+                }
                 if (c < 0 || c > 100)
                     throw new Error("Bad format");
                 o[i] = c / 100;
             }
             else {
-                if ("string" == typeof c && (c = parseInt(c)) == NaN) {
+                // if ("string" == typeof c && (c = parseInt(c)) == NaN) {
+                if ("string" == typeof c && Number.isNaN((c = parseInt(c)))) {
                     throw new Error("Bad format");
                 }
                 if (c < 0) {
                     throw new Error("Bad format");
                 }
                 //else if( allAreFrac ) o[i] = c; // c >= 0 && c <= 1 (all)
-                else if (c >= 0 && c < 1) {
+                else if (c >= 0 && c <= 1) {
                     o[i] = c;
                 }
                 // else if(c >= 0.0 && c <= 1.0) o[i] = c;
-                else if (c >= 1 && c < 256) {
+                else if (c >= 0 && c < 256) {
                     o[i] = c / 255;
                 }
                 // ???
@@ -14045,33 +16932,50 @@ Color.Sanitizer = {
         return o;
     },
     HSL: function (...args) {
-        if (arguments.length < 3 || arguments.length > 4)
+        if (args.length < 3 || args.length > 4) {
             throw new Error("3 or 4 arguments required");
-        var h = arguments[0], s = arguments[1], l = arguments[2];
-        if ("string" == typeof h && (h = parseFloat(h)) == NaN)
+        }
+        var h = args[0], s = args[1], l = args[2];
+        // if ("string" == typeof h && (h = parseFloat(h)) == NaN) throw new Error("Bad format for hue");
+        if ("string" == typeof h && Number.isNaN((h = parseFloat(h)))) {
             throw new Error("Bad format for hue");
+        }
         if (h < 0 || h > 360)
             throw new Error("Hue out of range (0..360)");
         else if ((("" + h).indexOf(".") > -1 && h > 1) || ("" + h).indexOf(".") == -1)
             h /= 360;
         if ("string" == typeof s && s.indexOf("%") > -1) {
-            if ((s = parseInt(s)) == NaN)
+            // if ((s = parseInt(s)) == NaN) throw new Error("Bad format for saturation");
+            if (Number.isNaN((s = parseInt(s)))) {
                 throw new Error("Bad format for saturation");
-            if (s < 0 || s > 100)
+            }
+            if (s < 0 || s > 100) {
                 throw new Error("Bad format for saturation");
+            }
             s /= 100;
         }
-        else if (s < 0 || s > 1)
-            throw new Error("Bad format for saturation");
+        else {
+            s = typeof s === "string" ? Number.parseFloat(s) : s;
+            if (s < 0 || s > 1) {
+                throw new Error("Bad format for saturation");
+            }
+        }
         if ("string" == typeof l && l.indexOf("%") > -1) {
-            if ((l = parseInt(l)) == NaN)
+            // if ((l = parseInt(l)) == NaN) throw new Error("Bad format for lightness");
+            if (Number.isNaN((l = parseInt(l)))) {
                 throw new Error("Bad format for lightness");
-            if (l < 0 || l > 100)
+            }
+            if (l < 0 || l > 100) {
                 throw new Error("Bad format for lightness");
+            }
             l /= 100;
         }
-        else if (l < 0 || l > 1)
-            throw new Error("Bad format for lightness");
+        else {
+            l = typeof l === "string" ? Number.parseFloat(l) : l;
+            if (l < 0 || l > 1) {
+                throw new Error("Bad format for lightness");
+            }
+        }
         return [h, s, l];
     }
 }; // ENd sanitizer
@@ -14159,15 +17063,321 @@ Color.Converter = {
         return p;
     }
 };
+// Source
+//    https://en.wikipedia.org/wiki/Web_colors
+// Pink colors
+Color.MediumVioletRed = Color.makeRGB(199, 21, 133);
+Color.DeepPink = Color.makeRGB(255, 20, 147);
+Color.PaleVioletRed = Color.makeRGB(219, 112, 147);
+Color.HotPink = Color.makeRGB(255, 105, 180);
+Color.LightPink = Color.makeRGB(255, 182, 193);
+Color.Pink = Color.makeRGB(255, 192, 203);
+// Red colors
+Color.DarkRed = Color.makeRGB(139, 0, 0);
+Color.Red = Color.makeRGB(255, 0, 0);
+Color.Firebrick = Color.makeRGB(178, 34, 34);
+Color.Crimson = Color.makeRGB(220, 20, 60);
+Color.IndianRed = Color.makeRGB(205, 92, 92);
+Color.LightCoral = Color.makeRGB(240, 128, 128);
+Color.Salmon = Color.makeRGB(250, 128, 114);
+Color.DarkSalmon = Color.makeRGB(233, 150, 122);
+Color.LightSalmon = Color.makeRGB(255, 160, 122);
+// Orange colors
+Color.OrangeRed = Color.makeRGB(255, 69, 0);
+Color.Tomato = Color.makeRGB(255, 99, 71);
+Color.DarkOrange = Color.makeRGB(255, 140, 0);
+Color.Coral = Color.makeRGB(255, 127, 80);
+Color.Orange = Color.makeRGB(255, 165, 0);
+// Yellow colors
+Color.DarkKhaki = Color.makeRGB(189, 183, 107);
+Color.Gold = Color.makeRGB(255, 215, 0);
+Color.Khaki = Color.makeRGB(240, 230, 140);
+Color.PeachPuff = Color.makeRGB(255, 218, 185);
+Color.Yellow = Color.makeRGB(255, 255, 0);
+Color.PaleGoldenrod = Color.makeRGB(238, 232, 170);
+Color.Moccasin = Color.makeRGB(255, 228, 181);
+Color.PapayaWhip = Color.makeRGB(255, 239, 213);
+Color.LightGoldenrodYellow = Color.makeRGB(250, 250, 210);
+Color.LemonChiffon = Color.makeRGB(255, 250, 205);
+Color.LightYellow = Color.makeRGB(255, 255, 224);
+// Brown colors
+Color.Maroon = Color.makeRGB(128, 0, 0);
+Color.Brown = Color.makeRGB(165, 42, 42);
+Color.SaddleBrown = Color.makeRGB(139, 69, 19);
+Color.Sienna = Color.makeRGB(160, 82, 45);
+Color.Chocolate = Color.makeRGB(210, 105, 30);
+Color.DarkGoldenrod = Color.makeRGB(184, 134, 11);
+Color.Peru = Color.makeRGB(205, 133, 63);
+Color.RosyBrown = Color.makeRGB(188, 143, 143);
+Color.Goldenrod = Color.makeRGB(218, 165, 32);
+Color.SandyBrown = Color.makeRGB(244, 164, 96);
+Color.Tan = Color.makeRGB(210, 180, 140);
+Color.Burlywood = Color.makeRGB(222, 184, 135);
+Color.Wheat = Color.makeRGB(245, 222, 179);
+Color.NavajoWhite = Color.makeRGB(255, 222, 173);
+Color.Bisque = Color.makeRGB(255, 228, 196);
+Color.BlanchedAlmond = Color.makeRGB(255, 235, 205);
+Color.Cornsilk = Color.makeRGB(255, 248, 220);
+// Purple, violet, and magenta colors
+Color.Indigo = Color.makeRGB(75, 0, 130);
+Color.Purple = Color.makeRGB(128, 0, 128);
+Color.DarkMagenta = Color.makeRGB(139, 0, 139);
+Color.DarkViolet = Color.makeRGB(148, 0, 211);
+Color.DarkSlateBlue = Color.makeRGB(72, 61, 139);
+Color.BlueViolet = Color.makeRGB(138, 43, 226);
+Color.DarkOrchid = Color.makeRGB(153, 50, 204);
+Color.Fuchsia = Color.makeRGB(255, 0, 255);
+Color.Magenta = Color.makeRGB(255, 0, 255);
+Color.SlateBlue = Color.makeRGB(106, 90, 205);
+Color.MediumSlateBlue = Color.makeRGB(123, 104, 238);
+Color.MediumOrchid = Color.makeRGB(186, 85, 211);
+Color.MediumPurple = Color.makeRGB(147, 112, 219);
+Color.Orchid = Color.makeRGB(218, 112, 214);
+Color.Violet = Color.makeRGB(238, 130, 238);
+Color.Plum = Color.makeRGB(221, 160, 221);
+Color.Thistle = Color.makeRGB(216, 191, 216);
+Color.Lavender = Color.makeRGB(230, 230, 250);
+// Blue colors
+Color.MidnightBlue = Color.makeRGB(25, 25, 112);
+Color.Navy = Color.makeRGB(0, 0, 128);
+Color.DarkBlue = Color.makeRGB(0, 0, 139);
+Color.MediumBlue = Color.makeRGB(0, 0, 205);
+Color.Blue = Color.makeRGB(0, 0, 255);
+Color.RoyalBlue = Color.makeRGB(65, 105, 225);
+Color.SteelBlue = Color.makeRGB(70, 130, 180);
+Color.DodgerBlue = Color.makeRGB(30, 144, 255);
+Color.DeepSkyBlue = Color.makeRGB(0, 191, 255);
+Color.CornflowerBlue = Color.makeRGB(100, 149, 237);
+Color.SkyBlue = Color.makeRGB(135, 206, 235);
+Color.LightSkyBlue = Color.makeRGB(135, 206, 250);
+Color.LightSteelBlue = Color.makeRGB(176, 196, 222);
+Color.LightBlue = Color.makeRGB(173, 216, 230);
+Color.PowderBlue = Color.makeRGB(176, 224, 230);
+// Cyan colors
+Color.Teal = Color.makeRGB(0, 128, 128);
+Color.DarkCyan = Color.makeRGB(0, 139, 139);
+Color.LightSeaGreen = Color.makeRGB(32, 178, 170);
+Color.CadetBlue = Color.makeRGB(95, 158, 160);
+Color.DarkTurquoise = Color.makeRGB(0, 206, 209);
+Color.MediumTurquoise = Color.makeRGB(72, 209, 204);
+Color.Turquoise = Color.makeRGB(64, 224, 208);
+Color.Aqua = Color.makeRGB(0, 255, 255);
+Color.Cyan = Color.makeRGB(0, 255, 255);
+Color.Aquamarine = Color.makeRGB(127, 255, 212);
+Color.PaleTurquoise = Color.makeRGB(175, 238, 238);
+Color.LightCyan = Color.makeRGB(224, 255, 255);
+// Green colors
+Color.DarkGreen = Color.makeRGB(0, 100, 0);
+Color.Green = Color.makeRGB(0, 128, 0);
+Color.DarkOliveGreen = Color.makeRGB(85, 107, 47);
+Color.ForestGreen = Color.makeRGB(34, 139, 34);
+Color.SeaGreen = Color.makeRGB(46, 139, 87);
+Color.Olive = Color.makeRGB(128, 128, 0);
+Color.OliveDrab = Color.makeRGB(107, 142, 35);
+Color.MediumSeaGreen = Color.makeRGB(60, 179, 113);
+Color.LimeGreen = Color.makeRGB(50, 205, 50);
+Color.Lime = Color.makeRGB(0, 255, 0);
+Color.SpringGreen = Color.makeRGB(0, 255, 127);
+Color.MediumSpringGreen = Color.makeRGB(0, 250, 154);
+Color.DarkSeaGreen = Color.makeRGB(143, 188, 143);
+Color.MediumAquamarine = Color.makeRGB(102, 205, 170);
+Color.YellowGreen = Color.makeRGB(154, 205, 50);
+Color.LawnGreen = Color.makeRGB(124, 252, 0);
+Color.Chartreuse = Color.makeRGB(127, 255, 0);
+Color.LightGreen = Color.makeRGB(144, 238, 144);
+Color.GreenYellow = Color.makeRGB(173, 255, 47);
+Color.PaleGreen = Color.makeRGB(152, 251, 152);
+// White colors
+Color.MistyRose = Color.makeRGB(255, 228, 225);
+Color.AntiqueWhite = Color.makeRGB(250, 235, 215);
+Color.Linen = Color.makeRGB(250, 240, 230);
+Color.Beige = Color.makeRGB(245, 245, 220);
+Color.WhiteSmoke = Color.makeRGB(245, 245, 245);
+Color.LavenderBlush = Color.makeRGB(255, 240, 245);
+Color.OldLace = Color.makeRGB(253, 245, 230);
+Color.AliceBlue = Color.makeRGB(240, 248, 255);
+Color.Seashell = Color.makeRGB(255, 245, 238);
+Color.GhostWhite = Color.makeRGB(248, 248, 255);
+Color.Honeydew = Color.makeRGB(240, 255, 240);
+Color.FloralWhite = Color.makeRGB(255, 250, 240);
+Color.Azure = Color.makeRGB(240, 255, 255);
+Color.MintCream = Color.makeRGB(245, 255, 250);
+Color.Snow = Color.makeRGB(255, 250, 250);
+Color.Ivory = Color.makeRGB(255, 255, 240);
+Color.White = Color.makeRGB(255, 255, 255);
+// Gray and black colors
+Color.Black = Color.makeRGB(0, 0, 0);
+Color.DarkSlateGray = Color.makeRGB(47, 79, 79);
+Color.DimGray = Color.makeRGB(105, 105, 105);
+Color.SlateGray = Color.makeRGB(112, 128, 144);
+Color.Gray = Color.makeRGB(128, 128, 128);
+Color.LightSlateGray = Color.makeRGB(119, 136, 153);
+Color.DarkGray = Color.makeRGB(169, 169, 169);
+Color.Silver = Color.makeRGB(192, 192, 192);
+Color.LightGray = Color.makeRGB(211, 211, 211);
+Color.Gainsboro = Color.makeRGB(220, 220, 220);
+Color.CSS_COLORS = {
+    // Pink Color.XYZ,lors
+    MediumVioletRed: Color.MediumVioletRed,
+    DeepPink: Color.DeepPink,
+    PaleVioletRed: Color.PaleVioletRed,
+    HotPink: Color.HotPink,
+    LightPink: Color.LightPink,
+    Pink: Color.Pink,
+    // Red Color.XYZ,lors
+    DarkRed: Color.DarkRed,
+    Red: Color.Red,
+    Firebrick: Color.Firebrick,
+    Crimson: Color.Crimson,
+    IndianRed: Color.IndianRed,
+    LightCoral: Color.LightCoral,
+    Salmon: Color.Salmon,
+    DarkSalmon: Color.DarkSalmon,
+    LightSalmon: Color.LightSalmon,
+    // Orange Color.XYZ,lors
+    OrangeRed: Color.OrangeRed,
+    Tomato: Color.Tomato,
+    DarkOrange: Color.DarkOrange,
+    Coral: Color.Coral,
+    Orange: Color.Orange,
+    // Yellow Color.XYZ,lors
+    DarkKhaki: Color.DarkKhaki,
+    Gold: Color.Gold,
+    Khaki: Color.Khaki,
+    PeachPuff: Color.PeachPuff,
+    Yellow: Color.Yellow,
+    PaleGoldenrod: Color.PaleGoldenrod,
+    Moccasin: Color.Moccasin,
+    PapayaWhip: Color.PapayaWhip,
+    LightGoldenrodYellow: Color.LightGoldenrodYellow,
+    LemonChiffon: Color.LemonChiffon,
+    LightYellow: Color.LightYellow,
+    // Brown Color.XYZ,lors
+    Maroon: Color.Maroon,
+    Brown: Color.Brown,
+    SaddleBrown: Color.SaddleBrown,
+    Sienna: Color.Sienna,
+    Chocolate: Color.Chocolate,
+    DarkGoldenrod: Color.DarkGoldenrod,
+    Peru: Color.Peru,
+    RosyBrown: Color.RosyBrown,
+    Goldenrod: Color.Goldenrod,
+    SandyBrown: Color.SandyBrown,
+    Tan: Color.Tan,
+    Burlywood: Color.Burlywood,
+    Wheat: Color.Wheat,
+    NavajoWhite: Color.NavajoWhite,
+    Bisque: Color.Bisque,
+    BlanchedAlmond: Color.BlanchedAlmond,
+    Cornsilk: Color.Cornsilk,
+    // Purple, violet, and magenta Color.XYZ,lors
+    Indigo: Color.Indigo,
+    Purple: Color.Purple,
+    DarkMagenta: Color.DarkMagenta,
+    DarkViolet: Color.DarkViolet,
+    DarkSlateBlue: Color.DarkSlateBlue,
+    BlueViolet: Color.BlueViolet,
+    DarkOrchid: Color.DarkOrchid,
+    Fuchsia: Color.Fuchsia,
+    Magenta: Color.Magenta,
+    SlateBlue: Color.SlateBlue,
+    MediumSlateBlue: Color.MediumSlateBlue,
+    MediumOrchid: Color.MediumOrchid,
+    MediumPurple: Color.MediumPurple,
+    Orchid: Color.Orchid,
+    Violet: Color.Violet,
+    Plum: Color.Plum,
+    Thistle: Color.Thistle,
+    Lavender: Color.Lavender,
+    // Blue Colors
+    MidnightBlue: Color.MidnightBlue,
+    Navy: Color.Navy,
+    DarkBlue: Color.DarkBlue,
+    MediumBlue: Color.MediumBlue,
+    Blue: Color.Blue,
+    RoyalBlue: Color.RoyalBlue,
+    SteelBlue: Color.SteelBlue,
+    DodgerBlue: Color.DodgerBlue,
+    DeepSkyBlue: Color.DeepSkyBlue,
+    CornflowerBlue: Color.CornflowerBlue,
+    SkyBlue: Color.SkyBlue,
+    LightSkyBlue: Color.LightSkyBlue,
+    LightSteelBlue: Color.LightSteelBlue,
+    LightBlue: Color.LightBlue,
+    PowderBlue: Color.PowderBlue,
+    // Coyan Colors
+    Teal: Color.Teal,
+    DarkCyan: Color.DarkCyan,
+    LightSeaGreen: Color.LightSeaGreen,
+    CadetBlue: Color.CadetBlue,
+    DarkTurquoise: Color.DarkTurquoise,
+    MediumTurquoise: Color.MediumTurquoise,
+    Turquoise: Color.Turquoise,
+    Aqua: Color.Aqua,
+    Cyan: Color.Cyan,
+    Aquamarine: Color.Aquamarine,
+    PaleTurquoise: Color.PaleTurquoise,
+    LightCyan: Color.LightCyan,
+    // Green Colors
+    DarkGreen: Color.DarkGreen,
+    Green: Color.Green,
+    DarkOliveGreen: Color.DarkOliveGreen,
+    ForestGreen: Color.ForestGreen,
+    SeaGreen: Color.SeaGreen,
+    Olive: Color.Olive,
+    OliveDrab: Color.OliveDrab,
+    MediumSeaGreen: Color.MediumSeaGreen,
+    LimeGreen: Color.LimeGreen,
+    Lime: Color.Lime,
+    SpringGreen: Color.SpringGreen,
+    MediumSpringGreen: Color.MediumSpringGreen,
+    DarkSeaGreen: Color.DarkSeaGreen,
+    MediumAquamarine: Color.MediumAquamarine,
+    YellowGreen: Color.YellowGreen,
+    LawnGreen: Color.LawnGreen,
+    Chartreuse: Color.Chartreuse,
+    LightGreen: Color.LightGreen,
+    GreenYellow: Color.GreenYellow,
+    PaleGreen: Color.PaleGreen,
+    // White Color.XYZ,lors
+    MistyRose: Color.MistyRose,
+    AntiqueWhite: Color.AntiqueWhite,
+    Linen: Color.Linen,
+    Beige: Color.Beige,
+    WhiteSmoke: Color.WhiteSmoke,
+    LavenderBlush: Color.LavenderBlush,
+    OldLace: Color.OldLace,
+    AliceBlue: Color.AliceBlue,
+    Seashell: Color.Seashell,
+    GhostWhite: Color.GhostWhite,
+    Honeydew: Color.Honeydew,
+    FloralWhite: Color.FloralWhite,
+    Azure: Color.Azure,
+    MintCream: Color.MintCream,
+    Snow: Color.Snow,
+    Ivory: Color.Ivory,
+    White: Color.White,
+    // Gray and black Color.XYZ,lors
+    Black: Color.Black,
+    DarkSlateGray: Color.DarkSlateGray,
+    DimGray: Color.DimGray,
+    SlateGray: Color.SlateGray,
+    Gray: Color.Gray,
+    LightSlateGray: Color.LightSlateGray,
+    DarkGray: Color.DarkGray,
+    Silver: Color.Silver,
+    LightGray: Color.LightGray,
+    Gainsboro: Color.Gainsboro
+};
 //# sourceMappingURL=Color.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/cjs/DefaultFactory.js":
+/***/ "./node_modules/three-geometry-hellfix/src/cjs/DefaultFactory.js"
 /*!***********************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/cjs/DefaultFactory.js ***!
   \***********************************************************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 
 /**
@@ -14195,13 +17405,13 @@ exports.DefaultFactory = {
 };
 //# sourceMappingURL=DefaultFactory.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/cjs/DirectGeometry.js":
+/***/ "./node_modules/three-geometry-hellfix/src/cjs/DirectGeometry.js"
 /*!***********************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/cjs/DirectGeometry.js ***!
   \***********************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -14394,13 +17604,13 @@ var DirectGeometry = /** @class */ (function () {
 exports.DirectGeometry = DirectGeometry;
 //# sourceMappingURL=DirectGeometry.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/cjs/Face3.js":
+/***/ "./node_modules/three-geometry-hellfix/src/cjs/Face3.js"
 /*!**************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/cjs/Face3.js ***!
   \**************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -14468,13 +17678,13 @@ var Face3 = /** @class */ (function () {
 exports.Face3 = Face3;
 //# sourceMappingURL=Face3.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/cjs/Gmetry.js":
+/***/ "./node_modules/three-geometry-hellfix/src/cjs/Gmetry.js"
 /*!***************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/cjs/Gmetry.js ***!
   \***************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 /**
@@ -15461,13 +18671,13 @@ var Gmetry = /** @class */ (function () {
 exports.Gmetry = Gmetry;
 //# sourceMappingURL=Gmetry.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/cjs/index.js":
+/***/ "./node_modules/three-geometry-hellfix/src/cjs/index.js"
 /*!**************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/cjs/index.js ***!
   \**************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
@@ -15482,13 +18692,13 @@ var mylibrary_1 = __webpack_require__(/*! ./mylibrary */ "./node_modules/three-g
 Object.defineProperty(exports, "ThreeGeometryHellfix", ({ enumerable: true, get: function () { return mylibrary_1.ThreeGeometryHellfix; } }));
 //# sourceMappingURL=index.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/cjs/mylibrary.js":
+/***/ "./node_modules/three-geometry-hellfix/src/cjs/mylibrary.js"
 /*!******************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/cjs/mylibrary.js ***!
   \******************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
@@ -15505,17 +18715,17 @@ exports.ThreeGeometryHellfix = {
 };
 //# sourceMappingURL=mylibrary.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/esm/DefaultFactory.js":
+/***/ "./node_modules/three-geometry-hellfix/src/esm/DefaultFactory.js"
 /*!***********************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/esm/DefaultFactory.js ***!
   \***********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "DefaultFactory": () => (/* binding */ DefaultFactory)
+/* harmony export */   DefaultFactory: () => (/* binding */ DefaultFactory)
 /* harmony export */ });
 /**
  * The default factory to connect to your three library.
@@ -15540,17 +18750,17 @@ const DefaultFactory = {
 };
 //# sourceMappingURL=DefaultFactory.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/esm/DirectGeometry.js":
+/***/ "./node_modules/three-geometry-hellfix/src/esm/DirectGeometry.js"
 /*!***********************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/esm/DirectGeometry.js ***!
   \***********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "DirectGeometry": () => (/* binding */ DirectGeometry)
+/* harmony export */   DirectGeometry: () => (/* binding */ DirectGeometry)
 /* harmony export */ });
 /* harmony import */ var _DefaultFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DefaultFactory */ "./node_modules/three-geometry-hellfix/src/esm/DefaultFactory.js");
 /**
@@ -15739,17 +18949,17 @@ class DirectGeometry {
 }
 //# sourceMappingURL=DirectGeometry.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/esm/Face3.js":
+/***/ "./node_modules/three-geometry-hellfix/src/esm/Face3.js"
 /*!**************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/esm/Face3.js ***!
   \**************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Face3": () => (/* binding */ Face3)
+/* harmony export */   Face3: () => (/* binding */ Face3)
 /* harmony export */ });
 /* harmony import */ var _DefaultFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DefaultFactory */ "./node_modules/three-geometry-hellfix/src/esm/DefaultFactory.js");
 /**
@@ -15812,17 +19022,17 @@ class Face3 {
 }
 //# sourceMappingURL=Face3.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/esm/Gmetry.js":
+/***/ "./node_modules/three-geometry-hellfix/src/esm/Gmetry.js"
 /*!***************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/esm/Gmetry.js ***!
   \***************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Gmetry": () => (/* binding */ Gmetry)
+/* harmony export */   Gmetry: () => (/* binding */ Gmetry)
 /* harmony export */ });
 /* harmony import */ var _DefaultFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DefaultFactory */ "./node_modules/three-geometry-hellfix/src/esm/DefaultFactory.js");
 /* harmony import */ var _DirectGeometry__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DirectGeometry */ "./node_modules/three-geometry-hellfix/src/esm/DirectGeometry.js");
@@ -16804,20 +20014,20 @@ class Gmetry {
 }
 //# sourceMappingURL=Gmetry.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/esm/index.js":
+/***/ "./node_modules/three-geometry-hellfix/src/esm/index.js"
 /*!**************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/esm/index.js ***!
   \**************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "DirectGeometry": () => (/* reexport safe */ _DirectGeometry__WEBPACK_IMPORTED_MODULE_0__.DirectGeometry),
-/* harmony export */   "Face3": () => (/* reexport safe */ _Face3__WEBPACK_IMPORTED_MODULE_1__.Face3),
-/* harmony export */   "Gmetry": () => (/* reexport safe */ _Gmetry__WEBPACK_IMPORTED_MODULE_2__.Gmetry),
-/* harmony export */   "ThreeGeometryHellfix": () => (/* reexport safe */ _mylibrary__WEBPACK_IMPORTED_MODULE_3__.ThreeGeometryHellfix)
+/* harmony export */   DirectGeometry: () => (/* reexport safe */ _DirectGeometry__WEBPACK_IMPORTED_MODULE_0__.DirectGeometry),
+/* harmony export */   Face3: () => (/* reexport safe */ _Face3__WEBPACK_IMPORTED_MODULE_1__.Face3),
+/* harmony export */   Gmetry: () => (/* reexport safe */ _Gmetry__WEBPACK_IMPORTED_MODULE_2__.Gmetry),
+/* harmony export */   ThreeGeometryHellfix: () => (/* reexport safe */ _mylibrary__WEBPACK_IMPORTED_MODULE_3__.ThreeGeometryHellfix)
 /* harmony export */ });
 /* harmony import */ var _DirectGeometry__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DirectGeometry */ "./node_modules/three-geometry-hellfix/src/esm/DirectGeometry.js");
 /* harmony import */ var _Face3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Face3 */ "./node_modules/three-geometry-hellfix/src/esm/Face3.js");
@@ -16829,17 +20039,17 @@ __webpack_require__.r(__webpack_exports__);
 
 //# sourceMappingURL=index.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three-geometry-hellfix/src/esm/mylibrary.js":
+/***/ "./node_modules/three-geometry-hellfix/src/esm/mylibrary.js"
 /*!******************************************************************!*\
   !*** ./node_modules/three-geometry-hellfix/src/esm/mylibrary.js ***!
   \******************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ThreeGeometryHellfix": () => (/* binding */ ThreeGeometryHellfix)
+/* harmony export */   ThreeGeometryHellfix: () => (/* binding */ ThreeGeometryHellfix)
 /* harmony export */ });
 /* harmony import */ var _DefaultFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DefaultFactory */ "./node_modules/three-geometry-hellfix/src/esm/DefaultFactory.js");
 /* harmony import */ var _DirectGeometry__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DirectGeometry */ "./node_modules/three-geometry-hellfix/src/esm/DirectGeometry.js");
@@ -16857,17 +20067,17 @@ const ThreeGeometryHellfix = {
 };
 //# sourceMappingURL=mylibrary.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/threejs-slice-geometry-typescript/src/esm/GeometryBuilder.js":
+/***/ "./node_modules/threejs-slice-geometry-typescript/src/esm/GeometryBuilder.js"
 /*!***********************************************************************************!*\
   !*** ./node_modules/threejs-slice-geometry-typescript/src/esm/GeometryBuilder.js ***!
   \***********************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "GeometryBuilder": () => (/* binding */ GeometryBuilder)
+/* harmony export */   GeometryBuilder: () => (/* binding */ GeometryBuilder)
 /* harmony export */ });
 /* harmony import */ var _faces_from_edges__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./faces-from-edges */ "./node_modules/threejs-slice-geometry-typescript/src/esm/faces-from-edges.js");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constants */ "./node_modules/threejs-slice-geometry-typescript/src/esm/constants.js");
@@ -17094,20 +20304,20 @@ class GeometryBuilder {
 }
 //# sourceMappingURL=GeometryBuilder.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/threejs-slice-geometry-typescript/src/esm/constants.js":
+/***/ "./node_modules/threejs-slice-geometry-typescript/src/esm/constants.js"
 /*!*****************************************************************************!*\
   !*** ./node_modules/threejs-slice-geometry-typescript/src/esm/constants.js ***!
   \*****************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "FRONT": () => (/* binding */ FRONT),
-/* harmony export */   "BACK": () => (/* binding */ BACK),
-/* harmony export */   "ON": () => (/* binding */ ON),
-/* harmony export */   "FACE_KEYS": () => (/* binding */ FACE_KEYS)
+/* harmony export */   BACK: () => (/* binding */ BACK),
+/* harmony export */   FACE_KEYS: () => (/* binding */ FACE_KEYS),
+/* harmony export */   FRONT: () => (/* binding */ FRONT),
+/* harmony export */   ON: () => (/* binding */ ON)
 /* harmony export */ });
 const FRONT = 'front';
 const BACK = 'back';
@@ -17115,17 +20325,17 @@ const ON = 'on';
 const FACE_KEYS = ['a', 'b', 'c'];
 //# sourceMappingURL=constants.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/threejs-slice-geometry-typescript/src/esm/faces-from-edges.js":
+/***/ "./node_modules/threejs-slice-geometry-typescript/src/esm/faces-from-edges.js"
 /*!************************************************************************************!*\
   !*** ./node_modules/threejs-slice-geometry-typescript/src/esm/faces-from-edges.js ***!
   \************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "facesFromEdges": () => (/* binding */ facesFromEdges)
+/* harmony export */   facesFromEdges: () => (/* binding */ facesFromEdges)
 /* harmony export */ });
 /**
  * Ported to TypeScript from vanilla-js by Ikaros Kappler.
@@ -17207,23 +20417,23 @@ const validFace = (chain) => {
 };
 //# sourceMappingURL=faces-from-edges.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/threejs-slice-geometry-typescript/src/esm/index.js":
+/***/ "./node_modules/threejs-slice-geometry-typescript/src/esm/index.js"
 /*!*************************************************************************!*\
   !*** ./node_modules/threejs-slice-geometry-typescript/src/esm/index.js ***!
   \*************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "BACK": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.BACK),
-/* harmony export */   "FACE_KEYS": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.FACE_KEYS),
-/* harmony export */   "FRONT": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.FRONT),
-/* harmony export */   "ON": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.ON),
-/* harmony export */   "facesFromEdges": () => (/* reexport safe */ _faces_from_edges__WEBPACK_IMPORTED_MODULE_1__.facesFromEdges),
-/* harmony export */   "GeometryBuilder": () => (/* reexport safe */ _GeometryBuilder__WEBPACK_IMPORTED_MODULE_2__.GeometryBuilder),
-/* harmony export */   "sliceGeometry": () => (/* reexport safe */ _slice__WEBPACK_IMPORTED_MODULE_3__.sliceGeometry)
+/* harmony export */   BACK: () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.BACK),
+/* harmony export */   FACE_KEYS: () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.FACE_KEYS),
+/* harmony export */   FRONT: () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.FRONT),
+/* harmony export */   GeometryBuilder: () => (/* reexport safe */ _GeometryBuilder__WEBPACK_IMPORTED_MODULE_2__.GeometryBuilder),
+/* harmony export */   ON: () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.ON),
+/* harmony export */   facesFromEdges: () => (/* reexport safe */ _faces_from_edges__WEBPACK_IMPORTED_MODULE_1__.facesFromEdges),
+/* harmony export */   sliceGeometry: () => (/* reexport safe */ _slice__WEBPACK_IMPORTED_MODULE_3__.sliceGeometry)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./node_modules/threejs-slice-geometry-typescript/src/esm/constants.js");
 /* harmony import */ var _faces_from_edges__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./faces-from-edges */ "./node_modules/threejs-slice-geometry-typescript/src/esm/faces-from-edges.js");
@@ -17235,17 +20445,17 @@ __webpack_require__.r(__webpack_exports__);
 
 //# sourceMappingURL=index.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/threejs-slice-geometry-typescript/src/esm/slice.js":
+/***/ "./node_modules/threejs-slice-geometry-typescript/src/esm/slice.js"
 /*!*************************************************************************!*\
   !*** ./node_modules/threejs-slice-geometry-typescript/src/esm/slice.js ***!
   \*************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "sliceGeometry": () => (/* binding */ sliceGeometry)
+/* harmony export */   sliceGeometry: () => (/* binding */ sliceGeometry)
 /* harmony export */ });
 /* harmony import */ var _GeometryBuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./GeometryBuilder */ "./node_modules/threejs-slice-geometry-typescript/src/esm/GeometryBuilder.js");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constants */ "./node_modules/threejs-slice-geometry-typescript/src/esm/constants.js");
@@ -17322,13 +20532,13 @@ const findDistance = (vertex, plane) => {
 };
 //# sourceMappingURL=slice.js.map
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three/build/three.cjs":
+/***/ "./node_modules/three/build/three.cjs"
 /*!********************************************!*\
   !*** ./node_modules/three/build/three.cjs ***!
   \********************************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
 /**
  * @license
@@ -54084,453 +57294,453 @@ exports._SRGBAFormat = _SRGBAFormat;
 exports.sRGBEncoding = sRGBEncoding;
 
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three/build/three.module.js":
+/***/ "./node_modules/three/build/three.module.js"
 /*!**************************************************!*\
   !*** ./node_modules/three/build/three.module.js ***!
   \**************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ACESFilmicToneMapping": () => (/* binding */ ACESFilmicToneMapping),
-/* harmony export */   "AddEquation": () => (/* binding */ AddEquation),
-/* harmony export */   "AddOperation": () => (/* binding */ AddOperation),
-/* harmony export */   "AdditiveAnimationBlendMode": () => (/* binding */ AdditiveAnimationBlendMode),
-/* harmony export */   "AdditiveBlending": () => (/* binding */ AdditiveBlending),
-/* harmony export */   "AlphaFormat": () => (/* binding */ AlphaFormat),
-/* harmony export */   "AlwaysDepth": () => (/* binding */ AlwaysDepth),
-/* harmony export */   "AlwaysStencilFunc": () => (/* binding */ AlwaysStencilFunc),
-/* harmony export */   "AmbientLight": () => (/* binding */ AmbientLight),
-/* harmony export */   "AmbientLightProbe": () => (/* binding */ AmbientLightProbe),
-/* harmony export */   "AnimationClip": () => (/* binding */ AnimationClip),
-/* harmony export */   "AnimationLoader": () => (/* binding */ AnimationLoader),
-/* harmony export */   "AnimationMixer": () => (/* binding */ AnimationMixer),
-/* harmony export */   "AnimationObjectGroup": () => (/* binding */ AnimationObjectGroup),
-/* harmony export */   "AnimationUtils": () => (/* binding */ AnimationUtils),
-/* harmony export */   "ArcCurve": () => (/* binding */ ArcCurve),
-/* harmony export */   "ArrayCamera": () => (/* binding */ ArrayCamera),
-/* harmony export */   "ArrowHelper": () => (/* binding */ ArrowHelper),
-/* harmony export */   "Audio": () => (/* binding */ Audio),
-/* harmony export */   "AudioAnalyser": () => (/* binding */ AudioAnalyser),
-/* harmony export */   "AudioContext": () => (/* binding */ AudioContext),
-/* harmony export */   "AudioListener": () => (/* binding */ AudioListener),
-/* harmony export */   "AudioLoader": () => (/* binding */ AudioLoader),
-/* harmony export */   "AxesHelper": () => (/* binding */ AxesHelper),
-/* harmony export */   "AxisHelper": () => (/* binding */ AxisHelper),
-/* harmony export */   "BackSide": () => (/* binding */ BackSide),
-/* harmony export */   "BasicDepthPacking": () => (/* binding */ BasicDepthPacking),
-/* harmony export */   "BasicShadowMap": () => (/* binding */ BasicShadowMap),
-/* harmony export */   "BinaryTextureLoader": () => (/* binding */ BinaryTextureLoader),
-/* harmony export */   "Bone": () => (/* binding */ Bone),
-/* harmony export */   "BooleanKeyframeTrack": () => (/* binding */ BooleanKeyframeTrack),
-/* harmony export */   "BoundingBoxHelper": () => (/* binding */ BoundingBoxHelper),
-/* harmony export */   "Box2": () => (/* binding */ Box2),
-/* harmony export */   "Box3": () => (/* binding */ Box3),
-/* harmony export */   "Box3Helper": () => (/* binding */ Box3Helper),
-/* harmony export */   "BoxBufferGeometry": () => (/* binding */ BoxGeometry),
-/* harmony export */   "BoxGeometry": () => (/* binding */ BoxGeometry),
-/* harmony export */   "BoxHelper": () => (/* binding */ BoxHelper),
-/* harmony export */   "BufferAttribute": () => (/* binding */ BufferAttribute),
-/* harmony export */   "BufferGeometry": () => (/* binding */ BufferGeometry),
-/* harmony export */   "BufferGeometryLoader": () => (/* binding */ BufferGeometryLoader),
-/* harmony export */   "ByteType": () => (/* binding */ ByteType),
-/* harmony export */   "Cache": () => (/* binding */ Cache),
-/* harmony export */   "Camera": () => (/* binding */ Camera),
-/* harmony export */   "CameraHelper": () => (/* binding */ CameraHelper),
-/* harmony export */   "CanvasRenderer": () => (/* binding */ CanvasRenderer),
-/* harmony export */   "CanvasTexture": () => (/* binding */ CanvasTexture),
-/* harmony export */   "CatmullRomCurve3": () => (/* binding */ CatmullRomCurve3),
-/* harmony export */   "CineonToneMapping": () => (/* binding */ CineonToneMapping),
-/* harmony export */   "CircleBufferGeometry": () => (/* binding */ CircleGeometry),
-/* harmony export */   "CircleGeometry": () => (/* binding */ CircleGeometry),
-/* harmony export */   "ClampToEdgeWrapping": () => (/* binding */ ClampToEdgeWrapping),
-/* harmony export */   "Clock": () => (/* binding */ Clock),
-/* harmony export */   "Color": () => (/* binding */ Color),
-/* harmony export */   "ColorKeyframeTrack": () => (/* binding */ ColorKeyframeTrack),
-/* harmony export */   "CompressedTexture": () => (/* binding */ CompressedTexture),
-/* harmony export */   "CompressedTextureLoader": () => (/* binding */ CompressedTextureLoader),
-/* harmony export */   "ConeBufferGeometry": () => (/* binding */ ConeGeometry),
-/* harmony export */   "ConeGeometry": () => (/* binding */ ConeGeometry),
-/* harmony export */   "CubeCamera": () => (/* binding */ CubeCamera),
-/* harmony export */   "CubeReflectionMapping": () => (/* binding */ CubeReflectionMapping),
-/* harmony export */   "CubeRefractionMapping": () => (/* binding */ CubeRefractionMapping),
-/* harmony export */   "CubeTexture": () => (/* binding */ CubeTexture),
-/* harmony export */   "CubeTextureLoader": () => (/* binding */ CubeTextureLoader),
-/* harmony export */   "CubeUVReflectionMapping": () => (/* binding */ CubeUVReflectionMapping),
-/* harmony export */   "CubeUVRefractionMapping": () => (/* binding */ CubeUVRefractionMapping),
-/* harmony export */   "CubicBezierCurve": () => (/* binding */ CubicBezierCurve),
-/* harmony export */   "CubicBezierCurve3": () => (/* binding */ CubicBezierCurve3),
-/* harmony export */   "CubicInterpolant": () => (/* binding */ CubicInterpolant),
-/* harmony export */   "CullFaceBack": () => (/* binding */ CullFaceBack),
-/* harmony export */   "CullFaceFront": () => (/* binding */ CullFaceFront),
-/* harmony export */   "CullFaceFrontBack": () => (/* binding */ CullFaceFrontBack),
-/* harmony export */   "CullFaceNone": () => (/* binding */ CullFaceNone),
-/* harmony export */   "Curve": () => (/* binding */ Curve),
-/* harmony export */   "CurvePath": () => (/* binding */ CurvePath),
-/* harmony export */   "CustomBlending": () => (/* binding */ CustomBlending),
-/* harmony export */   "CustomToneMapping": () => (/* binding */ CustomToneMapping),
-/* harmony export */   "CylinderBufferGeometry": () => (/* binding */ CylinderGeometry),
-/* harmony export */   "CylinderGeometry": () => (/* binding */ CylinderGeometry),
-/* harmony export */   "Cylindrical": () => (/* binding */ Cylindrical),
-/* harmony export */   "DataTexture": () => (/* binding */ DataTexture),
-/* harmony export */   "DataTexture2DArray": () => (/* binding */ DataTexture2DArray),
-/* harmony export */   "DataTexture3D": () => (/* binding */ DataTexture3D),
-/* harmony export */   "DataTextureLoader": () => (/* binding */ DataTextureLoader),
-/* harmony export */   "DataUtils": () => (/* binding */ DataUtils),
-/* harmony export */   "DecrementStencilOp": () => (/* binding */ DecrementStencilOp),
-/* harmony export */   "DecrementWrapStencilOp": () => (/* binding */ DecrementWrapStencilOp),
-/* harmony export */   "DefaultLoadingManager": () => (/* binding */ DefaultLoadingManager),
-/* harmony export */   "DepthFormat": () => (/* binding */ DepthFormat),
-/* harmony export */   "DepthStencilFormat": () => (/* binding */ DepthStencilFormat),
-/* harmony export */   "DepthTexture": () => (/* binding */ DepthTexture),
-/* harmony export */   "DirectionalLight": () => (/* binding */ DirectionalLight),
-/* harmony export */   "DirectionalLightHelper": () => (/* binding */ DirectionalLightHelper),
-/* harmony export */   "DiscreteInterpolant": () => (/* binding */ DiscreteInterpolant),
-/* harmony export */   "DodecahedronBufferGeometry": () => (/* binding */ DodecahedronGeometry),
-/* harmony export */   "DodecahedronGeometry": () => (/* binding */ DodecahedronGeometry),
-/* harmony export */   "DoubleSide": () => (/* binding */ DoubleSide),
-/* harmony export */   "DstAlphaFactor": () => (/* binding */ DstAlphaFactor),
-/* harmony export */   "DstColorFactor": () => (/* binding */ DstColorFactor),
-/* harmony export */   "DynamicBufferAttribute": () => (/* binding */ DynamicBufferAttribute),
-/* harmony export */   "DynamicCopyUsage": () => (/* binding */ DynamicCopyUsage),
-/* harmony export */   "DynamicDrawUsage": () => (/* binding */ DynamicDrawUsage),
-/* harmony export */   "DynamicReadUsage": () => (/* binding */ DynamicReadUsage),
-/* harmony export */   "EdgesGeometry": () => (/* binding */ EdgesGeometry),
-/* harmony export */   "EdgesHelper": () => (/* binding */ EdgesHelper),
-/* harmony export */   "EllipseCurve": () => (/* binding */ EllipseCurve),
-/* harmony export */   "EqualDepth": () => (/* binding */ EqualDepth),
-/* harmony export */   "EqualStencilFunc": () => (/* binding */ EqualStencilFunc),
-/* harmony export */   "EquirectangularReflectionMapping": () => (/* binding */ EquirectangularReflectionMapping),
-/* harmony export */   "EquirectangularRefractionMapping": () => (/* binding */ EquirectangularRefractionMapping),
-/* harmony export */   "Euler": () => (/* binding */ Euler),
-/* harmony export */   "EventDispatcher": () => (/* binding */ EventDispatcher),
-/* harmony export */   "ExtrudeBufferGeometry": () => (/* binding */ ExtrudeGeometry),
-/* harmony export */   "ExtrudeGeometry": () => (/* binding */ ExtrudeGeometry),
-/* harmony export */   "FaceColors": () => (/* binding */ FaceColors),
-/* harmony export */   "FileLoader": () => (/* binding */ FileLoader),
-/* harmony export */   "FlatShading": () => (/* binding */ FlatShading),
-/* harmony export */   "Float16BufferAttribute": () => (/* binding */ Float16BufferAttribute),
-/* harmony export */   "Float32Attribute": () => (/* binding */ Float32Attribute),
-/* harmony export */   "Float32BufferAttribute": () => (/* binding */ Float32BufferAttribute),
-/* harmony export */   "Float64Attribute": () => (/* binding */ Float64Attribute),
-/* harmony export */   "Float64BufferAttribute": () => (/* binding */ Float64BufferAttribute),
-/* harmony export */   "FloatType": () => (/* binding */ FloatType),
-/* harmony export */   "Fog": () => (/* binding */ Fog),
-/* harmony export */   "FogExp2": () => (/* binding */ FogExp2),
-/* harmony export */   "Font": () => (/* binding */ Font),
-/* harmony export */   "FontLoader": () => (/* binding */ FontLoader),
-/* harmony export */   "FramebufferTexture": () => (/* binding */ FramebufferTexture),
-/* harmony export */   "FrontSide": () => (/* binding */ FrontSide),
-/* harmony export */   "Frustum": () => (/* binding */ Frustum),
-/* harmony export */   "GLBufferAttribute": () => (/* binding */ GLBufferAttribute),
-/* harmony export */   "GLSL1": () => (/* binding */ GLSL1),
-/* harmony export */   "GLSL3": () => (/* binding */ GLSL3),
-/* harmony export */   "GreaterDepth": () => (/* binding */ GreaterDepth),
-/* harmony export */   "GreaterEqualDepth": () => (/* binding */ GreaterEqualDepth),
-/* harmony export */   "GreaterEqualStencilFunc": () => (/* binding */ GreaterEqualStencilFunc),
-/* harmony export */   "GreaterStencilFunc": () => (/* binding */ GreaterStencilFunc),
-/* harmony export */   "GridHelper": () => (/* binding */ GridHelper),
-/* harmony export */   "Group": () => (/* binding */ Group),
-/* harmony export */   "HalfFloatType": () => (/* binding */ HalfFloatType),
-/* harmony export */   "HemisphereLight": () => (/* binding */ HemisphereLight),
-/* harmony export */   "HemisphereLightHelper": () => (/* binding */ HemisphereLightHelper),
-/* harmony export */   "HemisphereLightProbe": () => (/* binding */ HemisphereLightProbe),
-/* harmony export */   "IcosahedronBufferGeometry": () => (/* binding */ IcosahedronGeometry),
-/* harmony export */   "IcosahedronGeometry": () => (/* binding */ IcosahedronGeometry),
-/* harmony export */   "ImageBitmapLoader": () => (/* binding */ ImageBitmapLoader),
-/* harmony export */   "ImageLoader": () => (/* binding */ ImageLoader),
-/* harmony export */   "ImageUtils": () => (/* binding */ ImageUtils),
-/* harmony export */   "ImmediateRenderObject": () => (/* binding */ ImmediateRenderObject),
-/* harmony export */   "IncrementStencilOp": () => (/* binding */ IncrementStencilOp),
-/* harmony export */   "IncrementWrapStencilOp": () => (/* binding */ IncrementWrapStencilOp),
-/* harmony export */   "InstancedBufferAttribute": () => (/* binding */ InstancedBufferAttribute),
-/* harmony export */   "InstancedBufferGeometry": () => (/* binding */ InstancedBufferGeometry),
-/* harmony export */   "InstancedInterleavedBuffer": () => (/* binding */ InstancedInterleavedBuffer),
-/* harmony export */   "InstancedMesh": () => (/* binding */ InstancedMesh),
-/* harmony export */   "Int16Attribute": () => (/* binding */ Int16Attribute),
-/* harmony export */   "Int16BufferAttribute": () => (/* binding */ Int16BufferAttribute),
-/* harmony export */   "Int32Attribute": () => (/* binding */ Int32Attribute),
-/* harmony export */   "Int32BufferAttribute": () => (/* binding */ Int32BufferAttribute),
-/* harmony export */   "Int8Attribute": () => (/* binding */ Int8Attribute),
-/* harmony export */   "Int8BufferAttribute": () => (/* binding */ Int8BufferAttribute),
-/* harmony export */   "IntType": () => (/* binding */ IntType),
-/* harmony export */   "InterleavedBuffer": () => (/* binding */ InterleavedBuffer),
-/* harmony export */   "InterleavedBufferAttribute": () => (/* binding */ InterleavedBufferAttribute),
-/* harmony export */   "Interpolant": () => (/* binding */ Interpolant),
-/* harmony export */   "InterpolateDiscrete": () => (/* binding */ InterpolateDiscrete),
-/* harmony export */   "InterpolateLinear": () => (/* binding */ InterpolateLinear),
-/* harmony export */   "InterpolateSmooth": () => (/* binding */ InterpolateSmooth),
-/* harmony export */   "InvertStencilOp": () => (/* binding */ InvertStencilOp),
-/* harmony export */   "JSONLoader": () => (/* binding */ JSONLoader),
-/* harmony export */   "KeepStencilOp": () => (/* binding */ KeepStencilOp),
-/* harmony export */   "KeyframeTrack": () => (/* binding */ KeyframeTrack),
-/* harmony export */   "LOD": () => (/* binding */ LOD),
-/* harmony export */   "LatheBufferGeometry": () => (/* binding */ LatheGeometry),
-/* harmony export */   "LatheGeometry": () => (/* binding */ LatheGeometry),
-/* harmony export */   "Layers": () => (/* binding */ Layers),
-/* harmony export */   "LensFlare": () => (/* binding */ LensFlare),
-/* harmony export */   "LessDepth": () => (/* binding */ LessDepth),
-/* harmony export */   "LessEqualDepth": () => (/* binding */ LessEqualDepth),
-/* harmony export */   "LessEqualStencilFunc": () => (/* binding */ LessEqualStencilFunc),
-/* harmony export */   "LessStencilFunc": () => (/* binding */ LessStencilFunc),
-/* harmony export */   "Light": () => (/* binding */ Light),
-/* harmony export */   "LightProbe": () => (/* binding */ LightProbe),
-/* harmony export */   "Line": () => (/* binding */ Line),
-/* harmony export */   "Line3": () => (/* binding */ Line3),
-/* harmony export */   "LineBasicMaterial": () => (/* binding */ LineBasicMaterial),
-/* harmony export */   "LineCurve": () => (/* binding */ LineCurve),
-/* harmony export */   "LineCurve3": () => (/* binding */ LineCurve3),
-/* harmony export */   "LineDashedMaterial": () => (/* binding */ LineDashedMaterial),
-/* harmony export */   "LineLoop": () => (/* binding */ LineLoop),
-/* harmony export */   "LinePieces": () => (/* binding */ LinePieces),
-/* harmony export */   "LineSegments": () => (/* binding */ LineSegments),
-/* harmony export */   "LineStrip": () => (/* binding */ LineStrip),
-/* harmony export */   "LinearEncoding": () => (/* binding */ LinearEncoding),
-/* harmony export */   "LinearFilter": () => (/* binding */ LinearFilter),
-/* harmony export */   "LinearInterpolant": () => (/* binding */ LinearInterpolant),
-/* harmony export */   "LinearMipMapLinearFilter": () => (/* binding */ LinearMipMapLinearFilter),
-/* harmony export */   "LinearMipMapNearestFilter": () => (/* binding */ LinearMipMapNearestFilter),
-/* harmony export */   "LinearMipmapLinearFilter": () => (/* binding */ LinearMipmapLinearFilter),
-/* harmony export */   "LinearMipmapNearestFilter": () => (/* binding */ LinearMipmapNearestFilter),
-/* harmony export */   "LinearToneMapping": () => (/* binding */ LinearToneMapping),
-/* harmony export */   "Loader": () => (/* binding */ Loader),
-/* harmony export */   "LoaderUtils": () => (/* binding */ LoaderUtils),
-/* harmony export */   "LoadingManager": () => (/* binding */ LoadingManager),
-/* harmony export */   "LoopOnce": () => (/* binding */ LoopOnce),
-/* harmony export */   "LoopPingPong": () => (/* binding */ LoopPingPong),
-/* harmony export */   "LoopRepeat": () => (/* binding */ LoopRepeat),
-/* harmony export */   "LuminanceAlphaFormat": () => (/* binding */ LuminanceAlphaFormat),
-/* harmony export */   "LuminanceFormat": () => (/* binding */ LuminanceFormat),
-/* harmony export */   "MOUSE": () => (/* binding */ MOUSE),
-/* harmony export */   "Material": () => (/* binding */ Material),
-/* harmony export */   "MaterialLoader": () => (/* binding */ MaterialLoader),
-/* harmony export */   "Math": () => (/* binding */ MathUtils),
-/* harmony export */   "MathUtils": () => (/* binding */ MathUtils),
-/* harmony export */   "Matrix3": () => (/* binding */ Matrix3),
-/* harmony export */   "Matrix4": () => (/* binding */ Matrix4),
-/* harmony export */   "MaxEquation": () => (/* binding */ MaxEquation),
-/* harmony export */   "Mesh": () => (/* binding */ Mesh),
-/* harmony export */   "MeshBasicMaterial": () => (/* binding */ MeshBasicMaterial),
-/* harmony export */   "MeshDepthMaterial": () => (/* binding */ MeshDepthMaterial),
-/* harmony export */   "MeshDistanceMaterial": () => (/* binding */ MeshDistanceMaterial),
-/* harmony export */   "MeshFaceMaterial": () => (/* binding */ MeshFaceMaterial),
-/* harmony export */   "MeshLambertMaterial": () => (/* binding */ MeshLambertMaterial),
-/* harmony export */   "MeshMatcapMaterial": () => (/* binding */ MeshMatcapMaterial),
-/* harmony export */   "MeshNormalMaterial": () => (/* binding */ MeshNormalMaterial),
-/* harmony export */   "MeshPhongMaterial": () => (/* binding */ MeshPhongMaterial),
-/* harmony export */   "MeshPhysicalMaterial": () => (/* binding */ MeshPhysicalMaterial),
-/* harmony export */   "MeshStandardMaterial": () => (/* binding */ MeshStandardMaterial),
-/* harmony export */   "MeshToonMaterial": () => (/* binding */ MeshToonMaterial),
-/* harmony export */   "MinEquation": () => (/* binding */ MinEquation),
-/* harmony export */   "MirroredRepeatWrapping": () => (/* binding */ MirroredRepeatWrapping),
-/* harmony export */   "MixOperation": () => (/* binding */ MixOperation),
-/* harmony export */   "MultiMaterial": () => (/* binding */ MultiMaterial),
-/* harmony export */   "MultiplyBlending": () => (/* binding */ MultiplyBlending),
-/* harmony export */   "MultiplyOperation": () => (/* binding */ MultiplyOperation),
-/* harmony export */   "NearestFilter": () => (/* binding */ NearestFilter),
-/* harmony export */   "NearestMipMapLinearFilter": () => (/* binding */ NearestMipMapLinearFilter),
-/* harmony export */   "NearestMipMapNearestFilter": () => (/* binding */ NearestMipMapNearestFilter),
-/* harmony export */   "NearestMipmapLinearFilter": () => (/* binding */ NearestMipmapLinearFilter),
-/* harmony export */   "NearestMipmapNearestFilter": () => (/* binding */ NearestMipmapNearestFilter),
-/* harmony export */   "NeverDepth": () => (/* binding */ NeverDepth),
-/* harmony export */   "NeverStencilFunc": () => (/* binding */ NeverStencilFunc),
-/* harmony export */   "NoBlending": () => (/* binding */ NoBlending),
-/* harmony export */   "NoColors": () => (/* binding */ NoColors),
-/* harmony export */   "NoToneMapping": () => (/* binding */ NoToneMapping),
-/* harmony export */   "NormalAnimationBlendMode": () => (/* binding */ NormalAnimationBlendMode),
-/* harmony export */   "NormalBlending": () => (/* binding */ NormalBlending),
-/* harmony export */   "NotEqualDepth": () => (/* binding */ NotEqualDepth),
-/* harmony export */   "NotEqualStencilFunc": () => (/* binding */ NotEqualStencilFunc),
-/* harmony export */   "NumberKeyframeTrack": () => (/* binding */ NumberKeyframeTrack),
-/* harmony export */   "Object3D": () => (/* binding */ Object3D),
-/* harmony export */   "ObjectLoader": () => (/* binding */ ObjectLoader),
-/* harmony export */   "ObjectSpaceNormalMap": () => (/* binding */ ObjectSpaceNormalMap),
-/* harmony export */   "OctahedronBufferGeometry": () => (/* binding */ OctahedronGeometry),
-/* harmony export */   "OctahedronGeometry": () => (/* binding */ OctahedronGeometry),
-/* harmony export */   "OneFactor": () => (/* binding */ OneFactor),
-/* harmony export */   "OneMinusDstAlphaFactor": () => (/* binding */ OneMinusDstAlphaFactor),
-/* harmony export */   "OneMinusDstColorFactor": () => (/* binding */ OneMinusDstColorFactor),
-/* harmony export */   "OneMinusSrcAlphaFactor": () => (/* binding */ OneMinusSrcAlphaFactor),
-/* harmony export */   "OneMinusSrcColorFactor": () => (/* binding */ OneMinusSrcColorFactor),
-/* harmony export */   "OrthographicCamera": () => (/* binding */ OrthographicCamera),
-/* harmony export */   "PCFShadowMap": () => (/* binding */ PCFShadowMap),
-/* harmony export */   "PCFSoftShadowMap": () => (/* binding */ PCFSoftShadowMap),
-/* harmony export */   "PMREMGenerator": () => (/* binding */ PMREMGenerator),
-/* harmony export */   "ParametricGeometry": () => (/* binding */ ParametricGeometry),
-/* harmony export */   "Particle": () => (/* binding */ Particle),
-/* harmony export */   "ParticleBasicMaterial": () => (/* binding */ ParticleBasicMaterial),
-/* harmony export */   "ParticleSystem": () => (/* binding */ ParticleSystem),
-/* harmony export */   "ParticleSystemMaterial": () => (/* binding */ ParticleSystemMaterial),
-/* harmony export */   "Path": () => (/* binding */ Path),
-/* harmony export */   "PerspectiveCamera": () => (/* binding */ PerspectiveCamera),
-/* harmony export */   "Plane": () => (/* binding */ Plane),
-/* harmony export */   "PlaneBufferGeometry": () => (/* binding */ PlaneGeometry),
-/* harmony export */   "PlaneGeometry": () => (/* binding */ PlaneGeometry),
-/* harmony export */   "PlaneHelper": () => (/* binding */ PlaneHelper),
-/* harmony export */   "PointCloud": () => (/* binding */ PointCloud),
-/* harmony export */   "PointCloudMaterial": () => (/* binding */ PointCloudMaterial),
-/* harmony export */   "PointLight": () => (/* binding */ PointLight),
-/* harmony export */   "PointLightHelper": () => (/* binding */ PointLightHelper),
-/* harmony export */   "Points": () => (/* binding */ Points),
-/* harmony export */   "PointsMaterial": () => (/* binding */ PointsMaterial),
-/* harmony export */   "PolarGridHelper": () => (/* binding */ PolarGridHelper),
-/* harmony export */   "PolyhedronBufferGeometry": () => (/* binding */ PolyhedronGeometry),
-/* harmony export */   "PolyhedronGeometry": () => (/* binding */ PolyhedronGeometry),
-/* harmony export */   "PositionalAudio": () => (/* binding */ PositionalAudio),
-/* harmony export */   "PropertyBinding": () => (/* binding */ PropertyBinding),
-/* harmony export */   "PropertyMixer": () => (/* binding */ PropertyMixer),
-/* harmony export */   "QuadraticBezierCurve": () => (/* binding */ QuadraticBezierCurve),
-/* harmony export */   "QuadraticBezierCurve3": () => (/* binding */ QuadraticBezierCurve3),
-/* harmony export */   "Quaternion": () => (/* binding */ Quaternion),
-/* harmony export */   "QuaternionKeyframeTrack": () => (/* binding */ QuaternionKeyframeTrack),
-/* harmony export */   "QuaternionLinearInterpolant": () => (/* binding */ QuaternionLinearInterpolant),
-/* harmony export */   "REVISION": () => (/* binding */ REVISION),
-/* harmony export */   "RGBADepthPacking": () => (/* binding */ RGBADepthPacking),
-/* harmony export */   "RGBAFormat": () => (/* binding */ RGBAFormat),
-/* harmony export */   "RGBAIntegerFormat": () => (/* binding */ RGBAIntegerFormat),
-/* harmony export */   "RGBA_ASTC_10x10_Format": () => (/* binding */ RGBA_ASTC_10x10_Format),
-/* harmony export */   "RGBA_ASTC_10x5_Format": () => (/* binding */ RGBA_ASTC_10x5_Format),
-/* harmony export */   "RGBA_ASTC_10x6_Format": () => (/* binding */ RGBA_ASTC_10x6_Format),
-/* harmony export */   "RGBA_ASTC_10x8_Format": () => (/* binding */ RGBA_ASTC_10x8_Format),
-/* harmony export */   "RGBA_ASTC_12x10_Format": () => (/* binding */ RGBA_ASTC_12x10_Format),
-/* harmony export */   "RGBA_ASTC_12x12_Format": () => (/* binding */ RGBA_ASTC_12x12_Format),
-/* harmony export */   "RGBA_ASTC_4x4_Format": () => (/* binding */ RGBA_ASTC_4x4_Format),
-/* harmony export */   "RGBA_ASTC_5x4_Format": () => (/* binding */ RGBA_ASTC_5x4_Format),
-/* harmony export */   "RGBA_ASTC_5x5_Format": () => (/* binding */ RGBA_ASTC_5x5_Format),
-/* harmony export */   "RGBA_ASTC_6x5_Format": () => (/* binding */ RGBA_ASTC_6x5_Format),
-/* harmony export */   "RGBA_ASTC_6x6_Format": () => (/* binding */ RGBA_ASTC_6x6_Format),
-/* harmony export */   "RGBA_ASTC_8x5_Format": () => (/* binding */ RGBA_ASTC_8x5_Format),
-/* harmony export */   "RGBA_ASTC_8x6_Format": () => (/* binding */ RGBA_ASTC_8x6_Format),
-/* harmony export */   "RGBA_ASTC_8x8_Format": () => (/* binding */ RGBA_ASTC_8x8_Format),
-/* harmony export */   "RGBA_BPTC_Format": () => (/* binding */ RGBA_BPTC_Format),
-/* harmony export */   "RGBA_ETC2_EAC_Format": () => (/* binding */ RGBA_ETC2_EAC_Format),
-/* harmony export */   "RGBA_PVRTC_2BPPV1_Format": () => (/* binding */ RGBA_PVRTC_2BPPV1_Format),
-/* harmony export */   "RGBA_PVRTC_4BPPV1_Format": () => (/* binding */ RGBA_PVRTC_4BPPV1_Format),
-/* harmony export */   "RGBA_S3TC_DXT1_Format": () => (/* binding */ RGBA_S3TC_DXT1_Format),
-/* harmony export */   "RGBA_S3TC_DXT3_Format": () => (/* binding */ RGBA_S3TC_DXT3_Format),
-/* harmony export */   "RGBA_S3TC_DXT5_Format": () => (/* binding */ RGBA_S3TC_DXT5_Format),
-/* harmony export */   "RGBFormat": () => (/* binding */ RGBFormat),
-/* harmony export */   "RGB_ETC1_Format": () => (/* binding */ RGB_ETC1_Format),
-/* harmony export */   "RGB_ETC2_Format": () => (/* binding */ RGB_ETC2_Format),
-/* harmony export */   "RGB_PVRTC_2BPPV1_Format": () => (/* binding */ RGB_PVRTC_2BPPV1_Format),
-/* harmony export */   "RGB_PVRTC_4BPPV1_Format": () => (/* binding */ RGB_PVRTC_4BPPV1_Format),
-/* harmony export */   "RGB_S3TC_DXT1_Format": () => (/* binding */ RGB_S3TC_DXT1_Format),
-/* harmony export */   "RGFormat": () => (/* binding */ RGFormat),
-/* harmony export */   "RGIntegerFormat": () => (/* binding */ RGIntegerFormat),
-/* harmony export */   "RawShaderMaterial": () => (/* binding */ RawShaderMaterial),
-/* harmony export */   "Ray": () => (/* binding */ Ray),
-/* harmony export */   "Raycaster": () => (/* binding */ Raycaster),
-/* harmony export */   "RectAreaLight": () => (/* binding */ RectAreaLight),
-/* harmony export */   "RedFormat": () => (/* binding */ RedFormat),
-/* harmony export */   "RedIntegerFormat": () => (/* binding */ RedIntegerFormat),
-/* harmony export */   "ReinhardToneMapping": () => (/* binding */ ReinhardToneMapping),
-/* harmony export */   "RepeatWrapping": () => (/* binding */ RepeatWrapping),
-/* harmony export */   "ReplaceStencilOp": () => (/* binding */ ReplaceStencilOp),
-/* harmony export */   "ReverseSubtractEquation": () => (/* binding */ ReverseSubtractEquation),
-/* harmony export */   "RingBufferGeometry": () => (/* binding */ RingGeometry),
-/* harmony export */   "RingGeometry": () => (/* binding */ RingGeometry),
-/* harmony export */   "Scene": () => (/* binding */ Scene),
-/* harmony export */   "SceneUtils": () => (/* binding */ SceneUtils),
-/* harmony export */   "ShaderChunk": () => (/* binding */ ShaderChunk),
-/* harmony export */   "ShaderLib": () => (/* binding */ ShaderLib),
-/* harmony export */   "ShaderMaterial": () => (/* binding */ ShaderMaterial),
-/* harmony export */   "ShadowMaterial": () => (/* binding */ ShadowMaterial),
-/* harmony export */   "Shape": () => (/* binding */ Shape),
-/* harmony export */   "ShapeBufferGeometry": () => (/* binding */ ShapeGeometry),
-/* harmony export */   "ShapeGeometry": () => (/* binding */ ShapeGeometry),
-/* harmony export */   "ShapePath": () => (/* binding */ ShapePath),
-/* harmony export */   "ShapeUtils": () => (/* binding */ ShapeUtils),
-/* harmony export */   "ShortType": () => (/* binding */ ShortType),
-/* harmony export */   "Skeleton": () => (/* binding */ Skeleton),
-/* harmony export */   "SkeletonHelper": () => (/* binding */ SkeletonHelper),
-/* harmony export */   "SkinnedMesh": () => (/* binding */ SkinnedMesh),
-/* harmony export */   "SmoothShading": () => (/* binding */ SmoothShading),
-/* harmony export */   "Sphere": () => (/* binding */ Sphere),
-/* harmony export */   "SphereBufferGeometry": () => (/* binding */ SphereGeometry),
-/* harmony export */   "SphereGeometry": () => (/* binding */ SphereGeometry),
-/* harmony export */   "Spherical": () => (/* binding */ Spherical),
-/* harmony export */   "SphericalHarmonics3": () => (/* binding */ SphericalHarmonics3),
-/* harmony export */   "SplineCurve": () => (/* binding */ SplineCurve),
-/* harmony export */   "SpotLight": () => (/* binding */ SpotLight),
-/* harmony export */   "SpotLightHelper": () => (/* binding */ SpotLightHelper),
-/* harmony export */   "Sprite": () => (/* binding */ Sprite),
-/* harmony export */   "SpriteMaterial": () => (/* binding */ SpriteMaterial),
-/* harmony export */   "SrcAlphaFactor": () => (/* binding */ SrcAlphaFactor),
-/* harmony export */   "SrcAlphaSaturateFactor": () => (/* binding */ SrcAlphaSaturateFactor),
-/* harmony export */   "SrcColorFactor": () => (/* binding */ SrcColorFactor),
-/* harmony export */   "StaticCopyUsage": () => (/* binding */ StaticCopyUsage),
-/* harmony export */   "StaticDrawUsage": () => (/* binding */ StaticDrawUsage),
-/* harmony export */   "StaticReadUsage": () => (/* binding */ StaticReadUsage),
-/* harmony export */   "StereoCamera": () => (/* binding */ StereoCamera),
-/* harmony export */   "StreamCopyUsage": () => (/* binding */ StreamCopyUsage),
-/* harmony export */   "StreamDrawUsage": () => (/* binding */ StreamDrawUsage),
-/* harmony export */   "StreamReadUsage": () => (/* binding */ StreamReadUsage),
-/* harmony export */   "StringKeyframeTrack": () => (/* binding */ StringKeyframeTrack),
-/* harmony export */   "SubtractEquation": () => (/* binding */ SubtractEquation),
-/* harmony export */   "SubtractiveBlending": () => (/* binding */ SubtractiveBlending),
-/* harmony export */   "TOUCH": () => (/* binding */ TOUCH),
-/* harmony export */   "TangentSpaceNormalMap": () => (/* binding */ TangentSpaceNormalMap),
-/* harmony export */   "TetrahedronBufferGeometry": () => (/* binding */ TetrahedronGeometry),
-/* harmony export */   "TetrahedronGeometry": () => (/* binding */ TetrahedronGeometry),
-/* harmony export */   "TextGeometry": () => (/* binding */ TextGeometry),
-/* harmony export */   "Texture": () => (/* binding */ Texture),
-/* harmony export */   "TextureLoader": () => (/* binding */ TextureLoader),
-/* harmony export */   "TorusBufferGeometry": () => (/* binding */ TorusGeometry),
-/* harmony export */   "TorusGeometry": () => (/* binding */ TorusGeometry),
-/* harmony export */   "TorusKnotBufferGeometry": () => (/* binding */ TorusKnotGeometry),
-/* harmony export */   "TorusKnotGeometry": () => (/* binding */ TorusKnotGeometry),
-/* harmony export */   "Triangle": () => (/* binding */ Triangle),
-/* harmony export */   "TriangleFanDrawMode": () => (/* binding */ TriangleFanDrawMode),
-/* harmony export */   "TriangleStripDrawMode": () => (/* binding */ TriangleStripDrawMode),
-/* harmony export */   "TrianglesDrawMode": () => (/* binding */ TrianglesDrawMode),
-/* harmony export */   "TubeBufferGeometry": () => (/* binding */ TubeGeometry),
-/* harmony export */   "TubeGeometry": () => (/* binding */ TubeGeometry),
-/* harmony export */   "UVMapping": () => (/* binding */ UVMapping),
-/* harmony export */   "Uint16Attribute": () => (/* binding */ Uint16Attribute),
-/* harmony export */   "Uint16BufferAttribute": () => (/* binding */ Uint16BufferAttribute),
-/* harmony export */   "Uint32Attribute": () => (/* binding */ Uint32Attribute),
-/* harmony export */   "Uint32BufferAttribute": () => (/* binding */ Uint32BufferAttribute),
-/* harmony export */   "Uint8Attribute": () => (/* binding */ Uint8Attribute),
-/* harmony export */   "Uint8BufferAttribute": () => (/* binding */ Uint8BufferAttribute),
-/* harmony export */   "Uint8ClampedAttribute": () => (/* binding */ Uint8ClampedAttribute),
-/* harmony export */   "Uint8ClampedBufferAttribute": () => (/* binding */ Uint8ClampedBufferAttribute),
-/* harmony export */   "Uniform": () => (/* binding */ Uniform),
-/* harmony export */   "UniformsLib": () => (/* binding */ UniformsLib),
-/* harmony export */   "UniformsUtils": () => (/* binding */ UniformsUtils),
-/* harmony export */   "UnsignedByteType": () => (/* binding */ UnsignedByteType),
-/* harmony export */   "UnsignedInt248Type": () => (/* binding */ UnsignedInt248Type),
-/* harmony export */   "UnsignedIntType": () => (/* binding */ UnsignedIntType),
-/* harmony export */   "UnsignedShort4444Type": () => (/* binding */ UnsignedShort4444Type),
-/* harmony export */   "UnsignedShort5551Type": () => (/* binding */ UnsignedShort5551Type),
-/* harmony export */   "UnsignedShortType": () => (/* binding */ UnsignedShortType),
-/* harmony export */   "VSMShadowMap": () => (/* binding */ VSMShadowMap),
-/* harmony export */   "Vector2": () => (/* binding */ Vector2),
-/* harmony export */   "Vector3": () => (/* binding */ Vector3),
-/* harmony export */   "Vector4": () => (/* binding */ Vector4),
-/* harmony export */   "VectorKeyframeTrack": () => (/* binding */ VectorKeyframeTrack),
-/* harmony export */   "Vertex": () => (/* binding */ Vertex),
-/* harmony export */   "VertexColors": () => (/* binding */ VertexColors),
-/* harmony export */   "VideoTexture": () => (/* binding */ VideoTexture),
-/* harmony export */   "WebGL1Renderer": () => (/* binding */ WebGL1Renderer),
-/* harmony export */   "WebGLCubeRenderTarget": () => (/* binding */ WebGLCubeRenderTarget),
-/* harmony export */   "WebGLMultipleRenderTargets": () => (/* binding */ WebGLMultipleRenderTargets),
-/* harmony export */   "WebGLMultisampleRenderTarget": () => (/* binding */ WebGLMultisampleRenderTarget),
-/* harmony export */   "WebGLRenderTarget": () => (/* binding */ WebGLRenderTarget),
-/* harmony export */   "WebGLRenderTargetCube": () => (/* binding */ WebGLRenderTargetCube),
-/* harmony export */   "WebGLRenderer": () => (/* binding */ WebGLRenderer),
-/* harmony export */   "WebGLUtils": () => (/* binding */ WebGLUtils),
-/* harmony export */   "WireframeGeometry": () => (/* binding */ WireframeGeometry),
-/* harmony export */   "WireframeHelper": () => (/* binding */ WireframeHelper),
-/* harmony export */   "WrapAroundEnding": () => (/* binding */ WrapAroundEnding),
-/* harmony export */   "XHRLoader": () => (/* binding */ XHRLoader),
-/* harmony export */   "ZeroCurvatureEnding": () => (/* binding */ ZeroCurvatureEnding),
-/* harmony export */   "ZeroFactor": () => (/* binding */ ZeroFactor),
-/* harmony export */   "ZeroSlopeEnding": () => (/* binding */ ZeroSlopeEnding),
-/* harmony export */   "ZeroStencilOp": () => (/* binding */ ZeroStencilOp),
-/* harmony export */   "_SRGBAFormat": () => (/* binding */ _SRGBAFormat),
-/* harmony export */   "sRGBEncoding": () => (/* binding */ sRGBEncoding)
+/* harmony export */   ACESFilmicToneMapping: () => (/* binding */ ACESFilmicToneMapping),
+/* harmony export */   AddEquation: () => (/* binding */ AddEquation),
+/* harmony export */   AddOperation: () => (/* binding */ AddOperation),
+/* harmony export */   AdditiveAnimationBlendMode: () => (/* binding */ AdditiveAnimationBlendMode),
+/* harmony export */   AdditiveBlending: () => (/* binding */ AdditiveBlending),
+/* harmony export */   AlphaFormat: () => (/* binding */ AlphaFormat),
+/* harmony export */   AlwaysDepth: () => (/* binding */ AlwaysDepth),
+/* harmony export */   AlwaysStencilFunc: () => (/* binding */ AlwaysStencilFunc),
+/* harmony export */   AmbientLight: () => (/* binding */ AmbientLight),
+/* harmony export */   AmbientLightProbe: () => (/* binding */ AmbientLightProbe),
+/* harmony export */   AnimationClip: () => (/* binding */ AnimationClip),
+/* harmony export */   AnimationLoader: () => (/* binding */ AnimationLoader),
+/* harmony export */   AnimationMixer: () => (/* binding */ AnimationMixer),
+/* harmony export */   AnimationObjectGroup: () => (/* binding */ AnimationObjectGroup),
+/* harmony export */   AnimationUtils: () => (/* binding */ AnimationUtils),
+/* harmony export */   ArcCurve: () => (/* binding */ ArcCurve),
+/* harmony export */   ArrayCamera: () => (/* binding */ ArrayCamera),
+/* harmony export */   ArrowHelper: () => (/* binding */ ArrowHelper),
+/* harmony export */   Audio: () => (/* binding */ Audio),
+/* harmony export */   AudioAnalyser: () => (/* binding */ AudioAnalyser),
+/* harmony export */   AudioContext: () => (/* binding */ AudioContext),
+/* harmony export */   AudioListener: () => (/* binding */ AudioListener),
+/* harmony export */   AudioLoader: () => (/* binding */ AudioLoader),
+/* harmony export */   AxesHelper: () => (/* binding */ AxesHelper),
+/* harmony export */   AxisHelper: () => (/* binding */ AxisHelper),
+/* harmony export */   BackSide: () => (/* binding */ BackSide),
+/* harmony export */   BasicDepthPacking: () => (/* binding */ BasicDepthPacking),
+/* harmony export */   BasicShadowMap: () => (/* binding */ BasicShadowMap),
+/* harmony export */   BinaryTextureLoader: () => (/* binding */ BinaryTextureLoader),
+/* harmony export */   Bone: () => (/* binding */ Bone),
+/* harmony export */   BooleanKeyframeTrack: () => (/* binding */ BooleanKeyframeTrack),
+/* harmony export */   BoundingBoxHelper: () => (/* binding */ BoundingBoxHelper),
+/* harmony export */   Box2: () => (/* binding */ Box2),
+/* harmony export */   Box3: () => (/* binding */ Box3),
+/* harmony export */   Box3Helper: () => (/* binding */ Box3Helper),
+/* harmony export */   BoxBufferGeometry: () => (/* binding */ BoxGeometry),
+/* harmony export */   BoxGeometry: () => (/* binding */ BoxGeometry),
+/* harmony export */   BoxHelper: () => (/* binding */ BoxHelper),
+/* harmony export */   BufferAttribute: () => (/* binding */ BufferAttribute),
+/* harmony export */   BufferGeometry: () => (/* binding */ BufferGeometry),
+/* harmony export */   BufferGeometryLoader: () => (/* binding */ BufferGeometryLoader),
+/* harmony export */   ByteType: () => (/* binding */ ByteType),
+/* harmony export */   Cache: () => (/* binding */ Cache),
+/* harmony export */   Camera: () => (/* binding */ Camera),
+/* harmony export */   CameraHelper: () => (/* binding */ CameraHelper),
+/* harmony export */   CanvasRenderer: () => (/* binding */ CanvasRenderer),
+/* harmony export */   CanvasTexture: () => (/* binding */ CanvasTexture),
+/* harmony export */   CatmullRomCurve3: () => (/* binding */ CatmullRomCurve3),
+/* harmony export */   CineonToneMapping: () => (/* binding */ CineonToneMapping),
+/* harmony export */   CircleBufferGeometry: () => (/* binding */ CircleGeometry),
+/* harmony export */   CircleGeometry: () => (/* binding */ CircleGeometry),
+/* harmony export */   ClampToEdgeWrapping: () => (/* binding */ ClampToEdgeWrapping),
+/* harmony export */   Clock: () => (/* binding */ Clock),
+/* harmony export */   Color: () => (/* binding */ Color),
+/* harmony export */   ColorKeyframeTrack: () => (/* binding */ ColorKeyframeTrack),
+/* harmony export */   CompressedTexture: () => (/* binding */ CompressedTexture),
+/* harmony export */   CompressedTextureLoader: () => (/* binding */ CompressedTextureLoader),
+/* harmony export */   ConeBufferGeometry: () => (/* binding */ ConeGeometry),
+/* harmony export */   ConeGeometry: () => (/* binding */ ConeGeometry),
+/* harmony export */   CubeCamera: () => (/* binding */ CubeCamera),
+/* harmony export */   CubeReflectionMapping: () => (/* binding */ CubeReflectionMapping),
+/* harmony export */   CubeRefractionMapping: () => (/* binding */ CubeRefractionMapping),
+/* harmony export */   CubeTexture: () => (/* binding */ CubeTexture),
+/* harmony export */   CubeTextureLoader: () => (/* binding */ CubeTextureLoader),
+/* harmony export */   CubeUVReflectionMapping: () => (/* binding */ CubeUVReflectionMapping),
+/* harmony export */   CubeUVRefractionMapping: () => (/* binding */ CubeUVRefractionMapping),
+/* harmony export */   CubicBezierCurve: () => (/* binding */ CubicBezierCurve),
+/* harmony export */   CubicBezierCurve3: () => (/* binding */ CubicBezierCurve3),
+/* harmony export */   CubicInterpolant: () => (/* binding */ CubicInterpolant),
+/* harmony export */   CullFaceBack: () => (/* binding */ CullFaceBack),
+/* harmony export */   CullFaceFront: () => (/* binding */ CullFaceFront),
+/* harmony export */   CullFaceFrontBack: () => (/* binding */ CullFaceFrontBack),
+/* harmony export */   CullFaceNone: () => (/* binding */ CullFaceNone),
+/* harmony export */   Curve: () => (/* binding */ Curve),
+/* harmony export */   CurvePath: () => (/* binding */ CurvePath),
+/* harmony export */   CustomBlending: () => (/* binding */ CustomBlending),
+/* harmony export */   CustomToneMapping: () => (/* binding */ CustomToneMapping),
+/* harmony export */   CylinderBufferGeometry: () => (/* binding */ CylinderGeometry),
+/* harmony export */   CylinderGeometry: () => (/* binding */ CylinderGeometry),
+/* harmony export */   Cylindrical: () => (/* binding */ Cylindrical),
+/* harmony export */   DataTexture: () => (/* binding */ DataTexture),
+/* harmony export */   DataTexture2DArray: () => (/* binding */ DataTexture2DArray),
+/* harmony export */   DataTexture3D: () => (/* binding */ DataTexture3D),
+/* harmony export */   DataTextureLoader: () => (/* binding */ DataTextureLoader),
+/* harmony export */   DataUtils: () => (/* binding */ DataUtils),
+/* harmony export */   DecrementStencilOp: () => (/* binding */ DecrementStencilOp),
+/* harmony export */   DecrementWrapStencilOp: () => (/* binding */ DecrementWrapStencilOp),
+/* harmony export */   DefaultLoadingManager: () => (/* binding */ DefaultLoadingManager),
+/* harmony export */   DepthFormat: () => (/* binding */ DepthFormat),
+/* harmony export */   DepthStencilFormat: () => (/* binding */ DepthStencilFormat),
+/* harmony export */   DepthTexture: () => (/* binding */ DepthTexture),
+/* harmony export */   DirectionalLight: () => (/* binding */ DirectionalLight),
+/* harmony export */   DirectionalLightHelper: () => (/* binding */ DirectionalLightHelper),
+/* harmony export */   DiscreteInterpolant: () => (/* binding */ DiscreteInterpolant),
+/* harmony export */   DodecahedronBufferGeometry: () => (/* binding */ DodecahedronGeometry),
+/* harmony export */   DodecahedronGeometry: () => (/* binding */ DodecahedronGeometry),
+/* harmony export */   DoubleSide: () => (/* binding */ DoubleSide),
+/* harmony export */   DstAlphaFactor: () => (/* binding */ DstAlphaFactor),
+/* harmony export */   DstColorFactor: () => (/* binding */ DstColorFactor),
+/* harmony export */   DynamicBufferAttribute: () => (/* binding */ DynamicBufferAttribute),
+/* harmony export */   DynamicCopyUsage: () => (/* binding */ DynamicCopyUsage),
+/* harmony export */   DynamicDrawUsage: () => (/* binding */ DynamicDrawUsage),
+/* harmony export */   DynamicReadUsage: () => (/* binding */ DynamicReadUsage),
+/* harmony export */   EdgesGeometry: () => (/* binding */ EdgesGeometry),
+/* harmony export */   EdgesHelper: () => (/* binding */ EdgesHelper),
+/* harmony export */   EllipseCurve: () => (/* binding */ EllipseCurve),
+/* harmony export */   EqualDepth: () => (/* binding */ EqualDepth),
+/* harmony export */   EqualStencilFunc: () => (/* binding */ EqualStencilFunc),
+/* harmony export */   EquirectangularReflectionMapping: () => (/* binding */ EquirectangularReflectionMapping),
+/* harmony export */   EquirectangularRefractionMapping: () => (/* binding */ EquirectangularRefractionMapping),
+/* harmony export */   Euler: () => (/* binding */ Euler),
+/* harmony export */   EventDispatcher: () => (/* binding */ EventDispatcher),
+/* harmony export */   ExtrudeBufferGeometry: () => (/* binding */ ExtrudeGeometry),
+/* harmony export */   ExtrudeGeometry: () => (/* binding */ ExtrudeGeometry),
+/* harmony export */   FaceColors: () => (/* binding */ FaceColors),
+/* harmony export */   FileLoader: () => (/* binding */ FileLoader),
+/* harmony export */   FlatShading: () => (/* binding */ FlatShading),
+/* harmony export */   Float16BufferAttribute: () => (/* binding */ Float16BufferAttribute),
+/* harmony export */   Float32Attribute: () => (/* binding */ Float32Attribute),
+/* harmony export */   Float32BufferAttribute: () => (/* binding */ Float32BufferAttribute),
+/* harmony export */   Float64Attribute: () => (/* binding */ Float64Attribute),
+/* harmony export */   Float64BufferAttribute: () => (/* binding */ Float64BufferAttribute),
+/* harmony export */   FloatType: () => (/* binding */ FloatType),
+/* harmony export */   Fog: () => (/* binding */ Fog),
+/* harmony export */   FogExp2: () => (/* binding */ FogExp2),
+/* harmony export */   Font: () => (/* binding */ Font),
+/* harmony export */   FontLoader: () => (/* binding */ FontLoader),
+/* harmony export */   FramebufferTexture: () => (/* binding */ FramebufferTexture),
+/* harmony export */   FrontSide: () => (/* binding */ FrontSide),
+/* harmony export */   Frustum: () => (/* binding */ Frustum),
+/* harmony export */   GLBufferAttribute: () => (/* binding */ GLBufferAttribute),
+/* harmony export */   GLSL1: () => (/* binding */ GLSL1),
+/* harmony export */   GLSL3: () => (/* binding */ GLSL3),
+/* harmony export */   GreaterDepth: () => (/* binding */ GreaterDepth),
+/* harmony export */   GreaterEqualDepth: () => (/* binding */ GreaterEqualDepth),
+/* harmony export */   GreaterEqualStencilFunc: () => (/* binding */ GreaterEqualStencilFunc),
+/* harmony export */   GreaterStencilFunc: () => (/* binding */ GreaterStencilFunc),
+/* harmony export */   GridHelper: () => (/* binding */ GridHelper),
+/* harmony export */   Group: () => (/* binding */ Group),
+/* harmony export */   HalfFloatType: () => (/* binding */ HalfFloatType),
+/* harmony export */   HemisphereLight: () => (/* binding */ HemisphereLight),
+/* harmony export */   HemisphereLightHelper: () => (/* binding */ HemisphereLightHelper),
+/* harmony export */   HemisphereLightProbe: () => (/* binding */ HemisphereLightProbe),
+/* harmony export */   IcosahedronBufferGeometry: () => (/* binding */ IcosahedronGeometry),
+/* harmony export */   IcosahedronGeometry: () => (/* binding */ IcosahedronGeometry),
+/* harmony export */   ImageBitmapLoader: () => (/* binding */ ImageBitmapLoader),
+/* harmony export */   ImageLoader: () => (/* binding */ ImageLoader),
+/* harmony export */   ImageUtils: () => (/* binding */ ImageUtils),
+/* harmony export */   ImmediateRenderObject: () => (/* binding */ ImmediateRenderObject),
+/* harmony export */   IncrementStencilOp: () => (/* binding */ IncrementStencilOp),
+/* harmony export */   IncrementWrapStencilOp: () => (/* binding */ IncrementWrapStencilOp),
+/* harmony export */   InstancedBufferAttribute: () => (/* binding */ InstancedBufferAttribute),
+/* harmony export */   InstancedBufferGeometry: () => (/* binding */ InstancedBufferGeometry),
+/* harmony export */   InstancedInterleavedBuffer: () => (/* binding */ InstancedInterleavedBuffer),
+/* harmony export */   InstancedMesh: () => (/* binding */ InstancedMesh),
+/* harmony export */   Int16Attribute: () => (/* binding */ Int16Attribute),
+/* harmony export */   Int16BufferAttribute: () => (/* binding */ Int16BufferAttribute),
+/* harmony export */   Int32Attribute: () => (/* binding */ Int32Attribute),
+/* harmony export */   Int32BufferAttribute: () => (/* binding */ Int32BufferAttribute),
+/* harmony export */   Int8Attribute: () => (/* binding */ Int8Attribute),
+/* harmony export */   Int8BufferAttribute: () => (/* binding */ Int8BufferAttribute),
+/* harmony export */   IntType: () => (/* binding */ IntType),
+/* harmony export */   InterleavedBuffer: () => (/* binding */ InterleavedBuffer),
+/* harmony export */   InterleavedBufferAttribute: () => (/* binding */ InterleavedBufferAttribute),
+/* harmony export */   Interpolant: () => (/* binding */ Interpolant),
+/* harmony export */   InterpolateDiscrete: () => (/* binding */ InterpolateDiscrete),
+/* harmony export */   InterpolateLinear: () => (/* binding */ InterpolateLinear),
+/* harmony export */   InterpolateSmooth: () => (/* binding */ InterpolateSmooth),
+/* harmony export */   InvertStencilOp: () => (/* binding */ InvertStencilOp),
+/* harmony export */   JSONLoader: () => (/* binding */ JSONLoader),
+/* harmony export */   KeepStencilOp: () => (/* binding */ KeepStencilOp),
+/* harmony export */   KeyframeTrack: () => (/* binding */ KeyframeTrack),
+/* harmony export */   LOD: () => (/* binding */ LOD),
+/* harmony export */   LatheBufferGeometry: () => (/* binding */ LatheGeometry),
+/* harmony export */   LatheGeometry: () => (/* binding */ LatheGeometry),
+/* harmony export */   Layers: () => (/* binding */ Layers),
+/* harmony export */   LensFlare: () => (/* binding */ LensFlare),
+/* harmony export */   LessDepth: () => (/* binding */ LessDepth),
+/* harmony export */   LessEqualDepth: () => (/* binding */ LessEqualDepth),
+/* harmony export */   LessEqualStencilFunc: () => (/* binding */ LessEqualStencilFunc),
+/* harmony export */   LessStencilFunc: () => (/* binding */ LessStencilFunc),
+/* harmony export */   Light: () => (/* binding */ Light),
+/* harmony export */   LightProbe: () => (/* binding */ LightProbe),
+/* harmony export */   Line: () => (/* binding */ Line),
+/* harmony export */   Line3: () => (/* binding */ Line3),
+/* harmony export */   LineBasicMaterial: () => (/* binding */ LineBasicMaterial),
+/* harmony export */   LineCurve: () => (/* binding */ LineCurve),
+/* harmony export */   LineCurve3: () => (/* binding */ LineCurve3),
+/* harmony export */   LineDashedMaterial: () => (/* binding */ LineDashedMaterial),
+/* harmony export */   LineLoop: () => (/* binding */ LineLoop),
+/* harmony export */   LinePieces: () => (/* binding */ LinePieces),
+/* harmony export */   LineSegments: () => (/* binding */ LineSegments),
+/* harmony export */   LineStrip: () => (/* binding */ LineStrip),
+/* harmony export */   LinearEncoding: () => (/* binding */ LinearEncoding),
+/* harmony export */   LinearFilter: () => (/* binding */ LinearFilter),
+/* harmony export */   LinearInterpolant: () => (/* binding */ LinearInterpolant),
+/* harmony export */   LinearMipMapLinearFilter: () => (/* binding */ LinearMipMapLinearFilter),
+/* harmony export */   LinearMipMapNearestFilter: () => (/* binding */ LinearMipMapNearestFilter),
+/* harmony export */   LinearMipmapLinearFilter: () => (/* binding */ LinearMipmapLinearFilter),
+/* harmony export */   LinearMipmapNearestFilter: () => (/* binding */ LinearMipmapNearestFilter),
+/* harmony export */   LinearToneMapping: () => (/* binding */ LinearToneMapping),
+/* harmony export */   Loader: () => (/* binding */ Loader),
+/* harmony export */   LoaderUtils: () => (/* binding */ LoaderUtils),
+/* harmony export */   LoadingManager: () => (/* binding */ LoadingManager),
+/* harmony export */   LoopOnce: () => (/* binding */ LoopOnce),
+/* harmony export */   LoopPingPong: () => (/* binding */ LoopPingPong),
+/* harmony export */   LoopRepeat: () => (/* binding */ LoopRepeat),
+/* harmony export */   LuminanceAlphaFormat: () => (/* binding */ LuminanceAlphaFormat),
+/* harmony export */   LuminanceFormat: () => (/* binding */ LuminanceFormat),
+/* harmony export */   MOUSE: () => (/* binding */ MOUSE),
+/* harmony export */   Material: () => (/* binding */ Material),
+/* harmony export */   MaterialLoader: () => (/* binding */ MaterialLoader),
+/* harmony export */   Math: () => (/* binding */ MathUtils),
+/* harmony export */   MathUtils: () => (/* binding */ MathUtils),
+/* harmony export */   Matrix3: () => (/* binding */ Matrix3),
+/* harmony export */   Matrix4: () => (/* binding */ Matrix4),
+/* harmony export */   MaxEquation: () => (/* binding */ MaxEquation),
+/* harmony export */   Mesh: () => (/* binding */ Mesh),
+/* harmony export */   MeshBasicMaterial: () => (/* binding */ MeshBasicMaterial),
+/* harmony export */   MeshDepthMaterial: () => (/* binding */ MeshDepthMaterial),
+/* harmony export */   MeshDistanceMaterial: () => (/* binding */ MeshDistanceMaterial),
+/* harmony export */   MeshFaceMaterial: () => (/* binding */ MeshFaceMaterial),
+/* harmony export */   MeshLambertMaterial: () => (/* binding */ MeshLambertMaterial),
+/* harmony export */   MeshMatcapMaterial: () => (/* binding */ MeshMatcapMaterial),
+/* harmony export */   MeshNormalMaterial: () => (/* binding */ MeshNormalMaterial),
+/* harmony export */   MeshPhongMaterial: () => (/* binding */ MeshPhongMaterial),
+/* harmony export */   MeshPhysicalMaterial: () => (/* binding */ MeshPhysicalMaterial),
+/* harmony export */   MeshStandardMaterial: () => (/* binding */ MeshStandardMaterial),
+/* harmony export */   MeshToonMaterial: () => (/* binding */ MeshToonMaterial),
+/* harmony export */   MinEquation: () => (/* binding */ MinEquation),
+/* harmony export */   MirroredRepeatWrapping: () => (/* binding */ MirroredRepeatWrapping),
+/* harmony export */   MixOperation: () => (/* binding */ MixOperation),
+/* harmony export */   MultiMaterial: () => (/* binding */ MultiMaterial),
+/* harmony export */   MultiplyBlending: () => (/* binding */ MultiplyBlending),
+/* harmony export */   MultiplyOperation: () => (/* binding */ MultiplyOperation),
+/* harmony export */   NearestFilter: () => (/* binding */ NearestFilter),
+/* harmony export */   NearestMipMapLinearFilter: () => (/* binding */ NearestMipMapLinearFilter),
+/* harmony export */   NearestMipMapNearestFilter: () => (/* binding */ NearestMipMapNearestFilter),
+/* harmony export */   NearestMipmapLinearFilter: () => (/* binding */ NearestMipmapLinearFilter),
+/* harmony export */   NearestMipmapNearestFilter: () => (/* binding */ NearestMipmapNearestFilter),
+/* harmony export */   NeverDepth: () => (/* binding */ NeverDepth),
+/* harmony export */   NeverStencilFunc: () => (/* binding */ NeverStencilFunc),
+/* harmony export */   NoBlending: () => (/* binding */ NoBlending),
+/* harmony export */   NoColors: () => (/* binding */ NoColors),
+/* harmony export */   NoToneMapping: () => (/* binding */ NoToneMapping),
+/* harmony export */   NormalAnimationBlendMode: () => (/* binding */ NormalAnimationBlendMode),
+/* harmony export */   NormalBlending: () => (/* binding */ NormalBlending),
+/* harmony export */   NotEqualDepth: () => (/* binding */ NotEqualDepth),
+/* harmony export */   NotEqualStencilFunc: () => (/* binding */ NotEqualStencilFunc),
+/* harmony export */   NumberKeyframeTrack: () => (/* binding */ NumberKeyframeTrack),
+/* harmony export */   Object3D: () => (/* binding */ Object3D),
+/* harmony export */   ObjectLoader: () => (/* binding */ ObjectLoader),
+/* harmony export */   ObjectSpaceNormalMap: () => (/* binding */ ObjectSpaceNormalMap),
+/* harmony export */   OctahedronBufferGeometry: () => (/* binding */ OctahedronGeometry),
+/* harmony export */   OctahedronGeometry: () => (/* binding */ OctahedronGeometry),
+/* harmony export */   OneFactor: () => (/* binding */ OneFactor),
+/* harmony export */   OneMinusDstAlphaFactor: () => (/* binding */ OneMinusDstAlphaFactor),
+/* harmony export */   OneMinusDstColorFactor: () => (/* binding */ OneMinusDstColorFactor),
+/* harmony export */   OneMinusSrcAlphaFactor: () => (/* binding */ OneMinusSrcAlphaFactor),
+/* harmony export */   OneMinusSrcColorFactor: () => (/* binding */ OneMinusSrcColorFactor),
+/* harmony export */   OrthographicCamera: () => (/* binding */ OrthographicCamera),
+/* harmony export */   PCFShadowMap: () => (/* binding */ PCFShadowMap),
+/* harmony export */   PCFSoftShadowMap: () => (/* binding */ PCFSoftShadowMap),
+/* harmony export */   PMREMGenerator: () => (/* binding */ PMREMGenerator),
+/* harmony export */   ParametricGeometry: () => (/* binding */ ParametricGeometry),
+/* harmony export */   Particle: () => (/* binding */ Particle),
+/* harmony export */   ParticleBasicMaterial: () => (/* binding */ ParticleBasicMaterial),
+/* harmony export */   ParticleSystem: () => (/* binding */ ParticleSystem),
+/* harmony export */   ParticleSystemMaterial: () => (/* binding */ ParticleSystemMaterial),
+/* harmony export */   Path: () => (/* binding */ Path),
+/* harmony export */   PerspectiveCamera: () => (/* binding */ PerspectiveCamera),
+/* harmony export */   Plane: () => (/* binding */ Plane),
+/* harmony export */   PlaneBufferGeometry: () => (/* binding */ PlaneGeometry),
+/* harmony export */   PlaneGeometry: () => (/* binding */ PlaneGeometry),
+/* harmony export */   PlaneHelper: () => (/* binding */ PlaneHelper),
+/* harmony export */   PointCloud: () => (/* binding */ PointCloud),
+/* harmony export */   PointCloudMaterial: () => (/* binding */ PointCloudMaterial),
+/* harmony export */   PointLight: () => (/* binding */ PointLight),
+/* harmony export */   PointLightHelper: () => (/* binding */ PointLightHelper),
+/* harmony export */   Points: () => (/* binding */ Points),
+/* harmony export */   PointsMaterial: () => (/* binding */ PointsMaterial),
+/* harmony export */   PolarGridHelper: () => (/* binding */ PolarGridHelper),
+/* harmony export */   PolyhedronBufferGeometry: () => (/* binding */ PolyhedronGeometry),
+/* harmony export */   PolyhedronGeometry: () => (/* binding */ PolyhedronGeometry),
+/* harmony export */   PositionalAudio: () => (/* binding */ PositionalAudio),
+/* harmony export */   PropertyBinding: () => (/* binding */ PropertyBinding),
+/* harmony export */   PropertyMixer: () => (/* binding */ PropertyMixer),
+/* harmony export */   QuadraticBezierCurve: () => (/* binding */ QuadraticBezierCurve),
+/* harmony export */   QuadraticBezierCurve3: () => (/* binding */ QuadraticBezierCurve3),
+/* harmony export */   Quaternion: () => (/* binding */ Quaternion),
+/* harmony export */   QuaternionKeyframeTrack: () => (/* binding */ QuaternionKeyframeTrack),
+/* harmony export */   QuaternionLinearInterpolant: () => (/* binding */ QuaternionLinearInterpolant),
+/* harmony export */   REVISION: () => (/* binding */ REVISION),
+/* harmony export */   RGBADepthPacking: () => (/* binding */ RGBADepthPacking),
+/* harmony export */   RGBAFormat: () => (/* binding */ RGBAFormat),
+/* harmony export */   RGBAIntegerFormat: () => (/* binding */ RGBAIntegerFormat),
+/* harmony export */   RGBA_ASTC_10x10_Format: () => (/* binding */ RGBA_ASTC_10x10_Format),
+/* harmony export */   RGBA_ASTC_10x5_Format: () => (/* binding */ RGBA_ASTC_10x5_Format),
+/* harmony export */   RGBA_ASTC_10x6_Format: () => (/* binding */ RGBA_ASTC_10x6_Format),
+/* harmony export */   RGBA_ASTC_10x8_Format: () => (/* binding */ RGBA_ASTC_10x8_Format),
+/* harmony export */   RGBA_ASTC_12x10_Format: () => (/* binding */ RGBA_ASTC_12x10_Format),
+/* harmony export */   RGBA_ASTC_12x12_Format: () => (/* binding */ RGBA_ASTC_12x12_Format),
+/* harmony export */   RGBA_ASTC_4x4_Format: () => (/* binding */ RGBA_ASTC_4x4_Format),
+/* harmony export */   RGBA_ASTC_5x4_Format: () => (/* binding */ RGBA_ASTC_5x4_Format),
+/* harmony export */   RGBA_ASTC_5x5_Format: () => (/* binding */ RGBA_ASTC_5x5_Format),
+/* harmony export */   RGBA_ASTC_6x5_Format: () => (/* binding */ RGBA_ASTC_6x5_Format),
+/* harmony export */   RGBA_ASTC_6x6_Format: () => (/* binding */ RGBA_ASTC_6x6_Format),
+/* harmony export */   RGBA_ASTC_8x5_Format: () => (/* binding */ RGBA_ASTC_8x5_Format),
+/* harmony export */   RGBA_ASTC_8x6_Format: () => (/* binding */ RGBA_ASTC_8x6_Format),
+/* harmony export */   RGBA_ASTC_8x8_Format: () => (/* binding */ RGBA_ASTC_8x8_Format),
+/* harmony export */   RGBA_BPTC_Format: () => (/* binding */ RGBA_BPTC_Format),
+/* harmony export */   RGBA_ETC2_EAC_Format: () => (/* binding */ RGBA_ETC2_EAC_Format),
+/* harmony export */   RGBA_PVRTC_2BPPV1_Format: () => (/* binding */ RGBA_PVRTC_2BPPV1_Format),
+/* harmony export */   RGBA_PVRTC_4BPPV1_Format: () => (/* binding */ RGBA_PVRTC_4BPPV1_Format),
+/* harmony export */   RGBA_S3TC_DXT1_Format: () => (/* binding */ RGBA_S3TC_DXT1_Format),
+/* harmony export */   RGBA_S3TC_DXT3_Format: () => (/* binding */ RGBA_S3TC_DXT3_Format),
+/* harmony export */   RGBA_S3TC_DXT5_Format: () => (/* binding */ RGBA_S3TC_DXT5_Format),
+/* harmony export */   RGBFormat: () => (/* binding */ RGBFormat),
+/* harmony export */   RGB_ETC1_Format: () => (/* binding */ RGB_ETC1_Format),
+/* harmony export */   RGB_ETC2_Format: () => (/* binding */ RGB_ETC2_Format),
+/* harmony export */   RGB_PVRTC_2BPPV1_Format: () => (/* binding */ RGB_PVRTC_2BPPV1_Format),
+/* harmony export */   RGB_PVRTC_4BPPV1_Format: () => (/* binding */ RGB_PVRTC_4BPPV1_Format),
+/* harmony export */   RGB_S3TC_DXT1_Format: () => (/* binding */ RGB_S3TC_DXT1_Format),
+/* harmony export */   RGFormat: () => (/* binding */ RGFormat),
+/* harmony export */   RGIntegerFormat: () => (/* binding */ RGIntegerFormat),
+/* harmony export */   RawShaderMaterial: () => (/* binding */ RawShaderMaterial),
+/* harmony export */   Ray: () => (/* binding */ Ray),
+/* harmony export */   Raycaster: () => (/* binding */ Raycaster),
+/* harmony export */   RectAreaLight: () => (/* binding */ RectAreaLight),
+/* harmony export */   RedFormat: () => (/* binding */ RedFormat),
+/* harmony export */   RedIntegerFormat: () => (/* binding */ RedIntegerFormat),
+/* harmony export */   ReinhardToneMapping: () => (/* binding */ ReinhardToneMapping),
+/* harmony export */   RepeatWrapping: () => (/* binding */ RepeatWrapping),
+/* harmony export */   ReplaceStencilOp: () => (/* binding */ ReplaceStencilOp),
+/* harmony export */   ReverseSubtractEquation: () => (/* binding */ ReverseSubtractEquation),
+/* harmony export */   RingBufferGeometry: () => (/* binding */ RingGeometry),
+/* harmony export */   RingGeometry: () => (/* binding */ RingGeometry),
+/* harmony export */   Scene: () => (/* binding */ Scene),
+/* harmony export */   SceneUtils: () => (/* binding */ SceneUtils),
+/* harmony export */   ShaderChunk: () => (/* binding */ ShaderChunk),
+/* harmony export */   ShaderLib: () => (/* binding */ ShaderLib),
+/* harmony export */   ShaderMaterial: () => (/* binding */ ShaderMaterial),
+/* harmony export */   ShadowMaterial: () => (/* binding */ ShadowMaterial),
+/* harmony export */   Shape: () => (/* binding */ Shape),
+/* harmony export */   ShapeBufferGeometry: () => (/* binding */ ShapeGeometry),
+/* harmony export */   ShapeGeometry: () => (/* binding */ ShapeGeometry),
+/* harmony export */   ShapePath: () => (/* binding */ ShapePath),
+/* harmony export */   ShapeUtils: () => (/* binding */ ShapeUtils),
+/* harmony export */   ShortType: () => (/* binding */ ShortType),
+/* harmony export */   Skeleton: () => (/* binding */ Skeleton),
+/* harmony export */   SkeletonHelper: () => (/* binding */ SkeletonHelper),
+/* harmony export */   SkinnedMesh: () => (/* binding */ SkinnedMesh),
+/* harmony export */   SmoothShading: () => (/* binding */ SmoothShading),
+/* harmony export */   Sphere: () => (/* binding */ Sphere),
+/* harmony export */   SphereBufferGeometry: () => (/* binding */ SphereGeometry),
+/* harmony export */   SphereGeometry: () => (/* binding */ SphereGeometry),
+/* harmony export */   Spherical: () => (/* binding */ Spherical),
+/* harmony export */   SphericalHarmonics3: () => (/* binding */ SphericalHarmonics3),
+/* harmony export */   SplineCurve: () => (/* binding */ SplineCurve),
+/* harmony export */   SpotLight: () => (/* binding */ SpotLight),
+/* harmony export */   SpotLightHelper: () => (/* binding */ SpotLightHelper),
+/* harmony export */   Sprite: () => (/* binding */ Sprite),
+/* harmony export */   SpriteMaterial: () => (/* binding */ SpriteMaterial),
+/* harmony export */   SrcAlphaFactor: () => (/* binding */ SrcAlphaFactor),
+/* harmony export */   SrcAlphaSaturateFactor: () => (/* binding */ SrcAlphaSaturateFactor),
+/* harmony export */   SrcColorFactor: () => (/* binding */ SrcColorFactor),
+/* harmony export */   StaticCopyUsage: () => (/* binding */ StaticCopyUsage),
+/* harmony export */   StaticDrawUsage: () => (/* binding */ StaticDrawUsage),
+/* harmony export */   StaticReadUsage: () => (/* binding */ StaticReadUsage),
+/* harmony export */   StereoCamera: () => (/* binding */ StereoCamera),
+/* harmony export */   StreamCopyUsage: () => (/* binding */ StreamCopyUsage),
+/* harmony export */   StreamDrawUsage: () => (/* binding */ StreamDrawUsage),
+/* harmony export */   StreamReadUsage: () => (/* binding */ StreamReadUsage),
+/* harmony export */   StringKeyframeTrack: () => (/* binding */ StringKeyframeTrack),
+/* harmony export */   SubtractEquation: () => (/* binding */ SubtractEquation),
+/* harmony export */   SubtractiveBlending: () => (/* binding */ SubtractiveBlending),
+/* harmony export */   TOUCH: () => (/* binding */ TOUCH),
+/* harmony export */   TangentSpaceNormalMap: () => (/* binding */ TangentSpaceNormalMap),
+/* harmony export */   TetrahedronBufferGeometry: () => (/* binding */ TetrahedronGeometry),
+/* harmony export */   TetrahedronGeometry: () => (/* binding */ TetrahedronGeometry),
+/* harmony export */   TextGeometry: () => (/* binding */ TextGeometry),
+/* harmony export */   Texture: () => (/* binding */ Texture),
+/* harmony export */   TextureLoader: () => (/* binding */ TextureLoader),
+/* harmony export */   TorusBufferGeometry: () => (/* binding */ TorusGeometry),
+/* harmony export */   TorusGeometry: () => (/* binding */ TorusGeometry),
+/* harmony export */   TorusKnotBufferGeometry: () => (/* binding */ TorusKnotGeometry),
+/* harmony export */   TorusKnotGeometry: () => (/* binding */ TorusKnotGeometry),
+/* harmony export */   Triangle: () => (/* binding */ Triangle),
+/* harmony export */   TriangleFanDrawMode: () => (/* binding */ TriangleFanDrawMode),
+/* harmony export */   TriangleStripDrawMode: () => (/* binding */ TriangleStripDrawMode),
+/* harmony export */   TrianglesDrawMode: () => (/* binding */ TrianglesDrawMode),
+/* harmony export */   TubeBufferGeometry: () => (/* binding */ TubeGeometry),
+/* harmony export */   TubeGeometry: () => (/* binding */ TubeGeometry),
+/* harmony export */   UVMapping: () => (/* binding */ UVMapping),
+/* harmony export */   Uint16Attribute: () => (/* binding */ Uint16Attribute),
+/* harmony export */   Uint16BufferAttribute: () => (/* binding */ Uint16BufferAttribute),
+/* harmony export */   Uint32Attribute: () => (/* binding */ Uint32Attribute),
+/* harmony export */   Uint32BufferAttribute: () => (/* binding */ Uint32BufferAttribute),
+/* harmony export */   Uint8Attribute: () => (/* binding */ Uint8Attribute),
+/* harmony export */   Uint8BufferAttribute: () => (/* binding */ Uint8BufferAttribute),
+/* harmony export */   Uint8ClampedAttribute: () => (/* binding */ Uint8ClampedAttribute),
+/* harmony export */   Uint8ClampedBufferAttribute: () => (/* binding */ Uint8ClampedBufferAttribute),
+/* harmony export */   Uniform: () => (/* binding */ Uniform),
+/* harmony export */   UniformsLib: () => (/* binding */ UniformsLib),
+/* harmony export */   UniformsUtils: () => (/* binding */ UniformsUtils),
+/* harmony export */   UnsignedByteType: () => (/* binding */ UnsignedByteType),
+/* harmony export */   UnsignedInt248Type: () => (/* binding */ UnsignedInt248Type),
+/* harmony export */   UnsignedIntType: () => (/* binding */ UnsignedIntType),
+/* harmony export */   UnsignedShort4444Type: () => (/* binding */ UnsignedShort4444Type),
+/* harmony export */   UnsignedShort5551Type: () => (/* binding */ UnsignedShort5551Type),
+/* harmony export */   UnsignedShortType: () => (/* binding */ UnsignedShortType),
+/* harmony export */   VSMShadowMap: () => (/* binding */ VSMShadowMap),
+/* harmony export */   Vector2: () => (/* binding */ Vector2),
+/* harmony export */   Vector3: () => (/* binding */ Vector3),
+/* harmony export */   Vector4: () => (/* binding */ Vector4),
+/* harmony export */   VectorKeyframeTrack: () => (/* binding */ VectorKeyframeTrack),
+/* harmony export */   Vertex: () => (/* binding */ Vertex),
+/* harmony export */   VertexColors: () => (/* binding */ VertexColors),
+/* harmony export */   VideoTexture: () => (/* binding */ VideoTexture),
+/* harmony export */   WebGL1Renderer: () => (/* binding */ WebGL1Renderer),
+/* harmony export */   WebGLCubeRenderTarget: () => (/* binding */ WebGLCubeRenderTarget),
+/* harmony export */   WebGLMultipleRenderTargets: () => (/* binding */ WebGLMultipleRenderTargets),
+/* harmony export */   WebGLMultisampleRenderTarget: () => (/* binding */ WebGLMultisampleRenderTarget),
+/* harmony export */   WebGLRenderTarget: () => (/* binding */ WebGLRenderTarget),
+/* harmony export */   WebGLRenderTargetCube: () => (/* binding */ WebGLRenderTargetCube),
+/* harmony export */   WebGLRenderer: () => (/* binding */ WebGLRenderer),
+/* harmony export */   WebGLUtils: () => (/* binding */ WebGLUtils),
+/* harmony export */   WireframeGeometry: () => (/* binding */ WireframeGeometry),
+/* harmony export */   WireframeHelper: () => (/* binding */ WireframeHelper),
+/* harmony export */   WrapAroundEnding: () => (/* binding */ WrapAroundEnding),
+/* harmony export */   XHRLoader: () => (/* binding */ XHRLoader),
+/* harmony export */   ZeroCurvatureEnding: () => (/* binding */ ZeroCurvatureEnding),
+/* harmony export */   ZeroFactor: () => (/* binding */ ZeroFactor),
+/* harmony export */   ZeroSlopeEnding: () => (/* binding */ ZeroSlopeEnding),
+/* harmony export */   ZeroStencilOp: () => (/* binding */ ZeroStencilOp),
+/* harmony export */   _SRGBAFormat: () => (/* binding */ _SRGBAFormat),
+/* harmony export */   sRGBEncoding: () => (/* binding */ sRGBEncoding)
 /* harmony export */ });
 /**
  * @license
@@ -104981,17 +108191,17 @@ if ( typeof window !== 'undefined' ) {
 
 
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/three/examples/jsm/helpers/VertexNormalsHelper.js":
+/***/ "./node_modules/three/examples/jsm/helpers/VertexNormalsHelper.js"
 /*!************************************************************************!*\
   !*** ./node_modules/three/examples/jsm/helpers/VertexNormalsHelper.js ***!
   \************************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "VertexNormalsHelper": () => (/* binding */ VertexNormalsHelper)
+/* harmony export */   VertexNormalsHelper: () => (/* binding */ VertexNormalsHelper)
 /* harmony export */ });
 /* harmony import */ var three__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 
@@ -105100,7 +108310,7 @@ class VertexNormalsHelper extends three__WEBPACK_IMPORTED_MODULE_0__.LineSegment
 
 
 
-/***/ })
+/***/ }
 
 }]);
 //# sourceMappingURL=ngdg-vendor.js.map

@@ -19,7 +19,9 @@
   window.addEventListener("load", function () {
     // Fetch the GET params
     var GUP = gup();
+    var params = new Params(GUP);
     var isDarkmode = detectDarkMode(GUP);
+    var isLocalstorageDisabled = params.getBoolean("disableLocalStorage", false);
 
     // All config params are optional.
     var pb = new PlotBoilerplate(
@@ -30,8 +32,8 @@
           fitToParent: true,
           scaleX: 1.0,
           scaleY: 1.0,
-          rasterGrid: true,
-          drawOrigin: false,
+          rasterGrid: params.getBoolean("rasterGrid", true),
+          drawOrigin: params.getBoolean("drawOrigin", false),
           rasterAdjustFactor: 2.0,
           redrawOnResize: true,
           defaultCanvasWidth: 1024,
@@ -449,7 +451,7 @@
       }
       fill.polyline(polyline, false, config.bezierFillColor);
 
-      if (config.showSilhouette) {
+      if (config.showSilhouette && dildoSilhouette) {
         draw.polyline(dildoSilhouette.leftPathVertices, true, "orange", 3.0);
         draw.polyline(dildoSilhouette.rightPathVertices, true, "orange", 3.0);
       }
@@ -520,8 +522,8 @@
       if (outline && !keepOldInteractionHelper) {
         // pb.removeAll(false); // Do not keep vertices
         pb.remove(outline, false, true);
-        pb.add(newOutline); //, false);
       }
+      pb.add(newOutline, false);
 
       outline = newOutline;
       updatePathResizer();
@@ -657,50 +659,58 @@
         modal.open();
       }
     } else {
-      setDefaultPathInstance(false);
+      // setDefaultPathInstance(false);
+      // updateSilhouette(false);
+      // acquireOptimalPathView(pb, outline);
     }
 
     // +---------------------------------------------------------------------------------
     // | Load the config from the local storage.
     // | Handle file drop.
     // +-------------------------------
-    var localstorageIO = new ngdg.LocalstorageIO();
     var fileDrop = new FileDrop(pb.eventCatcher);
     fileDrop.onFileJSONDropped(function (jsonObject) {
       try {
         setPathInstance(BezierPath.fromArray(jsonObject));
         rebuild();
       } catch (e) {
-        console.error("Failed to retrieve Bézier path from localstorage", jsonObject);
+        console.error("Failed to retrieve Bézier path from dropped file.", jsonObject);
         console.log(e);
       }
     });
-    localstorageIO.onPathRestored(
-      function (jsonString, bendAngle, twistAngle, baseShapeExcentricity) {
-        // This is called when json string was loaded from storage
-        if (!GUP.rbdata) {
-          loadPathJSON(jsonString);
+    console.log("OUTLINE", outline);
+    if (isLocalstorageDisabled) {
+      console.log("[INFO] Localstorage is disabled.");
+      // setDefaultPathInstance(false);
+    } else {
+      var localstorageIO = new ngdg.LocalstorageIO();
+      localstorageIO.onPathRestored(
+        function (jsonString, bendAngle, twistAngle, baseShapeExcentricity) {
+          // This is called when json string was loaded from storage
+          if (!GUP.rbdata) {
+            loadPathJSON(jsonString);
+          }
+          if (!GUP.bendAngle) {
+            config.bendAngle = bendAngle;
+          }
+          if (!GUP.twistAngle) {
+            config.twistAngle = twistAngle;
+          }
+          if (!GUP.baseShapeExcentricity) {
+            config.baseShapeExcentricity = baseShapeExcentricity;
+          }
+        },
+        function () {
+          //  return outline ? outline.toJSON() : null;
+          return {
+            bezierJSON: outline ? outline.toJSON() : null,
+            bendAngle: config.bendAngle,
+            twistAngle: config.twistAngle,
+            baseShapeExcentricity: config.baseShapeExcentricity
+          };
         }
-        if (!GUP.bendAngle) {
-          config.bendAngle = bendAngle;
-        }
-        if (!GUP.twistAngle) {
-          config.twistAngle = twistAngle;
-        }
-        if (!GUP.baseShapeExcentricity) {
-          config.baseShapeExcentricity = baseShapeExcentricity;
-        }
-      },
-      function () {
-        //  return outline ? outline.toJSON() : null;
-        return {
-          bezierJSON: outline ? outline.toJSON() : null,
-          bendAngle: config.bendAngle,
-          twistAngle: config.twistAngle,
-          baseShapeExcentricity: config.baseShapeExcentricity
-        };
-      }
-    );
+      );
+    }
 
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
@@ -709,8 +719,13 @@
 
     pb.config.preDraw = preDraw;
     pb.config.postDraw = postDraw;
-    updateSilhouette(false);
-    pb.fitToView(scaleBounds(outline.getBounds(), 1.6));
+    if (!outline) {
+      console.log("[INFO] No path retrieved. Using default path.");
+      setDefaultPathInstance(true);
+      updateSilhouette(false);
+      acquireOptimalPathView(pb, outline);
+    }
+    // pb.fitToView(scaleBounds(outline.getBounds(), 1.6));
     rebuild();
 
     window.addEventListener("resize", function () {
@@ -724,8 +739,9 @@
       config.bendAngle = 0.0;
       config.twistAngle = 0.0;
       config.baseShapeExcentricity = 1.0;
-      setDefaultPathInstance(true); 
-      acquireOptimalPathView(pb,outline ) 
+      setDefaultPathInstance(true);
+      updateSilhouette(false);
+      acquireOptimalPathView(pb,outline);
     });
     // prettier-ignore
     ActionButtons.addFitToViewButton( function() { acquireOptimalPathView(pb, outline); } );

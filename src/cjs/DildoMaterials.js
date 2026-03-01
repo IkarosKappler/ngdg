@@ -61,7 +61,7 @@ exports.DildoMaterials = (function () {
             }
             else {
                 return new THREE.MeshLambertMaterial({
-                    color: useTextureImage ? 0x888888 : 0xa1848a8,
+                    color: useTextureImage ? 0x888888 : 0xa1848a8, // == blue
                     wireframe: false,
                     depthTest: true,
                     opacity: 1.0,
