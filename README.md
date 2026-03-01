@@ -53,8 +53,14 @@ The following config values are stored in the `LocalStorage`:
 - twist_angle
 - base_shape_excentricity
 
+### Toggle 2d silhouette view
+
+http://localhost:8080/public/index-dev.html?drawRulers=0&drawResizeHandleLines=0&drawOutline=0&fillOutline=0&drawRaster=0&darkmode=0&fitViewToSilhouette=1
+
 ### Changelog
 
+- 2026-03-01
+  - Adding several new flags for drawing and hiding 2D element from the canvas.
 - 2026-02-25
   - Fixing package json: replacing relative path for threejs-slice-geometry-typscript library by proper npm package.
   - Adding class `SculptMap`.

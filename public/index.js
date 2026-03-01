@@ -88,6 +88,7 @@
         drawResizeHandleLines: params.getBoolean("drawResizeHandleLines", true),
         drawRulers: params.getBoolean("drawRulers", true),
         drawOutline: params.getBoolean("drawOutline", true),
+        fillOutline: params.getBoolean("fillOutline", true),
         showNormals: params.getBoolean("showNormals", false),
         normalsLength: params.getNumber("normalsLength", 10.0),
         normalizePerpendiculars: params.getBoolean("normalizePerpendiculars", true),
@@ -183,6 +184,9 @@
         },
         acquireOptimalPathView: function () {
           acquireOptimalPathView(pb, outline);
+        },
+        fitViewToSilhouette: function () {
+          fitViewToSilhouette();
         },
         setDefaultPathJSON: function () {
           setDefaultPathInstance(true);
@@ -291,8 +295,16 @@
       } finally {
         if (newOutline) {
           setPathInstance(newOutline);
-          acquireOptimalPathView(pb, outline);
-          rebuild();
+          // acquireOptimalPathView(pb, outline);
+          rebuild()
+            .then(function (succeeded) {
+              succeeded && acquireOptimalView();
+            })
+            .catch(function (err) {
+              // NOOP: rebuild had been interrupted by new request.
+              // Old result has just been dropped.
+              err && console.log(err);
+            });
         }
       }
     };
@@ -320,38 +332,86 @@
       }
     };
 
+    var fitViewToSilhouette = function () {
+      var bounds = dildoSilhouette.getBounds();
+      pb.fitToView(scaleBounds(bounds, 1.6));
+    };
+
+    var acquireOptimalView = function () {
+      if (params.getBoolean("fitViewToSilhouette", false)) {
+        fitViewToSilhouette();
+      } else {
+        acquireOptimalPathView(pb, outline);
+      }
+    };
+
+    var handlePathVisibilityChanged = function () {
+      if (!outline) {
+        return;
+      }
+      console.log("OUTLINE", outline);
+      outline.bezierCurves.forEach(function (curve) {
+        console.log("Curve", curve);
+        curve.startPoint.attr.visible = config.drawOutline;
+        curve.endPoint.attr.visible = config.drawOutline;
+        curve.startControlPoint.attr.visible = config.drawOutline;
+        curve.endControlPoint.attr.visible = config.drawOutline;
+      });
+      if (config.drawOutline) {
+        pb.add(outline);
+        addPathListeners(outline);
+      } else {
+        pb.remove(outline, true, true); // redraw=true, removeWithVertices=true
+        removePathListeners(outline);
+      }
+      bezierResizer.verticalResizeHandle.attr.visible = config.drawResizeHandleLines;
+      bezierResizer.horizontalResizeHandle.attr.visible = config.drawResizeHandleLines;
+      // outline.
+      pb.redraw();
+    };
+
     // +---------------------------------------------------------------------------------
     // | Delay the build a bit. And cancel stale builds.
     // | This avoids too many rebuilds (pretty expensive) on mouse drag events.
     // +-------------------------------
     var buildId = null;
     var rebuild = function () {
-      buildId = new Date().getTime();
-      window.setTimeout(
-        (function (bId) {
-          return function () {
-            if (bId === buildId) {
-              updateSilhouette(false);
-              if (config.useBumpmap && ImageStore.isImageLoaded(bumpmapRasterImage)) {
-                // Resize the bumpmap to satisfy the mesh resolution.
-                bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.shapeSegmentCount, config.outlineSegmentCount);
-              }
-              updateBumpmapPreview(bumpmap, config.useBumpmap && typeof bumpmap !== "undefined" && config.showBumpmapImage);
-              // Set the bending flag only if bendAngle if not zero.
-              dildoGeneration.rebuild(
-                Object.assign(config, {
-                  outline: outline,
-                  isBending: config.bendAngle !== 0,
-                  bumpmap: bumpmap,
-                  baseShape: baseShape
-                })
-              );
-              updateModifiers();
-            }
-          };
-        })(buildId),
-        50
-      );
+      return new Promise(function (accept, reject) {
+        buildId = new Date().getTime();
+        try {
+          window.setTimeout(
+            (function (bId) {
+              return function () {
+                if (bId != buildId) {
+                  console.log("Rejecting", bId, buildId);
+                  accept(false);
+                  return;
+                }
+                updateSilhouette(false);
+                if (config.useBumpmap && ImageStore.isImageLoaded(bumpmapRasterImage)) {
+                  // Resize the bumpmap to satisfy the mesh resolution.
+                  bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.shapeSegmentCount, config.outlineSegmentCount);
+                }
+                updateBumpmapPreview(bumpmap, config.useBumpmap && typeof bumpmap !== "undefined" && config.showBumpmapImage);
+                // Set the bending flag only if bendAngle if not zero.
+                dildoGeneration.rebuild(
+                  Object.assign(config, {
+                    outline: outline,
+                    isBending: config.bendAngle !== 0,
+                    bumpmap: bumpmap,
+                    baseShape: baseShape
+                  })
+                );
+                updateModifiers();
+                accept(true);
+              };
+            })(buildId),
+            50
+          ); // END setTimeout
+        } catch (e) {
+          reject();
+        }
+      }); // END Promise
     };
 
     // +---------------------------------------------------------------------------------
@@ -453,7 +513,7 @@
       for (var i = 0; i < pathSteps; i++) {
         polyline.push(outline.getPointAt(i / pathSteps));
       }
-      fill.polyline(polyline, false, config.bezierFillColor);
+      config.fillOutline && fill.polyline(polyline, false, config.bezierFillColor);
 
       if (config.showSilhouette && dildoSilhouette) {
         draw.polyline(dildoSilhouette.leftPathVertices, true, "orange", 3.0);
@@ -533,6 +593,7 @@
       updatePathResizer();
       addPathListeners(outline);
       updateOutlineStats();
+      handlePathVisibilityChanged();
 
       // Install a Bézier interaction helper.
       if (!bezierPathInteractionHelper || !keepOldInteractionHelper) {
@@ -719,7 +780,7 @@
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
     // +-------------------------------
-    initGUI(pb, config, GUP, rebuild, updateModifiers, updateSilhouette);
+    initGUI(pb, config, GUP, rebuild, updateModifiers, updateSilhouette, handlePathVisibilityChanged);
 
     pb.config.preDraw = preDraw;
     pb.config.postDraw = postDraw;
@@ -727,7 +788,8 @@
       console.log("[INFO] No path retrieved. Using default path.");
       setDefaultPathInstance(true);
       updateSilhouette(false);
-      acquireOptimalPathView(pb, outline);
+      // acquireOptimalPathView(pb, outline);
+      acquireOptimalView();
     }
     // pb.fitToView(scaleBounds(outline.getBounds(), 1.6));
     rebuild();
@@ -745,7 +807,8 @@
       config.baseShapeExcentricity = 1.0;
       setDefaultPathInstance(true);
       updateSilhouette(false);
-      acquireOptimalPathView(pb,outline);
+      // acquireOptimalPathView(pb,outline);
+      acquireOptimalView();
     });
     // prettier-ignore
     ActionButtons.addFitToViewButton( function() { acquireOptimalPathView(pb, outline); } );

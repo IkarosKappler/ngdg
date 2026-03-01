@@ -1,7 +1,7 @@
 /**
  * @date 2026-02-26
  */
-import { Vertex } from "plotboilerplate";
+import { Bounds, Vertex } from "plotboilerplate";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { DildoGeometry } from "./DildoGeometry";
 export class DildoSilhouette2D {
@@ -41,6 +41,9 @@ export class DildoSilhouette2D {
             this.leftPathVertices.push(new Vertex(leftVert.x + outlineBounds.max.x, leftVert.y));
             this.rightPathVertices.push(new Vertex(rightVert.x + outlineBounds.max.x, rightVert.y));
         }
+    }
+    getBounds() {
+        return Bounds.computeFromVertices([...this.leftPathVertices, ...this.rightPathVertices]);
     }
 }
 //# sourceMappingURL=DildoSilhouette2D.js.map

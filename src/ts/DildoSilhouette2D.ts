@@ -62,4 +62,8 @@ export class DildoSilhouette2D {
       this.rightPathVertices.push(new Vertex(rightVert.x + outlineBounds.max.x, rightVert.y));
     }
   }
+
+  getBounds(): Bounds {
+    return Bounds.computeFromVertices([...this.leftPathVertices, ...this.rightPathVertices]);
+  }
 }

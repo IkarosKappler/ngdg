@@ -1367,6 +1367,15 @@ exports.DildoMaterials = (function () {
 /**
  * @date 2026-02-26
  */
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DildoSilhouette2D = void 0;
 var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
@@ -1410,6 +1419,9 @@ var DildoSilhouette2D = /** @class */ (function () {
             this.rightPathVertices.push(new plotboilerplate_1.Vertex(rightVert.x + outlineBounds.max.x, rightVert.y));
         }
     }
+    DildoSilhouette2D.prototype.getBounds = function () {
+        return plotboilerplate_1.Bounds.computeFromVertices(__spreadArray(__spreadArray([], this.leftPathVertices, true), this.rightPathVertices, true));
+    };
     return DildoSilhouette2D;
 }());
 exports.DildoSilhouette2D = DildoSilhouette2D;

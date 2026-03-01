@@ -7,10 +7,11 @@
  * @author   Ikaros Kappler
  * @date     2021-12-03
  * @modified 2022-02-03 Added modifiers folder.
- * @version  1.1.0
+ * @modified 2026-03-01 Added two new callbacks: `bendAngleChangedCallback` and `pathVisibilityChanged`.
+ * @version  1.2.0
  */
 
-function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bendAngleChangedCallback) {
+function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bendAngleChangedCallback, pathVisibilityChanged) {
   // TODO: remove the DatGuiProps again from PB? Not Used? Not Working?
   // See https://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-dat-gui-dropdown
   var gui = pb.createGUI({ autoPlace: false });
@@ -32,9 +33,22 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   // prettier-ignore
   fold0.add( config, "acquireOptimalPathView" );
   // prettier-ignore
+  fold0.add( config, "fitViewToSilhouette" );
+  // prettier-ignore
   fold0.add(config, "showDiscreteOutlinePoints").onChange( function() { pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
   // prettier-ignore
   fold0.add(config, "showSilhouette").onChange( function() { pb.redraw(); } ).name('showSilhouette').title('Show the 2D shilhouette of the dildo.');
+
+  // prettier-ignore
+  fold0.add(config, "drawPathBounds").onChange( function() { pb.redraw(); } ).name('drawPathBounds').title('Show the Beziér path bounding box.');
+  // prettier-ignore
+  fold0.add(config, "drawResizeHandleLines").onChange( function() { pathVisibilityChanged(); pb.redraw(); } ).name('drawResizeHandleLines').title('Draw resize handle lines (only visible when resizing).');
+  // prettier-ignore
+  fold0.add(config, "drawRulers").onChange( function() { pb.redraw(); } ).name('drawRulers').title('Show the 2D path rulers.');
+  // prettier-ignore
+  fold0.add(config, "drawOutline").onChange( function() { pathVisibilityChanged(); pb.redraw(); } ).name('drawOutline').title('Show the overall Bézier path.');
+  // prettier-ignore
+  fold0.add(config, "fillOutline").onChange( function() { pb.redraw(); } ).name('fillOutline').title('Fill the overall Bézier path area.');
 
   var fold1 = gui.addFolder("Mesh");
   // prettier-ignore
