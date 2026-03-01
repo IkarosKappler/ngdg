@@ -33,6 +33,17 @@ globalThis.ActionButtons =
       document.querySelector("body").appendChild(buttonFit);
     };
 
+    /**
+     * Add the 'Show Sculpt Map' button to the action menu.
+     *
+     * @param {function} actionCallback - The function to be triggered when the button is clicked.
+     */
+    AB.addShowSculptMapButton = function (actionCallback) {
+      var buttonSculptMap = createStyledButton("icons/icon-sculptmap.png", "Show sculpt map", actionCallback);
+      buttonSculptMap.style.transform = "translateX(52px)";
+      document.querySelector("body").appendChild(buttonSculptMap);
+    };
+
     var createStyledButton = function (iconPath, title, actionCallback) {
       var button = document.createElement("button");
       button.style.position = "absolute";

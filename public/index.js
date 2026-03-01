@@ -77,123 +77,123 @@
     // +---------------------------------------------------------------------------------
     // | A global config that's attached to the dat.gui control interface.
     // +-------------------------------
-    var config = PlotBoilerplate.utils.safeMergeByKeys(
-      {
-        outlineSegmentCount: params.getNumber("outlineSegmentCount", 128),
-        shapeSegmentCount: params.getNumber("shapeSegmentCount", 64),
-        bendAngle: params.getNumber("bendAngle", 0.0),
-        closeTop: params.getBoolean("closeTop", true),
-        closeBottom: params.getBoolean("closeBottom", true),
-        drawPathBounds: params.getBoolean("drawPathBounds", false),
-        drawResizeHandleLines: params.getBoolean("drawResizeHandleLines", true),
-        drawRulers: params.getBoolean("drawRulers", true),
-        drawOutline: params.getBoolean("drawOutline", true),
-        fillOutline: params.getBoolean("fillOutline", true),
-        showNormals: params.getBoolean("showNormals", false),
-        normalsLength: params.getNumber("normalsLength", 10.0),
-        normalizePerpendiculars: params.getBoolean("normalizePerpendiculars", true),
-        useTextureImage: params.getBoolean("useTextureImage", true),
-        textureImagePath: "assets/img/wood.png",
-        wireframe: params.getBoolean("wireframe", false),
-        performSlice: params.getBoolean("performSlice", false),
-        makeHollow: params.getBoolean("makeHollow", false),
-        hollowStrengthX: params.getNumber("hollowStrengthX", 15.0), // equivalent for Y is 'normalsLength'
-        renderFaces: params.getString("renderFaces", "double"), // "double" or "front" or "back"
-        twistAngle: params.getNumber("twistAngle", 0.0),
-        baseShapeExcentricity: params.getNumber("baseShapeExcentricity", 1.0),
-        closeCutAreas: params.getBoolean("closeCutAreas", true),
-        // previewBumpmap: false, // TODO: Is this actually in use?
-        useBumpmap: params.getBoolean("useBumpmap", false),
-        showBumpmapTargets: params.getBoolean("showBumpmapTargets", false),
-        showBumpmapImage: params.getBoolean("showBumpmapImage", false), // Not part of the generator interface
-        bumpmap: null, // This is not configurable at the moment and merge in later
-        bumpmapStrength: params.getNumber("bumpmapStrength", 10.0),
-        // Render settings
-        showBasicPerpendiculars: params.getBoolean("showBasicPerpendiculars", false),
-        addSpine: params.getBoolean("addSpine", false),
-        showSplitPane: params.getBoolean("showSplitPane", true),
-        showLeftSplit: params.getBoolean("showLeftSplit", true),
-        showRightSplit: params.getBoolean("showRightSplit", true),
-        showSplitShape: params.getBoolean("showSplitShape", true),
-        showSplitShapeTriangulation: params.getBoolean("showSplitShapeTriangulation", true),
-        addPrecalculatedMassiveFaces: params.getBoolean("addPrecalculatedMassiveFaces", false),
-        addPrecalculatedHollowFaces: params.getBoolean("addPrecalculatedHollowFaces", false),
-        addRawIntersectionTriangleMesh: params.getBoolean("addRawIntersectionTriangleMesh", false),
-        addPrecalculatedShapeOutlines: params.getBoolean("addPrecalculatedShapeOutlines", false),
-        bezierFillColor: params.getString("bezierFillColor", isDarkmode ? "rgba(64,64,64,.35)" : "rgba(0,0,0,0.15)"),
-        pathBoundsColor: params.getString("pathBoundsColor", isDarkmode ? "rgba(64,64,64,.5)" : "rgba(0,0,0,0.5)"),
-        resizeHandleLineColor: isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
-        rulerColor: params.getString("rulerColor", isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)"),
-        showDiscreteOutlinePoints: params.getBoolean("showDiscreteOutlinePoints", false),
-        showSilhouette: params.getBoolean("showSilhouette", true),
-        // Modifiers
-        leftSplitMeshRotationX: 180.0, // align properly according to split algorithm
-        leftSplitMeshRotationY: 0.0,
-        leftSplitMeshRotationZ: 0.0,
-        rightSplitMeshRotationX: 180.0, // align properly according to split algorithm
-        rightSplitMeshRotationY: 0.0,
-        rightSplitMeshRotationZ: 0.0,
-        leftSplitMeshTranslationX: ngdg.SPLIT_MESH_OFFSET.x,
-        leftSplitMeshTranslationY: ngdg.SPLIT_MESH_OFFSET.y,
-        leftSplitMeshTranslationZ: -ngdg.SPLIT_MESH_OFFSET.z, // Important: invert this (as in the algorithm)
-        rightSplitMeshTranslationX: ngdg.SPLIT_MESH_OFFSET.x,
-        rightSplitMeshTranslationY: ngdg.SPLIT_MESH_OFFSET.y,
-        rightSplitMeshTranslationZ: ngdg.SPLIT_MESH_OFFSET.z,
-        alignSplitsOnPlane: function () {
-          config.leftSplitMeshRotationX = 90;
-          config.leftSplitMeshRotationY = 0;
-          config.leftSplitMeshRotationZ = 90;
-          config.rightSplitMeshRotationX = 90;
-          config.rightSplitMeshRotationY = 180;
-          config.rightSplitMeshRotationZ = 90;
-          config.leftSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
-          config.leftSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
-          config.leftSplitMeshTranslationZ = -ngdg.SPLIT_MESH_OFFSET.z * 2; // Important: invert this (as in the algorithm)
-          config.rightSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
-          config.rightSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
-          config.rightSplitMeshTranslationZ = ngdg.SPLIT_MESH_OFFSET.z * 2;
-          updateModifiers();
-        },
-        restoreSplitAlignment: function () {
-          config.leftSplitMeshRotationX = 180;
-          config.leftSplitMeshRotationY = 0;
-          config.leftSplitMeshRotationZ = 0;
-          config.rightSplitMeshRotationX = 180;
-          config.rightSplitMeshRotationY = 0;
-          config.rightSplitMeshRotationZ = 0;
-          config.leftSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
-          config.leftSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
-          config.leftSplitMeshTranslationZ = -ngdg.SPLIT_MESH_OFFSET.z; // Important: invert this (as in the algorithm)
-          config.rightSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
-          config.rightSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
-          config.rightSplitMeshTranslationZ = ngdg.SPLIT_MESH_OFFSET.z;
-          updateModifiers();
-        },
-        // Functions
-        exportSTL: function () {
-          exportSTL();
-        },
-        showPathJSON: function () {
-          showPathJSON();
-        },
-        showSculptmap: function () {
-          showSculptmap();
-        },
-        insertPathJSON: function () {
-          insertPathJSON();
-        },
-        acquireOptimalPathView: function () {
-          acquireOptimalPathView(pb, outline);
-        },
-        fitViewToSilhouette: function () {
-          fitViewToSilhouette();
-        },
-        setDefaultPathJSON: function () {
-          setDefaultPathInstance(true);
-        }
+    var config = {
+      outlineSegmentCount: params.getNumber("outlineSegmentCount", 128),
+      shapeSegmentCount: params.getNumber("shapeSegmentCount", 64),
+      bendAngle: params.getNumber("bendAngle", 0.0),
+      closeTop: params.getBoolean("closeTop", true),
+      closeBottom: params.getBoolean("closeBottom", true),
+      drawPathBounds: params.getBoolean("drawPathBounds", false),
+      drawResizeHandleLines: params.getBoolean("drawResizeHandleLines", true),
+      drawRulers: params.getBoolean("drawRulers", true),
+      drawOutline: params.getBoolean("drawOutline", true),
+      fillOutline: params.getBoolean("fillOutline", true),
+      showNormals: params.getBoolean("showNormals", false),
+      normalsLength: params.getNumber("normalsLength", 10.0),
+      normalizePerpendiculars: params.getBoolean("normalizePerpendiculars", true),
+      useTextureImage: params.getBoolean("useTextureImage", true),
+      textureImagePath: "assets/img/wood.png",
+      wireframe: params.getBoolean("wireframe", false),
+      performSlice: params.getBoolean("performSlice", false),
+      makeHollow: params.getBoolean("makeHollow", false),
+      hollowStrengthX: params.getNumber("hollowStrengthX", 15.0), // equivalent for Y is 'normalsLength'
+      renderFaces: params.getString("renderFaces", "double"), // "double" or "front" or "back"
+      twistAngle: params.getNumber("twistAngle", 0.0),
+      baseShapeExcentricity: params.getNumber("baseShapeExcentricity", 1.0),
+      closeCutAreas: params.getBoolean("closeCutAreas", true),
+      // previewBumpmap: false, // TODO: Is this actually in use?
+      useBumpmap: params.getBoolean("useBumpmap", false),
+      showBumpmapTargets: params.getBoolean("showBumpmapTargets", false),
+      showBumpmapImage: params.getBoolean("showBumpmapImage", false), // Not part of the generator interface
+      bumpmap: null, // This is not configurable at the moment and merge in later
+      bumpmapStrength: params.getNumber("bumpmapStrength", 10.0),
+      // Render settings
+      showBasicPerpendiculars: params.getBoolean("showBasicPerpendiculars", false),
+      addSpine: params.getBoolean("addSpine", false),
+      showSplitPane: params.getBoolean("showSplitPane", true),
+      showLeftSplit: params.getBoolean("showLeftSplit", true),
+      showRightSplit: params.getBoolean("showRightSplit", true),
+      showSplitShape: params.getBoolean("showSplitShape", true),
+      showSplitShapeTriangulation: params.getBoolean("showSplitShapeTriangulation", true),
+      addPrecalculatedMassiveFaces: params.getBoolean("addPrecalculatedMassiveFaces", false),
+      addPrecalculatedHollowFaces: params.getBoolean("addPrecalculatedHollowFaces", false),
+      addRawIntersectionTriangleMesh: params.getBoolean("addRawIntersectionTriangleMesh", false),
+      addPrecalculatedShapeOutlines: params.getBoolean("addPrecalculatedShapeOutlines", false),
+      bezierFillColor: params.getString("bezierFillColor", isDarkmode ? "rgba(64,64,64,.35)" : "rgba(0,0,0,0.15)"),
+      pathBoundsColor: params.getString("pathBoundsColor", isDarkmode ? "rgba(64,64,64,.5)" : "rgba(0,0,0,0.5)"),
+      resizeHandleLineColor: isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
+      rulerColor: params.getString("rulerColor", isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)"),
+      showDiscreteOutlinePoints: params.getBoolean("showDiscreteOutlinePoints", false),
+      showSilhouette: params.getBoolean("showSilhouette", true),
+      // Modifiers
+      leftSplitMeshRotationX: 180.0, // align properly according to split algorithm
+      leftSplitMeshRotationY: 0.0,
+      leftSplitMeshRotationZ: 0.0,
+      rightSplitMeshRotationX: 180.0, // align properly according to split algorithm
+      rightSplitMeshRotationY: 0.0,
+      rightSplitMeshRotationZ: 0.0,
+      leftSplitMeshTranslationX: ngdg.SPLIT_MESH_OFFSET.x,
+      leftSplitMeshTranslationY: ngdg.SPLIT_MESH_OFFSET.y,
+      leftSplitMeshTranslationZ: -ngdg.SPLIT_MESH_OFFSET.z, // Important: invert this (as in the algorithm)
+      rightSplitMeshTranslationX: ngdg.SPLIT_MESH_OFFSET.x,
+      rightSplitMeshTranslationY: ngdg.SPLIT_MESH_OFFSET.y,
+      rightSplitMeshTranslationZ: ngdg.SPLIT_MESH_OFFSET.z,
+      alignSplitsOnPlane: function () {
+        config.leftSplitMeshRotationX = 90;
+        config.leftSplitMeshRotationY = 0;
+        config.leftSplitMeshRotationZ = 90;
+        config.rightSplitMeshRotationX = 90;
+        config.rightSplitMeshRotationY = 180;
+        config.rightSplitMeshRotationZ = 90;
+        config.leftSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
+        config.leftSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
+        config.leftSplitMeshTranslationZ = -ngdg.SPLIT_MESH_OFFSET.z * 2; // Important: invert this (as in the algorithm)
+        config.rightSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
+        config.rightSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
+        config.rightSplitMeshTranslationZ = ngdg.SPLIT_MESH_OFFSET.z * 2;
+        updateModifiers();
       },
-      GUP
-    );
+      restoreSplitAlignment: function () {
+        config.leftSplitMeshRotationX = 180;
+        config.leftSplitMeshRotationY = 0;
+        config.leftSplitMeshRotationZ = 0;
+        config.rightSplitMeshRotationX = 180;
+        config.rightSplitMeshRotationY = 0;
+        config.rightSplitMeshRotationZ = 0;
+        config.leftSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
+        config.leftSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
+        config.leftSplitMeshTranslationZ = -ngdg.SPLIT_MESH_OFFSET.z; // Important: invert this (as in the algorithm)
+        config.rightSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
+        config.rightSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
+        config.rightSplitMeshTranslationZ = ngdg.SPLIT_MESH_OFFSET.z;
+        updateModifiers();
+      },
+      // Functions
+      exportSTL: function () {
+        exportSTL();
+      },
+      showPathJSON: function () {
+        showPathJSON();
+      },
+      showSculptmap: function () {
+        showSculptmap();
+      },
+      insertPathJSON: function () {
+        insertPathJSON();
+      },
+      acquireOptimalPathView: function () {
+        acquireOptimalPathView(pb, outline);
+      },
+      fitViewToSilhouette: function () {
+        fitViewToSilhouette();
+      },
+      setDefaultPathJSON: function () {
+        setDefaultPathInstance(true);
+      }
+    };
+
+    var DEFAULT_BEZIER_COLOR = pb.drawConfig.bezier.color;
+    var DEFAULT_BEZIER_HANDLE_LINE_COLOR = pb.drawConfig.bezier.handleLine.color;
 
     var dildoGeneration = new ngdg.DildoGeneration("dildo-canvas", {
       makeOrbitControls: function (camera, domElement) {
@@ -261,7 +261,12 @@
       modal.setTitle("Show Path JSON");
       modal.setFooter("");
       modal.setActions([Modal.ACTION_CLOSE]);
-      modal.setBody(outline.toJSON(true));
+      var textArea = document.createElement("textarea");
+      textArea.style["width"] = "100%";
+      textArea.style["height"] = "100%";
+      textArea.style["min-height"] = "50vh";
+      textArea.innerHTML = outline.toJSON(true);
+      modal.setBody(textArea);
       modal.open();
     };
 
@@ -346,26 +351,38 @@
     };
 
     var handlePathVisibilityChanged = function () {
+      console.log("handlePathVisibilityChanged");
       if (!outline) {
         return;
       }
-      console.log("OUTLINE", outline);
+      // console.log("OUTLINE", outline);
       outline.bezierCurves.forEach(function (curve) {
-        console.log("Curve", curve);
+        // console.log("Curve", curve);
         curve.startPoint.attr.visible = config.drawOutline;
         curve.endPoint.attr.visible = config.drawOutline;
         curve.startControlPoint.attr.visible = config.drawOutline;
         curve.endControlPoint.attr.visible = config.drawOutline;
       });
       if (config.drawOutline) {
-        pb.add(outline);
-        addPathListeners(outline);
+        // if (!pb.drawables.includes(outline)) {
+        //   pb.add(outline);
+        // }
+        // addPathListeners(outline);
+        // setPathInstance(outline);
+        pb.drawConfig.bezier.color = DEFAULT_BEZIER_COLOR;
+        pb.drawConfig.bezier.handleLine.color = DEFAULT_BEZIER_HANDLE_LINE_COLOR;
+        pb.drawConfig.drawHandleLines = true;
       } else {
-        pb.remove(outline, true, true); // redraw=true, removeWithVertices=true
-        removePathListeners(outline);
+        // pb.removeAll(); // (outline, true, true); // redraw=true, removeWithVertices=true
+        // removePathListeners(outline);
+        pb.drawConfig.bezier.color = "rgba(255,255,255,1.0)";
+        pb.drawConfig.bezier.handleLine.color = "rgba(255,255,255,1.0)";
+        pb.drawConfig.drawHandleLines = false;
       }
       bezierResizer.verticalResizeHandle.attr.visible = config.drawResizeHandleLines;
+      bezierResizer.verticalResizeHandle.attr.draggable = config.drawResizeHandleLines;
       bezierResizer.horizontalResizeHandle.attr.visible = config.drawResizeHandleLines;
+      bezierResizer.horizontalResizeHandle.attr.draggable = config.drawResizeHandleLines;
       // outline.
       pb.redraw();
     };
@@ -383,7 +400,7 @@
             (function (bId) {
               return function () {
                 if (bId != buildId) {
-                  console.log("Rejecting", bId, buildId);
+                  // console.log("Rejecting", bId, buildId);
                   accept(false);
                   return;
                 }
@@ -566,6 +583,7 @@
         bezierResizer.destroy();
         bezierResizer = null;
       }
+      // if (config.drawResizeHandleLines) {
       var onUpdate = function () {
         updateOutlineStats();
         updateSilhouette(false); // noRedraw=false
@@ -573,31 +591,77 @@
       };
       bezierResizer = new BezierResizeHelper(pb, outline, onUpdate);
       pb.add([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
+      // }
     };
+
+    var setPathInstance = function (newOutline) {
+      if (typeof outline != "undefined") {
+        pb.removeAll(false); // Do not keep vertices
+      }
+      outline = newOutline;
+      addPathListeners(outline);
+      pb.add(newOutline);
+      updatePathResizer();
+
+      // +---------------------------------------------------------------------------------
+      // | Install a BÃ©zier interaction helper.
+      // +-------------------------------
+      new BezierPathInteractionHelper(pb, [outline], {
+        maxDetectDistance: 32.0,
+        autoAdjustPaths: true,
+        allowPathRemoval: false, // It is not alowed to remove the outline path
+        onPointerMoved: function (pathIndex, newA, newB, newT) {
+          if (pathIndex == -1) {
+            bezierDistanceLine = null;
+          } else {
+            bezierDistanceLine = new Line(newA, newB);
+            bezierDistanceT = newT;
+          }
+        },
+        onVertexInserted: function (pathIndex, insertAfterIndex, newPath, oldPath) {
+          console.log("[pathIndex=" + pathIndex + "] Vertex inserted after " + insertAfterIndex);
+          console.log("oldPath", oldPath, "newPath", newPath);
+          removePathListeners(outline);
+          outline = newPath;
+          addPathListeners(outline);
+          rebuild();
+        },
+        onVerticesDeleted: function (pathIndex, deletedVertIndices, newPath, oldPath) {
+          console.log("[pathIndex=" + pathIndex + "] vertices deleted", deletedVertIndices);
+          removePathListeners(outline);
+          outline = newPath;
+          addPathListeners(outline);
+          rebuild();
+        }
+      });
+    }; // END setPathInstance
 
     // +---------------------------------------------------------------------------------
     // | Set the new path instance and install a Bézier interaction helper.
     // +-------------------------------
-    var setPathInstance = function (newOutline, keepOldInteractionHelper) {
+    var _setPathInstance = function (newOutline, keepOldInteractionHelper) {
+      console.log("setPathInstance");
       if (outline && typeof outline !== "undefined") {
         removePathListeners(outline);
+        // bezierPathInteractionHelper.destroy();
+        pb.removeAll(false); // keepVertices=false, Do not keep vertices
       }
 
       if (outline && !keepOldInteractionHelper) {
-        // pb.removeAll(false); // Do not keep vertices
-        pb.remove(outline, false, true);
+        // pb.remove(outline, false, true); // redraw=false, removeWidthVertices=true
       }
       pb.add(newOutline, false);
 
       outline = newOutline;
       updatePathResizer();
-      addPathListeners(outline);
+      addPathListeners(newOutline);
       updateOutlineStats();
-      handlePathVisibilityChanged();
+      // handlePathVisibilityChanged();
 
       // Install a Bézier interaction helper.
       if (!bezierPathInteractionHelper || !keepOldInteractionHelper) {
         if (bezierPathInteractionHelper) {
+          console.log("Destroying old interaction helper");
           bezierPathInteractionHelper.destroy();
         }
 
@@ -615,12 +679,12 @@
           },
           onVertexInserted: function (_pathIndex, _insertAfterIndex, newPath, _oldPath) {
             removePathListeners(outline);
-            setPathInstance(newPath, true);
+            setPathInstance(newPath, false);
             rebuild();
           },
           onVerticesDeleted: function (_pathIndex, _deletedVertIndices, newPath, _oldPath) {
             removePathListeners(outline);
-            setPathInstance(newPath, true);
+            setPathInstance(newPath, false);
             rebuild();
           }
         });
@@ -743,7 +807,7 @@
         console.log(e);
       }
     });
-    console.log("OUTLINE", outline);
+    // console.log("OUTLINE", outline);
     if (isLocalstorageDisabled) {
       console.log("[INFO] Localstorage is disabled.");
       // setDefaultPathInstance(false);
@@ -812,5 +876,6 @@
     });
     // prettier-ignore
     ActionButtons.addFitToViewButton( function() { acquireOptimalPathView(pb, outline); } );
+    ActionButtons.addShowSculptMapButton(showSculptmap);
   });
 })(window);
