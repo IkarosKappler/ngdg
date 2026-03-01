@@ -1,0 +1,202 @@
+/* Source: https://www.w3schools.com/howto/howto_css_modals.asp */
+
+/* The Modal (background) */
+.modal {
+    /* display: none; */ /* Hidden by default */
+    font-family: sans-serif, Open Sans, Droid Sans, PT Sans, Asap, Calibri;
+    position: fixed; /* Stay in place */
+    z-index: 1002; /* Sit on top; lil-gui has z-index 1001 */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-opened {
+    display : block !important;
+}
+
+.modal .modal-backdrop {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.modal-closed {
+    display : none !important;
+}
+
+.modal button, .modal .button {
+    display: block;
+    padding : 0.5em;
+    font-weight: bold;
+    border: 0;
+    border-radius: 4px;
+}
+
+.modal .button:hover,
+.modal button:hover,
+.modal .button:active,
+.modal button:active   {
+}
+
+/* Modal Content */
+.modal-content {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10%;
+    margin-bottom: 10%;
+    padding: 0;
+    border: 1px solid #888;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    border-radius: 10px;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0} 
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+/* The Close Button */
+.modal-close {
+    color: rgb(11, 15, 56);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.modal-actions {
+    float : right;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-header {
+    padding: 2px 16px;
+    background-color: #d9ffd9;
+    color: rgb(11, 15, 56);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.modal-body {
+    padding: 2px 16px;
+    background-color: #fefefe;
+}
+
+.modal-footer {
+    min-height : 64px;
+    padding: 2px 16px;
+    /* background-color: #5cb85c; */
+    background-color: #fefefe;
+    color: white;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.modal-footer h3 {
+    float: left;
+}
+
+.modal-footer .modal-actions {
+    display: flex;
+}
+
+.modal-footer .modal-actions .button,
+.modal-footer .modal-actions button {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 1px;
+    margin-inline-end: 0px;
+}
+
+
+
+
+
+/* Define darkmode colors */
+body.darkmode .modal {
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+body.darkmode .modal-opened { }
+
+body.darkmode .modal .modal-backdrop { }
+
+body.darkmode .modal-closed { }
+
+body.darkmode .modal .button,
+body.darkmode .modal button {
+    background-color: #1e2937;
+    color: gray;
+}
+
+body.darkmode .modal .button:hover,
+body.darkmode .modal button:hover,
+body.darkmode .modal .button:active,
+body.darkmode .modal button:active {
+    background-color: rgba(216,216,216,0.9);
+}
+
+/* Modal Content */
+body.darkmode .modal-content {
+    border: 1px solid #888;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+/* The Close Button */
+body.darkmode .modal-close {
+    color: rgb(11, 15, 56);
+}
+
+body.darkmode .modal-actions {}
+
+body.darkmode .modal-close:hover,
+body.darkmode .modal-close:focus {
+    color: #000;
+}
+
+body.darkmode .modal-header {
+    background-color: #1e2937; 
+    color: #d9ffd9;
+}
+
+body.darkmode .modal-body {
+    background-color: #303030;
+}
+
+body.darkmode .modal-footer {
+    background-color: #303030;
+    color: white;
+}
+
+body.darkmode .modal-footer h3 {}
+
+body.darkmode .modal-footer .modal-actions {}
+
+body.darkmode .modal-footer .modal-actions .button,
+body.darkmode .modal-footer .modal-actions button {
+}
+
+
