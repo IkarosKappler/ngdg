@@ -83,7 +83,7 @@
       bendAngle: params.getNumber("bendAngle", 0.0),
       closeTop: params.getBoolean("closeTop", true),
       closeBottom: params.getBoolean("closeBottom", true),
-      drawPathBounds: params.getBoolean("drawPathBounds", false),
+      drawPathBounds: params.getBoolean("drawPathBounds", true),
       drawResizeHandleLines: params.getBoolean("drawResizeHandleLines", true),
       drawRulers: params.getBoolean("drawRulers", true),
       drawOutline: params.getBoolean("drawOutline", true),
@@ -614,7 +614,7 @@
       return new Bounds(new Vertex(bounds.min).scale(scaleFactor, center), new Vertex(bounds.max).scale(scaleFactor, center));
     };
 
-    var updatePathResizer = function () {
+    var updatePathResizer = function (triggerRedraw) {
       if (bezierResizer) {
         pb.remove([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
         bezierResizer.destroy();
@@ -627,7 +627,7 @@
         rebuild();
       };
       bezierResizer = new BezierResizeHelper(pb, outline, onUpdate);
-      pb.add([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
+      pb.add([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle], triggerRedraw);
       handlePathVisibilityChanged();
       // }
     };
@@ -638,8 +638,8 @@
       }
       outline = newOutline;
       addPathListeners(outline);
+      updatePathResizer(false); // triggerRedraw=false
       pb.add(newOutline);
-      updatePathResizer();
 
       // +---------------------------------------------------------------------------------
       // | Install a BÃ©zier interaction helper.
