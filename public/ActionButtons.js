@@ -44,6 +44,17 @@ globalThis.ActionButtons =
       document.querySelector("body").appendChild(buttonSculptMap);
     };
 
+    /**
+     * Add the 'Show Randomizer' button to the action menu.
+     *
+     * @param {function} actionCallback - The function to be triggered when the button is clicked.
+     */
+    AB.addShowRandomizerButton = function (actionCallback) {
+      var buttonRandomizer = createStyledButton("icons/icon-randomizer-64px.png", "Show randomizer", actionCallback);
+      buttonRandomizer.style.transform = "translateX(78px)";
+      document.querySelector("body").appendChild(buttonRandomizer);
+    };
+
     var createStyledButton = function (iconPath, title, actionCallback) {
       var button = document.createElement("button");
       button.style.position = "absolute";

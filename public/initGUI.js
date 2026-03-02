@@ -15,9 +15,9 @@
 function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bendAngleChangedCallback, pathVisibilityChanged) {
   // TODO: remove the DatGuiProps again from PB? Not Used? Not Working?
   // See https://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-dat-gui-dropdown
-  var gui = pb.createGUI({ autoPlace: true });
-  document.getElementsByTagName("body")[0].appendChild(gui.domElement);
-  // gui.domElement.id = "gui";
+  var gui = pb.createGUI(); // { autoPlace: true });
+  // document.getElementsByTagName("body")[0].appendChild(gui.domElement);
+  gui.domElement.id = "gui";
 
   var fold0 = gui.addFolder("Path");
   // prettier-ignore
@@ -43,9 +43,9 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
 
   var fold1 = gui.addFolder("Mesh");
   // prettier-ignore
-  fold1.add(config, "outlineSegmentCount").min(3).max(512).onChange( function() { rebuildCallback() } ).name('outlineSegmentCount').title('The number of segments on the outline.');
+  fold1.add(config, "outlineSegmentCount").min(3).step(1).max(512).onChange( function() { rebuildCallback() } ).name('outlineSegmentCount').title('The number of segments on the outline.');
   // prettier-ignore
-  fold1.add(config, "shapeSegmentCount").min(3).max(256).onChange( function() { rebuildCallback() } ).name('shapeSegmentCount').title('The number of segments on the shape.');
+  fold1.add(config, "shapeSegmentCount").min(3).step(1).max(512).onChange( function() { rebuildCallback() } ).name('shapeSegmentCount').title('The number of segments on the shape.');
   // prettier-ignore
   fold1.add(config, "bendAngle").min(0).max(180).onChange( function() { bendAngleChangedCallback(); rebuildCallback() } ).name('bendAngle').title('The bending angle in degrees.');
   // prettier-ignore

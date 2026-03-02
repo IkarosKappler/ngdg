@@ -5,6 +5,7 @@ export * from "./LocalstorageIO";
 export * from "./constants";
 export * from "./defaults";
 export * from "./DildoGeneration";
+export * from "./DildoRandomizer";
 export * from "./DildoGeometry";
 export * from "./DildoMaterials";
 export * from "./GeometryGenerationHelpers";

@@ -85,3 +85,21 @@ od-bl {
 .lil-gui.root .children  {
   overflow-y: scroll !important;
 }
+
+
+.modal .randomizerForm h4 {
+  margin-bottom: 0.5em;
+}
+
+.modal .randomizerForm .flex-flow {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+
+.modal .randomizerForm .putURL {
+  /* width: 100%; */
+  font-family: 'Courier New', Courier, monospace;
+  flex-grow: 1;
+}

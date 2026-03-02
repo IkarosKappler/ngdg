@@ -17,6 +17,7 @@ import { DEG_TO_RAD, KEY_SLICED_MESH_LEFT, KEY_SLICED_MESH_RIGHT, SPLIT_MESH_OFF
 import { SculptMap } from "./SculptMap";
 import { DildoSilhouette2D } from "./DildoSilhouette2D";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
+import { DildoRandomizer } from "./DildoRandomizer";
 export const ngdg = {
     DEFAULT_BEZIER_JSON,
     DEG_TO_RAD,
@@ -24,6 +25,7 @@ export const ngdg = {
     KEY_SLICED_MESH_RIGHT,
     KEY_SLICED_MESH_LEFT,
     DildoGeneration,
+    DildoRandomizer,
     DildoSilhouette2D,
     GeometryGenerationHelpers,
     ImageStore,

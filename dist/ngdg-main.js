@@ -1357,6 +1357,75 @@ exports.DildoMaterials = (function () {
 
 /***/ },
 
+/***/ "./src/cjs/DildoRandomizer.js"
+/*!************************************!*\
+  !*** ./src/cjs/DildoRandomizer.js ***!
+  \************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * A helper class for generating useful randomized dildo settings.
+ *
+ * @author  Ikaros Kappler
+ * @date    2026-03-02
+ * @version 1.0.0
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DildoRandomizer = void 0;
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_2 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var DildoRandomizer = /** @class */ (function () {
+    function DildoRandomizer(bounds, minPathSegments, maxPathSegments) {
+        this.bounds = bounds;
+        this.minPathSegments = minPathSegments;
+        this.maxPathSegments = maxPathSegments;
+    }
+    DildoRandomizer.prototype.next = function () {
+        var segmentCount = DildoRandomizer.randIntInRange(this.minPathSegments, this.maxPathSegments);
+        console.log("segmentCount", segmentCount);
+        var pathVertices = this.randomPathVertices(segmentCount + 1);
+        // Convert to lines Bezier Path
+        var curves = [];
+        for (var i = 0; i + 1 < segmentCount; i++) {
+            var startPoint = pathVertices[i];
+            var endPoint = pathVertices[i + 1];
+            var helperLine = new plotboilerplate_1.Line(startPoint, endPoint);
+            var startPointRatio = DildoRandomizer.randFloatInRange(0.1, 0.8);
+            var endPointRatio = DildoRandomizer.randFloatInRange(startPointRatio, 0.9);
+            console.log("startPointRatio", startPointRatio, "endPointRatio", endPointRatio);
+            var startControlPoint = helperLine.vertAt(startPointRatio);
+            var endControlPoint = helperLine.vertAt(endPointRatio);
+            curves.push(new plotboilerplate_2.CubicBezierCurve(startPoint, endPoint, startControlPoint, endControlPoint));
+        }
+        return { outline: plotboilerplate_1.BezierPath.fromArray(curves) };
+    };
+    DildoRandomizer.prototype.randomPathVertices = function (segmentCount) {
+        var pathVertices = [];
+        // Create the bottom point
+        pathVertices.push(new plotboilerplate_1.Vertex(DildoRandomizer.randFloatInRange(this.bounds.min.x, this.bounds.max.x), this.bounds.min.y));
+        for (var i = 0; i < segmentCount; i++) {
+            var segmendBounds = new plotboilerplate_1.Bounds({ x: this.bounds.min.x, y: this.bounds.min.y + i * (this.bounds.height / segmentCount) }, { x: this.bounds.max.x, y: (i + 1) * (this.bounds.height / segmentCount) });
+            //   var x = DildoRandomizer.randFloatInRange( segmendBounds.min.x. segmentBounds);
+            //   var y =
+            var pathVertex = segmendBounds.randomPoint();
+        }
+        pathVertices.push(new plotboilerplate_1.Vertex(DildoRandomizer.randFloatInRange(this.bounds.min.x, this.bounds.max.x), this.bounds.max.y));
+        return pathVertices;
+    };
+    DildoRandomizer.randIntInRange = function (min, max) {
+        return Math.floor(min + Math.random() * (max - min));
+    };
+    DildoRandomizer.randFloatInRange = function (min, max) {
+        return min + Math.random() * (max - min);
+    };
+    return DildoRandomizer;
+}());
+exports.DildoRandomizer = DildoRandomizer;
+//# sourceMappingURL=DildoRandomizer.js.map
+
+/***/ },
+
 /***/ "./src/cjs/DildoSilhouette2D.js"
 /*!**************************************!*\
   !*** ./src/cjs/DildoSilhouette2D.js ***!
@@ -3047,6 +3116,7 @@ var constants_1 = __webpack_require__(/*! ./constants */ "./src/cjs/constants.js
 var SculptMap_1 = __webpack_require__(/*! ./SculptMap */ "./src/cjs/SculptMap.js");
 var DildoSilhouette2D_1 = __webpack_require__(/*! ./DildoSilhouette2D */ "./src/cjs/DildoSilhouette2D.js");
 var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
+var DildoRandomizer_1 = __webpack_require__(/*! ./DildoRandomizer */ "./src/cjs/DildoRandomizer.js");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
@@ -3054,6 +3124,7 @@ exports.ngdg = {
     KEY_SLICED_MESH_RIGHT: constants_1.KEY_SLICED_MESH_RIGHT,
     KEY_SLICED_MESH_LEFT: constants_1.KEY_SLICED_MESH_LEFT,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
+    DildoRandomizer: DildoRandomizer_1.DildoRandomizer,
     DildoSilhouette2D: DildoSilhouette2D_1.DildoSilhouette2D,
     GeometryGenerationHelpers: GeometryGenerationHelpers_1.GeometryGenerationHelpers,
     ImageStore: ImageStore_1.ImageStore,

@@ -21,6 +21,7 @@ __exportStar(require("./LocalstorageIO"), exports);
 __exportStar(require("./constants"), exports);
 __exportStar(require("./defaults"), exports);
 __exportStar(require("./DildoGeneration"), exports);
+__exportStar(require("./DildoRandomizer"), exports);
 __exportStar(require("./DildoGeometry"), exports);
 __exportStar(require("./DildoMaterials"), exports);
 __exportStar(require("./GeometryGenerationHelpers"), exports);

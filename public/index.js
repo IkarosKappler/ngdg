@@ -168,6 +168,7 @@
         config.rightSplitMeshTranslationZ = ngdg.SPLIT_MESH_OFFSET.z;
         updateModifiers();
       },
+      isSilhoutettePreferredView: params.getBoolean("isSilhoutettePreferredView", true),
       // Functions
       exportSTL: function () {
         exportSTL();
@@ -314,6 +315,41 @@
       }
     };
 
+    // +---------------------------------------------------------------------------------
+    // | Updates the sculpt map by recalculating the image data from the 3d model.
+    // +-------------------------------
+    var setRandomizedResult = function (result) {
+      setPathInstance(result.outline);
+      config.bendAngle = result.bendAngle;
+      rebuild();
+    };
+    var dildoRandomizerDialog = new DildoRandomizerDialog(pb, setRandomizedResult);
+    var showDildoRandomizer = function () {
+      modal.setTitle("Dildo Randomizer");
+      modal.setFooter("");
+      modal.setActions([Modal.ACTION_CLOSE]);
+      modal.setBody(dildoRandomizerDialog.rootElement);
+      modal.open();
+    };
+
+    // +---------------------------------------------------------------------------------
+    // | Updates the sculpt map by recalculating the image data from the 3d model.
+    // +-------------------------------
+    var showSculptmap = function () {
+      modal.setTitle("Show Sculpt Map");
+      modal.setFooter("");
+      modal.setActions([Modal.ACTION_CLOSE]);
+      const geometry = dildoGeneration.primaryDildoGeometry;
+      const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
+      const canvas = sculptmap.toCanvas();
+      const dataString = canvas.toDataURL();
+      modal.setBody('<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%"></div>');
+      modal.open();
+    };
+
+    // +---------------------------------------------------------------------------------
+    // | Updates the sculpt map by recalculating the image data from the 3d model.
+    // +-------------------------------
     var updateSilhouette = function (noRedraw) {
       // TODO: baseShape updating belongs elsewhere!
       const baseRadius = outline.getBounds().width;
@@ -343,7 +379,8 @@
     };
 
     var acquireOptimalView = function () {
-      if (params.getBoolean("fitViewToSilhouette", false)) {
+      // if (params.getBoolean("fitViewToSilhouette", false)) {
+      if (config.isSilhoutettePreferredView) {
         fitViewToSilhouette();
       } else {
         acquireOptimalPathView(pb, outline);
@@ -742,7 +779,8 @@
     // THIS IS JUST EXPERIMENTAL
     var drawOutlineToPolygon = function (draw, fill) {
       outline.updateArcLengths();
-      var vertices = bezier2polygon(outline, 50);
+      // var vertices = bezier2polygon(outline, 50);
+      var vertices = outline.getEvenDistributionVertices(50);
       // console.log("drawOutlineToPolygon vertices", vertices);
       for (var i = 0; i < vertices.length; i++) {
         draw.circleHandle(vertices[i], 3, "rgba(0,192,128,0.5)");
@@ -867,7 +905,7 @@
     // Add action buttons
     // prettier-ignore
     ActionButtons.addNewButton(function() {
-      config.bendAngle = 0.0;
+      config.bendAngle = 23.0;
       config.twistAngle = 0.0;
       config.baseShapeExcentricity = 1.0;
       setDefaultPathInstance(true);
@@ -876,7 +914,8 @@
       acquireOptimalView();
     });
     // prettier-ignore
-    ActionButtons.addFitToViewButton( function() { acquireOptimalPathView(pb, outline); } );
+    ActionButtons.addFitToViewButton( function() { acquireOptimalView() } );
     ActionButtons.addShowSculptMapButton(showSculptmap);
+    ActionButtons.addShowRandomizerButton(showDildoRandomizer);
   });
 })(window);
