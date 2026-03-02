@@ -77,6 +77,11 @@ od-bl {
   background-color: white;
 }
 
-#gui {
+/* #gui {
   left: 50% !important;
+} */
+
+/* Override lil-gui scroll setting (activate scrolling) */
+.lil-gui.root .children  {
+  overflow-y: scroll !important;
 }

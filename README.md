@@ -59,6 +59,9 @@ http://localhost:8080/public/index-dev.html?drawRulers=0&drawResizeHandleLines=0
 
 ### Changelog
 
+- 2026-03-02
+  - GUI: removed the GUI-Size-Toggler: is now part of PlotBoierplate.
+  - Replacing dat.gui by lil-gui.
 - 2026-03-01
   - Adding several new flags for drawing and hiding 2D element from the canvas.
 - 2026-02-25

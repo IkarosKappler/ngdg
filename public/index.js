@@ -352,9 +352,9 @@
 
     var handlePathVisibilityChanged = function () {
       console.log("handlePathVisibilityChanged");
-      if (!outline) {
-        return;
-      }
+      // if (!outline) {
+      //   return;
+      // }
       // console.log("OUTLINE", outline);
       outline.bezierCurves.forEach(function (curve) {
         // console.log("Curve", curve);
@@ -375,8 +375,8 @@
       } else {
         // pb.removeAll(); // (outline, true, true); // redraw=true, removeWithVertices=true
         // removePathListeners(outline);
-        pb.drawConfig.bezier.color = "rgba(255,255,255,1.0)";
-        pb.drawConfig.bezier.handleLine.color = "rgba(255,255,255,1.0)";
+        pb.drawConfig.bezier.color = "rgba(255,255,255,0.0)";
+        pb.drawConfig.bezier.handleLine.color = "rgba(255,255,255,0.0)";
         pb.drawConfig.drawHandleLines = false;
       }
       bezierResizer.verticalResizeHandle.attr.visible = config.drawResizeHandleLines;
@@ -591,6 +591,7 @@
       };
       bezierResizer = new BezierResizeHelper(pb, outline, onUpdate);
       pb.add([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
+      handlePathVisibilityChanged();
       // }
     };
 

@@ -8,26 +8,16 @@
  * @date     2021-12-03
  * @modified 2022-02-03 Added modifiers folder.
  * @modified 2026-03-01 Added two new callbacks: `bendAngleChangedCallback` and `pathVisibilityChanged`.
+ * @modified 2026-03-02 Removed the GUI-Size-Toggler: is now part of PlotBoierplate.
  * @version  1.2.0
  */
 
 function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bendAngleChangedCallback, pathVisibilityChanged) {
   // TODO: remove the DatGuiProps again from PB? Not Used? Not Working?
   // See https://stackoverflow.com/questions/25653639/how-do-i-change-the-location-of-the-dat-gui-dropdown
-  var gui = pb.createGUI({ autoPlace: false });
+  var gui = pb.createGUI({ autoPlace: true });
   document.getElementsByTagName("body")[0].appendChild(gui.domElement);
-  gui.domElement.id = "gui";
-
-  // console.log("ngdg", ngdg);
-  var guiSize = guiSizeToggler(gui, config, { transformOrigin: "top center", transform: "translate(-50%,0%)" });
-  if (ngdg.isMobileDevice()) {
-    config.guiDoubleSize = true;
-    guiSize.update();
-  } else {
-    config.guiDoubleSize = false;
-  }
-  gui.add(config, "guiDoubleSize").title("Double size GUI?").onChange(guiSize.update);
-  guiSize.update();
+  // gui.domElement.id = "gui";
 
   var fold0 = gui.addFolder("Path");
   // prettier-ignore
@@ -38,6 +28,7 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   fold0.add(config, "showDiscreteOutlinePoints").onChange( function() { pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
   // prettier-ignore
   fold0.add(config, "showSilhouette").onChange( function() { pb.redraw(); } ).name('showSilhouette').title('Show the 2D shilhouette of the dildo.');
+  fold0.close();
 
   // prettier-ignore
   fold0.add(config, "drawPathBounds").onChange( function() { pb.redraw(); } ).name('drawPathBounds').title('Show the Beziér path bounding box.');
@@ -69,6 +60,7 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   // fold0.add(config, "useBumpmap").onChange( function() { rebuild() } ).name('useBumpmap').title('Check wether the mesh should use a bumpmap.');
   // prettier-ignore
   // fold0.add(config, "bumpmapStrength").min(0.0).max(20.0).onChange( function() { rebuild() } ).name('bumpmapStrength').title('How strong should the bumpmap be applied.');
+  fold1.close();
 
   var fold2 = gui.addFolder("Hollow");
   // prettier-ignore
@@ -79,12 +71,14 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   fold2.add(config, "hollowStrengthX").min(0.0).max(50.0).onChange( function() { rebuildCallback() } ).name('hollowStrengthX').title('How thick make the walls?');
   // prettier-ignore
   fold2.add(config, "normalizePerpendiculars").onChange( function() { rebuildCallback() } ).name('normalizePerpendiculars').title('Normalize the XZ perpendiculars (recommended).');
+  // fold2.close();
 
   var fold3 = gui.addFolder("Slice");
   // prettier-ignore
   fold3.add(config, "performSlice").onChange( function() { rebuildCallback() } ).name('performSlice').title('Slice the model along the x axis?');
   // prettier-ignore
   fold3.add(config, "closeCutAreas").onChange( function() { rebuildCallback() } ).name('closeCutAreas').title('Close the open cut areas on the split.');
+  fold3.close();
 
   var fold4 = gui.addFolder("Modifiers");
   // prettier-ignore
@@ -115,6 +109,7 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   fold4.add(config, "alignSplitsOnPlane").name('alignSplitsOnPlane').title('Align splits on plane.');
   // prettier-ignore
   fold4.add(config, "restoreSplitAlignment").name('restoreSplitAlignment').title('Restore original split alignment.');
+  fold4.close();
 
   var fold5 = gui.addFolder("Render Settings");
   // prettier-ignore
@@ -152,6 +147,7 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   fold5.add(config, "addRawIntersectionTriangleMesh").onChange( function() { rebuildCallback() } ).name('addRawIntersectionTriangleMesh').title('Show raw unoptimized split face triangulation?');
   // prettier-ignore
   fold5.add(config, "addPrecalculatedShapeOutlines").onChange( function() { rebuildCallback() } ).name('addPrecalculatedShapeOutlines').title('Show raw unoptimized split shape outline(s)?');
+  fold5.close();
 
   var fold6 = gui.addFolder("Export");
   // prettier-ignore
@@ -160,14 +156,16 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   fold6.add(config, "showPathJSON").name('Show Path JSON ...').title('Show the path data.');
   // prettier-ignore
   fold6.add(config, "showSculptmap").name('Show sculpt map ...').title('Show the mesh sculpt map.');
+  fold6.close();
 
   var fold7 = gui.addFolder("Import");
   // prettier-ignore
   fold7.add(config, "insertPathJSON").name('Insert Path JSON ...').title('Insert path data as JSON.');
   // prettier-ignore
   fold7.add(config, "setDefaultPathJSON").name('Load default Path JSON ...').title('Load the pre-configured default path JSON.');
+  fold7.close();
 
-  fold2.open();
+  // fold2.open();
   if (!GUP.openGui) {
     gui.close();
   }
