@@ -634,7 +634,7 @@
 
     var setPathInstance = function (newOutline) {
       if (typeof outline != "undefined") {
-        pb.removeAll(false); // Do not keep vertices
+        pb.removeAll(false, false); // keepVertices=false, triggerRedraw=false
       }
       outline = newOutline;
       addPathListeners(outline);

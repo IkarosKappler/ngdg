@@ -49,3 +49,5 @@ public/lib/uistats-typescripz
 src/cjs/thirdparty-ported/_earcut/
 src/ts/thirdparty-ported/_earcut/
 src/esm/thirdparty-ported/_earcut/
+
+.env*
