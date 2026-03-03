@@ -103,3 +103,24 @@ od-bl {
   font-family: 'Courier New', Courier, monospace;
   flex-grow: 1;
 }
+
+
+/* Basic grid system */
+.flow-containter {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.grid-w-50 {
+  width: 50%;
+}
+
+.center {
+  align-items: center;
+}
+
+.flow-containter button {
+  padding: 1em;
+  margin: 1em;
+}

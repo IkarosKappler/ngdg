@@ -18,22 +18,42 @@
 
     this.rootElement.innerHTML = `
     <h4>Outline Path</h4>
-    <label for="segmentCountMin">Min Segments</label>
-    <input type="number" id="segmentCountMin" min="1" max="24" value="3" name="segmentCountMin" />
-    <label for="segmentCountMax">Max Segments</label>
-    <input type="number" id="segmentCountMax" min="1" max="24" value="8" name="segmentCountMax" />
-    <br>
+    <div class="flow-containter">
+      <div class="grid-w-50">
+        <label for="segmentCountMin">Min Segments</label>
+        <input type="number" id="segmentCountMin" min="1" max="24" value="3" name="segmentCountMin" />
+      </div>
+      <div class="grid-w-50">
+        <label for="segmentCountMax">Max Segments</label>
+        <input type="number" id="segmentCountMax" min="1" max="24" value="8" name="segmentCountMax" />
+      </div>
+    </div>
     <h4>Mesh bend value (Deg)</h4>
-    <label for="bendValueMin">Min Bend Value</label>
-    <input type="number" id="bendValueMin" min="0" max="180" value="0" name="bendValueMin" />
-    <label for="bendValueMax">Max Bend Value</label>
-    <input type="number" id="bendValueMax" min="0" max="180" value="120" name="bendValueMax" />
-    <br>
-    <br>
-    <button id="randomizeButton">Randomize</button>
-    <br>
+    <div class="flow-containter">
+      <div class="grid-w-50">
+        <label for="bendValueMin">Min Bend Value</label>
+        <input type="number" id="bendValueMin" min="0" max="180" value="0" name="bendValueMin" />
+      </div>
+      <div class="grid-w-50">
+        <label for="bendValueMax">Max Bend Value</label>
+        <input type="number" id="bendValueMax" min="0" max="180" value="120" name="bendValueMax" />
+      </div>
+    </div>
+    <div class="flow-containter center">
+      <div>
+        <label for="bounds-ratio">Box ratio</label>
+        <select name="bounds-ratio" disabled>
+          <option value="1.0">1:1</option>
+          <option value="0.75">3:4</option>
+          <option value="0.5" selected>1:2</option>
+        </select>
+      </div>
+    </div>
+    <div class="flow-containter center">
+      <button id="randomizeButton">Randomize</button>
+    </div>
     <div class="flex-flow">
-        Store data <input type="checkbox" name="isPutEnabled" id="isPutEnabled" disabled>
+        <label for="isPutEnabled">Store data</label> <input type="checkbox" name="isPutEnabled" id="isPutEnabled" disabled>
         <input type="text" id="putURL" class="putURL" name="putURL" value="http://127.0.0.1:1337/model/put" disabled>
     </div>
 `;

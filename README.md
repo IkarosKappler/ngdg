@@ -28,7 +28,7 @@ Because 3D printing, 3D web, and dildos are fun.
 - [x] Add a proper Typescript interface for all available dildo generation options.
 - [ ] STL-Export: merge all exportable geometries together and export as one.
 - [ ] Add a 'Material' switch/tab.
-- [ ] Update the package.json's copy scripts (using OS dependent `cp` command). Better use an npm compatible copy here.
+- [ ] Update the package.json's copy scripts (currently using OS dependent `cp` command). Better use an npm compatible copy here.
 - [x] Define one global library export to avoid environment pollution.
 - [x] Remove unused build libraries: babel, rollup.
 - [x] Remove old alloyfinger library. Replace by alloyfinger-typescript.
@@ -48,10 +48,10 @@ Because 3D printing, 3D web, and dildos are fun.
 
 The following config values are stored in the `LocalStorage`:
 
-- bezier_path
-- bend_angle
-- twist_angle
-- base_shape_excentricity
+- `bezier_path`
+- `bend_angle`
+- `twist_angle`
+- `base_shape_excentricity`
 
 ### Toggle 2d silhouette view
 
@@ -138,13 +138,14 @@ http://localhost:8080/public/index-dev.html?drawRulers=0&drawResizeHandleLines=0
 
 Dependencies
 
-- HTML5 Canvas
-- HTML5 WebGL
+- [theejs](https://threejs.org/)
 - [threejs-slice-geometry](https://github.com/tdhooper/threejs-slice-geometry)
 
 ### Used Libraries
 
-- dat.gui
+- [~~dat.gui~~](https://github.com/dataarts/dat.gui)
+- [lil-gui](https://lil-gui.georgealways.com/)
+- [nice-forms.css](https://nielsvoogt.github.io/nice-forms.css/#installation)
 
 ### Credits
 
