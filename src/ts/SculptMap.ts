@@ -60,6 +60,12 @@ export class SculptMap {
     return canvas;
   }
 
+  /**
+   * Create a sculpt map from the given dildo geometry.
+   *
+   * @param {DildoGeometry} geometry
+   * @returns {SculptMap}
+   */
   static fromDildoGeometry(geometry: DildoGeometry): SculptMap {
     const w = geometry.getMatrixWidth();
     const h = geometry.getMatrixHeight();
@@ -87,4 +93,6 @@ export class SculptMap {
 
     return smap;
   }
+
+  // static from
 }

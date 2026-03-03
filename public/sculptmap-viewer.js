@@ -126,6 +126,24 @@
     };
     showSculptmap();
 
+    // +---------------------------------------------------------------------------------
+    // | Load the config from the local storage.
+    // | Handle file drop.
+    // +-------------------------------
+    var fileDrop = new FileDrop(document.body);
+    fileDrop.onFileBinaryDropped(function (blob, file) {
+      console.log("Binary file dropped:", file, blob);
+    });
+    // fileDrop.onFileJSONDropped(function (jsonObject) {
+    //   try {
+    //     setPathInstance(BezierPath.fromArray(jsonObject));
+    //     rebuild();
+    //   } catch (e) {
+    //     console.error("Failed to retrieve Bézier path from dropped file.", jsonObject);
+    //     console.log(e);
+    //   }
+    // });
+
     window.addEventListener("resize", () => {
       resizeCanvas();
     });

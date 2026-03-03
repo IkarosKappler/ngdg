@@ -246,18 +246,6 @@
       }
     };
 
-    var showSculptmap = function () {
-      modal.setTitle("Show Sculpt Map");
-      modal.setFooter("");
-      modal.setActions([Modal.ACTION_CLOSE]);
-      const geometry = dildoGeneration.primaryDildoGeometry;
-      const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
-      const canvas = sculptmap.toCanvas();
-      const dataString = canvas.toDataURL();
-      modal.setBody('<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%"></div>');
-      modal.open();
-    };
-
     var showPathJSON = function () {
       modal.setTitle("Show Path JSON");
       modal.setFooter("");
@@ -343,9 +331,27 @@
       const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
       const canvas = sculptmap.toCanvas();
       const dataString = canvas.toDataURL();
-      modal.setBody('<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%"></div>');
+      modal.setBody(
+        '<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%">'
+        // "<br>" +
+        // '<a href="sculpmap-viewer.html?data=' +
+        // dataString +
+        // '" target="_sculptmap-viewer">Test View</a>' +
+        // "</div>"
+      );
       modal.open();
     };
+    // var _showSculptmap = function () {
+    //   modal.setTitle("Show Sculpt Map");
+    //   modal.setFooter("");
+    //   modal.setActions([Modal.ACTION_CLOSE]);
+    //   const geometry = dildoGeneration.primaryDildoGeometry;
+    //   const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
+    //   const canvas = sculptmap.toCanvas();
+    //   const dataString = canvas.toDataURL();
+    //   modal.setBody('<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%"></div>');
+    //   modal.open();
+    // };
 
     // +---------------------------------------------------------------------------------
     // | Updates the sculpt map by recalculating the image data from the 3d model.
