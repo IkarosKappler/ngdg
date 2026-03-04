@@ -105,7 +105,10 @@
   </head>
   <body class="fullscreen">
     <div class="w-100">
-      <canvas id="sculptmap-canvas" width="1024" height="768" title="Drag and rotate here.">Your browser does not support the canvas tag.</canvas>
+      <canvas id="preview-canvas" width="1024" height="768" title="Drag and rotate here.">Your browser does not support the canvas tag.</canvas>
+    </div>
+    <div id="sculptmap-container">
+      <canvas id="sculptmap-canvas" width="64" height="64"></canvas>
     </div>
   </body>
   <style>
@@ -121,6 +124,15 @@
     }
     .right {
        float : right;
+    }
+    #sculptmap-container {
+      position: absolute;
+      display: block;
+      left: 10px;
+      bottom: 10px;
+      width: 64px;
+      height: 64px;
+      background: rgba(128,128,128,0.5);
     }
     /* #gui { position: absolute; top: 2px; left: 2px } */
   </style>

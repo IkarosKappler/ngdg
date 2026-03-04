@@ -24,7 +24,7 @@
 
     var modal = new Modal();
 
-    var canvasId = "sculptmap-canvas";
+    var canvasId = "preview-canvas";
 
     var canvas = document.getElementById(canvasId);
     var parent = canvas.parentElement;
@@ -112,19 +112,55 @@
     // +---------------------------------------------------------------------------------
     // | Show the current sculpt map.
     // +-------------------------------
-    var showSculptmap = function () {
-      modal.setTitle("Show Sculpt Map");
+    var imageFile;
+    var imageBlob;
+    var imageDataUrl;
+    var image;
+    var sculptmapCanvas = document.getElementById("sculptmap-canvas");
+    var sculptmapContext = sculptmapCanvas.getContext("2d");
+    var showInfo = function () {
+      modal.setTitle("Drop file");
       modal.setFooter("");
       modal.setActions([Modal.ACTION_CLOSE]);
-      //   const geometry = dildoGeneration.primaryDildoGeometry;
-      //   const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
-      //   const canvas = sculptmap.toCanvas();
-      //   const dataString = canvas.toDataURL();
-      var dataString = "xxxxx";
-      modal.setBody('<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%"></div>');
+
+      // var dataString = "xxxxx";
+      modal.setBody("Drop a sculpt map file here (an image file).");
       modal.open();
     };
-    showSculptmap();
+
+    var showSculptmap = function () {
+      return new Promise(function (accept, reject) {
+        //   const geometry = dildoGeneration.primaryDildoGeometry;
+        //   const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
+        //   const canvas = sculptmap.toCanvas();
+        //   const dataString = canvas.toDataURL();
+        // var modalBody = document.createElement("div");
+        // var modalCanvas = document.createElement("canvas");
+        // modalBody.style["height"] = "60vh";
+        // modalBody.style["width"] = "100%";
+        // modalCanvas.style["height"] = "100%";
+        // modalCanvas.style["width"] = "100%";
+        // modalBody.appendChild(modalCanvas);
+        // modal.setBody(modalBody);
+
+        if (imageFile) {
+          // Render image
+          // var ctx = modalCanvas.getContext("2d");
+          var img = new Image();
+          img.onload = function () {
+            sculptmapContext.clearRect(0, 0, sculptmapCanvas.width, sculptmapCanvas.height);
+            sculptmapContext.drawImage(img, 0, 0, sculptmapCanvas.width, sculptmapCanvas.height);
+            accept();
+          };
+          img.onerror = reject;
+          // img.src = imageDataUrl; // URL.createObjectURL(blob);
+          img.src = URL.createObjectURL(imageFile);
+        } else {
+          reject();
+        }
+      });
+    };
+    showInfo();
 
     // +---------------------------------------------------------------------------------
     // | Load the config from the local storage.
@@ -133,6 +169,25 @@
     var fileDrop = new FileDrop(document.body);
     fileDrop.onFileBinaryDropped(function (blob, file) {
       console.log("Binary file dropped:", file, blob);
+      // var imageData = GetTheTypedArraySomehow();
+      // var blob = new Blob([imageData], {type: "image/jpeg"});
+      imageFile = file;
+      imageBlob = blob;
+      imageDataUrl = URL.createObjectURL(blob);
+      console.log("imageDataUrl", imageDataUrl);
+
+      // image = new Image();
+      // image.onload = function () {
+      //   /// draw image to canvas
+      //   // context.drawImage(this, x, y);
+      //   console.log("image", this);
+      //   showSculptmap();
+      // };
+      // image.onerror = function (e) {
+      //   console.log("error", e);
+      // };
+      // image.src = imageDataUrl;
+      showSculptmap();
     });
     // fileDrop.onFileJSONDropped(function (jsonObject) {
     //   try {
@@ -151,9 +206,9 @@
 
     var animateCount = 0;
     const animate = () => {
-      if (animateCount % 100 === 0) {
-        console.log("animateCount", animateCount);
-      }
+      // if (animateCount % 100 === 0) {
+      //   console.log("animateCount", animateCount);
+      // }
 
       // Let's animate the cube: a rotation.
       cube.rotation.x += 0.05;
