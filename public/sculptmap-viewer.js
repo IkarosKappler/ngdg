@@ -31,7 +31,8 @@
 
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-    camera.position.z = 500;
+    camera.position.z = 150;
+    camera.position.y = 150;
 
     var lightDistanceFactor = 10.0;
     var intensityFactor = 1.0;
@@ -72,6 +73,9 @@
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const cube = new THREE.Mesh(geometry, material);
+    cube.scale.set(5, 5, 5);
+    // cube.position.z = 25;
+    // cube.position.x = 25;
     scene.add(cube);
 
     var renderer = new THREE.WebGLRenderer({
@@ -92,6 +96,8 @@
     controls.target.copy(cube.position);
     controls.update();
 
+    camera.lookAt({ x: 0, y: 0, z: 0 });
+
     /**
      * Resize the 3d canvas to fit its container.
      */
@@ -106,7 +112,8 @@
       canvas.setAttribute("height", height + "px");
       renderer.setSize(width, height);
       // What am I doing here?
-      camera.setViewOffset(width, height, width / 4, height / 20, width, height);
+      // camera.setViewOffset(width, height, width / 4, height / 20, width, height);
+      // camera.lookAt({ x: 0, y: 0, z: 0 });
     };
 
     // +---------------------------------------------------------------------------------
@@ -130,27 +137,19 @@
 
     var showSculptmap = function () {
       return new Promise(function (accept, reject) {
-        //   const geometry = dildoGeneration.primaryDildoGeometry;
-        //   const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
-        //   const canvas = sculptmap.toCanvas();
-        //   const dataString = canvas.toDataURL();
-        // var modalBody = document.createElement("div");
-        // var modalCanvas = document.createElement("canvas");
-        // modalBody.style["height"] = "60vh";
-        // modalBody.style["width"] = "100%";
-        // modalCanvas.style["height"] = "100%";
-        // modalCanvas.style["width"] = "100%";
-        // modalBody.appendChild(modalCanvas);
-        // modal.setBody(modalBody);
-
         if (imageFile) {
           // Render image
           // var ctx = modalCanvas.getContext("2d");
           var img = new Image();
           img.onload = function () {
-            sculptmapContext.clearRect(0, 0, sculptmapCanvas.width, sculptmapCanvas.height);
-            sculptmapContext.drawImage(img, 0, 0, sculptmapCanvas.width, sculptmapCanvas.height);
-            accept();
+            var w = img.naturalWidth;
+            var h = img.naturalHeight;
+            sculptmapCanvas.setAttribute("width", w);
+            sculptmapCanvas.setAttribute("height", h);
+            sculptmapContext.clearRect(0, 0, w, h);
+            sculptmapContext.drawImage(img, 0, 0, w, h);
+            var pixelData = sculptmapContext.getImageData(0, 0, w, h);
+            accept(pixelData);
           };
           img.onerror = reject;
           // img.src = imageDataUrl; // URL.createObjectURL(blob);
@@ -175,29 +174,23 @@
       imageBlob = blob;
       imageDataUrl = URL.createObjectURL(blob);
       console.log("imageDataUrl", imageDataUrl);
-
-      // image = new Image();
-      // image.onload = function () {
-      //   /// draw image to canvas
-      //   // context.drawImage(this, x, y);
-      //   console.log("image", this);
-      //   showSculptmap();
-      // };
-      // image.onerror = function (e) {
-      //   console.log("error", e);
-      // };
-      // image.src = imageDataUrl;
-      showSculptmap();
+      showSculptmap()
+        .then(function (pixelData) {
+          // Retrieve image data from sculpt map
+          // sculptmapContext;
+          var sculptMap = SculptMap.fromPixelData(pixelData);
+          var sculptGeometry = sculptMap.toGeometry({ width: 20.0, height: 20.0, depth: 20.0 });
+          const sculptMesh = new THREE.Mesh(sculptGeometry, material);
+          scene.add(sculptMesh);
+          scene.remove(cube);
+          camera.lookAt(sculptMesh.position);
+          modal.close();
+        })
+        .catch(function (e) {
+          console.log("Failed to render sculpt map data to 2d image.");
+          console.error(e);
+        });
     });
-    // fileDrop.onFileJSONDropped(function (jsonObject) {
-    //   try {
-    //     setPathInstance(BezierPath.fromArray(jsonObject));
-    //     rebuild();
-    //   } catch (e) {
-    //     console.error("Failed to retrieve Bézier path from dropped file.", jsonObject);
-    //     console.log(e);
-    //   }
-    // });
 
     window.addEventListener("resize", () => {
       resizeCanvas();
@@ -211,8 +204,10 @@
       // }
 
       // Let's animate the cube: a rotation.
-      cube.rotation.x += 0.05;
-      cube.rotation.y += 0.04;
+      if (cube) {
+        cube.rotation.x += 0.05;
+        cube.rotation.y += 0.04;
+      }
 
       controls.update();
       renderer.render(scene, camera);
