@@ -21,10 +21,10 @@
     <script src="lib/globalthis-polyfill.min.js"></script> 
     <script src="lib/path2d-polyfill.min.js"></script>
 
-    <!-- <script src="lib/lil-gui-0.19.min.js"></script>
+    <!-- <script src="lib/lil-gui-0.19.min.js"></script> -->
     <script src="lib/FileSaver.min.js"></script>
 
-    <script src="lib/plotboilerplate/src/cjs/utils/lil.gui.title.polyfill.js"></script>
+    <!-- <script src="lib/plotboilerplate/src/cjs/utils/lil.gui.title.polyfill.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/lil.gui.arrowbounce.polyfill.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/creategui.js"></script> -->
     <script src="lib/plotboilerplate/src/cjs/utils/module.js"></script>
@@ -68,7 +68,7 @@
     <script src="lib/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/WebColors.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/WebColorsContrast.js"></script> -->
-    <script src="lib/plotboilerplate/src/cjs/utils/io/FileDrop-Mod.js"></script> 
+    <script src="lib/plotboilerplate/src/cjs/utils/io/FileDrop.js"></script> 
     <script src="lib/plotboilerplate/src/cjs/utils/detectDarkMode.js"></script>
     <!-- <script src="lib/plotboilerplate/src/cjs/utils/dom/guiSizeToggler.js"></script>
     -->
@@ -103,12 +103,15 @@
     <!-- <script src="lib/slice.min.js"></script> -->
     <!-- <script src="../node_modules/threejs-slice-geometry/src/browser.js"></script> -->
   </head>
-  <body class="fullscreen">
+  <body class="sculptmap-viewer fullscreen">
     <div class="w-100">
       <canvas id="preview-canvas" width="1024" height="768" title="Drag and rotate here.">Your browser does not support the canvas tag.</canvas>
     </div>
     <div id="sculptmap-container">
       <canvas id="sculptmap-canvas" width="64" height="64"></canvas>
+    </div>
+    <div id="action-buttons" class="hidden">
+      <button id="btn-export-stl">To STL</button>
     </div>
   </body>
   <style>

@@ -8,6 +8,7 @@
  * @date   2026-02-25
  * @version 1.0.0
  */
+import * as THREE from "three";
 import { DildoGeometry } from "./DildoGeometry";
 export declare class SculptMap {
     private colorMatrix;
@@ -15,5 +16,17 @@ export declare class SculptMap {
     private height;
     private constructor();
     toCanvas(): HTMLCanvasElement;
+    toGeometry(dimension?: {
+        width: number;
+        height: number;
+        depth: number;
+    }): THREE.BufferGeometry;
+    /**
+     * Create a sculpt map from the given dildo geometry.
+     *
+     * @param {DildoGeometry} geometry
+     * @returns {SculptMap}
+     */
     static fromDildoGeometry(geometry: DildoGeometry): SculptMap;
+    static fromPixelData(pixelData: ImageData): SculptMap;
 }

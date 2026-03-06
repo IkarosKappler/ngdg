@@ -120,7 +120,18 @@ od-bl {
   align-items: center;
 }
 
-.flow-containter button {
+.sculptmap-viewer .flow-containter button {
   padding: 1em;
   margin: 1em;
+}
+
+.sculptmap-viewer #action-buttons {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
+
+
+.hidden {
+  display: none;
 }

@@ -8,6 +8,8 @@
  * @date   2026-02-25
  * @version 1.0.0
  */
+import * as THREE from "three";
+import { Face3, Gmetry } from "three-geometry-hellfix";
 export class SculptMap {
     constructor(width, height) {
         this.colorMatrix = [];
@@ -40,6 +42,45 @@ export class SculptMap {
         // const imageData = context.getImageData(0, 0, rasterWidth, rasterHeight).data;
         return canvas;
     }
+    toGeometry(dimension) {
+        const gmetry = new Gmetry();
+        // Create cylinder geometry
+        var indexMatrix = [];
+        var geometrySize = dimension || {
+            width: 1.0,
+            height: 1.0,
+            depth: 1.0
+        };
+        for (var y = 0; y < this.height; y++) {
+            const row = [];
+            for (var x = 0; x < this.width; x++) {
+                const vertIndex = gmetry.vertices.length;
+                const vert = new THREE.Vector3();
+                const color = this.colorMatrix[y][x];
+                vert.x = (color.r / 255.0) * geometrySize.width;
+                vert.y = (color.g / 255.0) * geometrySize.height;
+                vert.z = (color.b / 255.0) * geometrySize.depth;
+                gmetry.vertices.push(vert);
+                row.push(vertIndex);
+            }
+            indexMatrix.push(row);
+        }
+        // Connect?
+        for (var y = 0; y < this.height; y++) {
+            for (var x = 0; x < this.width; x++) {
+                if (y > 0 && x > 0) {
+                    gmetry.faces.push(new Face3(indexMatrix[y][x], indexMatrix[y - 1][x], indexMatrix[y][x - 1]));
+                }
+            }
+        }
+        return gmetry.toBufferGeometry();
+    }
+    /**
+     * Create a sculpt map from the given dildo geometry.
+     *
+     * @param {DildoGeometry} geometry
+     * @returns {SculptMap}
+     */
     static fromDildoGeometry(geometry) {
         const w = geometry.getMatrixWidth();
         const h = geometry.getMatrixHeight();
@@ -62,6 +103,38 @@ export class SculptMap {
             smap.colorMatrix.push(colorRow);
         }
         return smap;
+    }
+    static fromPixelData(pixelData) {
+        var w = pixelData.width;
+        var h = pixelData.height;
+        const sculptMap = new SculptMap(w, h);
+        // sculptMap.colorMatrix = []; // Array(h);
+        for (var y = 0; y < h; y++) {
+            const row = [];
+            for (var x = 0; x < w; x++) {
+                row.push({ r: NaN, g: NaN, b: NaN, a: NaN });
+            }
+            sculptMap.colorMatrix.push(row);
+        }
+        // Loop over each pixel and invert the color.
+        var data = pixelData.data;
+        var dataLength = data.length;
+        var x = 0;
+        var y = 0;
+        for (var i = 0, n = dataLength; i < n && x < w && y < h; i += 4) {
+            const color = sculptMap.colorMatrix[y][x];
+            color.r = 255 - data[i];
+            color.g = 255 - data[i + 1];
+            color.b = 255 - data[i + 2];
+            color.a = 255 - data[i + 3]; // Not really in use
+            x++;
+            if (x >= w) {
+                x = 0;
+                y++;
+            }
+        }
+        console.log("sculptMap.colorMatrix", sculptMap.colorMatrix);
+        return sculptMap;
     }
 }
 //# sourceMappingURL=SculptMap.js.map

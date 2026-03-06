@@ -35,6 +35,7 @@
   },
   "scripts": {
     "build": "npm run compile && npm run webpack && npm run copy-libs-to-public",
+    "build-dev": "npm run compile && npm run webpack && npm run copy-libs-to-public-dev",
     "compile": "npm run compile:cjs && npm run compile:esm",
     "compile:cjs": "tsc -p tsconfig.json --target es5 --module commonjs --outDir src/cjs/ && npm run copy-src-to-public",
     "compile:esm": "tsc -p tsconfig.json --target ES2015 --module ESNext --outdir src/esm/ --moduleResolution node",
@@ -44,6 +45,7 @@
     "copy-src-to-public": "cp -R src public/lib/ngdg",
     "copy-dist-to-public": "cp -R dist public/lib/ngdg",
     "copy-libs-to-public": "npm run clear-libs && npm run copy-lib-alloyfinger &&  npm run copy-lib-earcut && npm run copy-lib-ngdg && npm run copy-lib-plotboilerplate && npm run copy-lib-threejs && npm run copy-lib-three-gmetry && npm run copy-lib-three-slice && npm run copy-lib-uistats",
+    "copy-libs-to-public-dev": "npm run clear-libs && npm run copy-lib-alloyfinger &&  npm run copy-lib-earcut && npm run copy-lib-ngdg && npm run copy-lib-plotboilerplate-dev && npm run copy-lib-threejs && npm run copy-lib-three-gmetry && npm run copy-lib-three-slice && npm run copy-lib-uistats",
     "clear-libs": "rm -rf public/lib/alloyfinger-typescript && rm -rf earcut-typescript && rm -rf public/lib/ngdg && rm -rf public/lib/plotboilerplate && rm -rf public/lib/three && rm -rf public/lib/three-geometry-hellfix && rm -rf public/lib/threejs-slice-geometry-typescript",
     "copy-lib-alloyfinger": "mkdir public/lib/alloyfinger-typescript && cp -R node_modules/alloyfinger-typescript/src public/lib/alloyfinger-typescript/src",
     "copy-lib-earcut": "cp -R node_modules/earcut-typescript/dist public/lib/earcut-typescript",

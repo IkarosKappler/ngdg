@@ -59,6 +59,9 @@ http://localhost:8080/public/index-dev.html?drawRulers=0&drawResizeHandleLines=0
 
 ### Changelog
 
+- 2026-03-06
+  - Fixing an error in the STL exportet (class path).
+  - Finalizing a simple sculpt map viewer.
 - 2026-03-02
   - GUI: removed the GUI-Size-Toggler: is now part of PlotBoierplate.
   - Replacing dat.gui by lil-gui.

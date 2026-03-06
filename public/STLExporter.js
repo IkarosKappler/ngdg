@@ -42,7 +42,8 @@ THREE.STLExporter.prototype = {
 
           if (geometry.isBufferGeometry) {
             // geometry = new THREE.Geometry().fromBufferGeometry(geometry);
-            geometry = new ThreeGeometryHellfix.Gmetry().fromBufferGeometry(geometry);
+            // geometry = new ThreeGeometryHellfix.Gmetry().fromBufferGeometry(geometry);
+            geometry = new Gmetry().fromBufferGeometry(geometry);
           }
 
           if (geometry.isGeometry) {
