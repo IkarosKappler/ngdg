@@ -306,23 +306,6 @@
     // +---------------------------------------------------------------------------------
     // | Updates the sculpt map by recalculating the image data from the 3d model.
     // +-------------------------------
-    var setRandomizedResult = function (result) {
-      setPathInstance(result.outline);
-      config.bendAngle = result.bendAngle;
-      rebuild();
-    };
-    var dildoRandomizerDialog = new DildoRandomizerDialog(pb, setRandomizedResult);
-    var showDildoRandomizer = function () {
-      modal.setTitle("Dildo Randomizer");
-      modal.setFooter("");
-      modal.setActions([Modal.ACTION_CLOSE]);
-      modal.setBody(dildoRandomizerDialog.rootElement);
-      modal.open();
-    };
-
-    // +---------------------------------------------------------------------------------
-    // | Updates the sculpt map by recalculating the image data from the 3d model.
-    // +-------------------------------
     var showSculptmap = function () {
       modal.setTitle("Show Sculpt Map");
       modal.setFooter("");
@@ -341,17 +324,6 @@
       );
       modal.open();
     };
-    // var _showSculptmap = function () {
-    //   modal.setTitle("Show Sculpt Map");
-    //   modal.setFooter("");
-    //   modal.setActions([Modal.ACTION_CLOSE]);
-    //   const geometry = dildoGeneration.primaryDildoGeometry;
-    //   const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
-    //   const canvas = sculptmap.toCanvas();
-    //   const dataString = canvas.toDataURL();
-    //   modal.setBody('<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%"></div>');
-    //   modal.open();
-    // };
 
     // +---------------------------------------------------------------------------------
     // | Updates the sculpt map by recalculating the image data from the 3d model.
@@ -428,6 +400,23 @@
       bezierResizer.horizontalResizeHandle.attr.draggable = config.drawResizeHandleLines;
       // outline.
       pb.redraw();
+    };
+
+    // +---------------------------------------------------------------------------------
+    // | Updates the sculpt map by recalculating the image data from the 3d model.
+    // +-------------------------------
+    var setRandomizedResult = function (result) {
+      setPathInstance(result.outline);
+      config.bendAngle = result.bendAngle;
+      rebuild();
+    };
+    var dildoRandomizerDialog = new DildoRandomizerDialog(pb, config, setRandomizedResult, handlePathVisibilityChanged);
+    var showDildoRandomizer = function () {
+      modal.setTitle("Dildo Randomizer");
+      modal.setFooter("");
+      modal.setActions([Modal.ACTION_CLOSE]);
+      modal.setBody(dildoRandomizerDialog.rootElement);
+      modal.open();
     };
 
     // +---------------------------------------------------------------------------------
@@ -683,57 +672,57 @@
     // +---------------------------------------------------------------------------------
     // | Set the new path instance and install a Bézier interaction helper.
     // +-------------------------------
-    var _setPathInstance = function (newOutline, keepOldInteractionHelper) {
-      console.log("setPathInstance");
-      if (outline && typeof outline !== "undefined") {
-        removePathListeners(outline);
-        // bezierPathInteractionHelper.destroy();
-        pb.removeAll(false); // keepVertices=false, Do not keep vertices
-      }
+    // var _setPathInstance = function (newOutline, keepOldInteractionHelper) {
+    //   console.log("setPathInstance");
+    //   if (outline && typeof outline !== "undefined") {
+    //     removePathListeners(outline);
+    //     // bezierPathInteractionHelper.destroy();
+    //     pb.removeAll(false); // keepVertices=false, Do not keep vertices
+    //   }
 
-      if (outline && !keepOldInteractionHelper) {
-        // pb.remove(outline, false, true); // redraw=false, removeWidthVertices=true
-      }
-      pb.add(newOutline, false);
+    //   if (outline && !keepOldInteractionHelper) {
+    //     // pb.remove(outline, false, true); // redraw=false, removeWidthVertices=true
+    //   }
+    //   pb.add(newOutline, false);
 
-      outline = newOutline;
-      updatePathResizer();
-      addPathListeners(newOutline);
-      updateOutlineStats();
-      // handlePathVisibilityChanged();
+    //   outline = newOutline;
+    //   updatePathResizer();
+    //   addPathListeners(newOutline);
+    //   updateOutlineStats();
+    //   // handlePathVisibilityChanged();
 
-      // Install a Bézier interaction helper.
-      if (!bezierPathInteractionHelper || !keepOldInteractionHelper) {
-        if (bezierPathInteractionHelper) {
-          console.log("Destroying old interaction helper");
-          bezierPathInteractionHelper.destroy();
-        }
+    //   // Install a Bézier interaction helper.
+    //   if (!bezierPathInteractionHelper || !keepOldInteractionHelper) {
+    //     if (bezierPathInteractionHelper) {
+    //       console.log("Destroying old interaction helper");
+    //       bezierPathInteractionHelper.destroy();
+    //     }
 
-        bezierPathInteractionHelper = new BezierPathInteractionHelper(pb, [outline], {
-          maxDetectDistance: 32.0,
-          autoAdjustPaths: true,
-          allowPathRemoval: false, // It is not alowed to remove the outline path
-          onPointerMoved: function (pathIndex, newA, newB, newT) {
-            if (pathIndex == -1) {
-              bezierDistanceLine = null;
-            } else {
-              bezierDistanceLine = new Line(newA, newB);
-              bezierDistanceT = newT;
-            }
-          },
-          onVertexInserted: function (_pathIndex, _insertAfterIndex, newPath, _oldPath) {
-            removePathListeners(outline);
-            setPathInstance(newPath, false);
-            rebuild();
-          },
-          onVerticesDeleted: function (_pathIndex, _deletedVertIndices, newPath, _oldPath) {
-            removePathListeners(outline);
-            setPathInstance(newPath, false);
-            rebuild();
-          }
-        });
-      }
-    }; // END setPathInstance
+    //     bezierPathInteractionHelper = new BezierPathInteractionHelper(pb, [outline], {
+    //       maxDetectDistance: 32.0,
+    //       autoAdjustPaths: true,
+    //       allowPathRemoval: false, // It is not alowed to remove the outline path
+    //       onPointerMoved: function (pathIndex, newA, newB, newT) {
+    //         if (pathIndex == -1) {
+    //           bezierDistanceLine = null;
+    //         } else {
+    //           bezierDistanceLine = new Line(newA, newB);
+    //           bezierDistanceT = newT;
+    //         }
+    //       },
+    //       onVertexInserted: function (_pathIndex, _insertAfterIndex, newPath, _oldPath) {
+    //         removePathListeners(outline);
+    //         setPathInstance(newPath, false);
+    //         rebuild();
+    //       },
+    //       onVerticesDeleted: function (_pathIndex, _deletedVertIndices, newPath, _oldPath) {
+    //         removePathListeners(outline);
+    //         setPathInstance(newPath, false);
+    //         rebuild();
+    //       }
+    //     });
+    //   }
+    // }; // END setPathInstance
 
     var setDefaultPathInstance = function (doRebuild) {
       setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));

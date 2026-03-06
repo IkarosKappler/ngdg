@@ -45,11 +45,11 @@ export class DildoRandomizer {
       const startPoint = pathVertices[i];
       const endPoint = pathVertices[i + 1];
       const helperLine = new Line(startPoint, endPoint);
-      console.log("helperLine", helperLine);
+      // console.log("helperLine", helperLine);
 
       const startPointRatio: number = DildoRandomizer.randFloatInRange(0.1, 0.8);
       const endPointRatio: number = DildoRandomizer.randFloatInRange(startPointRatio, 0.9);
-      console.log("startPointRatio", startPointRatio, "endPointRatio", endPointRatio);
+      // console.log("startPointRatio", startPointRatio, "endPointRatio", endPointRatio);
       const startControlPoint: Vertex = helperLine.vertAt(startPointRatio);
       const endControlPoint: Vertex = helperLine.vertAt(endPointRatio);
       if (i == 0) {

@@ -32,10 +32,10 @@ var DildoRandomizer = /** @class */ (function () {
             var startPoint = pathVertices[i];
             var endPoint = pathVertices[i + 1];
             var helperLine = new plotboilerplate_1.Line(startPoint, endPoint);
-            console.log("helperLine", helperLine);
+            // console.log("helperLine", helperLine);
             var startPointRatio = DildoRandomizer.randFloatInRange(0.1, 0.8);
             var endPointRatio = DildoRandomizer.randFloatInRange(startPointRatio, 0.9);
-            console.log("startPointRatio", startPointRatio, "endPointRatio", endPointRatio);
+            // console.log("startPointRatio", startPointRatio, "endPointRatio", endPointRatio);
             var startControlPoint = helperLine.vertAt(startPointRatio);
             var endControlPoint = helperLine.vertAt(endPointRatio);
             if (i == 0) {

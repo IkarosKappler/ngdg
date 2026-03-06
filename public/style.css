@@ -112,12 +112,21 @@ od-bl {
   width: 100%;
 }
 
+.grid-w-33 {
+  width: 33%;
+}
+
+
 .grid-w-50 {
   width: 50%;
 }
 
 .center {
   align-items: center;
+}
+
+.right {
+  justify-content: right;
 }
 
 .sculptmap-viewer .flow-containter button {
@@ -134,4 +143,16 @@ od-bl {
 
 .hidden {
   display: none;
+}
+
+.error {
+  color: rgb(67, 11, 11)
+}
+
+.font-600 {
+  font-size: 0.6em;
+}
+
+.font-600 button {
+  font-size: 0.9em;
 }
