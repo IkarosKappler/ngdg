@@ -29,15 +29,15 @@ export class DildoRandomizer {
             const startPoint = pathVertices[i];
             const endPoint = pathVertices[i + 1];
             const helperLine = new Line(startPoint, endPoint);
-            console.log("helperLine", helperLine);
+            // console.log("helperLine", helperLine);
             const startPointRatio = DildoRandomizer.randFloatInRange(0.1, 0.8);
             const endPointRatio = DildoRandomizer.randFloatInRange(startPointRatio, 0.9);
-            console.log("startPointRatio", startPointRatio, "endPointRatio", endPointRatio);
+            // console.log("startPointRatio", startPointRatio, "endPointRatio", endPointRatio);
             const startControlPoint = helperLine.vertAt(startPointRatio);
             const endControlPoint = helperLine.vertAt(endPointRatio);
             if (i == 0) {
                 // Bottom curve should show straight up.
-                startControlPoint.x = this.bounds.min.x;
+                startControlPoint.x = startPoint.x; // this.bounds.min.x;
             }
             else if (i + 2 >= pathVertices.length) {
                 // Last point (top) should show to the left.
@@ -77,7 +77,7 @@ export class DildoRandomizer {
     randomizedPathVertices(vertexCount) {
         const pathVertices = [];
         // Create the bottom point
-        pathVertices.push(new Vertex(this.bounds.min.x, this.bounds.max.y));
+        pathVertices.push(new Vertex(this.bounds.min.x + Math.random() * this.bounds.width * 0.75, this.bounds.max.y));
         for (var i = 1; i + 1 < vertexCount; i++) {
             //   const segmendBounds = new Bounds(
             //     { x: this.bounds.min.x, y: this.bounds.max.y - i * (this.bounds.height / vertexCount) },

@@ -10,7 +10,6 @@
   //   const DEG_TO_RAD = Math.PI / 180.0;
 
   var DildoRandomizerDialog = function (pb, modal, config, outlineChangedCallback, onPathVisibilityChanged) {
-    // this.appContext = appContext;
     this.pb = pb;
     this.modal = modal;
     this.config = config;
@@ -291,17 +290,56 @@
     this.outlineChangedCallback(result);
 
     if (this.curSettings.isPutEnabled) {
-      // TODO: Store result
-      // ...
+      this._storeCurrentResult();
     }
-    if (this.curSettings.isCreateManyEnabled) {
-      var _self = this;
-      globalThis.setTimeout(function () {
-        _self._randomizeDildoSettings(curSequenceID);
-      }, 1000);
-    } else {
-      this.__setRunning(false);
-    }
+    var _self = this;
+    this._storeCurrentResult()
+      .then(function () {
+        if (_self.curSettings.isCreateManyEnabled) {
+          globalThis.setTimeout(function () {
+            _self._randomizeDildoSettings(curSequenceID);
+          }, 1000);
+        } else {
+          _self.__setRunning(false);
+        }
+      })
+      .catch(function (e) {
+        console.error(e);
+        _self._displayError("Failed to store model. See error console for details.");
+        _self.__setRunning(false);
+      });
+  };
+
+  // +---------------------------------------------------------------------------------
+  // | Tries to store the current model, screenshots sculpt map and settings.
+  // +-------------------------------
+  DildoRandomizerDialog.prototype._storeCurrentResult = function () {
+    var _self = this;
+    return new Promise(function (accept, reject) {
+      if (!_self.curSettings.isPutEnabled) {
+        accept();
+        return;
+      }
+      // Use AJAX/Axios
+      console.log("Sending data to ", _self.curSettings.putURL);
+      axios({
+        method: "post",
+        url: _self.curSettings.putURL, // "/user/12345",
+        data: {
+          firstName: "Fred",
+          lastName: "Flintstone"
+        }
+      })
+        .then(function (response) {
+          // response.data.pipe(fs.createWriteStream("ada_lovelace.jpg"));
+          console.log("Succeeded");
+          accept();
+        })
+        .catch(function (err) {
+          console.error(err);
+          reject();
+        });
+    });
   };
 
   // +---------------------------------------------------------------------------------
@@ -343,9 +381,7 @@
     // Get the maximum bounds the final 2D model should ideallically be
     // displayed in.
 
-    // var viewport = this.pb.viewport();
-    // var viewport = this.pb.viewport().getScaled(0.9);
-    this.viewport = this.pb.viewport(); // viewport;
+    this.viewport = this.pb.viewport();
     if (reevaluateFormSettings) {
       this.curSettings = this.getCurrentFormSettings();
     }
@@ -371,10 +407,8 @@
       )
     );
 
-    // // Move to the lower part to make it easier to see the full result below the dialog.
-    // var offsetY = viewport.max.y - idealLeftHalfBounds.max.y;
-    // idealLeftHalfBounds = idealLeftHalfBounds.getMoved({ x: 0, y: offsetY - 16 });
-    var offsetX = 0.0; // idealLeftHalfBounds.max.x - idealBounds.max.x;
+    // Move to the lower part to make it easier to see the full result below the dialog.
+    var offsetX = 0.0;
     var offsetY = this.viewport.max.y - bounds.max.y;
     bounds = bounds.getMoved({ x: offsetX, y: offsetY });
 
