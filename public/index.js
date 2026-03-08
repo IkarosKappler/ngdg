@@ -193,6 +193,8 @@
       }
     };
 
+    var modal = new Modal();
+
     var DEFAULT_BEZIER_COLOR = pb.drawConfig.bezier.color;
     var DEFAULT_BEZIER_HANDLE_LINE_COLOR = pb.drawConfig.bezier.handleLine.color;
 
@@ -201,8 +203,6 @@
         return new THREE.OrbitControls(camera, domElement);
       }
     });
-
-    var modal = new Modal();
 
     // +---------------------------------------------------------------------------------
     // | Export the model as an STL file.
@@ -410,13 +410,9 @@
       config.bendAngle = result.bendAngle;
       rebuild();
     };
-    var dildoRandomizerDialog = new DildoRandomizerDialog(pb, config, setRandomizedResult, handlePathVisibilityChanged);
+    var dildoRandomizerDialog = new DildoRandomizerDialog(pb, modal, config, setRandomizedResult, handlePathVisibilityChanged);
     var showDildoRandomizer = function () {
-      modal.setTitle("Dildo Randomizer");
-      modal.setFooter("");
-      modal.setActions([Modal.ACTION_CLOSE]);
-      modal.setBody(dildoRandomizerDialog.rootElement);
-      modal.open();
+      dildoRandomizerDialog.open();
     };
 
     // +---------------------------------------------------------------------------------
@@ -567,6 +563,15 @@
       if (config.showSilhouette && dildoSilhouette) {
         draw.polyline(dildoSilhouette.leftPathVertices, true, "orange", 3.0);
         draw.polyline(dildoSilhouette.rightPathVertices, true, "orange", 3.0);
+      }
+
+      if (dildoRandomizerDialog) {
+        try {
+          dildoRandomizerDialog.drawIdealBounds(draw, fill);
+        } catch (exc) {
+          console.error("Failed to pre-draw the dildoRandomizerDialog's settings.");
+          console.error(exc);
+        }
       }
     };
 

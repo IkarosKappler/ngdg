@@ -97,6 +97,14 @@ od-bl {
   justify-content: space-evenly;
 }
 
+.modal .randomizerForm input, 
+.modal .randomizerForm select {
+  min-width: 64px;
+}
+
+.modal .randomizerForm .isPutEnabled {
+
+}
 
 .modal .randomizerForm .putURL {
   /* width: 100%; */
@@ -108,8 +116,13 @@ od-bl {
 /* Basic grid system */
 .flow-containter {
   display: flex;
-  justify-content: space-evenly;
+  /* justify-content: space-evenly; */
   width: 100%;
+}
+
+.grid-w-25 {
+  width: 25%;
+  max-width: 25%;
 }
 
 .grid-w-33 {
@@ -119,6 +132,11 @@ od-bl {
 
 .grid-w-50 {
   width: 50%;
+}
+
+.grid-w-100 {
+  width: 100%;
+  min-width: 100%;
 }
 
 .center {
@@ -146,7 +164,8 @@ od-bl {
 }
 
 .error {
-  color: rgb(67, 11, 11)
+  color: rgb(93, 0, 0);
+  border: 1px solid rgb(93, 0, 0);
 }
 
 .font-600 {

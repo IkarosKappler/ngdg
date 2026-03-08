@@ -40,7 +40,7 @@ var DildoRandomizer = /** @class */ (function () {
             var endControlPoint = helperLine.vertAt(endPointRatio);
             if (i == 0) {
                 // Bottom curve should show straight up.
-                startControlPoint.x = this.bounds.min.x;
+                startControlPoint.x = startPoint.x; // this.bounds.min.x;
             }
             else if (i + 2 >= pathVertices.length) {
                 // Last point (top) should show to the left.
@@ -80,7 +80,7 @@ var DildoRandomizer = /** @class */ (function () {
     DildoRandomizer.prototype.randomizedPathVertices = function (vertexCount) {
         var pathVertices = [];
         // Create the bottom point
-        pathVertices.push(new plotboilerplate_1.Vertex(this.bounds.min.x, this.bounds.max.y));
+        pathVertices.push(new plotboilerplate_1.Vertex(this.bounds.min.x + Math.random() * this.bounds.width * 0.75, this.bounds.max.y));
         for (var i = 1; i + 1 < vertexCount; i++) {
             //   const segmendBounds = new Bounds(
             //     { x: this.bounds.min.x, y: this.bounds.max.y - i * (this.bounds.height / vertexCount) },

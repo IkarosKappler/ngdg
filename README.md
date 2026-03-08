@@ -59,6 +59,8 @@ http://localhost:8080/public/index-dev.html?drawRulers=0&drawResizeHandleLines=0
 
 ### Changelog
 
+- 2026-03-08
+  - Adding a progressbar and infinite model generation to the randomizer.
 - 2026-03-06
   - Fixing an error in the STL exportet (class path).
   - Finalizing a simple sculpt map viewer.
