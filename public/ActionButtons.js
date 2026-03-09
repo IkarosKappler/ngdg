@@ -4,6 +4,7 @@
  * @author  Ikaros Kappler
  * @version 1.0.0
  * @date    2021-12-03
+ * @date    2026-03-09 Putting all action buttons into a container to make them scalable for mobile devices.
  */
 
 globalThis.ActionButtons =
@@ -19,7 +20,7 @@ globalThis.ActionButtons =
     AB.addNewButton = function (actionCallback) {
       var buttonNew = createStyledButton("icons/empty_document.png", "Start with a new model", actionCallback);
       buttonNew.style.transform = "translateX(0px)";
-      document.querySelector("body").appendChild(buttonNew);
+      document.querySelector("#action-buttons").appendChild(buttonNew);
     };
 
     /**
@@ -30,7 +31,7 @@ globalThis.ActionButtons =
     AB.addFitToViewButton = function (actionCallback) {
       var buttonFit = createStyledButton("icons/fit_view.png", "Zoom to best fit", actionCallback);
       buttonFit.style.transform = "translateX(26px)";
-      document.querySelector("body").appendChild(buttonFit);
+      document.querySelector("#action-buttons").appendChild(buttonFit);
     };
 
     /**
@@ -41,7 +42,7 @@ globalThis.ActionButtons =
     AB.addShowSculptMapButton = function (actionCallback) {
       var buttonSculptMap = createStyledButton("icons/icon-sculptmap.png", "Show sculpt map", actionCallback);
       buttonSculptMap.style.transform = "translateX(52px)";
-      document.querySelector("body").appendChild(buttonSculptMap);
+      document.querySelector("#action-buttons").appendChild(buttonSculptMap);
     };
 
     /**
@@ -52,7 +53,7 @@ globalThis.ActionButtons =
     AB.addShowRandomizerButton = function (actionCallback) {
       var buttonRandomizer = createStyledButton("icons/icon-randomizer-64px.png", "Show randomizer", actionCallback);
       buttonRandomizer.style.transform = "translateX(78px)";
-      document.querySelector("body").appendChild(buttonRandomizer);
+      document.querySelector("#action-buttons").appendChild(buttonRandomizer);
     };
 
     var createStyledButton = function (iconPath, title, actionCallback) {

@@ -21,6 +21,11 @@
     var GUP = gup();
     var params = new Params(GUP);
     var isDarkmode = detectDarkMode(GUP);
+    var isMobile = detectMobileMode(params);
+    console.log("isMobile", isMobile);
+    if (isMobile) {
+      document.body.classList.add("mobile");
+    }
     var isLocalstorageDisabled = params.getBoolean("disableLocalStorage", false);
 
     // All config params are optional.
@@ -310,19 +315,21 @@
       modal.setTitle("Show Sculpt Map");
       modal.setFooter("");
       modal.setActions([Modal.ACTION_CLOSE]);
+      // const geometry = dildoGeneration.primaryDildoGeometry;
+      // const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
+      // const canvas = sculptmap.toCanvas();
+      // const dataString = canvas.toDataURL();
+      const dataString = getSculptmapDataURL();
+      modal.setBody('<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%">');
+      modal.open();
+    };
+
+    var getSculptmapDataURL = function () {
       const geometry = dildoGeneration.primaryDildoGeometry;
       const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
       const canvas = sculptmap.toCanvas();
       const dataString = canvas.toDataURL();
-      modal.setBody(
-        '<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%">'
-        // "<br>" +
-        // '<a href="sculpmap-viewer.html?data=' +
-        // dataString +
-        // '" target="_sculptmap-viewer">Test View</a>' +
-        // "</div>"
-      );
-      modal.open();
+      return dataString;
     };
 
     // +---------------------------------------------------------------------------------
@@ -400,19 +407,6 @@
       bezierResizer.horizontalResizeHandle.attr.draggable = config.drawResizeHandleLines;
       // outline.
       pb.redraw();
-    };
-
-    // +---------------------------------------------------------------------------------
-    // | Updates the sculpt map by recalculating the image data from the 3d model.
-    // +-------------------------------
-    var setRandomizedResult = function (result) {
-      setPathInstance(result.outline);
-      config.bendAngle = result.bendAngle;
-      rebuild();
-    };
-    var dildoRandomizerDialog = new DildoRandomizerDialog(pb, modal, config, setRandomizedResult, handlePathVisibilityChanged);
-    var showDildoRandomizer = function () {
-      dildoRandomizerDialog.open();
     };
 
     // +---------------------------------------------------------------------------------
@@ -674,61 +668,6 @@
       });
     }; // END setPathInstance
 
-    // +---------------------------------------------------------------------------------
-    // | Set the new path instance and install a Bézier interaction helper.
-    // +-------------------------------
-    // var _setPathInstance = function (newOutline, keepOldInteractionHelper) {
-    //   console.log("setPathInstance");
-    //   if (outline && typeof outline !== "undefined") {
-    //     removePathListeners(outline);
-    //     // bezierPathInteractionHelper.destroy();
-    //     pb.removeAll(false); // keepVertices=false, Do not keep vertices
-    //   }
-
-    //   if (outline && !keepOldInteractionHelper) {
-    //     // pb.remove(outline, false, true); // redraw=false, removeWidthVertices=true
-    //   }
-    //   pb.add(newOutline, false);
-
-    //   outline = newOutline;
-    //   updatePathResizer();
-    //   addPathListeners(newOutline);
-    //   updateOutlineStats();
-    //   // handlePathVisibilityChanged();
-
-    //   // Install a Bézier interaction helper.
-    //   if (!bezierPathInteractionHelper || !keepOldInteractionHelper) {
-    //     if (bezierPathInteractionHelper) {
-    //       console.log("Destroying old interaction helper");
-    //       bezierPathInteractionHelper.destroy();
-    //     }
-
-    //     bezierPathInteractionHelper = new BezierPathInteractionHelper(pb, [outline], {
-    //       maxDetectDistance: 32.0,
-    //       autoAdjustPaths: true,
-    //       allowPathRemoval: false, // It is not alowed to remove the outline path
-    //       onPointerMoved: function (pathIndex, newA, newB, newT) {
-    //         if (pathIndex == -1) {
-    //           bezierDistanceLine = null;
-    //         } else {
-    //           bezierDistanceLine = new Line(newA, newB);
-    //           bezierDistanceT = newT;
-    //         }
-    //       },
-    //       onVertexInserted: function (_pathIndex, _insertAfterIndex, newPath, _oldPath) {
-    //         removePathListeners(outline);
-    //         setPathInstance(newPath, false);
-    //         rebuild();
-    //       },
-    //       onVerticesDeleted: function (_pathIndex, _deletedVertIndices, newPath, _oldPath) {
-    //         removePathListeners(outline);
-    //         setPathInstance(newPath, false);
-    //         rebuild();
-    //       }
-    //     });
-    //   }
-    // }; // END setPathInstance
-
     var setDefaultPathInstance = function (doRebuild) {
       setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
       if (doRebuild) {
@@ -871,7 +810,7 @@
         function () {
           //  return outline ? outline.toJSON() : null;
           return {
-            bezierJSON: outline ? outline.toJSON() : null,
+            bezierJSON: getBezierJSON(),
             bendAngle: config.bendAngle,
             twistAngle: config.twistAngle,
             baseShapeExcentricity: config.baseShapeExcentricity
@@ -879,6 +818,10 @@
         }
       );
     }
+
+    var getBezierJSON = function () {
+      return outline ? outline.toJSON() : null;
+    };
 
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
@@ -901,6 +844,24 @@
       var scaledBounds = scaleBounds(outline.getBounds(), 1.6);
       pb.fitToView(scaledBounds);
     });
+
+    // +---------------------------------------------------------------------------------
+    // | Updates the sculpt map by recalculating the image data from the 3d model.
+    // +-------------------------------
+    var setRandomizedResult = function (result) {
+      setPathInstance(result.outline);
+      config.bendAngle = result.bendAngle;
+      rebuild();
+    };
+    var dildoRandomizerDialog = new DildoRandomizerDialog(pb, modal, config, {
+      setRandomizedResult: setRandomizedResult,
+      handlePathVisibilityChanged: handlePathVisibilityChanged,
+      getBezierJSON: getBezierJSON,
+      getSculptmapDataURL: getSculptmapDataURL
+    });
+    var showDildoRandomizer = function () {
+      dildoRandomizerDialog.open();
+    };
 
     // Add action buttons
     // prettier-ignore

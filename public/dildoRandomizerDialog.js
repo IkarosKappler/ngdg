@@ -9,12 +9,18 @@
 (function (_context) {
   //   const DEG_TO_RAD = Math.PI / 180.0;
 
-  var DildoRandomizerDialog = function (pb, modal, config, outlineChangedCallback, onPathVisibilityChanged) {
+  // outlineChangedCallback
+  // onPathVisibilityChanged
+  // getBezierJSON
+  // getSculptmapDataURL
+  var DildoRandomizerDialog = function (pb, modal, config, callbackOptions) {
+    // outlineChangedCallback, onPathVisibilityChanged, getBezierJSON) {
     this.pb = pb;
     this.modal = modal;
     this.config = config;
-    this.outlineChangedCallback = outlineChangedCallback;
-    this.onPathVisibilityChanged = onPathVisibilityChanged;
+    // this.outlineChangedCallback = outlineChangedCallback;
+    // this.onPathVisibilityChanged = onPathVisibilityChanged;
+    this.callbackOptions = callbackOptions;
     this.rootElement = document.createElement("form");
     this.rootElement.setAttribute("id", "randomizerForm");
     this.rootElement.classList.add("randomizerForm");
@@ -54,10 +60,12 @@
         <div class="grid-w-25">
           <label for="bendValueMin">Min Bend Value</label><br>
           <input type="number" id="bendValueMin" min="0" max="180" value="0" name="bendValueMin" />
+          °
         </div>
         <div class="grid-w-25">
           <label for="bendValueMax">Max Bend Value</label><br>
           <input type="number" id="bendValueMax" min="0" max="180" value="120" name="bendValueMax" />
+          °
         </div>
       </div>
       <div class="flow-containter center">
@@ -73,26 +81,28 @@
           </select>
         </div>
         <div class="grid-w-25">
-          <label for="optimalBoxWidthPx">Optimal box width (px)</label><br>
+          <label for="optimalBoxWidthPx">Optimal box width</label><br>
           <select id="optimalBoxWidthPx">
             <option value="256">256</option>
             <option value="512">512</option>
             <option value="1024" selected>1024</option>
             <option value="2048">2048</option>
-          </select>
+          </select> px
         </div>
       </div>
       <div class="flow-containter">
-        <div class="grid-w-33"></div>
+        <div class="grid-w-33"><!-- empty --></div>
         <div class="grid-w-33 flex-flow center">
           <button id="randomizeButton">Randomize</button>
         </div>
         <div class="grid-w-33">
-          <label for="isCreateManyEnabled">Create Many</label>
-          <input type="checkbox" name="isCreateManyEnabled" id="isCreateManyEnabled"><br>
-          <div class="flow-containter">
+          <div class="flex-flow grid-w-50">
+            <label for="isCreateManyEnabled">Create&nbsp;Many</label>
+            <input type="checkbox" name="isCreateManyEnabled" id="isCreateManyEnabled">
+          </div>
+          <div class="flex-flow grid-w-50">
+          <label for="maxIterationCount">Max&nbsp;Iterations</label>
             <input type="number" id="maxIterationCount" name="maxIterationCount" min="0" value="99" />
-            <label for="maxIterationCount">Max Iterations</label><br>
           </div>
           <span id="iterationDisplay"></span>
         </div>
@@ -104,26 +114,41 @@
           <label for="isPutEnabled">Store data</label>
           <input type="checkbox" name="isPutEnabled" id="isPutEnabled">
           <input type="text" id="putURL" class="putURL" name="putURL" value="http://127.0.0.1:1337/model/put" disabled>
+          <button id="btn_store-now">Store Now</button>
       </div>
-      <div class="error-container w-100 error"></div>
+      <div class="status-container w-100 error"></div>
     </div> <!-- END small font -->
 `;
 
     this.rootElement.querySelector("#randomizeButton").addEventListener("click", this._randomizeButtonEventHandler());
     this.rootElement.querySelector("#btn-show-path").addEventListener("click", this._togglePathVisibilityHandler(true));
     this.rootElement.querySelector("#btn-hide-path").addEventListener("click", this._togglePathVisibilityHandler(false));
+    this.rootElement.querySelector("#btn_store-now").addEventListener("click", this._storeNowHandler());
 
     console.log("this.modal.modalElements", this.modal.modalElements);
     this.modal.modalElements.modal.header.closeBtn.addEventListener("click", this._onCloseHandler());
 
-    // var formChangeHandler = this._onFormChangeHandler();
+    var formChangeHandler = this._onFormChangeHandler();
 
     // this.rootElement.querySelector("#segmentCountMin").addEventListener("click", formChangeHandler);
     // this.rootElement.querySelector("#segmentCountMax").addEventListener("click", formChangeHandler);
     // this.rootElement.querySelector("#bendValueMin").addEventListener("click", formChangeHandler);
     // this.rootElement.querySelector("#bendValueMax").addEventListener("click", formChangeHandler);
-    // this.rootElement.querySelector("#boundsRatio").addEventListener("click", formChangeHandler);
-    // this.rootElement.querySelector("#optimalBoxWidthPx").addEventListener("click", formChangeHandler);
+    this.rootElement.querySelector("#boundsRatio").addEventListener("click", formChangeHandler);
+    this.rootElement.querySelector("#optimalBoxWidthPx").addEventListener("click", formChangeHandler);
+
+    globalThis.addEventListener("resize", formChangeHandler);
+  };
+
+  // +---------------------------------------------------------------------------------
+  // | Handle form changes.
+  // +-------------------------------
+  DildoRandomizerDialog.prototype._onFormChangeHandler = function () {
+    var _self = this;
+    return function (event) {
+      _self._updateIdealBounds(true);
+      _self.pb.redraw();
+    };
   };
 
   // +---------------------------------------------------------------------------------
@@ -204,12 +229,28 @@
   // +---------------------------------------------------------------------------------
   // | Internal method for displaying error messages inside the dialog.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._displayError = function (errmsg) {
-    const errorContainer = this.rootElement.querySelector(".error-container");
+  DildoRandomizerDialog.prototype._displayStatus = function (errmsg, className) {
+    const errorContainer = this.rootElement.querySelector(".status-container");
     if (!errorContainer) {
       return;
     }
+    errorContainer.classList.remove("error", "success");
+    errorContainer.classList.add(className);
     errorContainer.innerHTML = errmsg;
+  };
+
+  // +---------------------------------------------------------------------------------
+  // | Internal method for displaying error messages inside the dialog.
+  // +-------------------------------
+  DildoRandomizerDialog.prototype._displayError = function (errmsg) {
+    this._displayStatus(errmsg, "error");
+  };
+
+  // +---------------------------------------------------------------------------------
+  // | Internal method for displaying error messages inside the dialog.
+  // +-------------------------------
+  DildoRandomizerDialog.prototype._displaySuccess = function (msg) {
+    this._displayStatus(msg, "success");
   };
 
   // +---------------------------------------------------------------------------------
@@ -226,7 +267,27 @@
       _self.config.fillOutline = isVisible;
       _self.config.drawResizeHandleLines = isVisible;
       _self.config.drawPathBounds = isVisible;
-      _self.onPathVisibilityChanged();
+      _self.callbackOptions.onPathVisibilityChanged();
+    };
+  };
+
+  // +---------------------------------------------------------------------------------
+  // | Toggle other paths except the outline on/off.
+  // +-------------------------------
+  DildoRandomizerDialog.prototype._storeNowHandler = function () {
+    var _self = this;
+    return function (event) {
+      console.log("Request to store model.");
+      event.preventDefault();
+      event.stopPropagation();
+      _self
+        ._storeCurrentResult(true) // isPutEnabled=true
+        .then(function () {
+          // NOOP (message is already displayed)
+        })
+        .catch(function (e) {
+          // NOOP (message is already displayed)
+        });
     };
   };
 
@@ -287,25 +348,22 @@
     );
 
     var result = dildoRandomizer.next();
-    this.outlineChangedCallback(result);
+    this.callbackOptions.outlineChangedCallback(result);
 
-    if (this.curSettings.isPutEnabled) {
-      this._storeCurrentResult();
-    }
     var _self = this;
-    this._storeCurrentResult()
+    this._storeCurrentResult(_self.curSettings.isPutEnabled)
       .then(function () {
         if (_self.curSettings.isCreateManyEnabled) {
           globalThis.setTimeout(function () {
             _self._randomizeDildoSettings(curSequenceID);
           }, 1000);
         } else {
+          console.log("Done ramdomizing.");
           _self.__setRunning(false);
         }
       })
       .catch(function (e) {
         console.error(e);
-        _self._displayError("Failed to store model. See error console for details.");
         _self.__setRunning(false);
       });
   };
@@ -313,10 +371,10 @@
   // +---------------------------------------------------------------------------------
   // | Tries to store the current model, screenshots sculpt map and settings.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._storeCurrentResult = function () {
+  DildoRandomizerDialog.prototype._storeCurrentResult = function (isPutEnabled) {
     var _self = this;
     return new Promise(function (accept, reject) {
-      if (!_self.curSettings.isPutEnabled) {
+      if (!isPutEnabled) {
         accept();
         return;
       }
@@ -326,17 +384,24 @@
         method: "post",
         url: _self.curSettings.putURL, // "/user/12345",
         data: {
-          firstName: "Fred",
-          lastName: "Flintstone"
+          hidenfield: "123456",
+          modelName: "My Model",
+          preview2d: null,
+          preview3d: null,
+          sculptmap: _self.callbackOptions.getSculptmapDataURL(),
+          bezierJSON: _self.callbackOptions.getBezierJSON(),
+          bendAngle: _self.config.bendAngle
         }
       })
         .then(function (response) {
           // response.data.pipe(fs.createWriteStream("ada_lovelace.jpg"));
           console.log("Succeeded");
+          _self._displaySuccess("Model stored.");
           accept();
         })
         .catch(function (err) {
           console.error(err);
+          _self._displayError("Failed to store model. See error console for details.");
           reject();
         });
     });
@@ -377,7 +442,6 @@
   // | Update the ideal bounds from the current form settings.
   // +-------------------------------
   DildoRandomizerDialog.prototype._updateIdealBounds = function (reevaluateFormSettings) {
-    // viewport, boundsRatio, optimalBoxWidthPx) {
     // Get the maximum bounds the final 2D model should ideallically be
     // displayed in.
 

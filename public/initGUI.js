@@ -60,7 +60,7 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   // fold0.add(config, "useBumpmap").onChange( function() { rebuild() } ).name('useBumpmap').title('Check wether the mesh should use a bumpmap.');
   // prettier-ignore
   // fold0.add(config, "bumpmapStrength").min(0.0).max(20.0).onChange( function() { rebuild() } ).name('bumpmapStrength').title('How strong should the bumpmap be applied.');
-  fold1.close();
+  // fold1.close();
 
   var fold2 = gui.addFolder("Hollow");
   // prettier-ignore
@@ -71,7 +71,7 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   fold2.add(config, "hollowStrengthX").min(0.0).max(50.0).onChange( function() { rebuildCallback() } ).name('hollowStrengthX').title('How thick make the walls?');
   // prettier-ignore
   fold2.add(config, "normalizePerpendiculars").onChange( function() { rebuildCallback() } ).name('normalizePerpendiculars').title('Normalize the XZ perpendiculars (recommended).');
-  // fold2.close();
+  fold2.close();
 
   var fold3 = gui.addFolder("Slice");
   // prettier-ignore
