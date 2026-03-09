@@ -854,10 +854,11 @@
       rebuild();
     };
     var dildoRandomizerDialog = new DildoRandomizerDialog(pb, modal, config, {
-      setRandomizedResult: setRandomizedResult,
-      handlePathVisibilityChanged: handlePathVisibilityChanged,
+      outlineChangedCallback: setRandomizedResult,
+      onPathVisibilityChanged: handlePathVisibilityChanged,
       getBezierJSON: getBezierJSON,
       getSculptmapDataURL: getSculptmapDataURL
+      // outlineChangedCallback: outlineChangedCallback
     });
     var showDildoRandomizer = function () {
       dildoRandomizerDialog.open();
