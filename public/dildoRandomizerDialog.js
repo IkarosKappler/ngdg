@@ -13,6 +13,7 @@
   // onPathVisibilityChanged
   // getBezierJSON
   // getSculptmapDataURL
+  // getPreviewImageDataURL
   var DildoRandomizerDialog = function (pb, modal, config, callbackOptions) {
     // outlineChangedCallback, onPathVisibilityChanged, getBezierJSON) {
     this.pb = pb;
@@ -83,9 +84,9 @@
         <div class="grid-w-25">
           <label for="optimalBoxWidthPx">Optimal box width</label><br>
           <select id="optimalBoxWidthPx">
-            <option value="256">256</option>
+            <option value="256" selected>256</option>
             <option value="512">512</option>
-            <option value="1024" selected>1024</option>
+            <option value="1024">1024</option>
             <option value="2048">2048</option>
           </select> px
         </div>
@@ -243,14 +244,14 @@
   // | Internal method for displaying error messages inside the dialog.
   // +-------------------------------
   DildoRandomizerDialog.prototype._displayError = function (errmsg) {
-    this._displayStatus(errmsg, "error");
+    this._displayStatus(`⚠️ ${errmsg}`, "error");
   };
 
   // +---------------------------------------------------------------------------------
   // | Internal method for displaying error messages inside the dialog.
   // +-------------------------------
   DildoRandomizerDialog.prototype._displaySuccess = function (msg) {
-    this._displayStatus(msg, "success");
+    this._displayStatus(`✅ ${msg}`, "success");
   };
 
   // +---------------------------------------------------------------------------------
@@ -277,7 +278,7 @@
   DildoRandomizerDialog.prototype._storeNowHandler = function () {
     var _self = this;
     return function (event) {
-      console.log("Request to store model.");
+      console.log("Request to store model (click).");
       event.preventDefault();
       event.stopPropagation();
       _self
@@ -339,7 +340,7 @@
     );
 
     console.log("Ideal bounds", this.idealGenerateBounds, "idealLeftHalfBounds", idealLeftHalfBounds);
-    var dildoRandomizer = new DildoRandomizer(
+    var dildoRandomizer = new ngdg.DildoRandomizer(
       idealLeftHalfBounds,
       this.curSettings.segmentCountMin,
       this.curSettings.segmentCountMax,
@@ -348,6 +349,7 @@
     );
 
     var result = dildoRandomizer.next();
+    console.log("Result", result);
     this.callbackOptions.outlineChangedCallback(result);
 
     var _self = this;
@@ -374,36 +376,56 @@
   DildoRandomizerDialog.prototype._storeCurrentResult = function (isPutEnabled) {
     var _self = this;
     return new Promise(function (accept, reject) {
+      console.log("[_storeCurrentResult] called [0].");
       if (!isPutEnabled) {
+        console.log("Storing data is not allowed by settings/configuration. Returning.");
         accept();
         return;
       }
-      // Use AJAX/Axios
-      console.log("Sending data to ", _self.curSettings.putURL);
-      axios({
-        method: "post",
-        url: _self.curSettings.putURL, // "/user/12345",
-        data: {
-          hidenfield: "123456",
-          modelName: "My Model",
-          preview2d: null,
-          preview3d: null,
-          sculptmap: _self.callbackOptions.getSculptmapDataURL(),
-          bezierJSON: _self.callbackOptions.getBezierJSON(),
-          bendAngle: _self.config.bendAngle
-        }
-      })
-        .then(function (response) {
-          // response.data.pipe(fs.createWriteStream("ada_lovelace.jpg"));
-          console.log("Succeeded");
-          _self._displaySuccess("Model stored.");
-          accept();
+      console.log("[_storeCurrentResult] called [1].");
+      // Retrieve image data
+      try {
+        // const boundsToCanvasRect = _self.idealExportBounds;
+        const boundsToCanvasRect = new Bounds(
+          _self.idealExportBounds.min.clone().scaleXY({ x: _self.pb.config.scaleX, y: _self.pb.config.scaleY }),
+          _self.idealExportBounds.max.clone().scaleXY({ x: _self.pb.config.scaleX, y: _self.pb.config.scaleY })
+        );
+        // boundsToCanvasRect = _self.viewport;
+        console.log("boundsToCanvasRect", boundsToCanvasRect);
+        const outlineSubImageResult = ngdg.getImageFromCanvas(_self.pb.canvas, _self.pb.draw.ctx, boundsToCanvasRect);
+        const outlineImageDataURL = outlineSubImageResult.canvas.toDataURL("image/png");
+        const previewImageDataURL = _self.callbackOptions.getPreviewImageDataURL("image/png");
+        // Use AJAX/Axios
+        console.log("Sending data to ", _self.curSettings.putURL);
+        axios({
+          method: "post",
+          url: _self.curSettings.putURL, // "/user/12345",
+          data: {
+            hidenfield: "123456",
+            modelName: "My Model",
+            preview2d_b64: outlineImageDataURL,
+            preview3d_b64: previewImageDataURL,
+            sculptmap_b64: _self.callbackOptions.getSculptmapDataURL(),
+            bezierJSON: _self.callbackOptions.getBezierJSON(),
+            bendAngle: _self.config.bendAngle
+          }
         })
-        .catch(function (err) {
-          console.error(err);
-          _self._displayError("Failed to store model. See error console for details.");
-          reject();
-        });
+          .then(function (response) {
+            // response.data.pipe(fs.createWriteStream("ada_lovelace.jpg"));
+            console.log("Succeeded");
+            _self._displaySuccess("Model stored.");
+            accept();
+          })
+          .catch(function (err) {
+            console.error(err);
+            _self._displayError("Failed to store model. See error console for details.");
+            reject();
+          });
+      } catch (exc) {
+        console.log("Failed to prepare/send axios request.", exc);
+        _self._displayError("Failed to prepare/send axios request. See error console for details.");
+        reject(exc);
+      }
     });
   };
 
@@ -450,24 +472,32 @@
       this.curSettings = this.getCurrentFormSettings();
     }
 
-    var width = Math.min(this.viewport.width, this.curSettings.optimalBoxWidthPx);
-    var height = width / this.curSettings.boundsRatio;
-    console.log("width", width, "height", height, "boundsRatio", this.curSettings.boundsRatio);
-    if (width < this.curSettings.optimalBoxWidthPx) {
+    // var width = Math.min(this.viewport.width, this.curSettings.optimalBoxWidthPx);
+    var canvasWidth = Math.min(this.pb.canvas.width, this.curSettings.optimalBoxWidthPx);
+    // var height = canvasWidth / this.curSettings.boundsRatio;
+    var canvasHeight = canvasWidth / this.curSettings.boundsRatio;
+    // var widthInPhysicalPixels = this.pb.canvas.width;
+    // var widthInPhysicalPixels = width * this.pb.config.scaleX;
+    console.log("canvasWidth", canvasWidth, "canvasHeight", canvasHeight, "boundsRatio", this.curSettings.boundsRatio);
+    if (canvasWidth < this.curSettings.optimalBoxWidthPx) {
       this._displayError(
-        `Warning: viewport width ${this.viewport.width.toFixed(
+        `Warning: viewport width ${canvasWidth.toFixed(
           0
         )} is smaller than optimal width ${this.curSettings.optimalBoxWidthPx.toFixed(0)}.`
+      );
+    } else {
+      this._displaySuccess(
+        `The viewport size satisfies the required box width ${this.curSettings.optimalBoxWidthPx.toFixed(0)}px.`
       );
     }
     var bounds = new Bounds(
       new Vertex(
-        this.viewport.min.x + (this.viewport.width - width) / 2.0,
-        this.viewport.min.y + (this.viewport.height - height) / 2.0
+        this.viewport.min.x + (this.viewport.width - canvasWidth / this.pb.config.scaleX) / 2.0,
+        this.viewport.min.y + (this.viewport.height - canvasHeight / this.pb.config.scaleY) / 2.0
       ),
       new Vertex(
-        this.viewport.max.x - (this.viewport.width - width) / 2.0,
-        this.viewport.max.y - (this.viewport.height - height) / 2.0
+        this.viewport.max.x - (this.viewport.width - canvasWidth / this.pb.config.scaleX) / 2.0,
+        this.viewport.max.y - (this.viewport.height - canvasHeight / this.pb.config.scaleY) / 2.0
       )
     );
 
@@ -479,6 +509,44 @@
     this.idealExportBounds = bounds;
     this.idealGenerateBounds = bounds.getScaled(0.666);
   };
+  // DildoRandomizerDialog.prototype._updateIdealBounds = function (reevaluateFormSettings) {
+  //   // Get the maximum bounds the final 2D model should ideallically be
+  //   // displayed in.
+
+  //   this.viewport = this.pb.viewport();
+  //   if (reevaluateFormSettings) {
+  //     this.curSettings = this.getCurrentFormSettings();
+  //   }
+
+  //   var width = Math.min(this.viewport.width, this.curSettings.optimalBoxWidthPx);
+  //   var height = width / this.curSettings.boundsRatio;
+  //   console.log("width", width, "height", height, "boundsRatio", this.curSettings.boundsRatio);
+  //   if (width < this.curSettings.optimalBoxWidthPx) {
+  //     this._displayError(
+  //       `Warning: viewport width ${this.viewport.width.toFixed(
+  //         0
+  //       )} is smaller than optimal width ${this.curSettings.optimalBoxWidthPx.toFixed(0)}.`
+  //     );
+  //   }
+  //   var bounds = new Bounds(
+  //     new Vertex(
+  //       this.viewport.min.x + (this.viewport.width - width) / 2.0,
+  //       this.viewport.min.y + (this.viewport.height - height) / 2.0
+  //     ),
+  //     new Vertex(
+  //       this.viewport.max.x - (this.viewport.width - width) / 2.0,
+  //       this.viewport.max.y - (this.viewport.height - height) / 2.0
+  //     )
+  //   );
+
+  //   // Move to the lower part to make it easier to see the full result below the dialog.
+  //   var offsetX = 0.0;
+  //   var offsetY = this.viewport.max.y - bounds.max.y;
+  //   bounds = bounds.getMoved({ x: offsetX, y: offsetY });
+
+  //   this.idealExportBounds = bounds;
+  //   this.idealGenerateBounds = bounds.getScaled(0.666);
+  // };
 
   // +---------------------------------------------------------------------------------
   // | A helper function to retrieve the selected value from an <select> element.

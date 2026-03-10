@@ -634,6 +634,7 @@
       addPathListeners(outline);
       updatePathResizer(false); // triggerRedraw=false
       pb.add(newOutline);
+      // pb.add(BezierPath.fromJSON(newOutline.toJSON()));
 
       // +---------------------------------------------------------------------------------
       // | Install a BÃ©zier interaction helper.
@@ -849,7 +850,10 @@
     // | Updates the sculpt map by recalculating the image data from the 3d model.
     // +-------------------------------
     var setRandomizedResult = function (result) {
-      setPathInstance(result.outline);
+      // setPathInstance(result.outline);
+      // TODO: WHY IS PLOTBOILERPLATE NOT RECOGNIZING THE BEZIER INSTANCE???!
+      // temp solution: serialize and de-serialize :/
+      setPathInstance(BezierPath.fromJSON(result.outline.toJSON()));
       config.bendAngle = result.bendAngle;
       rebuild();
     };
@@ -857,8 +861,10 @@
       outlineChangedCallback: setRandomizedResult,
       onPathVisibilityChanged: handlePathVisibilityChanged,
       getBezierJSON: getBezierJSON,
-      getSculptmapDataURL: getSculptmapDataURL
-      // outlineChangedCallback: outlineChangedCallback
+      getSculptmapDataURL: getSculptmapDataURL,
+      getPreviewImageDataURL: function (type) {
+        return dildoGeneration.canvas.toDataURL(type);
+      }
     });
     var showDildoRandomizer = function () {
       dildoRandomizerDialog.open();

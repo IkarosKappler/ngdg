@@ -21,6 +21,8 @@ var SculptMap_1 = require("./SculptMap");
 var DildoSilhouette2D_1 = require("./DildoSilhouette2D");
 var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
 var DildoRandomizer_1 = require("./DildoRandomizer");
+var randomWebColor_1 = require("./randomWebColor");
+var getImageFromCanvas_1 = require("./getImageFromCanvas");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
@@ -31,9 +33,11 @@ exports.ngdg = {
     DildoRandomizer: DildoRandomizer_1.DildoRandomizer,
     DildoSilhouette2D: DildoSilhouette2D_1.DildoSilhouette2D,
     GeometryGenerationHelpers: GeometryGenerationHelpers_1.GeometryGenerationHelpers,
+    getImageFromCanvas: getImageFromCanvas_1.getImageFromCanvas,
     ImageStore: ImageStore_1.ImageStore,
     isMobileDevice: isMobileDevice_1.isMobileDevice,
     LocalstorageIO: LocalstorageIO_1.LocalstorageIO,
+    randomWebColor: randomWebColor_1.randomWebColor,
     SculptMap: SculptMap_1.SculptMap
 };
 //# sourceMappingURL=ngdg.js.map

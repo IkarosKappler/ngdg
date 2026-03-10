@@ -18,6 +18,8 @@ import { SculptMap } from "./SculptMap";
 import { DildoSilhouette2D } from "./DildoSilhouette2D";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { DildoRandomizer } from "./DildoRandomizer";
+import { randomWebColor } from "./randomWebColor";
+import { getImageFromCanvas } from "./getImageFromCanvas";
 export const ngdg = {
     DEFAULT_BEZIER_JSON,
     DEG_TO_RAD,
@@ -28,9 +30,11 @@ export const ngdg = {
     DildoRandomizer,
     DildoSilhouette2D,
     GeometryGenerationHelpers,
+    getImageFromCanvas,
     ImageStore,
     isMobileDevice,
     LocalstorageIO,
+    randomWebColor,
     SculptMap
 };
 //# sourceMappingURL=ngdg.js.map

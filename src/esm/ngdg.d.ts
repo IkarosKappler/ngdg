@@ -49,11 +49,17 @@ export declare const ngdg: {
         rotateVert: (vert: import("three").Vector3, angle: number, xCenter: number, yCenter: number) => import("three").Vector3;
         rotateVertY: (vert: import("three").Vector3, angle: number, xCenter: number, zCenter: number) => import("three").Vector3;
     };
+    getImageFromCanvas: (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, bounds: import("plotboilerplate").Bounds) => {
+        canvas: HTMLCanvasElement;
+        context: CanvasRenderingContext2D;
+        imageData: ImageData;
+    };
     ImageStore: {
         getImage: (path: string, onComplete: (completeImage: HTMLImageElement) => void) => HTMLImageElement;
         isImageLoaded: (image: HTMLImageElement) => boolean;
     };
     isMobileDevice: () => boolean;
     LocalstorageIO: typeof LocalstorageIO;
+    randomWebColor: (index: number, colorSet?: "Malachite" | "Mixed" | "WebColors") => string;
     SculptMap: typeof SculptMap;
 };

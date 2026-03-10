@@ -9,6 +9,7 @@ export * from "./DildoRandomizer";
 export * from "./DildoGeometry";
 export * from "./DildoMaterials";
 export * from "./GeometryGenerationHelpers";
+export * from "./getImageFromCanvas";
 export * from "./ImageStore";
 export * from "./interfaces";
 export * from "./isMobileDevice";
@@ -18,7 +19,6 @@ export * from "./PathFinder";
 export * from "./PlaneMeshIntersection";
 export * from "./randomWebColor";
 export * from "./RasteredBumpmap";
-export * from "./randomWebColor";
 export * from "./UVHelpers";
 export * from "./SculptMap";
 //# sourceMappingURL=index.js.map

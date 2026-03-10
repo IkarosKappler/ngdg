@@ -25,6 +25,7 @@ __exportStar(require("./DildoRandomizer"), exports);
 __exportStar(require("./DildoGeometry"), exports);
 __exportStar(require("./DildoMaterials"), exports);
 __exportStar(require("./GeometryGenerationHelpers"), exports);
+__exportStar(require("./getImageFromCanvas"), exports);
 __exportStar(require("./ImageStore"), exports);
 __exportStar(require("./interfaces"), exports);
 __exportStar(require("./isMobileDevice"), exports);
@@ -34,7 +35,6 @@ __exportStar(require("./PathFinder"), exports);
 __exportStar(require("./PlaneMeshIntersection"), exports);
 __exportStar(require("./randomWebColor"), exports);
 __exportStar(require("./RasteredBumpmap"), exports);
-__exportStar(require("./randomWebColor"), exports);
 __exportStar(require("./UVHelpers"), exports);
 __exportStar(require("./SculptMap"), exports);
 //# sourceMappingURL=index.js.map

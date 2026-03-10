@@ -3056,6 +3056,38 @@ globalThis.ngdg = (__webpack_require__(/*! ./ngdg */ "./src/cjs/ngdg.js").ngdg);
 
 /***/ },
 
+/***/ "./src/cjs/getImageFromCanvas.js"
+/*!***************************************!*\
+  !*** ./src/cjs/getImageFromCanvas.js ***!
+  \***************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * @date    2026-03-10
+ * @version 0.0.1
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getImageFromCanvas = void 0;
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var getImageFromCanvas = function (canvas, context, bounds) {
+    var w = canvas.width;
+    var h = canvas.height;
+    var safeBounds = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(Math.max(bounds.min.x, 0), Math.min(bounds.max.x, w)), new plotboilerplate_1.Vertex(Math.max(bounds.min.y, 0), Math.min(bounds.max.y, h)));
+    //   var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    var imageData = context.getImageData(safeBounds.min.x, safeBounds.min.y, safeBounds.width, safeBounds.height);
+    var subCanvas = document.createElement("canvas"); // new HTMLCanvasElement();
+    subCanvas.setAttribute("width", "".concat(safeBounds.width));
+    subCanvas.setAttribute("height", "".concat(safeBounds.height));
+    var subContext = subCanvas.getContext("2d");
+    subContext.putImageData(imageData, 0, 0);
+    return { canvas: subCanvas, context: subContext, imageData: imageData };
+};
+exports.getImageFromCanvas = getImageFromCanvas;
+//# sourceMappingURL=getImageFromCanvas.js.map
+
+/***/ },
+
 /***/ "./src/cjs/isMobileDevice.js"
 /*!***********************************!*\
   !*** ./src/cjs/isMobileDevice.js ***!
@@ -3242,6 +3274,8 @@ var SculptMap_1 = __webpack_require__(/*! ./SculptMap */ "./src/cjs/SculptMap.js
 var DildoSilhouette2D_1 = __webpack_require__(/*! ./DildoSilhouette2D */ "./src/cjs/DildoSilhouette2D.js");
 var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
 var DildoRandomizer_1 = __webpack_require__(/*! ./DildoRandomizer */ "./src/cjs/DildoRandomizer.js");
+var randomWebColor_1 = __webpack_require__(/*! ./randomWebColor */ "./src/cjs/randomWebColor.js");
+var getImageFromCanvas_1 = __webpack_require__(/*! ./getImageFromCanvas */ "./src/cjs/getImageFromCanvas.js");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
@@ -3252,9 +3286,11 @@ exports.ngdg = {
     DildoRandomizer: DildoRandomizer_1.DildoRandomizer,
     DildoSilhouette2D: DildoSilhouette2D_1.DildoSilhouette2D,
     GeometryGenerationHelpers: GeometryGenerationHelpers_1.GeometryGenerationHelpers,
+    getImageFromCanvas: getImageFromCanvas_1.getImageFromCanvas,
     ImageStore: ImageStore_1.ImageStore,
     isMobileDevice: isMobileDevice_1.isMobileDevice,
     LocalstorageIO: LocalstorageIO_1.LocalstorageIO,
+    randomWebColor: randomWebColor_1.randomWebColor,
     SculptMap: SculptMap_1.SculptMap
 };
 //# sourceMappingURL=ngdg.js.map
