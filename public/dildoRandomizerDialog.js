@@ -335,14 +335,15 @@
       event.stopPropagation();
       _self.iterationNumber = 0;
       _self.sequenceID = Math.round(Math.random() * 365535);
-      _self._randomizeDildoSettings(_self, _self.sequenceID);
+      _self.__setRunning(true);
+      _self._randomizeDildoSettings(_self.sequenceID);
     };
   };
 
   // +---------------------------------------------------------------------------------
   // | Compute the next randomized dildo settings.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._randomizeDildoSettings = function (_selfInstance, curSequenceID) {
+  DildoRandomizerDialog.prototype._randomizeDildoSettings = function (curSequenceID) {
     this._displayError("");
     this.curSettings = this.getCurrentFormSettings();
     if (this.iterationNumber >= this.curSettings.maxIterationCount) {
@@ -358,7 +359,7 @@
 
       return;
     }
-    this.__setRunning(true);
+    // _self.__setRunning(true);
     this.iterationNumber++;
     this._setIterationDisplay(`${this.iterationNumber}/${this.curSettings.maxIterationCount}`);
 
