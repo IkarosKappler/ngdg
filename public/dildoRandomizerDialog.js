@@ -26,6 +26,7 @@
     this.rootElement.setAttribute("id", "randomizerForm");
     this.rootElement.classList.add("randomizerForm");
     this.isOpen = false;
+    this.isDrawIdealBoundsEnabled = true;
 
     // The ideal bounds to export the final image data from.
     this.idealExportBounds = null;
@@ -68,6 +69,10 @@
           <input type="number" id="bendValueMax" min="0" max="180" value="120" name="bendValueMax" />
           °
         </div>
+        <div class="grid-w-25 flow-containter right">
+          <label for="checkbox-hide-outlines-on-save">Hide outlines on save</label>
+          <input type="checkbox" name="checkbox-hide-outlines-on-save" id="checkbox-hide-outlines-on-save" checked>
+        </div>
       </div>
       <div class="flow-containter center">
         <div class="grid-w-25"><h4>Target Bounds Size</h4></div>
@@ -89,6 +94,10 @@
             <option value="1024">1024</option>
             <option value="2048">2048</option>
           </select> px
+        </div>
+        <div class="grid-w-25 flow-containter right">
+          <label for="checkbox-silhouette-black-color">Use black color for silhouette</label>
+          <input type="checkbox" name="checkbox-silhouette-black-color" id="checkbox-silhouette-black-color" checked>
         </div>
       </div>
       <div class="flow-containter">
@@ -164,7 +173,9 @@
       {
         label: "Close",
         action: function () {
+          console.log("CLOSE ACTION HIT!");
           _self.modal.close();
+          // _self.__setRunning(false);
           _self._onCloseHandler()();
         }
       }
@@ -201,9 +212,10 @@
   // +-------------------------------
   DildoRandomizerDialog.prototype._onCloseHandler = function () {
     var _self = this;
-    return function (event) {
+    return function (_event) {
       _self.isOpen = false;
       _self.pb.redraw();
+      console.log("Set running = false");
       _self.__setRunning(false);
     };
   };
@@ -212,7 +224,7 @@
   // | Draw the ideal bounds for randomization.
   // +-------------------------------
   DildoRandomizerDialog.prototype.drawIdealBounds = function (draw, fill) {
-    if (!this.isOpen || this.isRunning) {
+    if (!this.isOpen || this.isRunning || !this.isDrawIdealBoundsEnabled) {
       return;
     }
     if (this.idealExportBounds) {
@@ -255,7 +267,7 @@
   };
 
   // +---------------------------------------------------------------------------------
-  // | Toggle other paths except the outline on/off.
+  // | Handle path visibility events.
   // +-------------------------------
   DildoRandomizerDialog.prototype._togglePathVisibilityHandler = function (isVisible) {
     var _self = this;
@@ -263,13 +275,34 @@
       event.preventDefault();
       event.stopPropagation();
       // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
-      _self.config.drawRulers = isVisible;
-      _self.config.drawOutline = isVisible;
-      _self.config.fillOutline = isVisible;
-      _self.config.drawResizeHandleLines = isVisible;
-      _self.config.drawPathBounds = isVisible;
-      _self.callbackOptions.onPathVisibilityChanged();
+      _self._togglePathVisibility(isVisible);
     };
+  };
+
+  // +---------------------------------------------------------------------------------
+  // | Toggle other paths except the outline on/off.
+  // +-------------------------------
+  DildoRandomizerDialog.prototype._togglePathVisibility = function (isVisible) {
+    // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
+    this.config.drawRulers = isVisible;
+    this.config.drawOutline = isVisible;
+    this.config.fillOutline = isVisible;
+    this.config.drawResizeHandleLines = isVisible;
+    this.config.drawPathBounds = isVisible;
+    this.isDrawIdealBoundsEnabled = isVisible;
+    this.callbackOptions.onPathVisibilityChanged();
+  };
+
+  DildoRandomizerDialog.prototype._getPathVisibility = function () {
+    // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
+    return (
+      this.config.drawRulers ||
+      this.config.drawOutlines ||
+      this.config.fillOutlines ||
+      this.config.drawResizeHandleLiness ||
+      this.config.drawPathBoundss ||
+      this.isDrawIdealBoundsEnabled
+    );
   };
 
   // +---------------------------------------------------------------------------------
@@ -302,14 +335,14 @@
       event.stopPropagation();
       _self.iterationNumber = 0;
       _self.sequenceID = Math.round(Math.random() * 365535);
-      _self._randomizeDildoSettings(_self.sequenceID);
+      _self._randomizeDildoSettings(_self, _self.sequenceID);
     };
   };
 
   // +---------------------------------------------------------------------------------
   // | Compute the next randomized dildo settings.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._randomizeDildoSettings = function (curSequenceID) {
+  DildoRandomizerDialog.prototype._randomizeDildoSettings = function (_selfInstance, curSequenceID) {
     this._displayError("");
     this.curSettings = this.getCurrentFormSettings();
     if (this.iterationNumber >= this.curSettings.maxIterationCount) {
@@ -355,7 +388,8 @@
     var _self = this;
     this._storeCurrentResult(_self.curSettings.isPutEnabled)
       .then(function () {
-        if (_self.curSettings.isCreateManyEnabled) {
+        if (_self.curSettings.isCreateManyEnabled && _self.isRunning) {
+          console.log("NEXT ITERATION? isRunning=", _self.isRunning);
           globalThis.setTimeout(function () {
             _self._randomizeDildoSettings(curSequenceID);
           }, 1000);
@@ -374,6 +408,12 @@
   // | Tries to store the current model, screenshots sculpt map and settings.
   // +-------------------------------
   DildoRandomizerDialog.prototype._storeCurrentResult = function (isPutEnabled) {
+    if (isPutEnabled && this.curSettings.hideOutlineOnSave && this._getPathVisibility()) {
+      if (this.curSettings.isSilhouetteBlackColor) {
+        this.config.silhouetteLineColor = "rgb(0,0,0)";
+      }
+      this._togglePathVisibility(false);
+    }
     var _self = this;
     return new Promise(function (accept, reject) {
       console.log("[_storeCurrentResult] called [0].");
@@ -385,16 +425,15 @@
       console.log("[_storeCurrentResult] called [1].");
       // Retrieve image data
       try {
-        // const boundsToCanvasRect = _self.idealExportBounds;
-        const boundsToCanvasRect = new Bounds(
-          _self.idealExportBounds.min.clone().scaleXY({ x: _self.pb.config.scaleX, y: _self.pb.config.scaleY }),
-          _self.idealExportBounds.max.clone().scaleXY({ x: _self.pb.config.scaleX, y: _self.pb.config.scaleY })
+        var boundsToCanvasRect = new Bounds(
+          new Vertex(_self.pb.revertMousePosition(_self.idealExportBounds.min.x, _self.idealExportBounds.min.y)),
+          new Vertex(_self.pb.revertMousePosition(_self.idealExportBounds.max.x, _self.idealExportBounds.max.y))
         );
-        // boundsToCanvasRect = _self.viewport;
+        // var boundsToCanvasRect = _self.idealExportBounds;
         console.log("boundsToCanvasRect", boundsToCanvasRect);
-        const outlineSubImageResult = ngdg.getImageFromCanvas(_self.pb.canvas, _self.pb.draw.ctx, boundsToCanvasRect);
-        const outlineImageDataURL = outlineSubImageResult.canvas.toDataURL("image/png");
-        const previewImageDataURL = _self.callbackOptions.getPreviewImageDataURL("image/png");
+        const preview2dSubImageResult = ngdg.getImageFromCanvas(_self.pb.canvas, _self.pb.draw.ctx, boundsToCanvasRect);
+        const preview2dImageDataURL = preview2dSubImageResult.canvas.toDataURL("image/png");
+        const preview3dImageDataURL = _self.callbackOptions.getPreviewImageDataURL("image/png");
         // Use AJAX/Axios
         console.log("Sending data to ", _self.curSettings.putURL);
         axios({
@@ -403,8 +442,10 @@
           data: {
             hidenfield: "123456",
             modelName: "My Model",
-            preview2d_b64: outlineImageDataURL,
-            preview3d_b64: previewImageDataURL,
+            shapeSegmentCount: _self.config.shapeSegmentCount,
+            outlineSegmentCount: _self.config.outlineSegmentCount,
+            preview2d_b64: preview2dImageDataURL,
+            preview3d_b64: preview3dImageDataURL,
             sculptmap_b64: _self.callbackOptions.getSculptmapDataURL(),
             bezierJSON: _self.callbackOptions.getBezierJSON(),
             bendAngle: _self.config.bendAngle
@@ -418,7 +459,14 @@
           })
           .catch(function (err) {
             console.error(err);
-            _self._displayError("Failed to store model. See error console for details.");
+            _self._displayError(
+              "Failed to store model. See error console for details." +
+                (err &&
+                  err.response &&
+                  err.response.data &&
+                  err.response.data.message &&
+                  " Message from server: " + err.response.data.message)
+            );
             reject();
           });
       } catch (exc) {
@@ -444,6 +492,9 @@
     var maxIterationCount = Number(this.rootElement.querySelector("#maxIterationCount").value);
     var isPutEnabled = Boolean(this.rootElement.querySelector("#isPutEnabled").checked);
     var putURL = this.rootElement.querySelector("#putURL").value;
+    var hideOutlineOnSave = Boolean(this.rootElement.querySelector("#checkbox-hide-outlines-on-save").checked);
+    var isSilhouetteBlackColor = Boolean(this.rootElement.querySelector("#checkbox-silhouette-black-color").checked);
+
     console.log("boundsRatio", boundsRatio, "optimalBoxWidthPx", optimalBoxWidthPx);
 
     return {
@@ -456,6 +507,8 @@
       isCreateManyEnabled: isCreateManyEnabled,
       maxIterationCount: maxIterationCount,
       isPutEnabled: isPutEnabled,
+      hideOutlineOnSave: hideOutlineOnSave,
+      isSilhouetteBlackColor: isSilhouetteBlackColor,
       putURL: putURL
     };
   };
@@ -509,44 +562,6 @@
     this.idealExportBounds = bounds;
     this.idealGenerateBounds = bounds.getScaled(0.666);
   };
-  // DildoRandomizerDialog.prototype._updateIdealBounds = function (reevaluateFormSettings) {
-  //   // Get the maximum bounds the final 2D model should ideallically be
-  //   // displayed in.
-
-  //   this.viewport = this.pb.viewport();
-  //   if (reevaluateFormSettings) {
-  //     this.curSettings = this.getCurrentFormSettings();
-  //   }
-
-  //   var width = Math.min(this.viewport.width, this.curSettings.optimalBoxWidthPx);
-  //   var height = width / this.curSettings.boundsRatio;
-  //   console.log("width", width, "height", height, "boundsRatio", this.curSettings.boundsRatio);
-  //   if (width < this.curSettings.optimalBoxWidthPx) {
-  //     this._displayError(
-  //       `Warning: viewport width ${this.viewport.width.toFixed(
-  //         0
-  //       )} is smaller than optimal width ${this.curSettings.optimalBoxWidthPx.toFixed(0)}.`
-  //     );
-  //   }
-  //   var bounds = new Bounds(
-  //     new Vertex(
-  //       this.viewport.min.x + (this.viewport.width - width) / 2.0,
-  //       this.viewport.min.y + (this.viewport.height - height) / 2.0
-  //     ),
-  //     new Vertex(
-  //       this.viewport.max.x - (this.viewport.width - width) / 2.0,
-  //       this.viewport.max.y - (this.viewport.height - height) / 2.0
-  //     )
-  //   );
-
-  //   // Move to the lower part to make it easier to see the full result below the dialog.
-  //   var offsetX = 0.0;
-  //   var offsetY = this.viewport.max.y - bounds.max.y;
-  //   bounds = bounds.getMoved({ x: offsetX, y: offsetY });
-
-  //   this.idealExportBounds = bounds;
-  //   this.idealGenerateBounds = bounds.getScaled(0.666);
-  // };
 
   // +---------------------------------------------------------------------------------
   // | A helper function to retrieve the selected value from an <select> element.

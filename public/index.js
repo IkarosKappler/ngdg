@@ -130,6 +130,8 @@
       rulerColor: params.getString("rulerColor", isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)"),
       showDiscreteOutlinePoints: params.getBoolean("showDiscreteOutlinePoints", false),
       showSilhouette: params.getBoolean("showSilhouette", true),
+      silhouetteLineColor: params.getString("silhouetteLineColor", "rgb(255,128,0)"),
+      silhouetteLineWidth: params.getNumber("silhouetteLineWidth", 3.0),
       // Modifiers
       leftSplitMeshRotationX: 180.0, // align properly according to split algorithm
       leftSplitMeshRotationY: 0.0,
@@ -555,8 +557,8 @@
       config.fillOutline && fill.polyline(polyline, false, config.bezierFillColor);
 
       if (config.showSilhouette && dildoSilhouette) {
-        draw.polyline(dildoSilhouette.leftPathVertices, true, "orange", 3.0);
-        draw.polyline(dildoSilhouette.rightPathVertices, true, "orange", 3.0);
+        draw.polyline(dildoSilhouette.leftPathVertices, true, config.silhouetteLineColor, config.silhouetteLineWidth);
+        draw.polyline(dildoSilhouette.rightPathVertices, true, config.silhouetteLineColor, config.silhouetteLineWidth);
       }
 
       if (dildoRandomizerDialog) {

@@ -28,6 +28,11 @@ function initGUI(pb, config, GUP, rebuildCallback, updateModifiersCallback, bend
   fold0.add(config, "showDiscreteOutlinePoints").onChange( function() { pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
   // prettier-ignore
   fold0.add(config, "showSilhouette").onChange( function() { pb.redraw(); } ).name('showSilhouette').title('Show the 2D shilhouette of the dildo.');
+  // prettier-ignore
+  fold0.addColor(config, "silhouetteLineColor").onChange( function() { pb.redraw(); } ).title('The line color of the silhoutette.');
+  // prettier-ignore
+  fold0.add(config, "silhouetteLineWidth").onChange( function() { pb.redraw(); } ).title('The line width of the silhoutette.');
+
   fold0.close();
 
   // prettier-ignore
