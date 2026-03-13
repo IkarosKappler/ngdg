@@ -24,6 +24,28 @@ import { getImageFromCanvas } from "./getImageFromCanvas";
 import { detectDarkMode } from "./detectDarkMode";
 import { AppContext } from "./AppContext";
 import { setPathInstance } from "./appcontext/setPathInstance";
+import { Rulers } from "./Rulers";
+import { acquireOptimalView } from "./appcontext/acquireOptimalView";
+import { addPathListeners, removePathListeners } from "./appcontext/addRemovePathListeners";
+import { acquireOptimalPathView } from "./appcontext/acquireOptimalPathView";
+import { exportSTL } from "./appcontext/exportSTL";
+import { fitViewToSilhouette } from "./appcontext/fitViewToSilhouette";
+import { getSculptmapDataURL } from "./appcontext/getSculptmapDataURL";
+import { handlePathVisibilityChanged } from "./appcontext/handlePathVisibilityChanged";
+import { initConfig } from "./appcontext/initConfig";
+import { initStats } from "./appcontext/initStats";
+import { insertPathJSON } from "./appcontext/insertPathJSON";
+import { rebuild } from "./appcontext/rebuild";
+import { loadPathJSON } from "./appcontext/loadPathJSON";
+import { setDefaultPathInstance } from "./appcontext/setDefaultPathInstance";
+import { showPathJSON } from "./appcontext/showPathJSON";
+import { updateBumpmapPreview } from "./appcontext/updateBumpmapPreview";
+import { updateModifiers } from "./appcontext/updateModifiers";
+import { updateOutlineStats } from "./appcontext/updateOutlineStats";
+import { updatePathResizer } from "./appcontext/updatePathResizer";
+import { updateSilhouette } from "./appcontext/updateSilhouette";
+import { getBezierJSON } from "./appcontext/getBezierJSON";
+import { scaleBounds } from "./scaleBounds";
 
 export const ngdg = {
   DEFAULT_BEZIER_JSON,
@@ -34,6 +56,29 @@ export const ngdg = {
   KEY_SLICED_MESH_LEFT,
 
   AppContext,
+  acquireOptimalView,
+  addPathListeners,
+  removePathListeners,
+  acquireOptimalPathView,
+  exportSTL,
+  fitViewToSilhouette,
+  getBezierJSON,
+  getSculptmapDataURL,
+  handlePathVisibilityChanged,
+  initConfig,
+  initStats,
+  insertPathJSON,
+  loadPathJSON,
+  rebuild,
+  setDefaultPathInstance,
+  setPathInstance,
+  showPathJSON,
+  updateBumpmapPreview,
+  updateModifiers,
+  updateOutlineStats,
+  updatePathResizer,
+  updateSilhouette,
+
   detectDarkMode,
   DildoGeneration,
   DildoRandomizer,
@@ -44,6 +89,7 @@ export const ngdg = {
   isMobileDevice,
   LocalstorageIO,
   randomWebColor,
-  SculptMap,
-  setPathInstance
+  Rulers,
+  scaleBounds,
+  SculptMap
 };

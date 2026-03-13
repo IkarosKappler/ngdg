@@ -21,17 +21,248 @@ var Params_1 = __webpack_require__(/*! plotboilerplate/src/esm/utils/Params */ "
 var gup_1 = __webpack_require__(/*! plotboilerplate/src/esm/utils/gup */ "./node_modules/plotboilerplate/src/esm/utils/gup.js");
 var detectDarkMode_1 = __webpack_require__(/*! ./detectDarkMode */ "./src/cjs/detectDarkMode.js");
 var detectMobileMode_1 = __webpack_require__(/*! ./detectMobileMode */ "./src/cjs/detectMobileMode.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var setPathInstance_1 = __webpack_require__(/*! ./appcontext/setPathInstance */ "./src/cjs/appcontext/setPathInstance.js");
+var addRemovePathListeners_1 = __webpack_require__(/*! ./appcontext/addRemovePathListeners */ "./src/cjs/appcontext/addRemovePathListeners.js");
+var updatePathResizer_1 = __webpack_require__(/*! ./appcontext/updatePathResizer */ "./src/cjs/appcontext/updatePathResizer.js");
+var updateSilhouette_1 = __webpack_require__(/*! ./appcontext/updateSilhouette */ "./src/cjs/appcontext/updateSilhouette.js");
+var initConfig_1 = __webpack_require__(/*! ./appcontext/initConfig */ "./src/cjs/appcontext/initConfig.js");
+var updateOutlineStats_1 = __webpack_require__(/*! ./appcontext/updateOutlineStats */ "./src/cjs/appcontext/updateOutlineStats.js");
+var updateModifiers_1 = __webpack_require__(/*! ./appcontext/updateModifiers */ "./src/cjs/appcontext/updateModifiers.js");
+var rebuild_1 = __webpack_require__(/*! ./appcontext/rebuild */ "./src/cjs/appcontext/rebuild.js");
+var handlePathVisibilityChanged_1 = __webpack_require__(/*! ./appcontext/handlePathVisibilityChanged */ "./src/cjs/appcontext/handlePathVisibilityChanged.js");
+var initStats_1 = __webpack_require__(/*! ./appcontext/initStats */ "./src/cjs/appcontext/initStats.js");
+var ngdg_1 = __webpack_require__(/*! ./ngdg */ "./src/cjs/ngdg.js");
+var updateBumpmapPreview_1 = __webpack_require__(/*! ./appcontext/updateBumpmapPreview */ "./src/cjs/appcontext/updateBumpmapPreview.js");
+var exportSTL_1 = __webpack_require__(/*! ./appcontext/exportSTL */ "./src/cjs/appcontext/exportSTL.js");
+var showPathJSON_1 = __webpack_require__(/*! ./appcontext/showPathJSON */ "./src/cjs/appcontext/showPathJSON.js");
+var showSculptMap_1 = __webpack_require__(/*! ./appcontext/showSculptMap */ "./src/cjs/appcontext/showSculptMap.js");
+var getSculptmapDataURL_1 = __webpack_require__(/*! ./appcontext/getSculptmapDataURL */ "./src/cjs/appcontext/getSculptmapDataURL.js");
+var insertPathJSON_1 = __webpack_require__(/*! ./appcontext/insertPathJSON */ "./src/cjs/appcontext/insertPathJSON.js");
+var loadPathJSON_1 = __webpack_require__(/*! ./appcontext/loadPathJSON */ "./src/cjs/appcontext/loadPathJSON.js");
+var fitViewToSilhouette_1 = __webpack_require__(/*! ./appcontext/fitViewToSilhouette */ "./src/cjs/appcontext/fitViewToSilhouette.js");
+var acquireOptimalView_1 = __webpack_require__(/*! ./appcontext/acquireOptimalView */ "./src/cjs/appcontext/acquireOptimalView.js");
+var acquireOptimalPathView_1 = __webpack_require__(/*! ./appcontext/acquireOptimalPathView */ "./src/cjs/appcontext/acquireOptimalPathView.js");
+var setDefaultPathInstance_1 = __webpack_require__(/*! ./appcontext/setDefaultPathInstance */ "./src/cjs/appcontext/setDefaultPathInstance.js");
+var getBezierJSON_1 = __webpack_require__(/*! ./appcontext/getBezierJSON */ "./src/cjs/appcontext/getBezierJSON.js");
+// import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 var AppContext = /** @class */ (function () {
-    function AppContext() {
+    function AppContext(options) {
+        this.bezierDistanceT = 0;
+        this.bezierDistanceLine = null;
         this.GUP = (0, gup_1.gup)();
         this.params = new Params_1.Params(this.GUP);
         this.isDarkmode = (0, detectDarkMode_1.detectDarkMode)(this.GUP);
         this.isMobile = (0, detectMobileMode_1.detectMobileMode)(this.params);
+        this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
+        this.config = (0, initConfig_1.initConfig)(this);
+        // Init PB
+        // All config appContext.params are optional.
+        this.pb = new plotboilerplate_1.PlotBoilerplate({
+            canvas: document.getElementById("my-canvas"),
+            fullSize: true,
+            fitToParent: true,
+            scaleX: 1.0,
+            scaleY: 1.0,
+            rasterGrid: this.params.getBoolean("rasterGrid", true),
+            drawOrigin: this.params.getBoolean("drawOrigin", false),
+            rasterAdjustFactor: 2.0,
+            redrawOnResize: true,
+            defaultCanvasWidth: 1024,
+            defaultCanvasHeight: 768,
+            canvasWidthFactor: 1.0,
+            canvasHeightFactor: 1.0,
+            cssScaleX: 1.0,
+            cssScaleY: 1.0,
+            cssUniformScale: true,
+            autoAdjustOffset: true,
+            offsetAdjustXPercent: 50,
+            offsetAdjustYPercent: 50,
+            backgroundColor: this.isDarkmode ? "rgb(09, 12, 23)" : "#ffffff",
+            // offsetX: 0.0,
+            // offsetY: 0.0,
+            // drawRaster: true,
+            // rasterScaleX: 1.0,
+            // rasterScaleY: 1.0,
+            // enableMouseWheel: true,
+            // enableZoom: true,
+            // enablePan: true,
+            // autoDetectRetina: true,
+            // enableMouse: true,
+            // enableKeys: true,
+            // enableTouch: true,
+            enableSVGExport: false
+        }, {} // TODO: FIX IN PlotBoilerpate. This should be optional
+        );
+        this.pb.drawConfig.bezier.color = this.isDarkmode ? "rgba(128,128,128, 0.8)" : "#000000";
+        this.pb.drawConfig.bezier.lineWidth = 2.0;
+        this.pb.drawConfig.bezier.handleLine.color = this.isDarkmode ? "rgba(92,92,92,0.8)" : "rgba(0,0,0,0.35)";
+        this.pb.drawConfig.bezier.pathVertex.color = "#B400FF";
+        this.pb.drawConfig.bezier.pathVertex.fill = true;
+        this.pb.drawConfig.bezier.controlVertex.color = "#B8D438";
+        this.pb.drawConfig.bezier.controlVertex.fill = true;
+        this.DEFAULT_BEZIER_COLOR = this.pb.drawConfig.bezier.color;
+        this.DEFAULT_BEZIER_HANDLE_LINE_COLOR = this.pb.drawConfig.bezier.handleLine.color;
+        this.bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
+        this.bumpmap = null;
+        var _self = this;
+        this.bumpmapRasterImage = ngdg_1.ngdg.ImageStore.getImage(this.bumpmapPath, function (_completeImage) {
+            _self.rebuild && _self.rebuild();
+        });
+        this.dildoGeneration = new ngdg_1.ngdg.DildoGeneration("dildo-canvas", {
+            makeOrbitControls: options.makeOrbitControls
+            //   makeOrbitControls: function (camera, domElement) {
+            //     return new THREE.OrbitControls(camera, domElement);
+            //   }
+        });
+        this.modal = options.makeModal();
+        this.saveAs = options.saveAs;
+        this.addPathListeners = (0, addRemovePathListeners_1.addPathListeners)(this);
+        this.removePathListeners = (0, addRemovePathListeners_1.removePathListeners)(this);
+        this.setPathInstance = (0, setPathInstance_1.setPathInstance)(this);
+        this.updatePathResizer = (0, updatePathResizer_1.updatePathResizer)(this);
+        this.updateSilhouette = (0, updateSilhouette_1.updateSilhouette)(this);
+        this.updateModifiers = (0, updateModifiers_1.updateModifiers)(this);
+        this.updateOutlineStats = (0, updateOutlineStats_1.updateOutlineStats)(this);
+        this.rebuild = (0, rebuild_1.rebuild)(this);
+        this.handlePathVisibilityChanged = (0, handlePathVisibilityChanged_1.handlePathVisibilityChanged)(this);
+        this.updateBumpmapPreview = updateBumpmapPreview_1.updateBumpmapPreview;
+        this.exportSTL = (0, exportSTL_1.exportSTL)(this, options.makeSTLExporter);
+        this.showPathJSON = (0, showPathJSON_1.showPathJSON)(this);
+        this.showSculptmap = (0, showSculptMap_1.showSculptmap)(this);
+        this.getSculptmapDataURL = (0, getSculptmapDataURL_1.getSculptmapDataURL)(this);
+        this.insertPathJSON = (0, insertPathJSON_1.insertPathJSON)(this);
+        this.loadPathJSON = (0, loadPathJSON_1.loadPathJSON)(this);
+        this.fitViewToSilhouette = (0, fitViewToSilhouette_1.fitViewToSilhouette)(this);
+        this.acquireOptimalView = (0, acquireOptimalView_1.acquireOptimalView)(this);
+        this.acquireOptimalPathView = (0, acquireOptimalPathView_1.acquireOptimalPathView)(this);
+        this.setDefaultPathInstance = (0, setDefaultPathInstance_1.setDefaultPathInstance)(this);
+        this.getBezierJSON = (0, getBezierJSON_1.getBezierJSON)(this);
+        this.stats = (0, initStats_1.initStats)();
     }
     return AppContext;
 }());
 exports.AppContext = AppContext;
 //# sourceMappingURL=AppContext.js.map
+
+/***/ },
+
+/***/ "./src/cjs/BezierResizeHelper.js"
+/*!***************************************!*\
+  !*** ./src/cjs/BezierResizeHelper.js ***!
+  \***************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * A helper to resize bezier paths in horizontal and vertical orientation.
+ *
+ * @requires PlotBoilerplate
+ * @requires BezierPath
+ * @requires Vertex
+ *
+ * @author   Ikaros Kappler
+ * @date     2021-12-01
+ * @modified 2026-03-13 Ported to Typescript.
+ * @version  1.1.0
+ *
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BezierResizeHelper = void 0;
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+// A closure to hide helper functions.
+var BezierResizeHelper = /** @class */ (function () {
+    /**
+     * The constructor.
+     *
+     * @param {PlotBoilerplate} pb
+     * @param {BezierPath} bezierPath
+     * @param {function} updateCallback
+     */
+    function BezierResizeHelper(pb, bezierPath, updateCallback) {
+        /**
+         * Destroys this helper by removing all previously installed vertex listeners.
+         */
+        this.destroy = function () {
+            this.verticalResizeHandle.listeners.removeDragStartListener(this.__listeners[0]);
+            this.verticalResizeHandle.listeners.removeDragEndListener(this.__listeners[1]);
+            this.horizontalResizeHandle.listeners.removeDragStartListener(this.__listeners[2]);
+            this.horizontalResizeHandle.listeners.removeDragEndListener(this.__listeners[3]);
+        };
+        this.bezierPath = bezierPath;
+        // @public
+        this.verticalResizeHandle = new plotboilerplate_1.Vertex(0, 0);
+        this.horizontalResizeHandle = new plotboilerplate_1.Vertex(0, 0);
+        // @private
+        this.verticalResizeHandleDragStartPosition = null;
+        this.horizontalResizeHandleDragStartPosition = null;
+        this.__listeners = installListeners(this, pb, bezierPath, updateCallback);
+        updateResizeHandles(this, bezierPath);
+    }
+    return BezierResizeHelper;
+}()); // END class
+exports.BezierResizeHelper = BezierResizeHelper;
+/**
+ * Install all required drag-start and drag-end listeners.
+ */
+var installListeners = function (_self, pb, bezierPath, updateCallback) {
+    var listeners = [];
+    listeners.push(_self.verticalResizeHandle.listeners.addDragStartListener(function (e) {
+        var relPos = pb.transformMousePosition(e.params.draggedFrom.x, e.params.draggedFrom.y);
+        _self.verticalResizeHandleDragStartPosition = relPos;
+    }));
+    listeners.push(_self.verticalResizeHandle.listeners.addDragEndListener(function (e) {
+        var relTargetPos = pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
+        var targetHeightDifference = _self.verticalResizeHandleDragStartPosition.y - relTargetPos.y;
+        changePathHeightBy(bezierPath, targetHeightDifference);
+        updateResizeHandles(_self, bezierPath);
+        _self.verticalResizeHandleDragStartPosition = null;
+        updateCallback();
+    }));
+    listeners.push(_self.horizontalResizeHandle.listeners.addDragStartListener(function (e) {
+        var relPos = pb.transformMousePosition(e.params.draggedFrom.x, e.params.draggedFrom.y);
+        _self.horizontalResizeHandleDragStartPosition = relPos;
+    }));
+    listeners.push(_self.horizontalResizeHandle.listeners.addDragEndListener(function (e) {
+        var relTargetPos = pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
+        var targetWidthDifference = _self.horizontalResizeHandleDragStartPosition.x - relTargetPos.x;
+        changePathWidthBy(bezierPath, targetWidthDifference);
+        updateResizeHandles(_self, bezierPath);
+        _self.horizontalResizeHandleDragStartPosition = null;
+        updateCallback();
+    }));
+    return listeners;
+};
+/**
+ * @param {BezierPath} bezierPath - The path to update.
+ * @param {number} heightAmount - The height difference to apply. Can be positive or negative or zero.
+ */
+var changePathHeightBy = function (bezierPath, heightAmount) {
+    var bounds = bezierPath.getBounds();
+    var scaleAnchor = bounds.max;
+    var verticalScaleFactor = (bounds.height + heightAmount) / bounds.height;
+    bezierPath.scaleXY({ x: 1.0, y: verticalScaleFactor }, scaleAnchor);
+};
+/**
+ * @param {BezierPath} bezierPath - The path to update.
+ * @param {number} widthAmount - The width difference to apply. Can be positive or negative or zero.
+ */
+var changePathWidthBy = function (bezierPath, widthAmount) {
+    var bounds = bezierPath.getBounds();
+    var scaleAnchor = bounds.max;
+    var horizontalScaleFactor = (bounds.width + widthAmount) / bounds.width;
+    bezierPath.scaleXY({ x: horizontalScaleFactor, y: 1.0 }, scaleAnchor);
+};
+/**
+ * Set the handles to the new position after the path was resized.
+ */
+var updateResizeHandles = function (_self, bezierPath) {
+    var handleOffset = 0;
+    var bounds = bezierPath.getBounds();
+    _self.horizontalResizeHandle.set(bounds.min.x - handleOffset, bounds.min.y + bounds.height / 2.0);
+    _self.verticalResizeHandle.set(bounds.min.x + bounds.width / 2.0, bounds.min.y - handleOffset);
+};
+//# sourceMappingURL=BezierResizeHelper.js.map
 
 /***/ },
 
@@ -204,8 +435,16 @@ var DildoGeneration = /** @class */ (function () {
      * Resize the 3d canvas to fit its container.
      */
     DildoGeneration.prototype.resizeCanvas = function () {
-        var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        console.log("resizeCanvas");
+        var space = this.getAvailableContainerSpace();
+        // _self.canvas.style.width = (_self.config.canvasWidthFactor ?? 1.0) * space.width + "px";
+        // _self.canvas.style.height = (_self.config.canvasHeightFactor ?? 1.0) * space.height + "px";
+        // _self.canvas.style.top = "";
+        // _self.canvas.style.left = "";
+        // let width: number = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        // let height: number = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var width = space.width;
+        var height = space.height;
         this.canvas.width = width;
         this.canvas.height = height;
         this.canvas.style.width = "" + width + "px";
@@ -215,6 +454,24 @@ var DildoGeneration = /** @class */ (function () {
         this.renderer.setSize(width, height);
         // What am I doing here?
         this.camera.setViewOffset(width, height, width / 4, height / 20, width, height);
+    };
+    // TODO: this was moved to the DOM utils
+    DildoGeneration.prototype.getAvailableContainerSpace = function () {
+        var container = this.canvas.parentNode; // Element | Document | DocumentFragment;
+        // _self.canvas.style.display = "none";
+        var padding = this.getFProp(container, "padding") || 0, border = this.getFProp(this.canvas, "border-width") || 0, pl = this.getFProp(container, "padding-left") || padding, pr = this.getFProp(container, "padding-right") || padding, pt = this.getFProp(container, "padding-top") || padding, pb = this.getFProp(container, "padding-bottom") || padding, bl = this.getFProp(this.canvas, "border-left-width") || border, br = this.getFProp(this.canvas, "border-right-width") || border, bt = this.getFProp(this.canvas, "border-top-width") || border, bb = this.getFProp(this.canvas, "border-bottom-width") || border;
+        var w = container.clientWidth;
+        var h = container.clientHeight;
+        // _self.canvas.style.display = "block";
+        return { width: w - pl - pr - bl - br, height: h - pt - pb - bt - bb };
+    };
+    /**
+     * Internal helper function used to get 'float' properties from elements.
+     * Used to determine border withs and paddings that were defined using CSS.
+     */
+    // TODO: this was moved to the DOM utils
+    DildoGeneration.prototype.getFProp = function (elem, propName) {
+        return parseFloat(globalThis.getComputedStyle(elem, null).getPropertyValue(propName));
     };
     /**
      * Clears the current scene and rebuilds everything from scratch according to the
@@ -2635,6 +2892,158 @@ var getThreePlanePoints = function (planeGeometryReal) {
 
 /***/ },
 
+/***/ "./src/cjs/RasteredBumpmap.js"
+/*!************************************!*\
+  !*** ./src/cjs/RasteredBumpmap.js ***!
+  \************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * @author Ikaros Kappler
+ * @version 1.0.0
+ * @date    2021-09-02
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RasteredBumpmap = void 0;
+var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
+var RasteredBumpmap = /** @class */ (function () {
+    function RasteredBumpmap(image, rasterWidth, rasterHeight) {
+        // console.log("Creating Bumpmap", image, rasterWidth, rasterHeight, image.naturalWidth, image.naturalHeight);
+        if (!rasterWidth) {
+            rasterWidth = image.naturalWidth;
+        }
+        if (!rasterHeight) {
+            rasterWidth = image.naturalHeight;
+        }
+        this.canvas = document.createElement("canvas");
+        this.canvas.setAttribute("width", "".concat(rasterWidth, "px"));
+        this.canvas.setAttribute("height", "".concat(rasterHeight, "px"));
+        this.context = this.canvas.getContext("2d");
+        this.context.drawImage(image, 0, 0, rasterWidth, rasterHeight);
+        this.imageData = this.context.getImageData(0, 0, rasterWidth, rasterHeight).data;
+        this.image = image;
+        this.width = rasterWidth;
+        this.height = rasterHeight;
+        // document.getElementById("bumpmap-preview").appendChild(canvas);
+        // document.getElementById("bumpmap-preview").style.display = "block";
+    }
+    /**
+     * Get the bumpmap's height-value at the given relative coordinates.
+     *
+     * @param {number} ratioX - A value for the horizontal position, must be in [0..1].
+     * @param {number} ratioY - A value for the vertical position, must be in [0..1].
+     * @return {number} The bumpmap's height value in the range [0..1].
+     */
+    RasteredBumpmap.prototype.getHeightAt = function (ratioX, ratioY) {
+        var x = Math.floor((this.width - 1) * GeometryGenerationHelpers_1.GeometryGenerationHelpers.clamp(ratioX, 0.0, 1.0));
+        var y = Math.floor((this.height - 1) * GeometryGenerationHelpers_1.GeometryGenerationHelpers.clamp(ratioY, 0.0, 1.0));
+        var offset = (y * this.width + x) * 4;
+        // const offset: number = y * this.width + x;
+        // Each pixel value must a byte, so each component is in [0..255]
+        var pixel = {
+            r: this.imageData[offset],
+            g: this.imageData[offset + 1],
+            b: this.imageData[offset + 2],
+            a: this.imageData[offset + 3] // Ignore alpha channel?
+        };
+        // Convert rgb pixel data to `radiant intensity`
+        // https://computergraphics.stackexchange.com/questions/5085/light-intensity-of-an-rgb-value
+        var brightness = (0.21 * pixel.r + 0.72 * pixel.g + 0.07 * pixel.b) / 255;
+        return brightness;
+    };
+    /**
+     * Get a preview image to use in the DOM.
+     *
+     * @return {HTMLImageElement}
+     */
+    RasteredBumpmap.prototype.createPreviewImage = function () {
+        var imageElem = document.createElement("img");
+        imageElem.setAttribute("src", this.canvas.toDataURL("image/png"));
+        imageElem.setAttribute("width", "".concat(this.width));
+        imageElem.setAttribute("height", "".concat(this.height));
+        return imageElem;
+    };
+    /**
+     * Get the dimension of the bumpmap (number of columns and number of rows).
+     *
+     * @return {Dimension}
+     */
+    RasteredBumpmap.prototype.getDimension = function () {
+        return { width: this.width, height: this.height };
+    };
+    return RasteredBumpmap;
+}());
+exports.RasteredBumpmap = RasteredBumpmap;
+//# sourceMappingURL=RasteredBumpmap.js.map
+
+/***/ },
+
+/***/ "./src/cjs/Rulers.js"
+/*!***************************!*\
+  !*** ./src/cjs/Rulers.js ***!
+  \***************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * Some helpers to draw vertical and horizontal rulers.
+ *
+ * @author   Ikaros Kappler
+ * @date     2021-12-03
+ * @modified 2026-03-13 Ported to Typescript.
+ * @version  1.1.0
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Rulers = void 0;
+var Rulers = /** @class */ (function () {
+    function Rulers() {
+    }
+    Rulers.drawHorizontalRuler = function (draw, fill, outline, color) {
+        // Draw the ruler.
+        var bounds = outline.getBounds();
+        // Draw horizontal ruler
+        draw.line({ x: bounds.min.x, y: bounds.max.y + 10 }, { x: bounds.max.x, y: bounds.max.y + 10 }, color, 0.5);
+        var horizontalStepCount = bounds.width / Rulers.stepSize;
+        for (var i = 0; i < horizontalStepCount; i++) {
+            draw.line({ x: bounds.max.x - i * Rulers.stepSize, y: bounds.max.y + 10 - 3 }, { x: bounds.max.x - i * Rulers.stepSize, y: bounds.max.y + 10 + 3 }, color, 0.5);
+            // Draw label?
+            if (i % 2 === 0) {
+                var x = bounds.max.x - i * Rulers.stepSize; //  - fontSize * 0.25;
+                var y = bounds.max.y + 16;
+                fill.text(Number(i * Rulers.stepSize * Rulers.mmPerUnit).toFixed(0) + "mm", x, y, {
+                    color: color,
+                    fontSize: Rulers.fontSize / fill.scale.x,
+                    textAlign: "right",
+                    rotation: -Math.PI / 4
+                });
+            }
+        }
+    };
+    Rulers.drawVerticalRuler = function (draw, fill, outline, color) {
+        // Draw the ruler.
+        var bounds = outline.getBounds();
+        // Draw vertical ruler
+        draw.line({ x: bounds.max.x + 10, y: bounds.min.y }, { x: bounds.max.x + 10, y: bounds.max.y }, color, 0.5);
+        var verticalStepCount = bounds.height / Rulers.stepSize;
+        for (var i = 0; i < verticalStepCount; i++) {
+            draw.line({ x: bounds.max.x + 10 - 3, y: bounds.max.y - i * Rulers.stepSize }, { x: bounds.max.x + 10 + 3, y: bounds.max.y - i * Rulers.stepSize }, color, 0.5);
+            // Draw label?
+            if (i % 2 === 0) {
+                fill.text(Number(i * Rulers.stepSize * Rulers.mmPerUnit).toFixed(0) + "mm", bounds.max.x + 16, bounds.max.y - i * Rulers.stepSize + Rulers.fontSize * 0.25, { color: color, fontSize: Rulers.fontSize / fill.scale.x });
+            }
+        }
+    };
+    Rulers.mmPerUnit = 0.5;
+    Rulers.stepSize = 20; // pixels
+    Rulers.fontSize = 10;
+    return Rulers;
+}()); // END class
+exports.Rulers = Rulers;
+//# sourceMappingURL=Rulers.js.map
+
+/***/ },
+
 /***/ "./src/cjs/SculptMap.js"
 /*!******************************!*\
   !*** ./src/cjs/SculptMap.js ***!
@@ -2860,6 +3269,1032 @@ exports.UVHelpers = {
     }
 };
 //# sourceMappingURL=UVHelpers.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/acquireOptimalPathView.js"
+/*!******************************************************!*\
+  !*** ./src/cjs/appcontext/acquireOptimalPathView.js ***!
+  \******************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * A helper function to scale and reposition the view to get optimal sight on an object.
+ *
+ * @author   Ikaros Kappler
+ * @date     2021-12-03
+ * @modified 2026-03-13 Ported to Typescript.
+ * @version  1.1.0
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.acquireOptimalPathView = void 0;
+var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
+// +---------------------------------------------------------------------------------
+// | Scale a given Bounds instance to a new size (from its center).
+// +-------------------------------
+var acquireOptimalPathView = function (appContext) {
+    return function (pb, outline) {
+        // var frameSize = new THREE.Vector2(25, 25);
+        // Just keep a 20% frame to stay clear of the canvas limits.
+        var frameSize = new THREE.Vector2(pb.canvasSize.width * 0.2, pb.canvasSize.height * 0.2);
+        // Compute the applicable canvas size, which leaves the passed frame untouched
+        var applicableCanvasWidth = pb.canvasSize.width - frameSize.x * 2;
+        var applicableCanvasHeight = pb.canvasSize.height - frameSize.y * 2;
+        // Move center of bezier polygon to (0,0)
+        var bounds = outline.getBounds();
+        var ratioX = bounds.width / applicableCanvasWidth;
+        var ratioY = bounds.height / applicableCanvasHeight;
+        // The minimal match (width or height) is our choice.
+        var newZoomFactor = Math.min(1.0 / ratioX, 1.0 / ratioY);
+        // TODO: the next version of PlotBoilerplate will habe this public :)
+        pb.setZoom(newZoomFactor, newZoomFactor, { x: 0, y: 0 });
+        // Set the draw offset position
+        var drawOffsetX = frameSize.x + applicableCanvasWidth / 2.0 - (bounds.min.x + bounds.width / 2) * newZoomFactor;
+        var drawOffsetY = frameSize.y + applicableCanvasHeight / 2.0 - (bounds.min.y + bounds.height / 2) * newZoomFactor;
+        // TODO: the next version of PlotBoilerplate will habe this public :)
+        pb.setOffset({ x: drawOffsetX, y: drawOffsetY });
+        // Don't forget to redraw
+        pb.redraw();
+    };
+};
+exports.acquireOptimalPathView = acquireOptimalPathView;
+//# sourceMappingURL=acquireOptimalPathView.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/acquireOptimalView.js"
+/*!**************************************************!*\
+  !*** ./src/cjs/appcontext/acquireOptimalView.js ***!
+  \**************************************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.acquireOptimalView = void 0;
+var acquireOptimalView = function (appContext) {
+    return function () {
+        // if (params.getBoolean("fitViewToSilhouette", false)) {
+        if (appContext.config.isSilhoutettePreferredView) {
+            appContext.fitViewToSilhouette();
+        }
+        else {
+            appContext.acquireOptimalPathView(appContext.pb, appContext.outline);
+        }
+    };
+};
+exports.acquireOptimalView = acquireOptimalView;
+//# sourceMappingURL=acquireOptimalView.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/addRemovePathListeners.js"
+/*!******************************************************!*\
+  !*** ./src/cjs/appcontext/addRemovePathListeners.js ***!
+  \******************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ * @param newOutline
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.removePathListeners = exports.addPathListeners = void 0;
+var BezierPathInteractionHelper_1 = __webpack_require__(/*! plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper */ "./node_modules/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js");
+var addPathListeners = function (appContex) {
+    return function (path) {
+        BezierPathInteractionHelper_1.BezierPathInteractionHelper.addPathVertexDragEndListeners(path, appContex.dragEndListener);
+        BezierPathInteractionHelper_1.BezierPathInteractionHelper.addPathVertexDragListeners(path, appContex.dragListener);
+    };
+};
+exports.addPathListeners = addPathListeners;
+var removePathListeners = function (appContex) {
+    return function (path) {
+        BezierPathInteractionHelper_1.BezierPathInteractionHelper.removePathVertexDragEndListeners(path, appContex.dragEndListener);
+        BezierPathInteractionHelper_1.BezierPathInteractionHelper.removePathVertexDragListeners(path, appContex.dragListener);
+    };
+};
+exports.removePathListeners = removePathListeners;
+//# sourceMappingURL=addRemovePathListeners.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/exportSTL.js"
+/*!*****************************************!*\
+  !*** ./src/cjs/appcontext/exportSTL.js ***!
+  \*****************************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.exportSTL = void 0;
+// +---------------------------------------------------------------------------------
+// | Export the model as an STL file.
+// +-------------------------------
+var exportSTL = function (appContext, makeSTLExporter) {
+    return function () {
+        function saveFile(data, filename) {
+            appContext.saveAs(new Blob([data], { type: "application/sla" }), filename);
+        }
+        appContext.modal.setTitle("Export STL");
+        appContext.modal.setFooter("");
+        appContext.modal.setActions([
+            {
+                label: "Cancel",
+                action: function () {
+                    appContext.modal.close();
+                    console.log("canceled");
+                }
+            }
+        ]);
+        appContext.modal.setBody("Loading ...");
+        appContext.modal.open();
+        try {
+            appContext.dildoGeneration.generateSTL({
+                onComplete: function (stlData) {
+                    window.setTimeout(function () {
+                        appContext.modal.setBody("File ready.");
+                        appContext.modal.setActions([appContext.modal.ACTION_CLOSE]);
+                        saveFile(stlData, "dildomodel.stl");
+                    }, 500);
+                    // modal.close();
+                }
+            }, 
+            // new THREE.STLExporter()
+            makeSTLExporter());
+        }
+        catch (e) {
+            console.error(e);
+            appContext.modal.setBody("Error: " + e);
+            appContext.modal.setActions([appContext.modal.ACTION_CLOSE]);
+            appContext.modal.open();
+        }
+    };
+};
+exports.exportSTL = exportSTL;
+//# sourceMappingURL=exportSTL.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/fitViewToSilhouette.js"
+/*!***************************************************!*\
+  !*** ./src/cjs/appcontext/fitViewToSilhouette.js ***!
+  \***************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.fitViewToSilhouette = void 0;
+var scaleBounds_1 = __webpack_require__(/*! ../scaleBounds */ "./src/cjs/scaleBounds.js");
+var fitViewToSilhouette = function (appContext) {
+    return function () {
+        var bounds = appContext.dildoSilhouette.getBounds();
+        appContext.pb.fitToView((0, scaleBounds_1.scaleBounds)(bounds, 1.6));
+    };
+};
+exports.fitViewToSilhouette = fitViewToSilhouette;
+//# sourceMappingURL=fitViewToSilhouette.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/getBezierJSON.js"
+/*!*********************************************!*\
+  !*** ./src/cjs/appcontext/getBezierJSON.js ***!
+  \*********************************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getBezierJSON = void 0;
+var getBezierJSON = function (appContext) {
+    return function (prettyFormat) {
+        return appContext.outline ? appContext.outline.toJSON(prettyFormat) : null;
+    };
+};
+exports.getBezierJSON = getBezierJSON;
+//# sourceMappingURL=getBezierJSON.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/getSculptmapDataURL.js"
+/*!***************************************************!*\
+  !*** ./src/cjs/appcontext/getSculptmapDataURL.js ***!
+  \***************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getSculptmapDataURL = void 0;
+var ngdg_1 = __webpack_require__(/*! ../ngdg */ "./src/cjs/ngdg.js");
+var getSculptmapDataURL = function (appContext) {
+    return function () {
+        var geometry = appContext.dildoGeneration.primaryDildoGeometry;
+        var sculptmap = ngdg_1.ngdg.SculptMap.fromDildoGeometry(geometry);
+        var canvas = sculptmap.toCanvas();
+        var dataString = canvas.toDataURL();
+        return dataString;
+    };
+};
+exports.getSculptmapDataURL = getSculptmapDataURL;
+//# sourceMappingURL=getSculptmapDataURL.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/handlePathVisibilityChanged.js"
+/*!***********************************************************!*\
+  !*** ./src/cjs/appcontext/handlePathVisibilityChanged.js ***!
+  \***********************************************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.handlePathVisibilityChanged = void 0;
+var handlePathVisibilityChanged = function (appContext) {
+    return function () {
+        console.log("handlePathVisibilityChanged");
+        // if (!outline) {
+        //   return;
+        // }
+        // console.log("OUTLINE", outline);
+        appContext.outline.bezierCurves.forEach(function (curve) {
+            // console.log("Curve", curve);
+            curve.startPoint.attr.visible = appContext.config.drawOutline;
+            curve.endPoint.attr.visible = appContext.config.drawOutline;
+            curve.startControlPoint.attr.visible = appContext.config.drawOutline;
+            curve.endControlPoint.attr.visible = appContext.config.drawOutline;
+        });
+        if (appContext.config.drawOutline) {
+            // if (!pb.drawables.includes(outline)) {
+            //   pb.add(outline);
+            // }
+            // addPathListeners(outline);
+            // setPathInstance(outline);
+            appContext.pb.drawConfig.bezier.color = appContext.DEFAULT_BEZIER_COLOR;
+            appContext.pb.drawConfig.bezier.handleLine.color = appContext.DEFAULT_BEZIER_HANDLE_LINE_COLOR;
+            appContext.pb.drawConfig.drawHandleLines = true;
+        }
+        else {
+            // pb.removeAll(); // (outline, true, true); // redraw=true, removeWithVertices=true
+            // removePathListeners(outline);
+            appContext.pb.drawConfig.bezier.color = "rgba(255,255,255,0.0)";
+            appContext.pb.drawConfig.bezier.handleLine.color = "rgba(255,255,255,0.0)";
+            appContext.pb.drawConfig.drawHandleLines = false;
+        }
+        appContext.bezierResizer.verticalResizeHandle.attr.visible = appContext.config.drawResizeHandleLines;
+        appContext.bezierResizer.verticalResizeHandle.attr.draggable = appContext.config.drawResizeHandleLines;
+        appContext.bezierResizer.horizontalResizeHandle.attr.visible = appContext.config.drawResizeHandleLines;
+        appContext.bezierResizer.horizontalResizeHandle.attr.draggable = appContext.config.drawResizeHandleLines;
+        // outline.
+        appContext.pb.redraw();
+    };
+};
+exports.handlePathVisibilityChanged = handlePathVisibilityChanged;
+//# sourceMappingURL=handlePathVisibilityChanged.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/initConfig.js"
+/*!******************************************!*\
+  !*** ./src/cjs/appcontext/initConfig.js ***!
+  \******************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.initConfig = void 0;
+var ngdg_1 = __webpack_require__(/*! ../ngdg */ "./src/cjs/ngdg.js");
+var initConfig = function (appContext) {
+    // +---------------------------------------------------------------------------------
+    // | A global config that's attached to the dat.gui control interface.
+    // +-------------------------------
+    var config = {
+        outlineSegmentCount: appContext.params.getNumber("outlineSegmentCount", 128),
+        shapeSegmentCount: appContext.params.getNumber("shapeSegmentCount", 64),
+        bendAngle: appContext.params.getNumber("bendAngle", 0.0),
+        closeTop: appContext.params.getBoolean("closeTop", true),
+        closeBottom: appContext.params.getBoolean("closeBottom", true),
+        drawPathBounds: appContext.params.getBoolean("drawPathBounds", true),
+        drawResizeHandleLines: appContext.params.getBoolean("drawResizeHandleLines", true),
+        drawRulers: appContext.params.getBoolean("drawRulers", true),
+        drawOutline: appContext.params.getBoolean("drawOutline", true),
+        fillOutline: appContext.params.getBoolean("fillOutline", true),
+        showNormals: appContext.params.getBoolean("showNormals", false),
+        normalsLength: appContext.params.getNumber("normalsLength", 10.0),
+        normalizePerpendiculars: appContext.params.getBoolean("normalizePerpendiculars", true),
+        useTextureImage: appContext.params.getBoolean("useTextureImage", true),
+        textureImagePath: "assets/img/wood.png",
+        wireframe: appContext.params.getBoolean("wireframe", false),
+        performSlice: appContext.params.getBoolean("performSlice", false),
+        makeHollow: appContext.params.getBoolean("makeHollow", false),
+        hollowStrengthX: appContext.params.getNumber("hollowStrengthX", 15.0), // equivalent for Y is 'normalsLength'
+        renderFaces: appContext.params.getString("renderFaces", "double"), // "double" or "front" or "back"
+        twistAngle: appContext.params.getNumber("twistAngle", 0.0),
+        baseShapeExcentricity: appContext.params.getNumber("baseShapeExcentricity", 1.0),
+        closeCutAreas: appContext.params.getBoolean("closeCutAreas", true),
+        // previewBumpmap: false, // TODO: Is this actually in use?
+        useBumpmap: appContext.params.getBoolean("useBumpmap", false),
+        showBumpmapTargets: appContext.params.getBoolean("showBumpmapTargets", false),
+        showBumpmapImage: appContext.params.getBoolean("showBumpmapImage", false), // Not part of the generator interface
+        bumpmap: null, // This is not configurable at the moment and merge in later
+        bumpmapStrength: appContext.params.getNumber("bumpmapStrength", 10.0),
+        // Render settings
+        showBasicPerpendiculars: appContext.params.getBoolean("showBasicPerpendiculars", false),
+        addSpine: appContext.params.getBoolean("addSpine", false),
+        showSplitPane: appContext.params.getBoolean("showSplitPane", true),
+        showLeftSplit: appContext.params.getBoolean("showLeftSplit", true),
+        showRightSplit: appContext.params.getBoolean("showRightSplit", true),
+        showSplitShape: appContext.params.getBoolean("showSplitShape", true),
+        showSplitShapeTriangulation: appContext.params.getBoolean("showSplitShapeTriangulation", true),
+        addPrecalculatedMassiveFaces: appContext.params.getBoolean("addPrecalculatedMassiveFaces", false),
+        addPrecalculatedHollowFaces: appContext.params.getBoolean("addPrecalculatedHollowFaces", false),
+        addRawIntersectionTriangleMesh: appContext.params.getBoolean("addRawIntersectionTriangleMesh", false),
+        addPrecalculatedShapeOutlines: appContext.params.getBoolean("addPrecalculatedShapeOutlines", false),
+        bezierFillColor: appContext.params.getString("bezierFillColor", appContext.isDarkmode ? "rgba(64,64,64,.35)" : "rgba(0,0,0,0.15)"),
+        pathBoundsColor: appContext.params.getString("pathBoundsColor", appContext.isDarkmode ? "rgba(64,64,64,.5)" : "rgba(0,0,0,0.5)"),
+        resizeHandleLineColor: appContext.isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
+        rulerColor: appContext.params.getString("rulerColor", appContext.isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)"),
+        showDiscreteOutlinePoints: appContext.params.getBoolean("showDiscreteOutlinePoints", false),
+        showSilhouette: appContext.params.getBoolean("showSilhouette", true),
+        silhouetteLineColor: appContext.params.getString("silhouetteLineColor", "rgb(255,128,0)"),
+        silhouetteLineWidth: appContext.params.getNumber("silhouetteLineWidth", 3.0),
+        // Modifiers
+        leftSplitMeshRotationX: 180.0, // align properly according to split algorithm
+        leftSplitMeshRotationY: 0.0,
+        leftSplitMeshRotationZ: 0.0,
+        rightSplitMeshRotationX: 180.0, // align properly according to split algorithm
+        rightSplitMeshRotationY: 0.0,
+        rightSplitMeshRotationZ: 0.0,
+        leftSplitMeshTranslationX: ngdg_1.ngdg.SPLIT_MESH_OFFSET.x,
+        leftSplitMeshTranslationY: ngdg_1.ngdg.SPLIT_MESH_OFFSET.y,
+        leftSplitMeshTranslationZ: -ngdg_1.ngdg.SPLIT_MESH_OFFSET.z, // Important: invert this (as in the algorithm)
+        rightSplitMeshTranslationX: ngdg_1.ngdg.SPLIT_MESH_OFFSET.x,
+        rightSplitMeshTranslationY: ngdg_1.ngdg.SPLIT_MESH_OFFSET.y,
+        rightSplitMeshTranslationZ: ngdg_1.ngdg.SPLIT_MESH_OFFSET.z,
+        alignSplitsOnPlane: function () {
+            config.leftSplitMeshRotationX = 90;
+            config.leftSplitMeshRotationY = 0;
+            config.leftSplitMeshRotationZ = 90;
+            config.rightSplitMeshRotationX = 90;
+            config.rightSplitMeshRotationY = 180;
+            config.rightSplitMeshRotationZ = 90;
+            config.leftSplitMeshTranslationX = ngdg_1.ngdg.SPLIT_MESH_OFFSET.x;
+            config.leftSplitMeshTranslationY = ngdg_1.ngdg.SPLIT_MESH_OFFSET.y;
+            config.leftSplitMeshTranslationZ = -ngdg_1.ngdg.SPLIT_MESH_OFFSET.z * 2; // Important: invert this (as in the algorithm)
+            config.rightSplitMeshTranslationX = ngdg_1.ngdg.SPLIT_MESH_OFFSET.x;
+            config.rightSplitMeshTranslationY = ngdg_1.ngdg.SPLIT_MESH_OFFSET.y;
+            config.rightSplitMeshTranslationZ = ngdg_1.ngdg.SPLIT_MESH_OFFSET.z * 2;
+            appContext.updateModifiers();
+        },
+        restoreSplitAlignment: function () {
+            config.leftSplitMeshRotationX = 180;
+            config.leftSplitMeshRotationY = 0;
+            config.leftSplitMeshRotationZ = 0;
+            config.rightSplitMeshRotationX = 180;
+            config.rightSplitMeshRotationY = 0;
+            config.rightSplitMeshRotationZ = 0;
+            config.leftSplitMeshTranslationX = ngdg_1.ngdg.SPLIT_MESH_OFFSET.x;
+            config.leftSplitMeshTranslationY = ngdg_1.ngdg.SPLIT_MESH_OFFSET.y;
+            config.leftSplitMeshTranslationZ = -ngdg_1.ngdg.SPLIT_MESH_OFFSET.z; // Important: invert this (as in the algorithm)
+            config.rightSplitMeshTranslationX = ngdg_1.ngdg.SPLIT_MESH_OFFSET.x;
+            config.rightSplitMeshTranslationY = ngdg_1.ngdg.SPLIT_MESH_OFFSET.y;
+            config.rightSplitMeshTranslationZ = ngdg_1.ngdg.SPLIT_MESH_OFFSET.z;
+            appContext.updateModifiers();
+        },
+        isSilhoutettePreferredView: appContext.params.getBoolean("isSilhoutettePreferredView", true),
+        // Functions
+        exportSTL: function () {
+            appContext.exportSTL();
+        },
+        showPathJSON: function () {
+            appContext.showPathJSON();
+        },
+        showSculptmap: function () {
+            appContext.showSculptmap();
+        },
+        insertPathJSON: function () {
+            appContext.insertPathJSON();
+        },
+        acquireOptimalPathView: function () {
+            appContext.acquireOptimalPathView(appContext.pb, appContext.outline);
+        },
+        fitViewToSilhouette: function () {
+            appContext.fitViewToSilhouette();
+        },
+        setDefaultPathJSON: function () {
+            appContext.setDefaultPathInstance(true);
+        }
+    };
+    return config;
+};
+exports.initConfig = initConfig;
+//# sourceMappingURL=initConfig.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/initStats.js"
+/*!*****************************************!*\
+  !*** ./src/cjs/appcontext/initStats.js ***!
+  \*****************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.initStats = void 0;
+var uistats_typescript_1 = __webpack_require__(/*! uistats-typescript */ "./node_modules/uistats-typescript/dist/uistats.js");
+var initStats = function () {
+    // +---------------------------------------------------------------------------------
+    // | Add stats.
+    // +-------------------------------
+    var stats = {
+        mouseX: 0,
+        mouseY: 0,
+        width: 0,
+        height: 0,
+        diameter: 0,
+        area: 0
+    };
+    var uiStats = new uistats_typescript_1.UIStats(stats);
+    stats = uiStats.proxy;
+    uiStats.add("mouseX").precision(1);
+    uiStats.add("mouseY").precision(1);
+    uiStats.add("width").precision(1).suffix(" mm");
+    uiStats.add("height").precision(1).suffix(" mm");
+    uiStats.add("diameter").precision(1).suffix(" mm");
+    uiStats.add("area").precision(1).suffix(" mm²");
+    return stats;
+};
+exports.initStats = initStats;
+//# sourceMappingURL=initStats.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/insertPathJSON.js"
+/*!**********************************************!*\
+  !*** ./src/cjs/appcontext/insertPathJSON.js ***!
+  \**********************************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.insertPathJSON = void 0;
+var insertPathJSON = function (appContext) {
+    return function () {
+        var textarea = document.createElement("textarea");
+        textarea.style.width = "100%";
+        textarea.style.height = "50vh";
+        textarea.innerHTML = appContext.outline.toJSON(true);
+        appContext.modal.setTitle("Insert Path JSON");
+        appContext.modal.setFooter("");
+        appContext.modal.setActions([
+            appContext.modal.ACTION_CANCEL,
+            {
+                label: "Load JSON",
+                action: function () {
+                    appContext.loadPathJSON(textarea.value);
+                    appContext.modal.close();
+                }
+            }
+        ]);
+        appContext.modal.setBody(textarea);
+        appContext.modal.open();
+    };
+};
+exports.insertPathJSON = insertPathJSON;
+//# sourceMappingURL=insertPathJSON.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/loadPathJSON.js"
+/*!********************************************!*\
+  !*** ./src/cjs/appcontext/loadPathJSON.js ***!
+  \********************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.loadPathJSON = void 0;
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var loadPathJSON = function (appContext) {
+    return function (jsonData) {
+        var newOutline = null;
+        try {
+            newOutline = plotboilerplate_1.BezierPath.fromJSON(jsonData);
+        }
+        catch (e) {
+            console.log("Error parsing JSON path:", e.getMessage());
+        }
+        finally {
+            if (newOutline) {
+                appContext.setPathInstance(newOutline);
+                // acquireOptimalPathView(pb, outline);
+                appContext
+                    .rebuild()
+                    .then(function (succeeded) {
+                    succeeded && appContext.acquireOptimalView();
+                })
+                    .catch(function (err) {
+                    // NOOP: rebuild had been interrupted by new request.
+                    // Old result has just been dropped.
+                    err && console.log(err);
+                });
+            }
+        }
+    };
+};
+exports.loadPathJSON = loadPathJSON;
+//# sourceMappingURL=loadPathJSON.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/rebuild.js"
+/*!***************************************!*\
+  !*** ./src/cjs/appcontext/rebuild.js ***!
+  \***************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.rebuild = void 0;
+var ImageStore_1 = __webpack_require__(/*! ../ImageStore */ "./src/cjs/ImageStore.js");
+var RasteredBumpmap_1 = __webpack_require__(/*! ../RasteredBumpmap */ "./src/cjs/RasteredBumpmap.js");
+// +---------------------------------------------------------------------------------
+// | Delay the build a bit. And cancel stale builds.
+// | This avoids too many rebuilds (pretty expensive) on mouse drag events.
+// +-------------------------------
+// var buildId = null;
+var rebuild = function (appContex) {
+    return function () {
+        return new Promise(function (accept, reject) {
+            appContex.buildId = new Date().getTime();
+            try {
+                window.setTimeout((function (bId) {
+                    return function () {
+                        if (bId != appContex.buildId) {
+                            // console.log("Rejecting", bId, buildId);
+                            accept(false);
+                            return;
+                        }
+                        appContex.updateSilhouette(false);
+                        if (appContex.config.useBumpmap && ImageStore_1.ImageStore.isImageLoaded(appContex.bumpmapRasterImage)) {
+                            // Resize the bumpmap to satisfy the mesh resolution.
+                            appContex.bumpmap = new RasteredBumpmap_1.RasteredBumpmap(appContex.bumpmapRasterImage, appContex.config.shapeSegmentCount, appContex.config.outlineSegmentCount);
+                        }
+                        appContex.updateBumpmapPreview(appContex.bumpmap, appContex.config.useBumpmap && typeof appContex.bumpmap !== "undefined" && appContex.config.showBumpmapImage);
+                        // Set the bending flag only if bendAngle if not zero.
+                        appContex.dildoGeneration.rebuild(Object.assign(appContex.config, {
+                            outline: appContex.outline,
+                            isBending: appContex.config.bendAngle !== 0,
+                            bumpmap: appContex.bumpmap,
+                            baseShape: appContex.baseShape
+                        }) // TODO: THIS IS NOT TYPE SAFE!!!
+                        );
+                        appContex.updateModifiers();
+                        accept(true);
+                    };
+                })(appContex.buildId), 50); // END setTimeout
+            }
+            catch (e) {
+                reject();
+            }
+        }); // END Promise
+    };
+};
+exports.rebuild = rebuild;
+//# sourceMappingURL=rebuild.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/setDefaultPathInstance.js"
+/*!******************************************************!*\
+  !*** ./src/cjs/appcontext/setDefaultPathInstance.js ***!
+  \******************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setDefaultPathInstance = void 0;
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var ngdg_1 = __webpack_require__(/*! ../ngdg */ "./src/cjs/ngdg.js");
+var setDefaultPathInstance = function (appContext) {
+    return function (doRebuild) {
+        appContext.setPathInstance(plotboilerplate_1.BezierPath.fromJSON(ngdg_1.ngdg.DEFAULT_BEZIER_JSON));
+        if (doRebuild) {
+            appContext.rebuild();
+        }
+    };
+};
+exports.setDefaultPathInstance = setDefaultPathInstance;
+//# sourceMappingURL=setDefaultPathInstance.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/setPathInstance.js"
+/*!***********************************************!*\
+  !*** ./src/cjs/appcontext/setPathInstance.js ***!
+  \***********************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setPathInstance = void 0;
+var BezierPathInteractionHelper_1 = __webpack_require__(/*! plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper */ "./node_modules/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var setPathInstance = function (appContext) {
+    return function (newOutline) {
+        if (typeof appContext.outline != "undefined") {
+            appContext.pb.removeAll(false, false); // keepVertices=false, triggerRedraw=false
+        }
+        appContext.outline = newOutline;
+        appContext.addPathListeners(appContext.outline);
+        appContext.updatePathResizer(false); // triggerRedraw=false
+        appContext.pb.add(newOutline);
+        // pb.add(BezierPath.fromJSON(newOutline.toJSON()));
+        // +---------------------------------------------------------------------------------
+        // | Install a BÃ©zier interaction helper.
+        // +-------------------------------
+        new BezierPathInteractionHelper_1.BezierPathInteractionHelper(appContext.pb, [appContext.outline], {
+            maxDetectDistance: 32.0,
+            autoAdjustPaths: true,
+            allowPathRemoval: false, // It is not alowed to remove the outline path
+            onPointerMoved: function (pathIndex, newA, newB, newT) {
+                if (pathIndex == -1) {
+                    appContext.bezierDistanceLine = null;
+                }
+                else {
+                    appContext.bezierDistanceLine = new plotboilerplate_1.Line(newA, newB);
+                    appContext.bezierDistanceT = newT;
+                }
+            },
+            onVertexInserted: function (pathIndex, insertAfterIndex, newPath, oldPath) {
+                console.log("[pathIndex=" + pathIndex + "] Vertex inserted after " + insertAfterIndex);
+                console.log("oldPath", oldPath, "newPath", newPath);
+                appContext.removePathListeners(appContext.outline);
+                appContext.outline = newPath;
+                appContext.addPathListeners(appContext.outline);
+                appContext.rebuild();
+            },
+            onVerticesDeleted: function (pathIndex, deletedVertIndices, newPath, oldPath) {
+                console.log("[pathIndex=" + pathIndex + "] vertices deleted", deletedVertIndices);
+                appContext.removePathListeners(appContext.outline);
+                appContext.outline = newPath;
+                appContext.addPathListeners(appContext.outline);
+                appContext.rebuild();
+            }
+        });
+    }; // END setPathInstance
+};
+exports.setPathInstance = setPathInstance;
+//# sourceMappingURL=setPathInstance.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/showPathJSON.js"
+/*!********************************************!*\
+  !*** ./src/cjs/appcontext/showPathJSON.js ***!
+  \********************************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.showPathJSON = void 0;
+var showPathJSON = function (appContext) {
+    return function () {
+        appContext.modal.setTitle("Show Path JSON");
+        appContext.modal.setFooter("");
+        appContext.modal.setActions([appContext.modal.ACTION_CLOSE]);
+        var textArea = document.createElement("textarea");
+        textArea.style["width"] = "100%";
+        textArea.style["height"] = "100%";
+        textArea.style["min-height"] = "50vh";
+        textArea.innerHTML = appContext.outline.toJSON(true);
+        appContext.modal.setBody(textArea);
+        appContext.modal.open();
+    };
+};
+exports.showPathJSON = showPathJSON;
+//# sourceMappingURL=showPathJSON.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/showSculptMap.js"
+/*!*********************************************!*\
+  !*** ./src/cjs/appcontext/showSculptMap.js ***!
+  \*********************************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.showSculptmap = void 0;
+// +---------------------------------------------------------------------------------
+// | Updates the sculpt map by recalculating the image data from the 3d model.
+// +-------------------------------
+var showSculptmap = function (appContext) {
+    return function () {
+        appContext.modal.setTitle("Show Sculpt Map");
+        appContext.modal.setFooter("");
+        appContext.modal.setActions([appContext.modal.ACTION_CLOSE]);
+        // const geometry = dildoGeneration.primaryDildoGeometry;
+        // const sculptmap = ngdg.SculptMap.fromDildoGeometry(geometry);
+        // const canvas = sculptmap.toCanvas();
+        // const dataString = canvas.toDataURL();
+        var dataString = appContext.getSculptmapDataURL();
+        appContext.modal.setBody('<div style="height: 60vh; width: 100%;"><img src="' + dataString + '" width="100%" height="100%">');
+        appContext.modal.open();
+    };
+};
+exports.showSculptmap = showSculptmap;
+//# sourceMappingURL=showSculptMap.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/updateBumpmapPreview.js"
+/*!****************************************************!*\
+  !*** ./src/cjs/appcontext/updateBumpmapPreview.js ***!
+  \****************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.updateBumpmapPreview = void 0;
+var GeometryGenerationHelpers_1 = __webpack_require__(/*! ../GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
+/**
+ * Create a pewview for the used bumpmap.
+ *
+ * @param {IBumpmap|undefined} bumpmap
+ * @param {boolean} isPreviewVisible
+ */
+var updateBumpmapPreview = function (bumpmap, isPreviewVisible) {
+    // var updateBumpmapPreview = function (bumpmap, isPreviewVisible) {
+    // Note: this is currently not in use
+    var previewWrapper = document.getElementById("bumpmap-preview");
+    if (bumpmap && isPreviewVisible) {
+        var previewImageElem = bumpmap.createPreviewImage();
+        previewImageElem.style["object-fit"] = "contain";
+        previewImageElem.style["position"] = "relative";
+        previewImageElem.style["box-flex"] = 1;
+        previewImageElem.style["flex"] = "1 1 auto";
+        previewImageElem.style["width"] = "100%";
+        previewImageElem.style["height"] = "100%";
+        GeometryGenerationHelpers_1.GeometryGenerationHelpers.removeAllChildNodes(previewWrapper);
+        previewWrapper.appendChild(previewImageElem);
+        previewWrapper.style.display = "flex";
+    }
+    else {
+        previewWrapper.style.display = "none";
+    }
+};
+exports.updateBumpmapPreview = updateBumpmapPreview;
+//# sourceMappingURL=updateBumpmapPreview.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/updateModifiers.js"
+/*!***********************************************!*\
+  !*** ./src/cjs/appcontext/updateModifiers.js ***!
+  \***********************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.updateModifiers = void 0;
+var ngdg_1 = __webpack_require__(/*! ../ngdg */ "./src/cjs/ngdg.js");
+// +---------------------------------------------------------------------------------
+// | Whenever the modifier settings change (post built and post split) apply
+// | them here: rotation and translation.
+// +-------------------------------
+var updateModifiers = function (appContex) {
+    return function () {
+        // Fetch the sliced result (if options tell it was created)
+        // and apply some modifiers.
+        if (appContex.config.performSlice) {
+            if (appContex.dildoGeneration.splitResults[ngdg_1.ngdg.KEY_SLICED_MESH_RIGHT]) {
+                var rightSliceMesh = appContex.dildoGeneration.splitResults[ngdg_1.ngdg.KEY_SLICED_MESH_RIGHT];
+                rightSliceMesh.rotation.x = appContex.config.leftSplitMeshRotationX * ngdg_1.ngdg.DEG_TO_RAD;
+                rightSliceMesh.rotation.y = appContex.config.leftSplitMeshRotationY * ngdg_1.ngdg.DEG_TO_RAD;
+                rightSliceMesh.rotation.z = appContex.config.leftSplitMeshRotationZ * ngdg_1.ngdg.DEG_TO_RAD;
+                rightSliceMesh.position.x = appContex.config.leftSplitMeshTranslationX;
+                rightSliceMesh.position.y = appContex.config.leftSplitMeshTranslationY;
+                rightSliceMesh.position.z = appContex.config.leftSplitMeshTranslationZ;
+            }
+            if (appContex.dildoGeneration.splitResults[ngdg_1.ngdg.KEY_SLICED_MESH_LEFT]) {
+                var leftSliceMesh = appContex.dildoGeneration.splitResults[ngdg_1.ngdg.KEY_SLICED_MESH_LEFT];
+                leftSliceMesh.rotation.x = appContex.config.rightSplitMeshRotationX * ngdg_1.ngdg.DEG_TO_RAD;
+                leftSliceMesh.rotation.y = appContex.config.rightSplitMeshRotationY * ngdg_1.ngdg.DEG_TO_RAD;
+                leftSliceMesh.rotation.z = appContex.config.rightSplitMeshRotationZ * ngdg_1.ngdg.DEG_TO_RAD;
+                leftSliceMesh.position.x = appContex.config.rightSplitMeshTranslationX;
+                leftSliceMesh.position.y = appContex.config.rightSplitMeshTranslationY;
+                leftSliceMesh.position.z = appContex.config.rightSplitMeshTranslationZ;
+            }
+        }
+    };
+};
+exports.updateModifiers = updateModifiers;
+//# sourceMappingURL=updateModifiers.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/updateOutlineStats.js"
+/*!**************************************************!*\
+  !*** ./src/cjs/appcontext/updateOutlineStats.js ***!
+  \**************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.updateOutlineStats = void 0;
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var Rulers_1 = __webpack_require__(/*! ../Rulers */ "./src/cjs/Rulers.js");
+var updateOutlineStats = function (appContext) {
+    return function () {
+        var pathBounds = appContext.outline.getBounds();
+        appContext.stats.width = pathBounds.width * Rulers_1.Rulers.mmPerUnit;
+        appContext.stats.height = pathBounds.height * Rulers_1.Rulers.mmPerUnit;
+        appContext.stats.diameter = 2 * pathBounds.width * Rulers_1.Rulers.mmPerUnit;
+        // Compute area from outline
+        var vertices = appContext.outline.getEvenDistributionVertices(100);
+        var bounds = appContext.outline.getBounds();
+        vertices.push(new plotboilerplate_1.Vertex(bounds.max));
+        var polygon = new plotboilerplate_1.Polygon(vertices, false);
+        appContext.stats.area = polygon.area();
+    };
+};
+exports.updateOutlineStats = updateOutlineStats;
+//# sourceMappingURL=updateOutlineStats.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/updatePathResizer.js"
+/*!*************************************************!*\
+  !*** ./src/cjs/appcontext/updatePathResizer.js ***!
+  \*************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.updatePathResizer = void 0;
+var BezierResizeHelper_1 = __webpack_require__(/*! ../BezierResizeHelper */ "./src/cjs/BezierResizeHelper.js");
+var updatePathResizer = function (appContext) {
+    return function (triggerRedraw) {
+        if (appContext.bezierResizer) {
+            appContext.pb.remove([appContext.bezierResizer.verticalResizeHandle, appContext.bezierResizer.horizontalResizeHandle]);
+            appContext.bezierResizer.destroy();
+            appContext.bezierResizer = null;
+        }
+        // if (config.drawResizeHandleLines) {
+        var onUpdate = function () {
+            appContext.updateOutlineStats();
+            appContext.updateSilhouette(false); // noRedraw=false
+            appContext.rebuild();
+        };
+        appContext.bezierResizer = new BezierResizeHelper_1.BezierResizeHelper(appContext.pb, appContext.outline, onUpdate);
+        appContext.pb.add([appContext.bezierResizer.verticalResizeHandle, appContext.bezierResizer.horizontalResizeHandle], triggerRedraw);
+        appContext.handlePathVisibilityChanged();
+        // }
+    };
+};
+exports.updatePathResizer = updatePathResizer;
+//# sourceMappingURL=updatePathResizer.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/updateSilhouette.js"
+/*!************************************************!*\
+  !*** ./src/cjs/appcontext/updateSilhouette.js ***!
+  \************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.updateSilhouette = void 0;
+var ngdg_1 = __webpack_require__(/*! ../ngdg */ "./src/cjs/ngdg.js");
+// +---------------------------------------------------------------------------------
+// | Updates the sculpt map by recalculating the image data from the 3d model.
+// +-------------------------------
+var updateSilhouette = function (appContext) {
+    return function (noRedraw) {
+        // TODO: baseShape updating belongs elsewhere!
+        var baseRadius = appContext.outline.getBounds().width;
+        appContext.baseShape = ngdg_1.ngdg.GeometryGenerationHelpers.mkCircularPolygon(baseRadius, appContext.config.shapeSegmentCount, appContext.config.baseShapeExcentricity);
+        // Also draw the bent 2D dildo outline?
+        appContext.dildoSilhouette = new ngdg_1.ngdg.DildoSilhouette2D({
+            baseShape: appContext.baseShape,
+            outline: appContext.outline,
+            outlineSegmentCount: appContext.config.outlineSegmentCount,
+            bendAngleRad: appContext.config.bendAngle * ngdg_1.ngdg.DEG_TO_RAD,
+            bendAngleDeg: appContext.config.bendAngle,
+            // TODO: IS THIS REALLY IN USE???s
+            isBending: false // appContext.config.isBending
+        });
+        if (!noRedraw) {
+            appContext.pb.redraw();
+        }
+    };
+};
+exports.updateSilhouette = updateSilhouette;
+//# sourceMappingURL=updateSilhouette.js.map
 
 /***/ },
 
@@ -3392,6 +4827,29 @@ var randomWebColor_1 = __webpack_require__(/*! ./randomWebColor */ "./src/cjs/ra
 var getImageFromCanvas_1 = __webpack_require__(/*! ./getImageFromCanvas */ "./src/cjs/getImageFromCanvas.js");
 var detectDarkMode_1 = __webpack_require__(/*! ./detectDarkMode */ "./src/cjs/detectDarkMode.js");
 var AppContext_1 = __webpack_require__(/*! ./AppContext */ "./src/cjs/AppContext.js");
+var setPathInstance_1 = __webpack_require__(/*! ./appcontext/setPathInstance */ "./src/cjs/appcontext/setPathInstance.js");
+var Rulers_1 = __webpack_require__(/*! ./Rulers */ "./src/cjs/Rulers.js");
+var acquireOptimalView_1 = __webpack_require__(/*! ./appcontext/acquireOptimalView */ "./src/cjs/appcontext/acquireOptimalView.js");
+var addRemovePathListeners_1 = __webpack_require__(/*! ./appcontext/addRemovePathListeners */ "./src/cjs/appcontext/addRemovePathListeners.js");
+var acquireOptimalPathView_1 = __webpack_require__(/*! ./appcontext/acquireOptimalPathView */ "./src/cjs/appcontext/acquireOptimalPathView.js");
+var exportSTL_1 = __webpack_require__(/*! ./appcontext/exportSTL */ "./src/cjs/appcontext/exportSTL.js");
+var fitViewToSilhouette_1 = __webpack_require__(/*! ./appcontext/fitViewToSilhouette */ "./src/cjs/appcontext/fitViewToSilhouette.js");
+var getSculptmapDataURL_1 = __webpack_require__(/*! ./appcontext/getSculptmapDataURL */ "./src/cjs/appcontext/getSculptmapDataURL.js");
+var handlePathVisibilityChanged_1 = __webpack_require__(/*! ./appcontext/handlePathVisibilityChanged */ "./src/cjs/appcontext/handlePathVisibilityChanged.js");
+var initConfig_1 = __webpack_require__(/*! ./appcontext/initConfig */ "./src/cjs/appcontext/initConfig.js");
+var initStats_1 = __webpack_require__(/*! ./appcontext/initStats */ "./src/cjs/appcontext/initStats.js");
+var insertPathJSON_1 = __webpack_require__(/*! ./appcontext/insertPathJSON */ "./src/cjs/appcontext/insertPathJSON.js");
+var rebuild_1 = __webpack_require__(/*! ./appcontext/rebuild */ "./src/cjs/appcontext/rebuild.js");
+var loadPathJSON_1 = __webpack_require__(/*! ./appcontext/loadPathJSON */ "./src/cjs/appcontext/loadPathJSON.js");
+var setDefaultPathInstance_1 = __webpack_require__(/*! ./appcontext/setDefaultPathInstance */ "./src/cjs/appcontext/setDefaultPathInstance.js");
+var showPathJSON_1 = __webpack_require__(/*! ./appcontext/showPathJSON */ "./src/cjs/appcontext/showPathJSON.js");
+var updateBumpmapPreview_1 = __webpack_require__(/*! ./appcontext/updateBumpmapPreview */ "./src/cjs/appcontext/updateBumpmapPreview.js");
+var updateModifiers_1 = __webpack_require__(/*! ./appcontext/updateModifiers */ "./src/cjs/appcontext/updateModifiers.js");
+var updateOutlineStats_1 = __webpack_require__(/*! ./appcontext/updateOutlineStats */ "./src/cjs/appcontext/updateOutlineStats.js");
+var updatePathResizer_1 = __webpack_require__(/*! ./appcontext/updatePathResizer */ "./src/cjs/appcontext/updatePathResizer.js");
+var updateSilhouette_1 = __webpack_require__(/*! ./appcontext/updateSilhouette */ "./src/cjs/appcontext/updateSilhouette.js");
+var getBezierJSON_1 = __webpack_require__(/*! ./appcontext/getBezierJSON */ "./src/cjs/appcontext/getBezierJSON.js");
+var scaleBounds_1 = __webpack_require__(/*! ./scaleBounds */ "./src/cjs/scaleBounds.js");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
@@ -3399,6 +4857,28 @@ exports.ngdg = {
     KEY_SLICED_MESH_RIGHT: constants_1.KEY_SLICED_MESH_RIGHT,
     KEY_SLICED_MESH_LEFT: constants_1.KEY_SLICED_MESH_LEFT,
     AppContext: AppContext_1.AppContext,
+    acquireOptimalView: acquireOptimalView_1.acquireOptimalView,
+    addPathListeners: addRemovePathListeners_1.addPathListeners,
+    removePathListeners: addRemovePathListeners_1.removePathListeners,
+    acquireOptimalPathView: acquireOptimalPathView_1.acquireOptimalPathView,
+    exportSTL: exportSTL_1.exportSTL,
+    fitViewToSilhouette: fitViewToSilhouette_1.fitViewToSilhouette,
+    getBezierJSON: getBezierJSON_1.getBezierJSON,
+    getSculptmapDataURL: getSculptmapDataURL_1.getSculptmapDataURL,
+    handlePathVisibilityChanged: handlePathVisibilityChanged_1.handlePathVisibilityChanged,
+    initConfig: initConfig_1.initConfig,
+    initStats: initStats_1.initStats,
+    insertPathJSON: insertPathJSON_1.insertPathJSON,
+    loadPathJSON: loadPathJSON_1.loadPathJSON,
+    rebuild: rebuild_1.rebuild,
+    setDefaultPathInstance: setDefaultPathInstance_1.setDefaultPathInstance,
+    setPathInstance: setPathInstance_1.setPathInstance,
+    showPathJSON: showPathJSON_1.showPathJSON,
+    updateBumpmapPreview: updateBumpmapPreview_1.updateBumpmapPreview,
+    updateModifiers: updateModifiers_1.updateModifiers,
+    updateOutlineStats: updateOutlineStats_1.updateOutlineStats,
+    updatePathResizer: updatePathResizer_1.updatePathResizer,
+    updateSilhouette: updateSilhouette_1.updateSilhouette,
     detectDarkMode: detectDarkMode_1.detectDarkMode,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
     DildoRandomizer: DildoRandomizer_1.DildoRandomizer,
@@ -3409,6 +4889,8 @@ exports.ngdg = {
     isMobileDevice: isMobileDevice_1.isMobileDevice,
     LocalstorageIO: LocalstorageIO_1.LocalstorageIO,
     randomWebColor: randomWebColor_1.randomWebColor,
+    Rulers: Rulers_1.Rulers,
+    scaleBounds: scaleBounds_1.scaleBounds,
     SculptMap: SculptMap_1.SculptMap
 };
 //# sourceMappingURL=ngdg.js.map
@@ -3474,6 +4956,33 @@ var randomWebColor = function (index, colorSet) {
 };
 exports.randomWebColor = randomWebColor;
 //# sourceMappingURL=randomWebColor.js.map
+
+/***/ },
+
+/***/ "./src/cjs/scaleBounds.js"
+/*!********************************!*\
+  !*** ./src/cjs/scaleBounds.js ***!
+  \********************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.scaleBounds = void 0;
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+// +---------------------------------------------------------------------------------
+// | Scale a given Bounds instance to a new size (from its center).
+// +-------------------------------
+var scaleBounds = function (bounds, scaleFactor) {
+    var center = new plotboilerplate_1.Vertex(bounds.min.x + bounds.width / 2.0, bounds.min.y + bounds.height / 2.0);
+    return new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(bounds.min).scale(scaleFactor, center), new plotboilerplate_1.Vertex(bounds.max).scale(scaleFactor, center));
+};
+exports.scaleBounds = scaleBounds;
+//# sourceMappingURL=scaleBounds.js.map
 
 /***/ }
 

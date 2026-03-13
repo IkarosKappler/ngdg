@@ -41,6 +41,12 @@ export declare class DildoGeneration implements IDildoGeneration {
      * Resize the 3d canvas to fit its container.
      */
     resizeCanvas(): void;
+    private getAvailableContainerSpace;
+    /**
+     * Internal helper function used to get 'float' properties from elements.
+     * Used to determine border withs and paddings that were defined using CSS.
+     */
+    private getFProp;
     /**
      * Clears the current scene and rebuilds everything from scratch according to the
      * mesh options being passed.

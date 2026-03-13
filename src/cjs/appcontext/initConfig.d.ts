@@ -1,0 +1,77 @@
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-13 Refactored from the global `index.js`.
+ */
+import { AppContext } from "../AppContext";
+export declare const initConfig: (appContext: AppContext) => {
+    outlineSegmentCount: number;
+    shapeSegmentCount: number;
+    bendAngle: number;
+    closeTop: boolean;
+    closeBottom: boolean;
+    drawPathBounds: boolean;
+    drawResizeHandleLines: boolean;
+    drawRulers: boolean;
+    drawOutline: boolean;
+    fillOutline: boolean;
+    showNormals: boolean;
+    normalsLength: number;
+    normalizePerpendiculars: boolean;
+    useTextureImage: boolean;
+    textureImagePath: string;
+    wireframe: boolean;
+    performSlice: boolean;
+    makeHollow: boolean;
+    hollowStrengthX: number;
+    renderFaces: string;
+    twistAngle: number;
+    baseShapeExcentricity: number;
+    closeCutAreas: boolean;
+    useBumpmap: boolean;
+    showBumpmapTargets: boolean;
+    showBumpmapImage: boolean;
+    bumpmap: any;
+    bumpmapStrength: number;
+    showBasicPerpendiculars: boolean;
+    addSpine: boolean;
+    showSplitPane: boolean;
+    showLeftSplit: boolean;
+    showRightSplit: boolean;
+    showSplitShape: boolean;
+    showSplitShapeTriangulation: boolean;
+    addPrecalculatedMassiveFaces: boolean;
+    addPrecalculatedHollowFaces: boolean;
+    addRawIntersectionTriangleMesh: boolean;
+    addPrecalculatedShapeOutlines: boolean;
+    bezierFillColor: string;
+    pathBoundsColor: string;
+    resizeHandleLineColor: string;
+    rulerColor: string;
+    showDiscreteOutlinePoints: boolean;
+    showSilhouette: boolean;
+    silhouetteLineColor: string;
+    silhouetteLineWidth: number;
+    leftSplitMeshRotationX: number;
+    leftSplitMeshRotationY: number;
+    leftSplitMeshRotationZ: number;
+    rightSplitMeshRotationX: number;
+    rightSplitMeshRotationY: number;
+    rightSplitMeshRotationZ: number;
+    leftSplitMeshTranslationX: number;
+    leftSplitMeshTranslationY: number;
+    leftSplitMeshTranslationZ: number;
+    rightSplitMeshTranslationX: number;
+    rightSplitMeshTranslationY: number;
+    rightSplitMeshTranslationZ: number;
+    alignSplitsOnPlane: () => void;
+    restoreSplitAlignment: () => void;
+    isSilhoutettePreferredView: boolean;
+    exportSTL: () => void;
+    showPathJSON: () => void;
+    showSculptmap: () => void;
+    insertPathJSON: () => void;
+    acquireOptimalPathView: () => void;
+    fitViewToSilhouette: () => void;
+    setDefaultPathJSON: () => void;
+};

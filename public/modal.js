@@ -11,7 +11,8 @@
  * @modified 2024-03-10 Added the construtor option `closeOnBackdropClick`.
  * @modified 2024-03-10 Removed the `showDocumentInfo` method because it was crap. Use reame modal instead.
  * @modified 2025-09-10 Changing head text type from `h2` to `h3`. Added classname `button` to action butons.
- * @version  1.2.1
+ * @modified 2026-03-13 Adding instance properties `ACTION_CLOSE`, `ACTION_CANCEL` and `ACTION_OK`.
+ * @version  1.3.0
  **/
 
 (function () {
@@ -45,6 +46,10 @@
   var Modal = function (options) {
     this.modalElements = this.buildDOMNode("myModal-" + modalCounter++);
     this.closeOnBackdropClick = typeof options !== "undefined" && Boolean(options.closeOnBackdropClick);
+
+    this.ACTION_CLOSE = Modal.ACTION_CLOSE;
+    this.ACTION_CANCEL = Modal.ACTION_CANCEL;
+    this.ACTION_OK = Modal.ACTION_OK;
   };
 
   Modal.prototype.setTitle = function (title) {
