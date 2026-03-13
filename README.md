@@ -33,7 +33,7 @@ Because 3D printing, 3D web, and dildos are fun.
 - [x] Remove unused build libraries: babel, rollup.
 - [x] Remove old alloyfinger library. Replace by alloyfinger-typescript.
 - [x] Add a session storage for the current settings, especially the Bézier curve..
-- [ ] Add a session storage for the bend setting.
+- [x] Add a session storage for the bend setting.
 - [x] Make the Bézier curve more look like in the old version.
 - [x] Add horizonal and vertical scale like in the old version.
 - [ ] Fix the string.substr deprecation issue in `isMobileDevice`.
@@ -59,6 +59,9 @@ http://localhost:8080/public/index-dev.html?drawRulers=0&drawResizeHandleLines=0
 
 ### Changelog
 
+- 2026-03-13
+  - Adding `AppContext` class fot wrapping all 'global' stuff together.
+  - Fixing a bug in the 3d canvas resizer (always used full window width).
 - 2026-03-08
   - Adding a progressbar and infinite model generation to the randomizer.
 - 2026-03-06

@@ -82,8 +82,16 @@ var DildoGeneration = /** @class */ (function () {
      * Resize the 3d canvas to fit its container.
      */
     DildoGeneration.prototype.resizeCanvas = function () {
-        var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        console.log("resizeCanvas");
+        var space = this.getAvailableContainerSpace();
+        // _self.canvas.style.width = (_self.config.canvasWidthFactor ?? 1.0) * space.width + "px";
+        // _self.canvas.style.height = (_self.config.canvasHeightFactor ?? 1.0) * space.height + "px";
+        // _self.canvas.style.top = "";
+        // _self.canvas.style.left = "";
+        // let width: number = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        // let height: number = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var width = space.width;
+        var height = space.height;
         this.canvas.width = width;
         this.canvas.height = height;
         this.canvas.style.width = "" + width + "px";
@@ -93,6 +101,24 @@ var DildoGeneration = /** @class */ (function () {
         this.renderer.setSize(width, height);
         // What am I doing here?
         this.camera.setViewOffset(width, height, width / 4, height / 20, width, height);
+    };
+    // TODO: this was moved to the DOM utils
+    DildoGeneration.prototype.getAvailableContainerSpace = function () {
+        var container = this.canvas.parentNode; // Element | Document | DocumentFragment;
+        // _self.canvas.style.display = "none";
+        var padding = this.getFProp(container, "padding") || 0, border = this.getFProp(this.canvas, "border-width") || 0, pl = this.getFProp(container, "padding-left") || padding, pr = this.getFProp(container, "padding-right") || padding, pt = this.getFProp(container, "padding-top") || padding, pb = this.getFProp(container, "padding-bottom") || padding, bl = this.getFProp(this.canvas, "border-left-width") || border, br = this.getFProp(this.canvas, "border-right-width") || border, bt = this.getFProp(this.canvas, "border-top-width") || border, bb = this.getFProp(this.canvas, "border-bottom-width") || border;
+        var w = container.clientWidth;
+        var h = container.clientHeight;
+        // _self.canvas.style.display = "block";
+        return { width: w - pl - pr - bl - br, height: h - pt - pb - bt - bb };
+    };
+    /**
+     * Internal helper function used to get 'float' properties from elements.
+     * Used to determine border withs and paddings that were defined using CSS.
+     */
+    // TODO: this was moved to the DOM utils
+    DildoGeneration.prototype.getFProp = function (elem, propName) {
+        return parseFloat(globalThis.getComputedStyle(elem, null).getPropertyValue(propName));
     };
     /**
      * Clears the current scene and rebuilds everything from scratch according to the

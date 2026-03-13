@@ -16138,6 +16138,67 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ },
 
+/***/ "./node_modules/plotboilerplate/src/esm/utils/Params.js"
+/*!**************************************************************!*\
+  !*** ./node_modules/plotboilerplate/src/esm/utils/Params.js ***!
+  \**************************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Params: () => (/* binding */ Params)
+/* harmony export */ });
+/**
+ * Wraps a Record<string,string> and adds type conversion methods (developed this in
+ * some other project) and added this here (2023-10-28).
+ *
+ * @author   Ikars Kappler
+ * @version  1.0.0
+ * @date     2023-03-13
+ * @modified 2024-08-26 Added the `hasParam` method.
+ */
+class Params {
+    constructor(baseParams) {
+        this.baseParams = baseParams;
+    }
+    hasParam(name) {
+        return this.baseParams.hasOwnProperty(name);
+    }
+    getString(name, fallback) {
+        let value = this.baseParams[name];
+        if (typeof value === "undefined" || !value || (value = value.trim()).length === 0) {
+            return fallback;
+        }
+        return value;
+    }
+    getNumber(name, fallback) {
+        let value = this.baseParams[name];
+        if (typeof value === "undefined" || !value || (value = value.trim()).length === 0) {
+            return fallback;
+        }
+        return Number(value);
+    }
+    getBoolean(name, fallback) {
+        let value = this.baseParams[name];
+        if (typeof value === "undefined" || !value || (value = value.trim()).length === 0) {
+            return fallback;
+        }
+        value = value.toLocaleLowerCase();
+        if (value === "1" || value === "on" || value === "yes" || value === "y" || value === "hi" || value == "high") {
+            return true;
+        }
+        else if (value === "0" || value === "off" || value === "no" || value === "n" || value === "lo" || value == "low") {
+            return false;
+        }
+        else {
+            return Boolean(value);
+        }
+    }
+}
+//# sourceMappingURL=Params.js.map
+
+/***/ },
+
 /***/ "./node_modules/plotboilerplate/src/esm/utils/WebColors.js"
 /*!*****************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/utils/WebColors.js ***!
@@ -17370,6 +17431,46 @@ Color.CSS_COLORS = {
     Gainsboro: Color.Gainsboro
 };
 //# sourceMappingURL=Color.js.map
+
+/***/ },
+
+/***/ "./node_modules/plotboilerplate/src/esm/utils/gup.js"
+/*!***********************************************************!*\
+  !*** ./node_modules/plotboilerplate/src/esm/utils/gup.js ***!
+  \***********************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   gup: () => (/* binding */ gup)
+/* harmony export */ });
+/**
+ * `gup` = "Get URL/URI Params".
+ *
+ * This function simply taktes the location string from the broser bar and retrieves all GET params
+ * as a record of string mappings.
+ *
+ * You can pass that result into the `Params` class to get proper type conversion for numbers and booleans.
+ *
+ * Ported to typescript.
+ * @date 2021-05-21
+ * @modified 2024-03-10 Fixed some type for Typescript 5 compatibility.
+ * @modified 2024-08-26 Decoding URI components in GET params.
+ */
+// Get the URI GET params as an assoc.
+//
+// A nicer version with regex
+// Found at
+//    https://stackoverflow.com/questions/979975/how-to-get-the-value-from-the-get-parameters?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+const gup = () => {
+    const vars = {};
+    globalThis.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, (_m, key, value) => {
+        const keyName = key;
+        return (vars[decodeURIComponent(keyName)] = value);
+    });
+    return vars;
+};
+//# sourceMappingURL=gup.js.map
 
 /***/ },
 

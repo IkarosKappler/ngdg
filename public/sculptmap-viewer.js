@@ -30,19 +30,9 @@
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const cube = new THREE.Mesh(geometry, material);
     cube.scale.set(5, 5, 5);
-    // cube.position.z = 25;
-    // cube.position.x = 25;
     scene.scene.add(cube);
     meshes.push(cube);
 
-    // var renderer = new THREE.WebGLRenderer({
-    //   canvas: canvas,
-    //   preserveDrawingBuffer: true, // This is required to take screen shots
-    //   antialias: true // false
-    // });
-    // TODO: check if this works!
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    // var controls = options.makeOrbitControls(camera, renderer.domElement);
     var controls = new THREE.OrbitControls(scene.camera, scene.renderer.domElement);
     controls.addEventListener("change", function () {
       scene.directionalLightA.position.copy(scene.camera.position);
@@ -136,6 +126,10 @@
       });
     };
     showInfo();
+
+    document.querySelector("#sculptmap-container").addEventListener("click", function () {
+      showInfo();
+    });
 
     // +---------------------------------------------------------------------------------
     // | Export sculpt map if requested

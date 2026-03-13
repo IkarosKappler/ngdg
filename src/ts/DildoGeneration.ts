@@ -45,7 +45,7 @@ import {
   KEY_SLICED_MESH_RIGHT,
   KEY_SLICED_MESH_LEFT
 } from "./constants";
-import { Polygon } from "plotboilerplate";
+import { Polygon, XYDimension } from "plotboilerplate";
 // import { computeVertexNormals } from "./computeVertexNormals";
 import { BumpMapper } from "./BumpMapper";
 import { Gmetry } from "three-geometry-hellfix";
@@ -148,8 +148,18 @@ export class DildoGeneration implements IDildoGeneration {
    * Resize the 3d canvas to fit its container.
    */
   resizeCanvas() {
-    let width: number = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    let height: number = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    console.log("resizeCanvas");
+
+    const space: XYDimension = this.getAvailableContainerSpace();
+    // _self.canvas.style.width = (_self.config.canvasWidthFactor ?? 1.0) * space.width + "px";
+    // _self.canvas.style.height = (_self.config.canvasHeightFactor ?? 1.0) * space.height + "px";
+    // _self.canvas.style.top = "";
+    // _self.canvas.style.left = "";
+
+    // let width: number = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    // let height: number = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    let width = space.width;
+    let height = space.height;
     this.canvas.width = width;
     this.canvas.height = height;
     this.canvas.style.width = "" + width + "px";
@@ -159,6 +169,35 @@ export class DildoGeneration implements IDildoGeneration {
     this.renderer.setSize(width, height);
     // What am I doing here?
     this.camera.setViewOffset(width, height, width / 4, height / 20, width, height);
+  }
+
+  // TODO: this was moved to the DOM utils
+  private getAvailableContainerSpace(): XYDimension {
+    const container: HTMLElement = this.canvas.parentNode as unknown as HTMLElement; // Element | Document | DocumentFragment;
+    // _self.canvas.style.display = "none";
+    var padding: number = this.getFProp(container, "padding") || 0,
+      border: number = this.getFProp(this.canvas, "border-width") || 0,
+      pl: number = this.getFProp(container, "padding-left") || padding,
+      pr: number = this.getFProp(container, "padding-right") || padding,
+      pt: number = this.getFProp(container, "padding-top") || padding,
+      pb: number = this.getFProp(container, "padding-bottom") || padding,
+      bl: number = this.getFProp(this.canvas, "border-left-width") || border,
+      br: number = this.getFProp(this.canvas, "border-right-width") || border,
+      bt: number = this.getFProp(this.canvas, "border-top-width") || border,
+      bb: number = this.getFProp(this.canvas, "border-bottom-width") || border;
+    var w: number = container.clientWidth;
+    var h: number = container.clientHeight;
+    // _self.canvas.style.display = "block";
+    return { width: w - pl - pr - bl - br, height: h - pt - pb - bt - bb };
+  }
+
+  /**
+   * Internal helper function used to get 'float' properties from elements.
+   * Used to determine border withs and paddings that were defined using CSS.
+   */
+  // TODO: this was moved to the DOM utils
+  private getFProp(elem: HTMLElement | SVGElement, propName: string): number {
+    return parseFloat(globalThis.getComputedStyle(elem, null).getPropertyValue(propName));
   }
 
   /**

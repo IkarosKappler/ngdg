@@ -23,12 +23,16 @@ var GeometryGenerationHelpers_1 = require("./GeometryGenerationHelpers");
 var DildoRandomizer_1 = require("./DildoRandomizer");
 var randomWebColor_1 = require("./randomWebColor");
 var getImageFromCanvas_1 = require("./getImageFromCanvas");
+var detectDarkMode_1 = require("./detectDarkMode");
+var AppContext_1 = require("./AppContext");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
     SPLIT_MESH_OFFSET: constants_1.SPLIT_MESH_OFFSET,
     KEY_SLICED_MESH_RIGHT: constants_1.KEY_SLICED_MESH_RIGHT,
     KEY_SLICED_MESH_LEFT: constants_1.KEY_SLICED_MESH_LEFT,
+    AppContext: AppContext_1.AppContext,
+    detectDarkMode: detectDarkMode_1.detectDarkMode,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
     DildoRandomizer: DildoRandomizer_1.DildoRandomizer,
     DildoSilhouette2D: DildoSilhouette2D_1.DildoSilhouette2D,

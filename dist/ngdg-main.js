@@ -2,6 +2,39 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/cjs/AppContext.js"
+/*!*******************************!*\
+  !*** ./src/cjs/AppContext.js ***!
+  \*******************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * Not a context in React style. More a top level wrapper for 'global' stuff.
+ *
+ * @date 2026-03-13
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AppContext = void 0;
+// import { BezierPath, Bounds, Polygon, Vertex } from "plotboilerplate";
+var Params_1 = __webpack_require__(/*! plotboilerplate/src/esm/utils/Params */ "./node_modules/plotboilerplate/src/esm/utils/Params.js");
+var gup_1 = __webpack_require__(/*! plotboilerplate/src/esm/utils/gup */ "./node_modules/plotboilerplate/src/esm/utils/gup.js");
+var detectDarkMode_1 = __webpack_require__(/*! ./detectDarkMode */ "./src/cjs/detectDarkMode.js");
+var detectMobileMode_1 = __webpack_require__(/*! ./detectMobileMode */ "./src/cjs/detectMobileMode.js");
+var AppContext = /** @class */ (function () {
+    function AppContext() {
+        this.GUP = (0, gup_1.gup)();
+        this.params = new Params_1.Params(this.GUP);
+        this.isDarkmode = (0, detectDarkMode_1.detectDarkMode)(this.GUP);
+        this.isMobile = (0, detectMobileMode_1.detectMobileMode)(this.params);
+    }
+    return AppContext;
+}());
+exports.AppContext = AppContext;
+//# sourceMappingURL=AppContext.js.map
+
+/***/ },
+
 /***/ "./src/cjs/BumpMapper.js"
 /*!*******************************!*\
   !*** ./src/cjs/BumpMapper.js ***!
@@ -3042,6 +3075,87 @@ exports.DEFAULT_BEZIER_JSON = "\n  [\n    {\n       \"startPoint\":[\n          
 
 /***/ },
 
+/***/ "./src/cjs/detectDarkMode.js"
+/*!***********************************!*\
+  !*** ./src/cjs/detectDarkMode.js ***!
+  \***********************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * @author   Ikaros Kappler
+ * @date     2021-11-07
+ * @modified 2026-03-13 Ported to typescript.
+ * @version  1.1.0
+ *
+ * @param {Record<string,string>} GUP
+ * @returns {boolean}
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.detectDarkMode = void 0;
+var detectDarkMode = function (GUP) {
+    // Respect overrides
+    if (typeof GUP !== "undefined" && GUP.hasOwnProperty("darkmode") && GUP["darkmode"]) {
+        var overrideValue = GUP["darkmode"];
+        if (overrideValue === "0" || overrideValue.toLowerCase() === "false") {
+            return false;
+        }
+        else if (overrideValue === "1" || overrideValue.toLowerCase() === "true") {
+            return true;
+        }
+    }
+    var hours = new Date().getHours();
+    var isDayTime = hours > 6 && hours < 18;
+    return !isDayTime;
+};
+exports.detectDarkMode = detectDarkMode;
+//# sourceMappingURL=detectDarkMode.js.map
+
+/***/ },
+
+/***/ "./src/cjs/detectMobileMode.js"
+/*!*************************************!*\
+  !*** ./src/cjs/detectMobileMode.js ***!
+  \*************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * Get mobile mode and let it params pass overrides.
+ * Also set the 'mobile' class to the body if darkmode is detected.
+ *
+ * @date     2025-08-08
+ * @modified 2025-09-10 Optimized condition check.
+ * @modified 2026-03-13 Ported to typescript.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.detectMobileMode = void 0;
+var isMobileDevice_1 = __webpack_require__(/*! ./isMobileDevice */ "./src/cjs/isMobileDevice.js");
+/**
+ *
+ * @param {Params} params
+ * @returns
+ */
+var detectMobileMode = function (params) {
+    var isMobile = (0, isMobileDevice_1.isMobileDevice)();
+    // Check for manual overrides.
+    isMobile = params.getBoolean("isMobile", isMobile);
+    console.log("[detectMobileMode] isMobile", isMobile);
+    if (isMobile) {
+        try {
+            document.body.classList.add("mobile");
+        }
+        catch (exc) {
+            console.warn("Warning: failed to add `darkmode` class to the body.", exc);
+        }
+    }
+    return isMobile;
+};
+exports.detectMobileMode = detectMobileMode;
+//# sourceMappingURL=detectMobileMode.js.map
+
+/***/ },
+
 /***/ "./src/cjs/entry.js"
 /*!**************************!*\
   !*** ./src/cjs/entry.js ***!
@@ -3276,12 +3390,16 @@ var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHe
 var DildoRandomizer_1 = __webpack_require__(/*! ./DildoRandomizer */ "./src/cjs/DildoRandomizer.js");
 var randomWebColor_1 = __webpack_require__(/*! ./randomWebColor */ "./src/cjs/randomWebColor.js");
 var getImageFromCanvas_1 = __webpack_require__(/*! ./getImageFromCanvas */ "./src/cjs/getImageFromCanvas.js");
+var detectDarkMode_1 = __webpack_require__(/*! ./detectDarkMode */ "./src/cjs/detectDarkMode.js");
+var AppContext_1 = __webpack_require__(/*! ./AppContext */ "./src/cjs/AppContext.js");
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
     SPLIT_MESH_OFFSET: constants_1.SPLIT_MESH_OFFSET,
     KEY_SLICED_MESH_RIGHT: constants_1.KEY_SLICED_MESH_RIGHT,
     KEY_SLICED_MESH_LEFT: constants_1.KEY_SLICED_MESH_LEFT,
+    AppContext: AppContext_1.AppContext,
+    detectDarkMode: detectDarkMode_1.detectDarkMode,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
     DildoRandomizer: DildoRandomizer_1.DildoRandomizer,
     DildoSilhouette2D: DildoSilhouette2D_1.DildoSilhouette2D,

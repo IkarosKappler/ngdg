@@ -20,12 +20,16 @@ import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { DildoRandomizer } from "./DildoRandomizer";
 import { randomWebColor } from "./randomWebColor";
 import { getImageFromCanvas } from "./getImageFromCanvas";
+import { detectDarkMode } from "./detectDarkMode";
+import { AppContext } from "./AppContext";
 export const ngdg = {
     DEFAULT_BEZIER_JSON,
     DEG_TO_RAD,
     SPLIT_MESH_OFFSET,
     KEY_SLICED_MESH_RIGHT,
     KEY_SLICED_MESH_LEFT,
+    AppContext,
+    detectDarkMode,
     DildoGeneration,
     DildoRandomizer,
     DildoSilhouette2D,

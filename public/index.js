@@ -17,18 +17,19 @@
   "use strict";
 
   window.addEventListener("load", function () {
-    // Fetch the GET params
-    var GUP = gup();
-    var params = new Params(GUP);
-    var isDarkmode = detectDarkMode(GUP);
-    var isMobile = detectMobileMode(params);
-    console.log("isMobile", isMobile);
-    if (isMobile) {
-      document.body.classList.add("mobile");
-    }
-    var isLocalstorageDisabled = params.getBoolean("disableLocalStorage", false);
+    // Fetch the GET appContext.params
+    // var GUP = gup();
+    // var appContext.params = new appContext.Params(GUP);
+    // var isDarkmode = detectDarkMode(GUP);
+    // var isMobile = detectMobileMode(params);
+    // console.log("isMobile", isMobile);
+    // if (isMobile) {
+    //   document.body.classList.add("mobile");
+    // }
+    var appContext = new AppContext();
+    // var isLocalstorageDisabled = appContext.params.getBoolean("disableLocalStorage", false);
 
-    // All config params are optional.
+    // All config appContext.params are optional.
     var pb = new PlotBoilerplate(
       PlotBoilerplate.utils.safeMergeByKeys(
         {
@@ -37,8 +38,8 @@
           fitToParent: true,
           scaleX: 1.0,
           scaleY: 1.0,
-          rasterGrid: params.getBoolean("rasterGrid", true),
-          drawOrigin: params.getBoolean("drawOrigin", false),
+          rasterGrid: appContext.params.getBoolean("rasterGrid", true),
+          drawOrigin: appContext.params.getBoolean("drawOrigin", false),
           rasterAdjustFactor: 2.0,
           redrawOnResize: true,
           defaultCanvasWidth: 1024,
@@ -51,18 +52,18 @@
           autoAdjustOffset: true,
           offsetAdjustXPercent: 50,
           offsetAdjustYPercent: 50,
-          backgroundColor: isDarkmode ? "rgb(09, 12, 23)" : "#ffffff",
+          backgroundColor: appContext.isDarkmode ? "rgb(09, 12, 23)" : "#ffffff",
           enableMouse: true,
           enableKeys: true,
           enableTouch: true,
           enableSVGExport: false
         },
-        GUP
+        appContext.GUP
       )
     );
-    pb.drawConfig.bezier.color = isDarkmode ? "rgba(128,128,128, 0.8)" : "#000000";
+    pb.drawConfig.bezier.color = appContext.isDarkmode ? "rgba(128,128,128, 0.8)" : "#000000";
     pb.drawConfig.bezier.lineWidth = 2.0;
-    pb.drawConfig.bezier.handleLine.color = isDarkmode ? "rgba(92,92,92,0.8)" : "rgba(0,0,0,0.35)";
+    pb.drawConfig.bezier.handleLine.color = appContext.isDarkmode ? "rgba(92,92,92,0.8)" : "rgba(0,0,0,0.35)";
     pb.drawConfig.bezier.pathVertex.color = "#B400FF";
     pb.drawConfig.bezier.pathVertex.fill = true;
     pb.drawConfig.bezier.controlVertex.color = "#B8D438";
@@ -83,55 +84,64 @@
     // | A global config that's attached to the dat.gui control interface.
     // +-------------------------------
     var config = {
-      outlineSegmentCount: params.getNumber("outlineSegmentCount", 128),
-      shapeSegmentCount: params.getNumber("shapeSegmentCount", 64),
-      bendAngle: params.getNumber("bendAngle", 0.0),
-      closeTop: params.getBoolean("closeTop", true),
-      closeBottom: params.getBoolean("closeBottom", true),
-      drawPathBounds: params.getBoolean("drawPathBounds", true),
-      drawResizeHandleLines: params.getBoolean("drawResizeHandleLines", true),
-      drawRulers: params.getBoolean("drawRulers", true),
-      drawOutline: params.getBoolean("drawOutline", true),
-      fillOutline: params.getBoolean("fillOutline", true),
-      showNormals: params.getBoolean("showNormals", false),
-      normalsLength: params.getNumber("normalsLength", 10.0),
-      normalizePerpendiculars: params.getBoolean("normalizePerpendiculars", true),
-      useTextureImage: params.getBoolean("useTextureImage", true),
+      outlineSegmentCount: appContext.params.getNumber("outlineSegmentCount", 128),
+      shapeSegmentCount: appContext.params.getNumber("shapeSegmentCount", 64),
+      bendAngle: appContext.params.getNumber("bendAngle", 0.0),
+      closeTop: appContext.params.getBoolean("closeTop", true),
+      closeBottom: appContext.params.getBoolean("closeBottom", true),
+      drawPathBounds: appContext.params.getBoolean("drawPathBounds", true),
+      drawResizeHandleLines: appContext.params.getBoolean("drawResizeHandleLines", true),
+      drawRulers: appContext.params.getBoolean("drawRulers", true),
+      drawOutline: appContext.params.getBoolean("drawOutline", true),
+      fillOutline: appContext.params.getBoolean("fillOutline", true),
+      showNormals: appContext.params.getBoolean("showNormals", false),
+      normalsLength: appContext.params.getNumber("normalsLength", 10.0),
+      normalizePerpendiculars: appContext.params.getBoolean("normalizePerpendiculars", true),
+      useTextureImage: appContext.params.getBoolean("useTextureImage", true),
       textureImagePath: "assets/img/wood.png",
-      wireframe: params.getBoolean("wireframe", false),
-      performSlice: params.getBoolean("performSlice", false),
-      makeHollow: params.getBoolean("makeHollow", false),
-      hollowStrengthX: params.getNumber("hollowStrengthX", 15.0), // equivalent for Y is 'normalsLength'
-      renderFaces: params.getString("renderFaces", "double"), // "double" or "front" or "back"
-      twistAngle: params.getNumber("twistAngle", 0.0),
-      baseShapeExcentricity: params.getNumber("baseShapeExcentricity", 1.0),
-      closeCutAreas: params.getBoolean("closeCutAreas", true),
+      wireframe: appContext.params.getBoolean("wireframe", false),
+      performSlice: appContext.params.getBoolean("performSlice", false),
+      makeHollow: appContext.params.getBoolean("makeHollow", false),
+      hollowStrengthX: appContext.params.getNumber("hollowStrengthX", 15.0), // equivalent for Y is 'normalsLength'
+      renderFaces: appContext.params.getString("renderFaces", "double"), // "double" or "front" or "back"
+      twistAngle: appContext.params.getNumber("twistAngle", 0.0),
+      baseShapeExcentricity: appContext.params.getNumber("baseShapeExcentricity", 1.0),
+      closeCutAreas: appContext.params.getBoolean("closeCutAreas", true),
       // previewBumpmap: false, // TODO: Is this actually in use?
-      useBumpmap: params.getBoolean("useBumpmap", false),
-      showBumpmapTargets: params.getBoolean("showBumpmapTargets", false),
-      showBumpmapImage: params.getBoolean("showBumpmapImage", false), // Not part of the generator interface
+      useBumpmap: appContext.params.getBoolean("useBumpmap", false),
+      showBumpmapTargets: appContext.params.getBoolean("showBumpmapTargets", false),
+      showBumpmapImage: appContext.params.getBoolean("showBumpmapImage", false), // Not part of the generator interface
       bumpmap: null, // This is not configurable at the moment and merge in later
-      bumpmapStrength: params.getNumber("bumpmapStrength", 10.0),
+      bumpmapStrength: appContext.params.getNumber("bumpmapStrength", 10.0),
       // Render settings
-      showBasicPerpendiculars: params.getBoolean("showBasicPerpendiculars", false),
-      addSpine: params.getBoolean("addSpine", false),
-      showSplitPane: params.getBoolean("showSplitPane", true),
-      showLeftSplit: params.getBoolean("showLeftSplit", true),
-      showRightSplit: params.getBoolean("showRightSplit", true),
-      showSplitShape: params.getBoolean("showSplitShape", true),
-      showSplitShapeTriangulation: params.getBoolean("showSplitShapeTriangulation", true),
-      addPrecalculatedMassiveFaces: params.getBoolean("addPrecalculatedMassiveFaces", false),
-      addPrecalculatedHollowFaces: params.getBoolean("addPrecalculatedHollowFaces", false),
-      addRawIntersectionTriangleMesh: params.getBoolean("addRawIntersectionTriangleMesh", false),
-      addPrecalculatedShapeOutlines: params.getBoolean("addPrecalculatedShapeOutlines", false),
-      bezierFillColor: params.getString("bezierFillColor", isDarkmode ? "rgba(64,64,64,.35)" : "rgba(0,0,0,0.15)"),
-      pathBoundsColor: params.getString("pathBoundsColor", isDarkmode ? "rgba(64,64,64,.5)" : "rgba(0,0,0,0.5)"),
-      resizeHandleLineColor: isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
-      rulerColor: params.getString("rulerColor", isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)"),
-      showDiscreteOutlinePoints: params.getBoolean("showDiscreteOutlinePoints", false),
-      showSilhouette: params.getBoolean("showSilhouette", true),
-      silhouetteLineColor: params.getString("silhouetteLineColor", "rgb(255,128,0)"),
-      silhouetteLineWidth: params.getNumber("silhouetteLineWidth", 3.0),
+      showBasicPerpendiculars: appContext.params.getBoolean("showBasicPerpendiculars", false),
+      addSpine: appContext.params.getBoolean("addSpine", false),
+      showSplitPane: appContext.params.getBoolean("showSplitPane", true),
+      showLeftSplit: appContext.params.getBoolean("showLeftSplit", true),
+      showRightSplit: appContext.params.getBoolean("showRightSplit", true),
+      showSplitShape: appContext.params.getBoolean("showSplitShape", true),
+      showSplitShapeTriangulation: appContext.params.getBoolean("showSplitShapeTriangulation", true),
+      addPrecalculatedMassiveFaces: appContext.params.getBoolean("addPrecalculatedMassiveFaces", false),
+      addPrecalculatedHollowFaces: appContext.params.getBoolean("addPrecalculatedHollowFaces", false),
+      addRawIntersectionTriangleMesh: appContext.params.getBoolean("addRawIntersectionTriangleMesh", false),
+      addPrecalculatedShapeOutlines: appContext.params.getBoolean("addPrecalculatedShapeOutlines", false),
+      bezierFillColor: appContext.params.getString(
+        "bezierFillColor",
+        appContext.isDarkmode ? "rgba(64,64,64,.35)" : "rgba(0,0,0,0.15)"
+      ),
+      pathBoundsColor: appContext.params.getString(
+        "pathBoundsColor",
+        appContext.isDarkmode ? "rgba(64,64,64,.5)" : "rgba(0,0,0,0.5)"
+      ),
+      resizeHandleLineColor: appContext.isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
+      rulerColor: appContext.params.getString(
+        "rulerColor",
+        appContext.isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)"
+      ),
+      showDiscreteOutlinePoints: appContext.params.getBoolean("showDiscreteOutlinePoints", false),
+      showSilhouette: appContext.params.getBoolean("showSilhouette", true),
+      silhouetteLineColor: appContext.params.getString("silhouetteLineColor", "rgb(255,128,0)"),
+      silhouetteLineWidth: appContext.params.getNumber("silhouetteLineWidth", 3.0),
       // Modifiers
       leftSplitMeshRotationX: 180.0, // align properly according to split algorithm
       leftSplitMeshRotationY: 0.0,
@@ -175,7 +185,7 @@
         config.rightSplitMeshTranslationZ = ngdg.SPLIT_MESH_OFFSET.z;
         updateModifiers();
       },
-      isSilhoutettePreferredView: params.getBoolean("isSilhoutettePreferredView", true),
+      isSilhoutettePreferredView: appContext.params.getBoolean("isSilhoutettePreferredView", true),
       // Functions
       exportSTL: function () {
         exportSTL();
@@ -628,48 +638,49 @@
       // }
     };
 
-    var setPathInstance = function (newOutline) {
-      if (typeof outline != "undefined") {
-        pb.removeAll(false, false); // keepVertices=false, triggerRedraw=false
-      }
-      outline = newOutline;
-      addPathListeners(outline);
-      updatePathResizer(false); // triggerRedraw=false
-      pb.add(newOutline);
-      // pb.add(BezierPath.fromJSON(newOutline.toJSON()));
+    // appContext.setPathInstance = setPathInstance(appContext)
+    // var setPathInstance = function (newOutline) {
+    //   if (typeof outline != "undefined") {
+    //     pb.removeAll(false, false); // keepVertices=false, triggerRedraw=false
+    //   }
+    //   outline = newOutline;
+    //   addPathListeners(outline);
+    //   updatePathResizer(false); // triggerRedraw=false
+    //   pb.add(newOutline);
+    //   // pb.add(BezierPath.fromJSON(newOutline.toJSON()));
 
-      // +---------------------------------------------------------------------------------
-      // | Install a BÃ©zier interaction helper.
-      // +-------------------------------
-      new BezierPathInteractionHelper(pb, [outline], {
-        maxDetectDistance: 32.0,
-        autoAdjustPaths: true,
-        allowPathRemoval: false, // It is not alowed to remove the outline path
-        onPointerMoved: function (pathIndex, newA, newB, newT) {
-          if (pathIndex == -1) {
-            bezierDistanceLine = null;
-          } else {
-            bezierDistanceLine = new Line(newA, newB);
-            bezierDistanceT = newT;
-          }
-        },
-        onVertexInserted: function (pathIndex, insertAfterIndex, newPath, oldPath) {
-          console.log("[pathIndex=" + pathIndex + "] Vertex inserted after " + insertAfterIndex);
-          console.log("oldPath", oldPath, "newPath", newPath);
-          removePathListeners(outline);
-          outline = newPath;
-          addPathListeners(outline);
-          rebuild();
-        },
-        onVerticesDeleted: function (pathIndex, deletedVertIndices, newPath, oldPath) {
-          console.log("[pathIndex=" + pathIndex + "] vertices deleted", deletedVertIndices);
-          removePathListeners(outline);
-          outline = newPath;
-          addPathListeners(outline);
-          rebuild();
-        }
-      });
-    }; // END setPathInstance
+    //   // +---------------------------------------------------------------------------------
+    //   // | Install a BÃ©zier interaction helper.
+    //   // +-------------------------------
+    //   new BezierPathInteractionHelper(pb, [outline], {
+    //     maxDetectDistance: 32.0,
+    //     autoAdjustPaths: true,
+    //     allowPathRemoval: false, // It is not alowed to remove the outline path
+    //     onPointerMoved: function (pathIndex, newA, newB, newT) {
+    //       if (pathIndex == -1) {
+    //         bezierDistanceLine = null;
+    //       } else {
+    //         bezierDistanceLine = new Line(newA, newB);
+    //         bezierDistanceT = newT;
+    //       }
+    //     },
+    //     onVertexInserted: function (pathIndex, insertAfterIndex, newPath, oldPath) {
+    //       console.log("[pathIndex=" + pathIndex + "] Vertex inserted after " + insertAfterIndex);
+    //       console.log("oldPath", oldPath, "newPath", newPath);
+    //       removePathListeners(outline);
+    //       outline = newPath;
+    //       addPathListeners(outline);
+    //       rebuild();
+    //     },
+    //     onVerticesDeleted: function (pathIndex, deletedVertIndices, newPath, oldPath) {
+    //       console.log("[pathIndex=" + pathIndex + "] vertices deleted", deletedVertIndices);
+    //       removePathListeners(outline);
+    //       outline = newPath;
+    //       addPathListeners(outline);
+    //       rebuild();
+    //     }
+    //   });
+    // }; // END setPathInstance
 
     var setDefaultPathInstance = function (doRebuild) {
       setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
@@ -752,19 +763,19 @@
 
     // This will trigger the first initial postDraw/draw/redraw call
     // setPathInstance(BezierPath.fromJSON(initialPathJSON));
-    if (GUP.rbdata) {
+    if (appContext.GUP.rbdata) {
       // If you need some test data:
       //    this seems to be the most favourite dildo shape regarding the ranking on Google (2021-10-12)
       //    (plus bendAngle=23.0)
       // [-58.5,243,-59.2,200,-12,217,6.3,196,23.3,176.6,38.7,113,-4.6,76.2,-69.8,20.9,6.2,-65.1,-5.7,-112.6,-30.8,-213,35.4,-243,58.5,-243]
-      if (!GUP.rbdata.endsWith("]")) {
-        GUP.rbdata += "]"; // Twitter hack
+      if (!appContext.GUP.rbdata.endsWith("]")) {
+        appContext.GUP.rbdata += "]"; // Twitter hack
       }
       try {
-        setPathInstance(BezierPath.fromReducedListRepresentation(GUP.rbdata));
+        setPathInstance(BezierPath.fromReducedListRepresentation(appContext.GUP.rbdata));
       } catch (e) {
         console.error(e);
-        modal.setBody("Your Bézier path data could not be parsed: <pre>" + GUP.rbdata + "</pre>");
+        modal.setBody("Your Bézier path data could not be parsed: <pre>" + appContext.GUP.rbdata + "</pre>");
         modal.setActions([Modal.ACTION_CLOSE]);
         modal.open();
       }
@@ -789,7 +800,7 @@
       }
     });
     // console.log("OUTLINE", outline);
-    if (isLocalstorageDisabled) {
+    if (appContext.isLocalstorageDisabled) {
       console.log("[INFO] Localstorage is disabled.");
       // setDefaultPathInstance(false);
     } else {
@@ -797,16 +808,16 @@
       localstorageIO.onPathRestored(
         function (jsonString, bendAngle, twistAngle, baseShapeExcentricity) {
           // This is called when json string was loaded from storage
-          if (!GUP.rbdata) {
+          if (!appContext.GUP.rbdata) {
             loadPathJSON(jsonString);
           }
-          if (!GUP.bendAngle) {
+          if (!appContext.GUP.bendAngle) {
             config.bendAngle = bendAngle;
           }
-          if (!GUP.twistAngle) {
+          if (!appContext.GUP.twistAngle) {
             config.twistAngle = twistAngle;
           }
-          if (!GUP.baseShapeExcentricity) {
+          if (!appContext.GUP.baseShapeExcentricity) {
             config.baseShapeExcentricity = baseShapeExcentricity;
           }
         },
@@ -829,7 +840,7 @@
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
     // +-------------------------------
-    initGUI(pb, config, GUP, rebuild, updateModifiers, updateSilhouette, handlePathVisibilityChanged);
+    initGUI(pb, config, appContext.GUP, rebuild, updateModifiers, updateSilhouette, handlePathVisibilityChanged);
 
     pb.config.preDraw = preDraw;
     pb.config.postDraw = postDraw;

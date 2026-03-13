@@ -21,6 +21,9 @@ import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { DildoRandomizer } from "./DildoRandomizer";
 import { randomWebColor } from "./randomWebColor";
 import { getImageFromCanvas } from "./getImageFromCanvas";
+import { detectDarkMode } from "./detectDarkMode";
+import { AppContext } from "./AppContext";
+import { setPathInstance } from "./appcontext/setPathInstance";
 
 export const ngdg = {
   DEFAULT_BEZIER_JSON,
@@ -30,6 +33,8 @@ export const ngdg = {
   KEY_SLICED_MESH_RIGHT,
   KEY_SLICED_MESH_LEFT,
 
+  AppContext,
+  detectDarkMode,
   DildoGeneration,
   DildoRandomizer,
   DildoSilhouette2D,
@@ -39,5 +44,6 @@ export const ngdg = {
   isMobileDevice,
   LocalstorageIO,
   randomWebColor,
-  SculptMap
+  SculptMap,
+  setPathInstance
 };
