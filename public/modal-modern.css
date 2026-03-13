@@ -184,6 +184,7 @@ body.darkmode .modal-header {
 
 body.darkmode .modal-body {
     background-color: #303030;
+    color: rgb(240,240,240);
 }
 
 body.darkmode .modal-footer {

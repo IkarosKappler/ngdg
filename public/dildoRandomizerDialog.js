@@ -41,7 +41,7 @@
     this.isRunning = false;
 
     this.rootElement.innerHTML = `
-    <div class="font-600">
+    <div class="font-600-desktop">
       <div class="flow-containter">
         <div class="grid-w-25"><h4>Outline Path</h4></div>
         <div class="grid-w-25">
@@ -52,7 +52,7 @@
           <label for="segmentCountMax">Max Segments</label><br>
           <input type="number" id="segmentCountMax" min="1" max="24" value="8" name="segmentCountMax" />
         </div>
-        <div class="grid-w-25 flow-containter right">
+        <div class="grid-w-25 flow-containter right center-v">
           <button id="btn-hide-path">Hide Path</button>
           <button id="btn-show-path">Show Path</button>
         </div>
@@ -69,7 +69,7 @@
           <input type="number" id="bendValueMax" min="0" max="180" value="120" name="bendValueMax" />
           °
         </div>
-        <div class="grid-w-25 flow-containter right">
+        <div class="grid-w-25 flow-containter right center-v">
           <label for="checkbox-hide-outlines-on-save">Hide outlines on save</label>
           <input type="checkbox" name="checkbox-hide-outlines-on-save" id="checkbox-hide-outlines-on-save" checked>
         </div>
@@ -95,7 +95,7 @@
             <option value="2048">2048</option>
           </select> px
         </div>
-        <div class="grid-w-25 flow-containter right">
+        <div class="grid-w-25 flow-containter right center-v">
           <label for="checkbox-silhouette-black-color">Use black color for silhouette</label>
           <input type="checkbox" name="checkbox-silhouette-black-color" id="checkbox-silhouette-black-color" checked>
         </div>
@@ -256,14 +256,14 @@
   // | Internal method for displaying error messages inside the dialog.
   // +-------------------------------
   DildoRandomizerDialog.prototype._displayError = function (errmsg) {
-    this._displayStatus(`⚠️ ${errmsg}`, "error");
+    this._displayStatus(errmsg ? `⚠️ ${errmsg}` : "", "error");
   };
 
   // +---------------------------------------------------------------------------------
   // | Internal method for displaying error messages inside the dialog.
   // +-------------------------------
   DildoRandomizerDialog.prototype._displaySuccess = function (msg) {
-    this._displayStatus(`✅ ${msg}`, "success");
+    this._displayStatus(msg ? `✅ ${msg}` : "", "success");
   };
 
   // +---------------------------------------------------------------------------------

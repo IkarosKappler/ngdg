@@ -163,8 +163,14 @@ body.mobile #action-buttons {
   min-width: 100%;
 }
 
-.center {
+.center-h {
+  /* align-items: center; */
+  justify-content: center;
+}
+
+.center-v {
   align-items: center;
+  /* justify-content: center; */
 }
 
 .right {
@@ -177,7 +183,7 @@ body.mobile #action-buttons {
   margin: 1em;
 }
 
-.sculptmap-viewer #action-buttons {
+.sculptmap-viewer #sculptmap-action-buttons {
   position: absolute;
   bottom: 8px;
   right: 8px;
@@ -198,7 +204,7 @@ body.mobile #action-buttons {
   border: 1px solid rgb(0, 93, 14);
 }
 
-.font-600 {
+body:not(.mobile) .font-600-desktop {
   font-size: 0.6em;
 }
 

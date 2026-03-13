@@ -197,7 +197,7 @@
           modal.close();
 
           // Allow STL download
-          var actionButtons = document.querySelector("#action-buttons");
+          var actionButtons = document.querySelector("#sculptmap-action-buttons");
           actionButtons.classList.remove("hidden");
         })
         .catch(function (e) {
