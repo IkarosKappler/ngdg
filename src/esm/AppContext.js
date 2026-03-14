@@ -43,6 +43,7 @@ export class AppContext {
         this.isMobile = detectMobileMode(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
         this.config = initConfig(this);
+        this.stats = initStats();
         // Init PB
         // All config appContext.params are optional.
         this.pb = new PlotBoilerplate({
@@ -125,7 +126,6 @@ export class AppContext {
         this.acquireOptimalPathView = acquireOptimalPathView(this);
         this.setDefaultPathInstance = setDefaultPathInstance(this);
         this.getBezierJSON = getBezierJSON(this);
-        this.stats = initStats();
     }
 }
 //# sourceMappingURL=AppContext.js.map

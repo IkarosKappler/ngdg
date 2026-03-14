@@ -17,7 +17,9 @@
   "use strict";
 
   window.addEventListener("load", function () {
-    var appContext = new AppContext({
+    // console.log("UIStats [4]", UIStats);
+
+    var appContext = new ngdg.AppContext({
       makeSTLExporter: function () {
         return new THREE.STLExporter();
       },
@@ -29,6 +31,7 @@
       },
       saveAs: saveAs // (Blob, filename) => void;
     });
+    // console.log("UIStats [5]", UIStats);
 
     // +---------------------------------------------------------------------------------
     // | Draw some stuff before rendering?
@@ -109,16 +112,9 @@
     };
 
     var drawRulers = function (draw, fill) {
-      Rulers.drawVerticalRuler(draw, fill, appContext.outline, appContext.config.rulerColor);
-      Rulers.drawHorizontalRuler(draw, fill, appContext.outline, appContext.config.rulerColor);
+      ngdg.Rulers.drawVerticalRuler(draw, fill, appContext.outline, appContext.config.rulerColor);
+      ngdg.Rulers.drawHorizontalRuler(draw, fill, appContext.outline, appContext.config.rulerColor);
     };
-
-    // Add a mouse listener to track the mouse position.-
-    new MouseHandler(appContext.pb.canvas).move(function (e) {
-      var relPos = appContext.pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
-      appContext.stats.mouseX = relPos.x;
-      appContext.stats.mouseY = relPos.y;
-    });
 
     // THIS IS JUST EXPERIMENTAL
     var drawOutlineToPolygon = function (draw, fill) {
@@ -264,6 +260,18 @@
     var showDildoRandomizer = function () {
       dildoRandomizerDialog.open();
     };
+
+    // Add a mouse listener to track the mouse position.
+    try {
+      // var stats = ngdg.initStats();
+      new MouseHandler(appContext.pb.eventCatcher).move(function (e) {
+        var relPos = appContext.pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
+        appContext.stats.mouseX = relPos.x;
+        appContext.stats.mouseY = relPos.y;
+      });
+    } catch (exc) {
+      console.log("Failed to init stats.", exc);
+    }
 
     // Add action buttons
     // prettier-ignore

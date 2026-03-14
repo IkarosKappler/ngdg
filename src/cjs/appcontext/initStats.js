@@ -7,6 +7,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initStats = void 0;
 var uistats_typescript_1 = require("uistats-typescript");
+// import UIStats from "uistats-typescript/src/js/index.js";
+// import UIStats from "uistats-typescript/src/js/index";
+console.log("UIStatd [static]", uistats_typescript_1.UIStats);
 var initStats = function () {
     // +---------------------------------------------------------------------------------
     // | Add stats.
@@ -19,15 +22,22 @@ var initStats = function () {
         diameter: 0,
         area: 0
     };
-    var uiStats = new uistats_typescript_1.UIStats(stats);
-    stats = uiStats.proxy;
-    uiStats.add("mouseX").precision(1);
-    uiStats.add("mouseY").precision(1);
-    uiStats.add("width").precision(1).suffix(" mm");
-    uiStats.add("height").precision(1).suffix(" mm");
-    uiStats.add("diameter").precision(1).suffix(" mm");
-    uiStats.add("area").precision(1).suffix(" mm²");
-    return stats;
+    console.log("UIStats", uistats_typescript_1.UIStats);
+    try {
+        var uiStats = new uistats_typescript_1.UIStats(stats);
+        // stats = uiStats.proxy;
+        uiStats.add("mouseX").precision(1);
+        uiStats.add("mouseY").precision(1);
+        uiStats.add("width").precision(1).suffix(" mm");
+        uiStats.add("height").precision(1).suffix(" mm");
+        uiStats.add("diameter").precision(1).suffix(" mm");
+        uiStats.add("area").precision(1).suffix(" mm²");
+        return uiStats.proxy;
+    }
+    catch (exc) {
+        console.error("Failed to initialize UIStats.", exc);
+        return stats;
+    }
 };
 exports.initStats = initStats;
 //# sourceMappingURL=initStats.js.map

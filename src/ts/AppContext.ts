@@ -105,7 +105,7 @@ export class AppContext {
   dildoGeneration: DildoGeneration;
 
   modal: Modal;
-  saveAs: (Blob, filename) => void;
+  saveAs: (blob: Blob, filename: string) => void;
 
   bezierDistanceT: number = 0;
   bezierDistanceLine: Line = null;
@@ -128,6 +128,7 @@ export class AppContext {
     this.isMobile = detectMobileMode(this.params);
     this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
     this.config = initConfig(this);
+    this.stats = initStats();
 
     // Init PB
     // All config appContext.params are optional.
@@ -218,6 +219,5 @@ export class AppContext {
     this.acquireOptimalPathView = acquireOptimalPathView(this);
     this.setDefaultPathInstance = setDefaultPathInstance(this);
     this.getBezierJSON = getBezierJSON(this);
-    this.stats = initStats();
   }
 }

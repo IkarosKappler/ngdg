@@ -56,6 +56,7 @@ var AppContext = /** @class */ (function () {
         this.isMobile = (0, detectMobileMode_1.detectMobileMode)(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
         this.config = (0, initConfig_1.initConfig)(this);
+        this.stats = (0, initStats_1.initStats)();
         // Init PB
         // All config appContext.params are optional.
         this.pb = new plotboilerplate_1.PlotBoilerplate({
@@ -138,7 +139,6 @@ var AppContext = /** @class */ (function () {
         this.acquireOptimalPathView = (0, acquireOptimalPathView_1.acquireOptimalPathView)(this);
         this.setDefaultPathInstance = (0, setDefaultPathInstance_1.setDefaultPathInstance)(this);
         this.getBezierJSON = (0, getBezierJSON_1.getBezierJSON)(this);
-        this.stats = (0, initStats_1.initStats)();
     }
     return AppContext;
 }());
@@ -3744,6 +3744,9 @@ exports.initConfig = initConfig;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.initStats = void 0;
 var uistats_typescript_1 = __webpack_require__(/*! uistats-typescript */ "./node_modules/uistats-typescript/dist/uistats.js");
+// import UIStats from "uistats-typescript/src/js/index.js";
+// import UIStats from "uistats-typescript/src/js/index";
+console.log("UIStatd [static]", uistats_typescript_1.UIStats);
 var initStats = function () {
     // +---------------------------------------------------------------------------------
     // | Add stats.
@@ -3756,15 +3759,22 @@ var initStats = function () {
         diameter: 0,
         area: 0
     };
-    var uiStats = new uistats_typescript_1.UIStats(stats);
-    stats = uiStats.proxy;
-    uiStats.add("mouseX").precision(1);
-    uiStats.add("mouseY").precision(1);
-    uiStats.add("width").precision(1).suffix(" mm");
-    uiStats.add("height").precision(1).suffix(" mm");
-    uiStats.add("diameter").precision(1).suffix(" mm");
-    uiStats.add("area").precision(1).suffix(" mm²");
-    return stats;
+    console.log("UIStats", uistats_typescript_1.UIStats);
+    try {
+        var uiStats = new uistats_typescript_1.UIStats(stats);
+        // stats = uiStats.proxy;
+        uiStats.add("mouseX").precision(1);
+        uiStats.add("mouseY").precision(1);
+        uiStats.add("width").precision(1).suffix(" mm");
+        uiStats.add("height").precision(1).suffix(" mm");
+        uiStats.add("diameter").precision(1).suffix(" mm");
+        uiStats.add("area").precision(1).suffix(" mm²");
+        return uiStats.proxy;
+    }
+    catch (exc) {
+        console.error("Failed to initialize UIStats.", exc);
+        return stats;
+    }
 };
 exports.initStats = initStats;
 //# sourceMappingURL=initStats.js.map

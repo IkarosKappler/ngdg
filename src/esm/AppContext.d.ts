@@ -63,7 +63,7 @@ export declare class AppContext {
     dildoSilhouette: DildoSilhouette2D;
     dildoGeneration: DildoGeneration;
     modal: Modal;
-    saveAs: (Blob: any, filename: any) => void;
+    saveAs: (blob: Blob, filename: string) => void;
     bezierDistanceT: number;
     bezierDistanceLine: Line;
     bumpmapPath: string;

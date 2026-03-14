@@ -5,6 +5,10 @@
  */
 
 import { UIStats } from "uistats-typescript";
+// import UIStats from "uistats-typescript/src/js/index.js";
+// import UIStats from "uistats-typescript/src/js/index";
+
+// console.log("UIStatd [static]", UIStats);
 
 export const initStats = () => {
   // +---------------------------------------------------------------------------------
@@ -18,14 +22,20 @@ export const initStats = () => {
     diameter: 0,
     area: 0
   };
-  var uiStats = new UIStats(stats);
-  stats = uiStats.proxy;
-  uiStats.add("mouseX").precision(1);
-  uiStats.add("mouseY").precision(1);
-  uiStats.add("width").precision(1).suffix(" mm");
-  uiStats.add("height").precision(1).suffix(" mm");
-  uiStats.add("diameter").precision(1).suffix(" mm");
-  uiStats.add("area").precision(1).suffix(" mm²");
+  console.log("UIStats", UIStats);
+  try {
+    var uiStats = new UIStats(stats);
+    // stats = uiStats.proxy;
+    uiStats.add("mouseX").precision(1);
+    uiStats.add("mouseY").precision(1);
+    uiStats.add("width").precision(1).suffix(" mm");
+    uiStats.add("height").precision(1).suffix(" mm");
+    uiStats.add("diameter").precision(1).suffix(" mm");
+    uiStats.add("area").precision(1).suffix(" mm²");
 
-  return stats;
+    return uiStats.proxy as any as typeof stats;
+  } catch (exc) {
+    console.error("Failed to initialize UIStats.", exc);
+    return stats;
+  }
 };

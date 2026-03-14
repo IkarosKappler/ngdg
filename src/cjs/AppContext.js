@@ -46,6 +46,7 @@ var AppContext = /** @class */ (function () {
         this.isMobile = (0, detectMobileMode_1.detectMobileMode)(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
         this.config = (0, initConfig_1.initConfig)(this);
+        this.stats = (0, initStats_1.initStats)();
         // Init PB
         // All config appContext.params are optional.
         this.pb = new plotboilerplate_1.PlotBoilerplate({
@@ -128,7 +129,6 @@ var AppContext = /** @class */ (function () {
         this.acquireOptimalPathView = (0, acquireOptimalPathView_1.acquireOptimalPathView)(this);
         this.setDefaultPathInstance = (0, setDefaultPathInstance_1.setDefaultPathInstance)(this);
         this.getBezierJSON = (0, getBezierJSON_1.getBezierJSON)(this);
-        this.stats = (0, initStats_1.initStats)();
     }
     return AppContext;
 }());

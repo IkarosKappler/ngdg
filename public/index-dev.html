@@ -40,11 +40,23 @@
     <script src="lib/three-geometry-hellfix/src/cjs/Face3.js"></script> 
     <script src="lib/three-geometry-hellfix/src/cjs/Gmetry.js"></script> 
     
+    <script src="lib/earcut-typescript/dist/earcut.min.js"></script>
+    <script src="lib/plotboilerplate/dist/plotboilerplate.min.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/datastructures/Color.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/WebColors.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/WebColorsContrast.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/io/FileDrop.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/detectDarkMode.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/dom/guiSizeToggler.js"></script>
+
+    
     <script src="lib/ngdg/src/cjs/defaults.js"></script>
     <script src="lib/ngdg/src/cjs/computeVertexNormals.js"></script>
     <script src="lib/ngdg/src/cjs/LocalstorageIO.js"></script>
     <script src="lib/ngdg/src/cjs/BezierResizeHelper.js"></script> <!-- new -->
     <script src="lib/ngdg/src/cjs/constants.js"></script>
+    <script src="lib/ngdg/src/cjs/detectMobileMode.js"></script>
     <script src="lib/ngdg/src/cjs/DildoGeneration.js"></script>
     <script src="lib/ngdg/src/cjs/DildoGeometry.js"></script>
     <script src="lib/ngdg/src/cjs/DildoMaterials.js"></script>
@@ -91,23 +103,16 @@
     <script src="lib/ngdg/src/cjs/Rulers.js"></script>
     <script src="lib/ngdg/src/cjs/scaleBounds.js"></script>
     <script src="lib/ngdg/src/cjs/ngdg.js"></script>
-    
-    <script src="lib/plotboilerplate/dist/plotboilerplate.min.js"></script>
-    <script src="lib/alloyfinger-typescript/src/cjs/alloy_finger.js"></script>
-    <script src="lib/earcut-typescript/dist/earcut.min.js"></script>
     <script src="lib/uistats-typescript/uistats.min.js"></script>
-    <script src="lib/plotboilerplate/src/cjs/utils/datastructures/Color.js"></script>
-    <script src="lib/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js"></script>
-    <script src="lib/plotboilerplate/src/cjs/utils/WebColors.js"></script>
-    <script src="lib/plotboilerplate/src/cjs/utils/WebColorsContrast.js"></script>
-    <script src="lib/plotboilerplate/src/cjs/utils/io/FileDrop.js"></script>
-    <script src="lib/plotboilerplate/src/cjs/utils/detectDarkMode.js"></script>
-    <script src="lib/plotboilerplate/src/cjs/utils/dom/guiSizeToggler.js"></script>
+    <script>console.log("UIStats [1]", UIStats); </script>
+    <script src="lib/alloyfinger-typescript/src/cjs/alloy_finger.js"></script>
+    <script>console.log("UIStats [2]", UIStats); </script>
+    
     <script src="modal.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="modal-modern.css">
     <link rel="stylesheet" href="progressbar.css">
-
+    
     <script src="lib/axios/dist/axios.min.js"></script> 
     <script src="lib/three-r124/build/three.min.js"></script> 
     <script src="lib/threejs-slice-geometry-typescript/dist/threejs-slice-geometry-typescript-main.min.js"></script>
@@ -116,13 +121,15 @@
     <script src="STLExporter.js"></script>
     <script src="VertexNormalsHelper.js"></script>
     <!-- <script src="BezierResizeHelper.js"></script> -->
-    <script src="detectMobileMode.js"></script>
+    <!-- <script src="detectMobileMode.js"></script> -->
     <!-- <script src="Rulers.js"></script> -->
     <script src="drawResizeHandleLines.js"></script>
     <script src="ActionButtons.js"></script>
     <!-- <script src="acquireOptimalPathView.js"></script> -->
     <script src="dildoRandomizerDialog.js"></script>
     <script src="initGUI.js"></script>
+    <script>console.log("UIStats [3]", UIStats); </script>
+
     <script src="index.js"></script>
   </head>
   <body class="fullscreen">
