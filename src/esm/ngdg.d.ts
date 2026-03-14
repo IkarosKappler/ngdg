@@ -106,7 +106,7 @@ export declare const ngdg: {
         fitViewToSilhouette: () => void;
         setDefaultPathJSON: () => void;
     };
-    initStats: () => {
+    initStats: (makeUIStats: (stats: object) => UIStats) => {
         mouseX: number;
         mouseY: number;
         width: number;

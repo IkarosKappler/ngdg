@@ -39,6 +39,7 @@ import { acquireOptimalView } from "./appcontext/acquireOptimalView";
 import { acquireOptimalPathView } from "./appcontext/acquireOptimalPathView";
 import { setDefaultPathInstance } from "./appcontext/setDefaultPathInstance";
 import { getBezierJSON } from "./appcontext/getBezierJSON";
+import { UIStats } from "uistats-typescript";
 
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 
@@ -62,6 +63,7 @@ export class AppContext {
   readonly removePathListeners: (path: BezierPath) => void;
   readonly updatePathResizer: (triggerRedraw: boolean) => void;
   readonly setPathInstance: (newOutline: BezierPath) => void;
+  readonly setPathInstanceByJSON: (pathJSON: string) => void;
   readonly updateSilhouette: (noRedraw: boolean) => void;
   readonly updateOutlineStats: () => void;
   readonly updateModifiers: () => void;
@@ -120,6 +122,7 @@ export class AppContext {
     makeSTLExporter: () => STLExporter;
     makeOrbitControls: (camera: THREE.Camera, domElement: HTMLCanvasElement) => any;
     makeModal: () => Modal;
+    makeUIStats: (stats: object) => UIStats;
     saveAs: (Blob, filename) => void;
   }) {
     this.GUP = gup();
@@ -128,7 +131,36 @@ export class AppContext {
     this.isMobile = detectMobileMode(this.params);
     this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
     this.config = initConfig(this);
-    this.stats = initStats();
+    this.stats = initStats(options.makeUIStats);
+
+    // TODO: Move to appcontex/...
+    // +---------------------------------------------------------------------------------
+    // | Each outline vertex requires a drag (end) listener. We need this to update
+    // | the 3d mesh on changes, update stats, and resize handle positions.
+    // +-------------------------------
+    const _self = this;
+    this.dragEndListener = function (dragEvent) {
+      // Uhm, well, some curve point moved.
+      _self.updatePathResizer(false);
+      _self.updateOutlineStats();
+      _self.rebuild();
+    };
+    // +---------------------------------------------------------------------------------
+    // | Each outline vertex requires a drag (end) listener. We need this to update
+    // | the 2d preview on changes.
+    // +-------------------------------
+    this.dragListener = function (dragEvent) {
+      // Uhm, well, some curve point moved.
+      _self.updateSilhouette(false); // noRedraw=false
+    };
+
+    /**
+     * If there are multiple instance of PB present, then it might be easier
+     * to just pass the JSON string instead of the BezierPath instance.
+     */
+    this.setPathInstanceByJSON = (pathJSON: string) => {
+      this.setPathInstance(BezierPath.fromJSON(pathJSON));
+    };
 
     // Init PB
     // All config appContext.params are optional.
@@ -183,7 +215,7 @@ export class AppContext {
 
     this.bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
     this.bumpmap = null;
-    const _self = this;
+    // const _self = this;
     this.bumpmapRasterImage = ngdg.ImageStore.getImage(this.bumpmapPath, _completeImage => {
       _self.rebuild && _self.rebuild();
     });

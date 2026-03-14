@@ -38,6 +38,7 @@ var getBezierJSON_1 = require("./appcontext/getBezierJSON");
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 var AppContext = /** @class */ (function () {
     function AppContext(options) {
+        var _this = this;
         this.bezierDistanceT = 0;
         this.bezierDistanceLine = null;
         this.GUP = (0, gup_1.gup)();
@@ -46,7 +47,34 @@ var AppContext = /** @class */ (function () {
         this.isMobile = (0, detectMobileMode_1.detectMobileMode)(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
         this.config = (0, initConfig_1.initConfig)(this);
-        this.stats = (0, initStats_1.initStats)();
+        this.stats = (0, initStats_1.initStats)(options.makeUIStats);
+        // TODO: Move to appcontex/...
+        // +---------------------------------------------------------------------------------
+        // | Each outline vertex requires a drag (end) listener. We need this to update
+        // | the 3d mesh on changes, update stats, and resize handle positions.
+        // +-------------------------------
+        var _self = this;
+        this.dragEndListener = function (dragEvent) {
+            // Uhm, well, some curve point moved.
+            _self.updatePathResizer(false);
+            _self.updateOutlineStats();
+            _self.rebuild();
+        };
+        // +---------------------------------------------------------------------------------
+        // | Each outline vertex requires a drag (end) listener. We need this to update
+        // | the 2d preview on changes.
+        // +-------------------------------
+        this.dragListener = function (dragEvent) {
+            // Uhm, well, some curve point moved.
+            _self.updateSilhouette(false); // noRedraw=false
+        };
+        /**
+         * If there are multiple instance of PB present, then it might be easier
+         * to just pass the JSON string instead of the BezierPath instance.
+         */
+        this.setPathInstanceByJSON = function (pathJSON) {
+            _this.setPathInstance(plotboilerplate_1.BezierPath.fromJSON(pathJSON));
+        };
         // Init PB
         // All config appContext.params are optional.
         this.pb = new plotboilerplate_1.PlotBoilerplate({
@@ -96,7 +124,7 @@ var AppContext = /** @class */ (function () {
         this.DEFAULT_BEZIER_HANDLE_LINE_COLOR = this.pb.drawConfig.bezier.handleLine.color;
         this.bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
         this.bumpmap = null;
-        var _self = this;
+        // const _self = this;
         this.bumpmapRasterImage = ngdg_1.ngdg.ImageStore.getImage(this.bumpmapPath, function (_completeImage) {
             _self.rebuild && _self.rebuild();
         });

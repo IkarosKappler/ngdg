@@ -58,10 +58,14 @@
     <script src="lib/earcut-typescript/dist/earcut.min.js"></script>
     <script src="lib/alloyfinger-typescript/src/cjs/alloy_finger.js"></script>
     <script src="lib/plotboilerplate/dist/plotboilerplate.min.js"></script>
-    <script src="lib/uistats-typescript/uistats.min.js"></script>
-    <script>console.log("UIStats", UIStats); </script>
     <script src="lib/ngdg/dist/ngdg-vendor.js"></script>
     <script src="lib/ngdg/dist/ngdg-main.js"></script>
+    <script src="lib/uistats-typescript/uistats.min.js"></script>
+    <script>
+      console.log("UIStats", UIStats); 
+      globalThis["UIStats"] = UIStats;
+      globalThis["uistats-typescript"] = UIStats;
+    </script>
 
     <script src="lib/plotboilerplate/src/cjs/utils/datastructures/Color.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js"></script>

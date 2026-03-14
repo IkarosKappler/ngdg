@@ -5,12 +5,9 @@
  */
 
 import { UIStats } from "uistats-typescript";
-// import UIStats from "uistats-typescript/src/js/index.js";
-// import UIStats from "uistats-typescript/src/js/index";
+// import * as UIStats from "uistats-typescript";
 
-// console.log("UIStatd [static]", UIStats);
-
-export const initStats = () => {
+export const initStats = (makeUIStats: (stats: object) => UIStats) => {
   // +---------------------------------------------------------------------------------
   // | Add stats.
   // +-------------------------------
@@ -24,7 +21,8 @@ export const initStats = () => {
   };
   console.log("UIStats", UIStats);
   try {
-    var uiStats = new UIStats(stats);
+    // var uiStats = new UIStats(stats);
+    const uiStats = makeUIStats(stats);
     // stats = uiStats.proxy;
     uiStats.add("mouseX").precision(1);
     uiStats.add("mouseY").precision(1);

@@ -3,7 +3,8 @@
  *
  * @date 2026-03-13 Refactored from the global `index.js`.
  */
-export declare const initStats: () => {
+import { UIStats } from "uistats-typescript";
+export declare const initStats: (makeUIStats: (stats: object) => UIStats) => {
     mouseX: number;
     mouseY: number;
     width: number;

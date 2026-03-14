@@ -48,6 +48,7 @@ var updatePathResizer_1 = require("./appcontext/updatePathResizer");
 var updateSilhouette_1 = require("./appcontext/updateSilhouette");
 var getBezierJSON_1 = require("./appcontext/getBezierJSON");
 var scaleBounds_1 = require("./scaleBounds");
+// import * as UIStats from "uistats-typescript";
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
@@ -90,5 +91,6 @@ exports.ngdg = {
     Rulers: Rulers_1.Rulers,
     scaleBounds: scaleBounds_1.scaleBounds,
     SculptMap: SculptMap_1.SculptMap
+    // UIStats
 };
 //# sourceMappingURL=ngdg.js.map

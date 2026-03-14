@@ -23,7 +23,11 @@ var detectDarkMode = function (GUP) {
     }
     var hours = new Date().getHours();
     var isDayTime = hours > 6 && hours < 18;
-    return !isDayTime;
+    var darkmode = !isDayTime;
+    if (darkmode) {
+        document.body.classList.add("darkmode");
+    }
+    return darkmode;
 };
 exports.detectDarkMode = detectDarkMode;
 //# sourceMappingURL=detectDarkMode.js.map

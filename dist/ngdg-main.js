@@ -48,6 +48,7 @@ var getBezierJSON_1 = __webpack_require__(/*! ./appcontext/getBezierJSON */ "./s
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 var AppContext = /** @class */ (function () {
     function AppContext(options) {
+        var _this = this;
         this.bezierDistanceT = 0;
         this.bezierDistanceLine = null;
         this.GUP = (0, gup_1.gup)();
@@ -56,7 +57,34 @@ var AppContext = /** @class */ (function () {
         this.isMobile = (0, detectMobileMode_1.detectMobileMode)(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
         this.config = (0, initConfig_1.initConfig)(this);
-        this.stats = (0, initStats_1.initStats)();
+        this.stats = (0, initStats_1.initStats)(options.makeUIStats);
+        // TODO: Move to appcontex/...
+        // +---------------------------------------------------------------------------------
+        // | Each outline vertex requires a drag (end) listener. We need this to update
+        // | the 3d mesh on changes, update stats, and resize handle positions.
+        // +-------------------------------
+        var _self = this;
+        this.dragEndListener = function (dragEvent) {
+            // Uhm, well, some curve point moved.
+            _self.updatePathResizer(false);
+            _self.updateOutlineStats();
+            _self.rebuild();
+        };
+        // +---------------------------------------------------------------------------------
+        // | Each outline vertex requires a drag (end) listener. We need this to update
+        // | the 2d preview on changes.
+        // +-------------------------------
+        this.dragListener = function (dragEvent) {
+            // Uhm, well, some curve point moved.
+            _self.updateSilhouette(false); // noRedraw=false
+        };
+        /**
+         * If there are multiple instance of PB present, then it might be easier
+         * to just pass the JSON string instead of the BezierPath instance.
+         */
+        this.setPathInstanceByJSON = function (pathJSON) {
+            _this.setPathInstance(plotboilerplate_1.BezierPath.fromJSON(pathJSON));
+        };
         // Init PB
         // All config appContext.params are optional.
         this.pb = new plotboilerplate_1.PlotBoilerplate({
@@ -106,7 +134,7 @@ var AppContext = /** @class */ (function () {
         this.DEFAULT_BEZIER_HANDLE_LINE_COLOR = this.pb.drawConfig.bezier.handleLine.color;
         this.bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
         this.bumpmap = null;
-        var _self = this;
+        // const _self = this;
         this.bumpmapRasterImage = ngdg_1.ngdg.ImageStore.getImage(this.bumpmapPath, function (_completeImage) {
             _self.rebuild && _self.rebuild();
         });
@@ -3744,10 +3772,8 @@ exports.initConfig = initConfig;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.initStats = void 0;
 var uistats_typescript_1 = __webpack_require__(/*! uistats-typescript */ "./node_modules/uistats-typescript/dist/uistats.js");
-// import UIStats from "uistats-typescript/src/js/index.js";
-// import UIStats from "uistats-typescript/src/js/index";
-console.log("UIStatd [static]", uistats_typescript_1.UIStats);
-var initStats = function () {
+// import * as UIStats from "uistats-typescript";
+var initStats = function (makeUIStats) {
     // +---------------------------------------------------------------------------------
     // | Add stats.
     // +-------------------------------
@@ -3761,7 +3787,8 @@ var initStats = function () {
     };
     console.log("UIStats", uistats_typescript_1.UIStats);
     try {
-        var uiStats = new uistats_typescript_1.UIStats(stats);
+        // var uiStats = new UIStats(stats);
+        var uiStats = makeUIStats(stats);
         // stats = uiStats.proxy;
         uiStats.add("mouseX").precision(1);
         uiStats.add("mouseY").precision(1);
@@ -4551,7 +4578,11 @@ var detectDarkMode = function (GUP) {
     }
     var hours = new Date().getHours();
     var isDayTime = hours > 6 && hours < 18;
-    return !isDayTime;
+    var darkmode = !isDayTime;
+    if (darkmode) {
+        document.body.classList.add("darkmode");
+    }
+    return darkmode;
 };
 exports.detectDarkMode = detectDarkMode;
 //# sourceMappingURL=detectDarkMode.js.map
@@ -4860,6 +4891,7 @@ var updatePathResizer_1 = __webpack_require__(/*! ./appcontext/updatePathResizer
 var updateSilhouette_1 = __webpack_require__(/*! ./appcontext/updateSilhouette */ "./src/cjs/appcontext/updateSilhouette.js");
 var getBezierJSON_1 = __webpack_require__(/*! ./appcontext/getBezierJSON */ "./src/cjs/appcontext/getBezierJSON.js");
 var scaleBounds_1 = __webpack_require__(/*! ./scaleBounds */ "./src/cjs/scaleBounds.js");
+// import * as UIStats from "uistats-typescript";
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
     DEG_TO_RAD: constants_1.DEG_TO_RAD,
@@ -4902,6 +4934,7 @@ exports.ngdg = {
     Rulers: Rulers_1.Rulers,
     scaleBounds: scaleBounds_1.scaleBounds,
     SculptMap: SculptMap_1.SculptMap
+    // UIStats
 };
 //# sourceMappingURL=ngdg.js.map
 

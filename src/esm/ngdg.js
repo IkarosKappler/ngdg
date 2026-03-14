@@ -45,6 +45,7 @@ import { updatePathResizer } from "./appcontext/updatePathResizer";
 import { updateSilhouette } from "./appcontext/updateSilhouette";
 import { getBezierJSON } from "./appcontext/getBezierJSON";
 import { scaleBounds } from "./scaleBounds";
+// import * as UIStats from "uistats-typescript";
 export const ngdg = {
     DEFAULT_BEZIER_JSON,
     DEG_TO_RAD,
@@ -87,5 +88,6 @@ export const ngdg = {
     Rulers,
     scaleBounds,
     SculptMap
+    // UIStats
 };
 //# sourceMappingURL=ngdg.js.map

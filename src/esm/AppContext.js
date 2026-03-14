@@ -8,7 +8,7 @@ import { Params } from "plotboilerplate/src/esm/utils/Params";
 import { gup } from "plotboilerplate/src/esm/utils/gup";
 import { detectDarkMode } from "./detectDarkMode";
 import { detectMobileMode } from "./detectMobileMode";
-import { PlotBoilerplate } from "plotboilerplate";
+import { BezierPath, PlotBoilerplate } from "plotboilerplate";
 import { setPathInstance } from "./appcontext/setPathInstance";
 import { addPathListeners, removePathListeners } from "./appcontext/addRemovePathListeners";
 import { updatePathResizer } from "./appcontext/updatePathResizer";
@@ -43,7 +43,34 @@ export class AppContext {
         this.isMobile = detectMobileMode(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
         this.config = initConfig(this);
-        this.stats = initStats();
+        this.stats = initStats(options.makeUIStats);
+        // TODO: Move to appcontex/...
+        // +---------------------------------------------------------------------------------
+        // | Each outline vertex requires a drag (end) listener. We need this to update
+        // | the 3d mesh on changes, update stats, and resize handle positions.
+        // +-------------------------------
+        const _self = this;
+        this.dragEndListener = function (dragEvent) {
+            // Uhm, well, some curve point moved.
+            _self.updatePathResizer(false);
+            _self.updateOutlineStats();
+            _self.rebuild();
+        };
+        // +---------------------------------------------------------------------------------
+        // | Each outline vertex requires a drag (end) listener. We need this to update
+        // | the 2d preview on changes.
+        // +-------------------------------
+        this.dragListener = function (dragEvent) {
+            // Uhm, well, some curve point moved.
+            _self.updateSilhouette(false); // noRedraw=false
+        };
+        /**
+         * If there are multiple instance of PB present, then it might be easier
+         * to just pass the JSON string instead of the BezierPath instance.
+         */
+        this.setPathInstanceByJSON = (pathJSON) => {
+            this.setPathInstance(BezierPath.fromJSON(pathJSON));
+        };
         // Init PB
         // All config appContext.params are optional.
         this.pb = new PlotBoilerplate({
@@ -93,7 +120,7 @@ export class AppContext {
         this.DEFAULT_BEZIER_HANDLE_LINE_COLOR = this.pb.drawConfig.bezier.handleLine.color;
         this.bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
         this.bumpmap = null;
-        const _self = this;
+        // const _self = this;
         this.bumpmapRasterImage = ngdg.ImageStore.getImage(this.bumpmapPath, _completeImage => {
             _self.rebuild && _self.rebuild();
         });

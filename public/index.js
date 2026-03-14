@@ -29,6 +29,9 @@
       makeModal: function () {
         return new Modal();
       },
+      makeUIStats: function (stats) {
+        return new UIStats(stats);
+      },
       saveAs: saveAs // (Blob, filename) => void;
     });
     // console.log("UIStats [5]", UIStats);
@@ -244,7 +247,8 @@
       // setPathInstance(result.outline);
       // TODO: WHY IS PLOTBOILERPLATE NOT RECOGNIZING THE BEZIER INSTANCE???!
       // temp solution: serialize and de-serialize :/
-      appContext.setPathInstance(BezierPath.fromJSON(result.outline.toJSON()));
+      // appContext.setPathInstance(BezierPath.fromJSON(result.outline.toJSON()));
+      appContext.setPathInstanceByJSON(result.outline.toJSON());
       appContext.config.bendAngle = result.bendAngle;
       appContext.rebuild();
     };
@@ -263,7 +267,6 @@
 
     // Add a mouse listener to track the mouse position.
     try {
-      // var stats = ngdg.initStats();
       new MouseHandler(appContext.pb.eventCatcher).move(function (e) {
         var relPos = appContext.pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
         appContext.stats.mouseX = relPos.x;

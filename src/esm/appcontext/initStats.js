@@ -4,10 +4,8 @@
  * @date 2026-03-13 Refactored from the global `index.js`.
  */
 import { UIStats } from "uistats-typescript";
-// import UIStats from "uistats-typescript/src/js/index.js";
-// import UIStats from "uistats-typescript/src/js/index";
-console.log("UIStatd [static]", UIStats);
-export const initStats = () => {
+// import * as UIStats from "uistats-typescript";
+export const initStats = (makeUIStats) => {
     // +---------------------------------------------------------------------------------
     // | Add stats.
     // +-------------------------------
@@ -21,7 +19,8 @@ export const initStats = () => {
     };
     console.log("UIStats", UIStats);
     try {
-        var uiStats = new UIStats(stats);
+        // var uiStats = new UIStats(stats);
+        const uiStats = makeUIStats(stats);
         // stats = uiStats.proxy;
         uiStats.add("mouseX").precision(1);
         uiStats.add("mouseY").precision(1);
