@@ -119,8 +119,8 @@
 
     // THIS IS JUST EXPERIMENTAL
     var drawOutlineToPolygon = function (draw, fill) {
-      outline.updateArcLengths();
-      var vertices = outline.getEvenDistributionVertices(50);
+      appContext.outline.updateArcLengths();
+      var vertices = appContext.outline.getEvenDistributionVertices(50);
       // console.log("drawOutlineToPolygon vertices", vertices);
       for (var i = 0; i < vertices.length; i++) {
         draw.circleHandle(vertices[i], 3, "rgba(0,192,128,0.5)");
@@ -163,8 +163,8 @@
     appContext.rebuild();
 
     window.addEventListener("resize", function () {
-      var scaledBounds = scaleBounds(appContext.outline.getBounds(), 1.6);
-      pb.fitToView(scaledBounds);
+      var scaledBounds = ngdg.scaleBounds(appContext.outline.getBounds(), 1.6);
+      appContext.pb.fitToView(scaledBounds);
     });
 
     var dildoRandomizerDialog = new DildoRandomizerDialog(appContext.pb, appContext.modal, appContext.config, {

@@ -27,26 +27,26 @@ function initGUI(appContext) {
   // prettier-ignore
   fold0.add( appContext.config, "fitViewToSilhouette" );
   // prettier-ignore
-  fold0.add(appContext.config, "showDiscreteOutlinePoints").onChange( function() { pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
+  fold0.add(appContext.config, "showDiscreteOutlinePoints").listen().onChange( function() { appContext.pb.redraw(); } ).name('showDiscreteOutlinePoints').title('Show the outline points used to calculate the area?');
   // prettier-ignore
-  fold0.add(appContext.config, "showSilhouette").onChange( function() { pb.redraw(); } ).name('showSilhouette').title('Show the 2D shilhouette of the dildo.');
+  fold0.add(appContext.config, "showSilhouette").onChange( function() { appContext.pb.redraw(); } ).name('showSilhouette').title('Show the 2D shilhouette of the dildo.');
   // prettier-ignore
-  fold0.addColor(appContext.config, "silhouetteLineColor").onChange( function() { pb.redraw(); } ).title('The line color of the silhoutette.');
+  fold0.addColor(appContext.config, "silhouetteLineColor").onChange( function() { appContext.pb.redraw(); } ).title('The line color of the silhoutette.');
   // prettier-ignore
-  fold0.add(appContext.config, "silhouetteLineWidth").onChange( function() { pb.redraw(); } ).title('The line width of the silhoutette.');
+  fold0.add(appContext.config, "silhouetteLineWidth").onChange( function() { appContext.pb.redraw(); } ).title('The line width of the silhoutette.');
 
   fold0.close();
 
   // prettier-ignore
-  fold0.add(appContext.config, "drawPathBounds").onChange( function() { pb.redraw(); } ).name('drawPathBounds').title('Show the Beziér path bounding box.');
+  fold0.add(appContext.config, "drawPathBounds").listen().onChange( function() { appContext.pb.redraw(); } ).name('drawPathBounds').title('Show the Beziér path bounding box.');
   // prettier-ignore
-  fold0.add(appContext.config, "drawResizeHandleLines").onChange( function() { appContext.handlePathVisibilityChanged(); pb.redraw(); } ).name('drawResizeHandleLines').title('Draw resize handle lines (only visible when resizing).');
+  fold0.add(appContext.config, "drawResizeHandleLines").listen().onChange( function() { appContext.handlePathVisibilityChanged(); appContext.pb.redraw(); } ).name('drawResizeHandleLines').title('Draw resize handle lines (only visible when resizing).');
   // prettier-ignore
-  fold0.add(appContext.config, "drawRulers").onChange( function() { pb.redraw(); } ).name('drawRulers').title('Show the 2D path rulers.');
+  fold0.add(appContext.config, "drawRulers").listen().onChange( function() { appContext.pb.redraw(); } ).name('drawRulers').title('Show the 2D path rulers.');
   // prettier-ignore
-  fold0.add(appContext.config, "drawOutline").onChange( function() { appContext.handlePathVisibilityChanged(); pb.redraw(); } ).name('drawOutline').title('Show the overall Bézier path.');
+  fold0.add(appContext.config, "drawOutline").listen().onChange( function() { appContext.handlePathVisibilityChanged(); appContext.pb.redraw(); } ).name('drawOutline').title('Show the overall Bézier path.');
   // prettier-ignore
-  fold0.add(appContext.config, "fillOutline").onChange( function() { pb.redraw(); } ).name('fillOutline').title('Fill the overall Bézier path area.');
+  fold0.add(appContext.config, "fillOutline").listen().onChange( function() { appContext.pb.redraw(); } ).name('fillOutline').title('Fill the overall Bézier path area.');
 
   var fold1 = gui.addFolder("Mesh");
   // prettier-ignore

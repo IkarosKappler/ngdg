@@ -290,6 +290,9 @@
     this.config.drawResizeHandleLines = isVisible;
     this.config.drawPathBounds = isVisible;
     this.isDrawIdealBoundsEnabled = isVisible;
+    if (!isVisible) {
+      this.config.showDiscreteOutlinePoints = false;
+    }
     this.callbackOptions.onPathVisibilityChanged();
   };
 
