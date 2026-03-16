@@ -121,6 +121,7 @@ export declare const ngdg: {
     retrieveFromLocalStorage: (appContext: AppContext) => void;
     setDefaultPathInstance: (appContext: AppContext) => (doRebuild: boolean) => void;
     setPathInstance: (appContext: AppContext) => (newOutline: import("plotboilerplate").BezierPath) => void;
+    setRandomizedResult: (appContext: AppContext) => (result: import("./appcontext/setRandomizedResult").RandomizerResult) => void;
     showPathJSON: (appContext: AppContext) => () => void;
     updateBumpmapPreview: (bumpmap: import("./interfaces").IBumpmap, isPreviewVisible: boolean) => void;
     updateModifiers: (appContex: AppContext) => () => void;

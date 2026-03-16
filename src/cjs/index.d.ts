@@ -39,6 +39,7 @@ export * from "./appcontext/rebuild";
 export * from "./appcontext/retrieveFromLocalStorage";
 export * from "./appcontext/setDefaultPathInstance";
 export * from "./appcontext/setPathInstance";
+export * from "./appcontext/setRandomizedResult";
 export * from "./appcontext/showPathJSON";
 export * from "./appcontext/updateBumpmapPreview";
 export * from "./appcontext/updateModifiers";

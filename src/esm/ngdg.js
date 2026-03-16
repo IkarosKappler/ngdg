@@ -47,6 +47,7 @@ import { getBezierJSON } from "./appcontext/getBezierJSON";
 import { scaleBounds } from "./scaleBounds";
 import { filedropHandler } from "./appcontext/filedropHandler";
 import { retrieveFromLocalStorage } from "./appcontext/retrieveFromLocalStorage";
+import { setRandomizedResult } from "./appcontext/setRandomizedResult";
 // import * as UIStats from "uistats-typescript";
 export const ngdg = {
     DEFAULT_BEZIER_JSON,
@@ -73,6 +74,7 @@ export const ngdg = {
     retrieveFromLocalStorage,
     setDefaultPathInstance,
     setPathInstance,
+    setRandomizedResult,
     showPathJSON,
     updateBumpmapPreview,
     updateModifiers,

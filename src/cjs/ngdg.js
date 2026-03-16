@@ -50,6 +50,7 @@ var getBezierJSON_1 = require("./appcontext/getBezierJSON");
 var scaleBounds_1 = require("./scaleBounds");
 var filedropHandler_1 = require("./appcontext/filedropHandler");
 var retrieveFromLocalStorage_1 = require("./appcontext/retrieveFromLocalStorage");
+var setRandomizedResult_1 = require("./appcontext/setRandomizedResult");
 // import * as UIStats from "uistats-typescript";
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
@@ -76,6 +77,7 @@ exports.ngdg = {
     retrieveFromLocalStorage: retrieveFromLocalStorage_1.retrieveFromLocalStorage,
     setDefaultPathInstance: setDefaultPathInstance_1.setDefaultPathInstance,
     setPathInstance: setPathInstance_1.setPathInstance,
+    setRandomizedResult: setRandomizedResult_1.setRandomizedResult,
     showPathJSON: showPathJSON_1.showPathJSON,
     updateBumpmapPreview: updateBumpmapPreview_1.updateBumpmapPreview,
     updateModifiers: updateModifiers_1.updateModifiers,

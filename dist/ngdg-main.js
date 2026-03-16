@@ -483,6 +483,7 @@ var DildoGeneration = /** @class */ (function () {
         // let height: number = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
         var width = space.width;
         var height = space.height;
+        console.log("resizeCanvas width", width, " height", height);
         this.canvas.width = width;
         this.canvas.height = height;
         this.canvas.style.width = "" + width + "px";
@@ -490,8 +491,8 @@ var DildoGeneration = /** @class */ (function () {
         this.canvas.setAttribute("width", "" + width + "px");
         this.canvas.setAttribute("height", height + "px");
         this.renderer.setSize(width, height);
-        // What am I doing here?
-        this.camera.setViewOffset(width, height, width / 4, height / 20, width, height);
+        // What am I doing here? -> Space for bending
+        this.camera.setViewOffset(width, height, width / 2, height / 20, width, height);
     };
     // TODO: this was moved to the DOM utils
     DildoGeneration.prototype.getAvailableContainerSpace = function () {
@@ -5033,6 +5034,7 @@ var getBezierJSON_1 = __webpack_require__(/*! ./appcontext/getBezierJSON */ "./s
 var scaleBounds_1 = __webpack_require__(/*! ./scaleBounds */ "./src/cjs/scaleBounds.js");
 var filedropHandler_1 = __webpack_require__(/*! ./appcontext/filedropHandler */ "./src/cjs/appcontext/filedropHandler.js");
 var retrieveFromLocalStorage_1 = __webpack_require__(/*! ./appcontext/retrieveFromLocalStorage */ "./src/cjs/appcontext/retrieveFromLocalStorage.js");
+var setRandomizedResult_1 = __webpack_require__(/*! ./appcontext/setRandomizedResult */ "./src/cjs/appcontext/setRandomizedResult.js");
 // import * as UIStats from "uistats-typescript";
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
@@ -5059,6 +5061,7 @@ exports.ngdg = {
     retrieveFromLocalStorage: retrieveFromLocalStorage_1.retrieveFromLocalStorage,
     setDefaultPathInstance: setDefaultPathInstance_1.setDefaultPathInstance,
     setPathInstance: setPathInstance_1.setPathInstance,
+    setRandomizedResult: setRandomizedResult_1.setRandomizedResult,
     showPathJSON: showPathJSON_1.showPathJSON,
     updateBumpmapPreview: updateBumpmapPreview_1.updateBumpmapPreview,
     updateModifiers: updateModifiers_1.updateModifiers,

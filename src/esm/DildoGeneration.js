@@ -89,6 +89,7 @@ export class DildoGeneration {
         // let height: number = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
         let width = space.width;
         let height = space.height;
+        console.log("resizeCanvas width", width, " height", height);
         this.canvas.width = width;
         this.canvas.height = height;
         this.canvas.style.width = "" + width + "px";
@@ -96,8 +97,8 @@ export class DildoGeneration {
         this.canvas.setAttribute("width", "" + width + "px");
         this.canvas.setAttribute("height", height + "px");
         this.renderer.setSize(width, height);
-        // What am I doing here?
-        this.camera.setViewOffset(width, height, width / 4, height / 20, width, height);
+        // What am I doing here? -> Space for bending
+        this.camera.setViewOffset(width, height, width / 2, height / 20, width, height);
     }
     // TODO: this was moved to the DOM utils
     getAvailableContainerSpace() {

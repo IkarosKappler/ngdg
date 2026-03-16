@@ -55,6 +55,7 @@ __exportStar(require("./appcontext/rebuild"), exports);
 __exportStar(require("./appcontext/retrieveFromLocalStorage"), exports);
 __exportStar(require("./appcontext/setDefaultPathInstance"), exports);
 __exportStar(require("./appcontext/setPathInstance"), exports);
+__exportStar(require("./appcontext/setRandomizedResult"), exports);
 __exportStar(require("./appcontext/showPathJSON"), exports);
 __exportStar(require("./appcontext/updateBumpmapPreview"), exports);
 __exportStar(require("./appcontext/updateModifiers"), exports);
