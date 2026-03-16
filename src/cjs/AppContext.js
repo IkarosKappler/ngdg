@@ -35,6 +35,10 @@ var acquireOptimalView_1 = require("./appcontext/acquireOptimalView");
 var acquireOptimalPathView_1 = require("./appcontext/acquireOptimalPathView");
 var setDefaultPathInstance_1 = require("./appcontext/setDefaultPathInstance");
 var getBezierJSON_1 = require("./appcontext/getBezierJSON");
+// import { UIStats } from "uistats-typescript";
+var filedropHandler_1 = require("./appcontext/filedropHandler");
+var retrieveFromLocalStorage_1 = require("./appcontext/retrieveFromLocalStorage");
+var setRandomizedResult_1 = require("./appcontext/setRandomizedResult");
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 var AppContext = /** @class */ (function () {
     function AppContext(options) {
@@ -47,7 +51,7 @@ var AppContext = /** @class */ (function () {
         this.isMobile = (0, detectMobileMode_1.detectMobileMode)(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
         this.config = (0, initConfig_1.initConfig)(this);
-        this.stats = (0, initStats_1.initStats)(options.makeUIStats);
+        this.stats = (0, initStats_1.initStats)();
         // TODO: Move to appcontex/...
         // +---------------------------------------------------------------------------------
         // | Each outline vertex requires a drag (end) listener. We need this to update
@@ -157,6 +161,12 @@ var AppContext = /** @class */ (function () {
         this.acquireOptimalPathView = (0, acquireOptimalPathView_1.acquireOptimalPathView)(this);
         this.setDefaultPathInstance = (0, setDefaultPathInstance_1.setDefaultPathInstance)(this);
         this.getBezierJSON = (0, getBezierJSON_1.getBezierJSON)(this);
+        this.setRandomizedResult = (0, setRandomizedResult_1.setRandomizedResult)(this);
+        // +---------------------------------------------------------------------------------
+        // | Handle file drop.
+        // +-------------------------------
+        var filedrop = (0, filedropHandler_1.filedropHandler)(this);
+        (0, retrieveFromLocalStorage_1.retrieveFromLocalStorage)(this);
     }
     return AppContext;
 }());

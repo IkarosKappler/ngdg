@@ -7,7 +7,7 @@
 import { AppContext } from "../AppContext";
 
 export const getBezierJSON = (appContext: AppContext) => {
-  return (prettyFormat?: boolean) => {
+  return (prettyFormat?: boolean): string => {
     return appContext.outline ? appContext.outline.toJSON(prettyFormat) : null;
   };
 };

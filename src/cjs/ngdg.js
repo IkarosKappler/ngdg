@@ -48,6 +48,8 @@ var updatePathResizer_1 = require("./appcontext/updatePathResizer");
 var updateSilhouette_1 = require("./appcontext/updateSilhouette");
 var getBezierJSON_1 = require("./appcontext/getBezierJSON");
 var scaleBounds_1 = require("./scaleBounds");
+var filedropHandler_1 = require("./appcontext/filedropHandler");
+var retrieveFromLocalStorage_1 = require("./appcontext/retrieveFromLocalStorage");
 // import * as UIStats from "uistats-typescript";
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
@@ -61,6 +63,7 @@ exports.ngdg = {
     removePathListeners: addRemovePathListeners_1.removePathListeners,
     acquireOptimalPathView: acquireOptimalPathView_1.acquireOptimalPathView,
     exportSTL: exportSTL_1.exportSTL,
+    filedropHandler: filedropHandler_1.filedropHandler,
     fitViewToSilhouette: fitViewToSilhouette_1.fitViewToSilhouette,
     getBezierJSON: getBezierJSON_1.getBezierJSON,
     getSculptmapDataURL: getSculptmapDataURL_1.getSculptmapDataURL,
@@ -70,6 +73,7 @@ exports.ngdg = {
     insertPathJSON: insertPathJSON_1.insertPathJSON,
     loadPathJSON: loadPathJSON_1.loadPathJSON,
     rebuild: rebuild_1.rebuild,
+    retrieveFromLocalStorage: retrieveFromLocalStorage_1.retrieveFromLocalStorage,
     setDefaultPathInstance: setDefaultPathInstance_1.setDefaultPathInstance,
     setPathInstance: setPathInstance_1.setPathInstance,
     showPathJSON: showPathJSON_1.showPathJSON,

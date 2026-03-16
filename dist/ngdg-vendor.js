@@ -1,3 +1,4 @@
+"use strict";
 (self["webpackChunkngdg"] = self["webpackChunkngdg"] || []).push([["vendor"],{
 
 /***/ "./node_modules/alloyfinger-typescript/src/esm/alloy_finger.js"
@@ -6,7 +7,6 @@
   \*********************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   AlloyFinger: () => (/* binding */ AlloyFinger),
@@ -410,7 +410,6 @@ class AlloyFinger {
   \**************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   AlloyFinger: () => (/* reexport safe */ _alloy_finger__WEBPACK_IMPORTED_MODULE_0__.AlloyFinger),
@@ -437,7 +436,6 @@ __webpack_require__.r(__webpack_exports__);
   \**********************************************************/
 (__unused_webpack_module, exports) {
 
-"use strict";
 
 // Original algorithm by https://github.com/mapbox/earcut
 //
@@ -1045,7 +1043,6 @@ exports.earcut = (function () {
   \************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author Ikaros Kappler
@@ -2182,7 +2179,6 @@ exports.BezierPath = BezierPath;
   \********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -2512,7 +2508,6 @@ exports.Bounds = Bounds;
   \********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -2861,7 +2856,6 @@ exports.Circle = Circle;
   \**************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -3235,7 +3229,6 @@ exports.CircleSector = CircleSector;
   \******************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -4307,7 +4300,6 @@ exports.CubicBezierCurve = CubicBezierCurve;
   \******************************************************/
 (__unused_webpack_module, exports) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -4407,7 +4399,6 @@ exports.Grid = Grid;
   \************************************************************/
 (__unused_webpack_module, exports) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -4852,7 +4843,6 @@ exports.KeyHandler = KeyHandler;
   \******************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -5082,7 +5072,6 @@ exports.Line = Line;
   \**************************************************************/
 (__unused_webpack_module, exports) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -5515,7 +5504,6 @@ exports.MouseHandler = MouseHandler;
   \*********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -5586,7 +5574,6 @@ exports.PBImage = PBImage;
   \********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -5659,7 +5646,6 @@ exports.PBText = PBText;
   \*****************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -8016,7 +8002,6 @@ exports["default"] = PlotBoilerplate;
   \*********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -8959,7 +8944,6 @@ exports.Polygon = Polygon;
   \**********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author    Ikaros Kappler
@@ -9466,7 +9450,6 @@ exports.Triangle = Triangle;
   \**************************************************************/
 (__unused_webpack_module, exports) {
 
-"use strict";
 
 /**
  * @classdesc A static UIDGenerator.
@@ -9497,7 +9480,6 @@ exports.UIDGenerator = UIDGenerator;
   \**********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -10085,7 +10067,6 @@ exports.VEllipse = VEllipse;
   \****************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * Implementation of elliptic sectors.
@@ -10523,7 +10504,6 @@ exports.VEllipseSector = VEllipseSector;
   \********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -10732,7 +10712,6 @@ exports.Vector = Vector;
   \***********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author Ikaros Kappler
@@ -11090,7 +11069,6 @@ exports.VertTuple = VertTuple;
   \********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -11803,7 +11781,6 @@ exports.Vertex = Vertex;
   \************************************************************/
 (__unused_webpack_module, exports) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -11872,7 +11849,6 @@ exports.VertexAttr = VertexAttr;
   \*****************************************************************/
 (__unused_webpack_module, exports) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -12149,7 +12125,6 @@ exports.VertexListeners = VertexListeners;
   \******************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -13318,7 +13293,6 @@ exports.drawutils = drawutils;
   \********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -14121,7 +14095,6 @@ var GLU = /** @class */ (function () {
   \**************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * Draws elements into an SVG node.
@@ -15829,7 +15802,6 @@ exports.drawutilssvg = drawutilssvg;
   \***********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * @author   Ikaros Kappler
@@ -15965,7 +15937,6 @@ exports.geomutils = {
   \*******************************************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * Interfaces and class for automatically handling Bézier curves.
@@ -16624,13 +16595,194 @@ exports.BezierPathInteractionHelper = BezierPathInteractionHelper;
 
 /***/ },
 
+/***/ "./node_modules/plotboilerplate/src/cjs/utils/io/FileDrop.js"
+/*!*******************************************************************!*\
+  !*** ./node_modules/plotboilerplate/src/cjs/utils/io/FileDrop.js ***!
+  \*******************************************************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * A basic IO handler for file drop (Drag-and-drop).
+ *
+ * Example use:
+ * ```javascript
+ *  var body = document.getElememtByTagName("body")[0];
+ *  var fileDrop = new FileDrop(body);
+ *    fileDrop.onFileJSONDropped(function (jsonObject) {
+ *    console.log("jsonObject", jsonObject);
+ *  });
+ * ```
+ *
+ * @author   Ikaros Kappler
+ * @date     2021-10-13
+ * @modified 2022-01-31 (ported from the ngdg project, then generalized)
+ * @modified 2023-01-03 Fixing some minor type issues and adding SVG reading capabilities.
+ * @version  2.1.0
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FileDrop = void 0;
+var FileDrop = /** @class */ (function () {
+    /**
+     *
+     * @param {HTMLElement} element - The element you wish to operate as the drop zone (like <body/>).
+     */
+    function FileDrop(element) {
+        var _this = this;
+        /**
+         * Internally handle a drop event.
+         *
+         * @param {DragEvent} event
+         * @returns {void}
+         */
+        this.handleDropEvent = function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            _this.element.style.opacity = "1.0";
+            if (!event.dataTransfer || !event.dataTransfer.files || event.dataTransfer.files.length === 0) {
+                // No files were dropped
+                return;
+            }
+            if (event.dataTransfer.files.length > 1) {
+                // Multiple file drop is not nupported
+                return;
+            }
+            // if (!this.fileDroppedCallbackJSON) {
+            //   // No handling callback defined.
+            //   return;
+            // }
+            if (event.dataTransfer.files[0]) {
+                var file_1 = event.dataTransfer.files[0];
+                // console.log("file", file);
+                if (file_1.type.match(/json.*/) && _this.fileDroppedCallbackJSON !== null) {
+                    var reader = new FileReader();
+                    reader.onload = function (readEvent) {
+                        if (!readEvent.target) {
+                            console.warn("Cannot process JSON ProgressEvent data: target is null.");
+                            return;
+                        }
+                        // Finished reading file data.
+                        var jsonObject = JSON.parse(readEvent.target.result);
+                        // TODO: what happens on fail?
+                        _this.fileDroppedCallbackJSON && _this.fileDroppedCallbackJSON(jsonObject);
+                    };
+                    reader.readAsText(file_1); // start reading the file data.
+                }
+                else if (file_1.type.match(/text\/plain.*/) && _this.fileDroppedCallbackText) {
+                    var reader = new FileReader();
+                    reader.onload = function (readEvent) {
+                        if (!readEvent.target) {
+                            console.warn("Cannot process Text ProgressEvent data: target is null.");
+                            return;
+                        }
+                        // Finished reading file data.
+                        _this.fileDroppedCallbackText && _this.fileDroppedCallbackText(readEvent.target.result);
+                    };
+                    reader.readAsText(file_1); // start reading the file data.
+                }
+                else if (_this.fileDroppedCallbackBinary) {
+                    var reader = new FileReader();
+                    reader.onload = function (readEvent) {
+                        if (!readEvent.target) {
+                            console.warn("Cannot process Binary ProgressEvent data: target is null.");
+                            return;
+                        }
+                        // Finished reading file data.
+                        _this.fileDroppedCallbackBinary &&
+                            _this.fileDroppedCallbackBinary(new Blob([readEvent.target.result]), file_1);
+                    };
+                    reader.readAsBinaryString(file_1); // start reading the file data.
+                }
+                else if (_this.fileDroppedCallbackSVG) {
+                    var reader = new FileReader();
+                    reader.onload = function (readEvent) {
+                        if (!readEvent.target) {
+                            console.warn("Cannot process SVG ProgressEvent data: target is null.");
+                            return;
+                        }
+                        var parser = new DOMParser();
+                        var doc = parser.parseFromString(readEvent.target.result, "image/svg+xml");
+                        // Finished reading file data.
+                        _this.fileDroppedCallbackSVG && _this.fileDroppedCallbackSVG(doc);
+                    };
+                    reader.readAsText(file_1); // start reading the file data.
+                }
+            }
+        };
+        /**
+         * Toggles the drop sensitive element's opacity to 0.5.
+         *
+         * @param {DragEvent} event - The event.
+         */
+        this.handleDragOverEvent = function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            _this.element.style.opacity = "0.5";
+        };
+        /**
+         * Restored the drop sensitive element's opacity back to 1.0.
+         *
+         * @param {DragEvent} event - The event.
+         */
+        this.handleDragLeaveEvent = function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            _this.element.style.opacity = "1.0";
+        };
+        this.element = element;
+        // Init the drop listeners
+        element.addEventListener("drop", this.handleDropEvent.bind(this));
+        element.addEventListener("dragover", this.handleDragOverEvent.bind(this));
+        element.addEventListener("dragleave", this.handleDragLeaveEvent.bind(this));
+    }
+    /**
+     * Install the JSON (MIME type json*) file drop callback. Note than only one callback can be installed
+     * in this implementation. Calling this method multiple times will overwrite previously
+     * installed listeners.
+     *
+     * The callback will receive the dropped file content as an object (parsed JSON).
+     *
+     * @param {(data:object)=>void} callback
+     */
+    FileDrop.prototype.onFileJSONDropped = function (callback) {
+        this.fileDroppedCallbackJSON = callback;
+    };
+    /**
+     * Install the text file (MIME type text/plain) drop callback. Note than only one callback can be installed
+     * in this implementation. Calling this method multiple times will overwrite previously
+     * installed listeners.
+     *
+     * The callback will receive the dropped file content as a string.
+     *
+     * @param {(data:object)=>void} callback
+     */
+    FileDrop.prototype.onFileTextDropped = function (callback) {
+        this.fileDroppedCallbackText = callback;
+    };
+    FileDrop.prototype.onFileSVGDropped = function (callback) {
+        this.fileDroppedCallbackSVG = callback;
+    };
+    /**
+     * Removes all listeners (drop, dragover and dragleave).
+     */
+    FileDrop.prototype.destroy = function () {
+        this.element.removeEventListener("drop", this.handleDropEvent);
+        this.element.removeEventListener("dragover", this.handleDragOverEvent);
+        this.element.removeEventListener("dragleave", this.handleDragLeaveEvent);
+    };
+    return FileDrop;
+}());
+exports.FileDrop = FileDrop;
+//# sourceMappingURL=FileDrop.js.map
+
+/***/ },
+
 /***/ "./node_modules/plotboilerplate/src/esm/BezierPath.js"
 /*!************************************************************!*\
   !*** ./node_modules/plotboilerplate/src/esm/BezierPath.js ***!
   \************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   BezierPath: () => (/* binding */ BezierPath)
@@ -17768,7 +17920,6 @@ BezierPath.END_POINT = 3;
   \********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Bounds: () => (/* binding */ Bounds)
@@ -18097,7 +18248,6 @@ class Bounds {
   \********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Circle: () => (/* binding */ Circle)
@@ -18447,7 +18597,6 @@ Circle.circleUtils = {
   \**************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CircleSector: () => (/* binding */ CircleSector)
@@ -18822,7 +18971,6 @@ CircleSector.circleSectorUtils = {
   \******************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CubicBezierCurve: () => (/* binding */ CubicBezierCurve)
@@ -19893,7 +20041,6 @@ CubicBezierCurve.utils = {
   \******************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Grid: () => (/* binding */ Grid)
@@ -19992,7 +20139,6 @@ Grid.utils = {
   \************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   KeyHandler: () => (/* binding */ KeyHandler)
@@ -20436,7 +20582,6 @@ KeyHandler.KEY_CODES = {
   \******************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Line: () => (/* binding */ Line)
@@ -20650,7 +20795,6 @@ class Line extends _VertTuple__WEBPACK_IMPORTED_MODULE_2__.VertTuple {
   \**************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   MouseHandler: () => (/* binding */ MouseHandler),
@@ -21057,7 +21201,6 @@ class MouseHandler {
   \*********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   PBImage: () => (/* binding */ PBImage)
@@ -21128,7 +21271,6 @@ class PBImage {
   \********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   PBText: () => (/* binding */ PBText)
@@ -21202,7 +21344,6 @@ class PBText {
   \*****************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   PlotBoilerplate: () => (/* binding */ PlotBoilerplate),
@@ -23577,7 +23718,6 @@ PlotBoilerplate.utils = {
   \*********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Polygon: () => (/* binding */ Polygon)
@@ -24519,7 +24659,6 @@ Polygon.utils = {
   \**********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Triangle: () => (/* binding */ Triangle)
@@ -25030,7 +25169,6 @@ Triangle.utils = {
   \**************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   UIDGenerator: () => (/* binding */ UIDGenerator)
@@ -25058,7 +25196,6 @@ UIDGenerator.current = 0;
   \**********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VEllipse: () => (/* binding */ VEllipse)
@@ -25649,7 +25786,6 @@ VEllipse.utils = {
   \****************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VEllipseSector: () => (/* binding */ VEllipseSector)
@@ -26088,7 +26224,6 @@ VEllipseSector.ellipseSectorUtils = {
   \********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Vector: () => (/* binding */ Vector)
@@ -26281,7 +26416,6 @@ Vector.utils = {
   \***********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VertTuple: () => (/* binding */ VertTuple)
@@ -26640,7 +26774,6 @@ VertTuple.vtutils = {
   \********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Vertex: () => (/* binding */ Vertex)
@@ -27357,7 +27490,6 @@ Vertex.utils = {
   \************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VertexAttr: () => (/* binding */ VertexAttr)
@@ -27425,7 +27557,6 @@ VertexAttr.model = {
   \*****************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VertexListeners: () => (/* binding */ VertexListeners)
@@ -27701,7 +27832,6 @@ class VertexListeners {
   \******************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   drawutils: () => (/* binding */ drawutils)
@@ -28869,7 +28999,6 @@ drawutils.helpers = {
   \********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   drawutilsgl: () => (/* binding */ drawutilsgl)
@@ -29691,7 +29820,6 @@ class GLU {
   \**************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   drawutilssvg: () => (/* binding */ drawutilssvg)
@@ -31396,7 +31524,6 @@ drawutilssvg.HEAD_XML = [
   \***********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   geomutils: () => (/* binding */ geomutils)
@@ -31535,7 +31662,6 @@ const geomutils = {
   \*******************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   BezierPath: () => (/* reexport safe */ _BezierPath__WEBPACK_IMPORTED_MODULE_0__.BezierPath),
@@ -31631,7 +31757,6 @@ __webpack_require__.r(__webpack_exports__);
   \********************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /**
  * @author Ikaros Kappler
@@ -31672,7 +31797,6 @@ __webpack_require__.r(__webpack_exports__);
   \************************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 
 //# sourceMappingURL=additionals.js.map
@@ -31685,7 +31809,6 @@ __webpack_require__.r(__webpack_exports__);
   \*****************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /**
  * @author Ikaros Kappler
@@ -31725,7 +31848,6 @@ __webpack_require__.r(__webpack_exports__);
   \**********************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /**
  * @author  Ikaros Kappler
@@ -31743,7 +31865,6 @@ __webpack_require__.r(__webpack_exports__);
   \******************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core */ "./node_modules/plotboilerplate/src/esm/interfaces/core.js");
 /* harmony import */ var _DrawLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DrawLib */ "./node_modules/plotboilerplate/src/esm/interfaces/DrawLib.js");
@@ -31763,7 +31884,6 @@ __webpack_require__.r(__webpack_exports__);
   \**************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Params: () => (/* binding */ Params)
@@ -31825,7 +31945,6 @@ class Params {
   \*****************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Blue: () => (/* binding */ Blue),
@@ -31904,7 +32023,6 @@ const shuffleWebColors = (order) => {
   \*************************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   WebColorsContrast: () => (/* binding */ WebColorsContrast)
@@ -31928,7 +32046,6 @@ const WebColorsContrast = (0,_WebColors__WEBPACK_IMPORTED_MODULE_0__.shuffleWebC
   \**************************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   WebColorsMalachite: () => (/* binding */ WebColorsMalachite)
@@ -31968,7 +32085,6 @@ const WebColorsMalachite = [
   \****************************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Color: () => (/* binding */ Color)
@@ -33064,7 +33180,6 @@ Color.CSS_COLORS = {
   \***********************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   gup: () => (/* binding */ gup)
@@ -33105,7 +33220,6 @@ const gup = () => {
   \***********************************************************************/
 (__unused_webpack_module, exports) {
 
-"use strict";
 
 /**
  * The default factory to connect to your three library.
@@ -33140,7 +33254,6 @@ exports.DefaultFactory = {
   \***********************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * THE ORIGINAL SOURCE COOE IS HERE:
@@ -33340,7 +33453,6 @@ exports.DirectGeometry = DirectGeometry;
   \**************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * THE ORIGINAL SOURCE COOE IS HERE:
@@ -33415,7 +33527,6 @@ exports.Face3 = Face3;
   \***************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 /**
  * THE ORIGINAL SOURCE COOE IS HERE:
@@ -34409,7 +34520,6 @@ exports.Gmetry = Gmetry;
   \**************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ThreeGeometryHellfix = exports.Gmetry = exports.Face3 = exports.DirectGeometry = void 0;
@@ -34431,7 +34541,6 @@ Object.defineProperty(exports, "ThreeGeometryHellfix", ({ enumerable: true, get:
   \******************************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ThreeGeometryHellfix = void 0;
@@ -34455,7 +34564,6 @@ exports.ThreeGeometryHellfix = {
   \***********************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   DefaultFactory: () => (/* binding */ DefaultFactory)
@@ -34491,7 +34599,6 @@ const DefaultFactory = {
   \***********************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   DirectGeometry: () => (/* binding */ DirectGeometry)
@@ -34691,7 +34798,6 @@ class DirectGeometry {
   \**************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Face3: () => (/* binding */ Face3)
@@ -34765,7 +34871,6 @@ class Face3 {
   \***************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Gmetry: () => (/* binding */ Gmetry)
@@ -35758,7 +35863,6 @@ class Gmetry {
   \**************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   DirectGeometry: () => (/* reexport safe */ _DirectGeometry__WEBPACK_IMPORTED_MODULE_0__.DirectGeometry),
@@ -35784,7 +35888,6 @@ __webpack_require__.r(__webpack_exports__);
   \******************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ThreeGeometryHellfix: () => (/* binding */ ThreeGeometryHellfix)
@@ -35813,7 +35916,6 @@ const ThreeGeometryHellfix = {
   \***********************************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   GeometryBuilder: () => (/* binding */ GeometryBuilder)
@@ -36051,7 +36153,6 @@ class GeometryBuilder {
   \*****************************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   BACK: () => (/* binding */ BACK),
@@ -36073,7 +36174,6 @@ const FACE_KEYS = ['a', 'b', 'c'];
   \************************************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   facesFromEdges: () => (/* binding */ facesFromEdges)
@@ -36166,7 +36266,6 @@ const validFace = (chain) => {
   \*************************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   BACK: () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.BACK),
@@ -36195,7 +36294,6 @@ __webpack_require__.r(__webpack_exports__);
   \*************************************************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   sliceGeometry: () => (/* binding */ sliceGeometry)
@@ -36277,242 +36375,220 @@ const findDistance = (vertex, plane) => {
 
 /***/ },
 
-/***/ "./node_modules/uistats-typescript/dist/uistats.js"
-/*!*********************************************************!*\
-  !*** ./node_modules/uistats-typescript/dist/uistats.js ***!
-  \*********************************************************/
-(module) {
+/***/ "./node_modules/uistats-typescript/src/cjs/UIStats.js"
+/*!************************************************************!*\
+  !*** ./node_modules/uistats-typescript/src/cjs/UIStats.js ***!
+  \************************************************************/
+(__unused_webpack_module, exports) {
+
 
 /**
- * uistats-typescript v0.0.1
- * A tiny ui component to display app stats.
+ * This is a tiny UI module for displaying simple stats data.
  *
- * @author Ikaros Kappler <info@int2byte.de>
- * @license MIT
- * @preserve
+ * Not working with IEx. Use a 'Proxy' polyfill maybe?
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+ *
+ * @author   Ikaros Kappler
+ * @date     2020-12-20
+ * @modified 2026-03-16 Chaning export from `export default UIStats` to `export const UIStats`.
  */
-
-(function (global, factory) {
-	 true ? module.exports = factory() :
-	0;
-}(this, (function () { 'use strict';
-
-	function unwrapExports (x) {
-		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-	}
-
-	function createCommonjsModule(fn, module) {
-		return module = { exports: {} }, fn(module, module.exports), module.exports;
-	}
-
-	var UIStats_1 = createCommonjsModule(function (module, exports) {
-	/**
-	 * This is a tiny UI module for displaying simple stats data.
-	 *
-	 * Not working with IEx. Use a 'Proxy' polyfill maybe?
-	 *
-	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
-	 *
-	 * @author Ikaros Kappler
-	 * @date   2020-12-20
-	 */
-	Object.defineProperty(exports, "__esModule", { value: true });
-	/**
-	 * The default `Evaluator` function: identity (display values raw as they are).
-	 */
-	var FN_IDENTITY = function (value) { return value; };
-	/**
-	 * The main class.
-	 *
-	 * Once instantiated it will append a new HTMLDivElement node to the DOM.
-	 */
-	var UIStats = /** @class */ (function () {
-	    // @name LiveStats
-	    // @constructor
-	    // @param {object} observee
-	    // @param {Object} keyToObserve (string->Object with props)
-	    function UIStats(observee) {
-	        // @member {object} Keeps the props for currently observed keys.
-	        this.keyProps = {};
-	        // @member {object}
-	        this.keyProps = {};
-	        // @member {number}
-	        this.keyCount = 0;
-	        // @member {object}
-	        this.observee = observee;
-	        this.root = document.createElement('div');
-	        document.body.appendChild(this.root);
-	        var _self = this;
-	        this.toggled = false;
-	        // Add header node
-	        this.header = document.createElement('div');
-	        this.header.addEventListener('click', function () { _self.__toggleVisibility(); });
-	        this.root.appendChild(this.header);
-	        this.__applyBaseLayout();
-	        var proxyHandler = {
-	            // get: function(target, prop, receiver) {
-	            //    if( prop === 'message' )
-	            //       return ...;
-	            // }, 
-	            set: function (obj, propName, value) {
-	                var kProps = _self.keyProps[propName];
-	                if (typeof kProps !== "undefined") {
-	                    var refinedValue = kProps.childElem.evaluateFn(value);
-	                    _self.__applyKeyValue(propName, kProps, refinedValue);
-	                }
-	                return true; // Indicates change was successful
-	            }
-	        };
-	        this.proxy = new Proxy(observee, proxyHandler);
-	    }
-	    // @private
-	    UIStats.prototype.__applyKeyValue = function (keyName, kProps, value) {
-	        var node = document.getElementById(kProps.id);
-	        node.innerHTML = value;
-	        node.setAttribute('title', value);
-	    };
-	    // @param {string} keyName
-	    // @param {LiveStatsElem} newElem
-	    UIStats.prototype.__updateChildElem = function (keyName, newElem) {
-	        var kProps = this.keyProps[keyName];
-	        if (typeof kProps !== "undefined") {
-	            kProps.childElem = newElem;
-	        }
-	    };
-	    UIStats.prototype.add = function (keyName) {
-	        var id = keyName + "_" + Math.floor(Math.random() * 65636);
-	        // └-Root
-	        //   └-Node
-	        //     ├-Label
-	        //     └-Content (with unique ID)
-	        var node = document.createElement('div');
-	        var label = document.createElement('div');
-	        var content = document.createElement('div');
-	        node.style.display = 'flex';
-	        label.style.width = '50%';
-	        label.style.color = '#0070ff';
-	        this.__applyTextLayout(label);
-	        label.innerHTML = keyName;
-	        label.setAttribute('title', keyName);
-	        content.style.width = '50%';
-	        content.style.color = '#cccecb';
-	        content.setAttribute('id', id);
-	        this.__applyTextLayout(content);
-	        node.appendChild(label);
-	        node.appendChild(content);
-	        this.root.appendChild(node);
-	        // Gives the user the opportunity to tweak the output.
-	        // Identity function is the default behavior.
-	        var childElem = new UIStats.UIStatsChild(this, keyName, FN_IDENTITY);
-	        this.keyProps[keyName] = { id: id, childElem: childElem };
-	        this.keyCount++;
-	        // Initially display the current value
-	        this.__applyKeyValue(keyName, this.keyProps[keyName], this.observee[keyName]);
-	        return childElem;
-	    };
-	    // Toggles the main component on/off.
-	    // @private
-	    UIStats.prototype.__toggleVisibility = function () {
-	        this.toggled = !this.toggled;
-	        if (this.toggled) {
-	            this.root.style.left = '-200px';
-	            this.header.style.transform = 'rotate(180deg)';
-	        }
-	        else {
-	            this.root.style.left = '0px';
-	            this.header.style.transform = 'rotate(0deg)';
-	        }
-	    };
-	    // Avoid text from overflowing or breaking the bounds.
-	    // @private
-	    UIStats.prototype.__applyTextLayout = function (textNode) {
-	        textNode.style.paddingLeft = '3px';
-	        textNode.style.overflow = 'hidden';
-	        textNode.style.whiteSpace = 'nowrap';
-	        textNode.style.textOverflow = 'ellipsis';
-	    };
-	    // @private
-	    UIStats.prototype.__applyBaseLayout = function () {
-	        this.root.style.position = 'absolute';
-	        this.root.style.left = '0';
-	        this.root.style.top = '0';
-	        this.root.style.width = '200px';
-	        this.root.style.background = '#1a1a1a'; // Like in dat.gui
-	        this.root.style.fontFamily = 'Calibri, Arial, Helvetica';
-	        this.root.style.fontSize = '12px';
-	        this.root.style.transition = 'left 1s';
-	        this.header.style.position = 'absolute';
-	        this.header.style.display = 'flex';
-	        this.header.style.justifyContent = 'center';
-	        this.header.style.alignItems = 'center';
-	        this.header.style.top = '0';
-	        this.header.style.left = '100%';
-	        this.header.style.width = '12px';
-	        this.header.style.height = '12px';
-	        this.header.style.borderRadius = '6px';
-	        this.header.style.background = 'rgba(255,255,255,0.5)';
-	        this.header.style.color = 'black';
-	        this.header.style.fontSize = '6px';
-	        this.header.style.cursor = 'pointer';
-	        this.header.innerHTML = '&#9664;';
-	    };
-	    // @param {UIStats} liveStats
-	    // @param {string} keyName
-	    // @param {function} evaluateFn - A function with one param: value => newValue
-	    UIStats.UIStatsChild = /** @class */ (function () {
-	        // Creates a new child.
-	        function class_1(uiStats, keyName, evaluateFn) {
-	            this.precision = function (precision) {
-	                var _self = this;
-	                return this.__installAsNewParent(function (value) {
-	                    return Number(_self.evaluateFn(value)).toFixed(precision);
-	                });
-	            };
-	            this.suffix = function (suffixText) {
-	                var _self = this;
-	                return this.__installAsNewParent(function (value) {
-	                    return [_self.evaluateFn(value), suffixText].join('');
-	                });
-	            };
-	            this.prefix = function (prefixText) {
-	                var _self = this;
-	                return this.__installAsNewParent(function (value) {
-	                    return [prefixText, _self.evaluateFn(value)].join('');
-	                });
-	            };
-	            this.uiStats = uiStats;
-	            this.keyName = keyName;
-	            this.evaluateFn = evaluateFn;
-	        }
-	        class_1.prototype.__installAsNewParent = function (evaluateFn) {
-	            var newChildElem = new UIStats.UIStatsChild(this.uiStats, this.keyName, evaluateFn);
-	            this.uiStats.__updateChildElem(this.keyName, newChildElem);
-	            return newChildElem;
-	        };
-	        return class_1;
-	    }()); // END nested class
-	    return UIStats;
-	}());
-	exports.default = UIStats;
-
-	});
-
-	unwrapExports(UIStats_1);
-
-	/* Imports and exports for webpack */
-
-	// Expose the component to the global scope
-	globalThis.UIStats = UIStats_1.default;
-
-	var entry = {
-
-	};
-
-	return entry;
-
-})));
-//# sourceMappingURL=uistats.js.map
-
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UIStats = void 0;
+/**
+ * The default `Evaluator` function: identity (display values raw as they are).
+ */
+var FN_IDENTITY = function (value) { return value; };
+/**
+ * The main class.
+ *
+ * Once instantiated it will append a new HTMLDivElement node to the DOM.
+ */
+var UIStats = /** @class */ (function () {
+    // @name UIStats
+    // @constructor
+    // @param {object} observee
+    // @param {Object} keyToObserve (string->Object with props)
+    function UIStats(observee) {
+        // @member {object} Keeps the props for currently observed keys.
+        this.keyProps = {};
+        // @member {object}
+        this.keyProps = {};
+        // @member {number}
+        this.keyCount = 0;
+        // @member {object}
+        this.observee = observee;
+        this.root = document.createElement("div");
+        document.body.appendChild(this.root);
+        var _self = this;
+        this.toggled = false;
+        // Add header node
+        this.header = document.createElement("div");
+        this.header.addEventListener("click", function () {
+            _self.__toggleVisibility();
+        });
+        this.root.appendChild(this.header);
+        this.__applyBaseLayout();
+        var proxyHandler = {
+            get: function (target, prop, receiver) {
+                // if( prop === 'message' )
+                //   ...;
+                // console.log('get', prop, target, receiver );
+                return target[prop]; // _self.observee[prop];
+            },
+            set: function (obj, propName, value) {
+                // Apply the setter itself
+                _self.observee[propName] = value;
+                // Check further handling
+                var kProps = _self.keyProps[propName];
+                if (typeof kProps !== "undefined") {
+                    var refinedValue = kProps.childElem.evaluateFn(value);
+                    _self.__applyKeyValue(propName, kProps, refinedValue);
+                }
+                return true; // Indicates change was successful
+            }
+        };
+        this.proxy = new Proxy(observee, proxyHandler);
+    }
+    // @private
+    UIStats.prototype.__applyKeyValue = function (keyName, kProps, value) {
+        var node = document.getElementById(kProps.id);
+        node.innerHTML = value;
+        node.setAttribute("title", value);
+    };
+    // @param {string} keyName
+    // @param {LiveStatsElem} newElem
+    UIStats.prototype.__updateChildElem = function (keyName, newElem) {
+        var kProps = this.keyProps[keyName];
+        if (typeof kProps !== "undefined") {
+            kProps.childElem = newElem;
+        }
+    };
+    UIStats.prototype.add = function (keyName) {
+        var id = keyName + "_" + Math.floor(Math.random() * 65636);
+        // └-Root
+        //   └-Node
+        //     ├-Label
+        //     └-Content (with unique ID)
+        var node = document.createElement("div");
+        var label = document.createElement("div");
+        var content = document.createElement("div");
+        node.style.display = "flex";
+        node.style.borderBottom = "1px solid #2c2c2c";
+        node.style.borderLeft = "3px solid #806787";
+        label.style.width = "50%";
+        label.style.color = "#0070ff";
+        this.__applyTextLayout(label);
+        label.innerHTML = keyName;
+        label.setAttribute("title", keyName);
+        content.style.width = "50%";
+        content.style.color = "#cccecb";
+        content.setAttribute("id", id);
+        this.__applyTextLayout(content);
+        node.appendChild(label);
+        node.appendChild(content);
+        this.root.appendChild(node);
+        // Gives the user the opportunity to tweak the output.
+        // Identity function is the default behavior.
+        var childElem = new UIStats.UIStatsChild(this, keyName, FN_IDENTITY);
+        this.keyProps[keyName] = { id: id, childElem: childElem };
+        this.keyCount++;
+        // Initially display the current value
+        this.__applyKeyValue(keyName, this.keyProps[keyName], this.observee[keyName]);
+        return childElem;
+    };
+    // Toggles the main component on/off.
+    // @private
+    UIStats.prototype.__toggleVisibility = function () {
+        this.toggled = !this.toggled;
+        if (this.toggled) {
+            this.root.style.left = "-200px";
+            this.header.style.transform = "rotate(180deg)";
+        }
+        else {
+            this.root.style.left = "0px";
+            this.header.style.transform = "rotate(0deg)";
+        }
+    };
+    // Avoid text from overflowing or breaking the bounds.
+    // @private
+    UIStats.prototype.__applyTextLayout = function (textNode) {
+        textNode.style.paddingLeft = "3px";
+        textNode.style.overflow = "hidden";
+        textNode.style.whiteSpace = "nowrap";
+        textNode.style.textOverflow = "ellipsis";
+    };
+    // @private
+    UIStats.prototype.__applyBaseLayout = function () {
+        this.root.style.position = "absolute";
+        this.root.style.left = "0";
+        this.root.style.top = "0";
+        this.root.style.width = "200px";
+        this.root.style.background = "#1a1a1a"; // Like in dat.gui
+        this.root.style.fontFamily = "Calibri, Arial, Helvetica";
+        this.root.style.fontSize = "12px";
+        this.root.style.transition = "left 1s";
+        this.header.style.position = "absolute";
+        this.header.style.display = "flex";
+        this.header.style.justifyContent = "center";
+        this.header.style.alignItems = "center";
+        this.header.style.top = "0";
+        this.header.style.left = "100%";
+        this.header.style.width = "12px";
+        this.header.style.height = "12px";
+        this.header.style.borderRadius = "6px";
+        this.header.style.background = "rgba(255,255,255,0.5)";
+        this.header.style.color = "black";
+        this.header.style.fontSize = "6px";
+        this.header.style.cursor = "pointer";
+        this.header.innerHTML = "&#9664;";
+    };
+    // @param {UIStats} liveStats
+    // @param {string} keyName
+    // @param {function} evaluateFn - A function with one param: value => newValue
+    UIStats.UIStatsChild = /** @class */ (function () {
+        // Creates a new child.
+        function class_1(uiStats, keyName, evaluateFn) {
+            var _this = this;
+            this.precision = function (precision) {
+                var _self = _this;
+                //   var evaluateThis = value => {
+                //     return Number(_self.evaluateFn(value)).toFixed(precision);
+                //   };
+                //   //   _self.uiStats.observee[_self.keyName] = evaluateThis(_self.uiStats.observee[_self.keyName]);
+                //   return this.__installAsNewParent(evaluateThis);
+                return _this.__installAsNewParent(function (value) {
+                    return Number(_self.evaluateFn(value)).toFixed(precision);
+                });
+            };
+            this.suffix = function (suffixText) {
+                var _self = _this;
+                return _this.__installAsNewParent(function (value) {
+                    return [_self.evaluateFn(value), suffixText].join("");
+                });
+            };
+            this.prefix = function (prefixText) {
+                var _self = _this;
+                return _this.__installAsNewParent(function (value) {
+                    return [prefixText, _self.evaluateFn(value)].join("");
+                });
+            };
+            this.uiStats = uiStats;
+            this.keyName = keyName;
+            this.evaluateFn = evaluateFn;
+        }
+        class_1.prototype.__installAsNewParent = function (evaluateFn) {
+            var newChildElem = new UIStats.UIStatsChild(this.uiStats, this.keyName, evaluateFn);
+            this.uiStats.__applyKeyValue(this.keyName, this.uiStats.keyProps[this.keyName], evaluateFn(this.uiStats.observee[this.keyName]));
+            this.uiStats.__updateChildElem(this.keyName, newChildElem);
+            return newChildElem;
+        };
+        return class_1;
+    }()); // END nested class
+    return UIStats;
+}());
+exports.UIStats = UIStats;
+//# sourceMappingURL=UIStats.js.map
 
 /***/ },
 
@@ -36522,7 +36598,6 @@ const findDistance = (vertex, plane) => {
   \********************************************/
 (__unused_webpack_module, exports) {
 
-"use strict";
 /**
  * @license
  * Copyright 2010-2022 Three.js Authors
@@ -73285,7 +73360,6 @@ exports.sRGBEncoding = sRGBEncoding;
   \**************************************************/
 (__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ACESFilmicToneMapping: () => (/* binding */ ACESFilmicToneMapping),
@@ -124183,7 +124257,6 @@ if ( typeof window !== 'undefined' ) {
   \************************************************************************/
 (__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VertexNormalsHelper: () => (/* binding */ VertexNormalsHelper)

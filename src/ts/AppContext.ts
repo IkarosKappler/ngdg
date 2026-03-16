@@ -39,7 +39,10 @@ import { acquireOptimalView } from "./appcontext/acquireOptimalView";
 import { acquireOptimalPathView } from "./appcontext/acquireOptimalPathView";
 import { setDefaultPathInstance } from "./appcontext/setDefaultPathInstance";
 import { getBezierJSON } from "./appcontext/getBezierJSON";
-import { UIStats } from "uistats-typescript";
+// import { UIStats } from "uistats-typescript";
+import { filedropHandler } from "./appcontext/filedropHandler";
+import { retrieveFromLocalStorage } from "./appcontext/retrieveFromLocalStorage";
+import { setRandomizedResult } from "./appcontext/setRandomizedResult";
 
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 
@@ -82,7 +85,8 @@ export class AppContext {
   readonly acquireOptimalView: ReturnType<typeof acquireOptimalView>;
   readonly acquireOptimalPathView: ReturnType<typeof acquireOptimalPathView>;
   readonly setDefaultPathInstance: ReturnType<typeof setDefaultPathInstance>;
-  readonly getBezierJSON: () => void;
+  readonly getBezierJSON: () => string;
+  readonly setRandomizedResult: ReturnType<typeof setRandomizedResult>;
 
   // +---------------------------------------------------------------------------------
   // | The base shape that's used for the extrusion geometry part.
@@ -122,7 +126,6 @@ export class AppContext {
     makeSTLExporter: () => STLExporter;
     makeOrbitControls: (camera: THREE.Camera, domElement: HTMLCanvasElement) => any;
     makeModal: () => Modal;
-    makeUIStats: (stats: object) => UIStats;
     saveAs: (Blob, filename) => void;
   }) {
     this.GUP = gup();
@@ -131,7 +134,7 @@ export class AppContext {
     this.isMobile = detectMobileMode(this.params);
     this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
     this.config = initConfig(this);
-    this.stats = initStats(options.makeUIStats);
+    this.stats = initStats();
 
     // TODO: Move to appcontex/...
     // +---------------------------------------------------------------------------------
@@ -251,5 +254,13 @@ export class AppContext {
     this.acquireOptimalPathView = acquireOptimalPathView(this);
     this.setDefaultPathInstance = setDefaultPathInstance(this);
     this.getBezierJSON = getBezierJSON(this);
+    this.setRandomizedResult = setRandomizedResult(this);
+
+    // +---------------------------------------------------------------------------------
+    // | Handle file drop.
+    // +-------------------------------
+    const filedrop = filedropHandler(this);
+
+    retrieveFromLocalStorage(this);
   }
 }

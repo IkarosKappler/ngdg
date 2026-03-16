@@ -45,6 +45,10 @@ var acquireOptimalView_1 = __webpack_require__(/*! ./appcontext/acquireOptimalVi
 var acquireOptimalPathView_1 = __webpack_require__(/*! ./appcontext/acquireOptimalPathView */ "./src/cjs/appcontext/acquireOptimalPathView.js");
 var setDefaultPathInstance_1 = __webpack_require__(/*! ./appcontext/setDefaultPathInstance */ "./src/cjs/appcontext/setDefaultPathInstance.js");
 var getBezierJSON_1 = __webpack_require__(/*! ./appcontext/getBezierJSON */ "./src/cjs/appcontext/getBezierJSON.js");
+// import { UIStats } from "uistats-typescript";
+var filedropHandler_1 = __webpack_require__(/*! ./appcontext/filedropHandler */ "./src/cjs/appcontext/filedropHandler.js");
+var retrieveFromLocalStorage_1 = __webpack_require__(/*! ./appcontext/retrieveFromLocalStorage */ "./src/cjs/appcontext/retrieveFromLocalStorage.js");
+var setRandomizedResult_1 = __webpack_require__(/*! ./appcontext/setRandomizedResult */ "./src/cjs/appcontext/setRandomizedResult.js");
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 var AppContext = /** @class */ (function () {
     function AppContext(options) {
@@ -57,7 +61,7 @@ var AppContext = /** @class */ (function () {
         this.isMobile = (0, detectMobileMode_1.detectMobileMode)(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
         this.config = (0, initConfig_1.initConfig)(this);
-        this.stats = (0, initStats_1.initStats)(options.makeUIStats);
+        this.stats = (0, initStats_1.initStats)();
         // TODO: Move to appcontex/...
         // +---------------------------------------------------------------------------------
         // | Each outline vertex requires a drag (end) listener. We need this to update
@@ -167,6 +171,12 @@ var AppContext = /** @class */ (function () {
         this.acquireOptimalPathView = (0, acquireOptimalPathView_1.acquireOptimalPathView)(this);
         this.setDefaultPathInstance = (0, setDefaultPathInstance_1.setDefaultPathInstance)(this);
         this.getBezierJSON = (0, getBezierJSON_1.getBezierJSON)(this);
+        this.setRandomizedResult = (0, setRandomizedResult_1.setRandomizedResult)(this);
+        // +---------------------------------------------------------------------------------
+        // | Handle file drop.
+        // +-------------------------------
+        var filedrop = (0, filedropHandler_1.filedropHandler)(this);
+        (0, retrieveFromLocalStorage_1.retrieveFromLocalStorage)(this);
     }
     return AppContext;
 }());
@@ -3477,6 +3487,44 @@ exports.exportSTL = exportSTL;
 
 /***/ },
 
+/***/ "./src/cjs/appcontext/filedropHandler.js"
+/*!***********************************************!*\
+  !*** ./src/cjs/appcontext/filedropHandler.js ***!
+  \***********************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-16 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.filedropHandler = void 0;
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var FileDrop_1 = __webpack_require__(/*! plotboilerplate/src/cjs/utils/io/FileDrop */ "./node_modules/plotboilerplate/src/cjs/utils/io/FileDrop.js");
+var filedropHandler = function (appContext) {
+    // +---------------------------------------------------------------------------------
+    // | Load the config from the local storage.
+    // | Handle file drop.
+    // +-------------------------------
+    var fileDrop = new FileDrop_1.FileDrop(appContext.pb.eventCatcher);
+    fileDrop.onFileJSONDropped(function (jsonObject) {
+        try {
+            appContext.setPathInstance(plotboilerplate_1.BezierPath.fromArray(jsonObject));
+            appContext.rebuild();
+        }
+        catch (e) {
+            console.error("Failed to retrieve Bézier path from dropped file.", jsonObject);
+            console.log(e);
+        }
+    });
+};
+exports.filedropHandler = filedropHandler;
+//# sourceMappingURL=filedropHandler.js.map
+
+/***/ },
+
 /***/ "./src/cjs/appcontext/fitViewToSilhouette.js"
 /*!***************************************************!*\
   !*** ./src/cjs/appcontext/fitViewToSilhouette.js ***!
@@ -3771,9 +3819,9 @@ exports.initConfig = initConfig;
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.initStats = void 0;
-var uistats_typescript_1 = __webpack_require__(/*! uistats-typescript */ "./node_modules/uistats-typescript/dist/uistats.js");
+var UIStats_1 = __webpack_require__(/*! uistats-typescript/src/cjs/UIStats */ "./node_modules/uistats-typescript/src/cjs/UIStats.js");
 // import * as UIStats from "uistats-typescript";
-var initStats = function (makeUIStats) {
+var initStats = function () {
     // +---------------------------------------------------------------------------------
     // | Add stats.
     // +-------------------------------
@@ -3785,11 +3833,9 @@ var initStats = function (makeUIStats) {
         diameter: 0,
         area: 0
     };
-    console.log("UIStats", uistats_typescript_1.UIStats);
+    console.log("UIStats", UIStats_1.UIStats);
     try {
-        // var uiStats = new UIStats(stats);
-        var uiStats = makeUIStats(stats);
-        // stats = uiStats.proxy;
+        var uiStats = new UIStats_1.UIStats(stats);
         uiStats.add("mouseX").precision(1);
         uiStats.add("mouseY").precision(1);
         uiStats.add("width").precision(1).suffix(" mm");
@@ -3959,6 +4005,65 @@ exports.rebuild = rebuild;
 
 /***/ },
 
+/***/ "./src/cjs/appcontext/retrieveFromLocalStorage.js"
+/*!********************************************************!*\
+  !*** ./src/cjs/appcontext/retrieveFromLocalStorage.js ***!
+  \********************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-16 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.retrieveFromLocalStorage = void 0;
+var ngdg_1 = __webpack_require__(/*! ../ngdg */ "./src/cjs/ngdg.js");
+var retrieveFromLocalStorage = function (appContext) {
+    // +---------------------------------------------------------------------------------
+    // | Load the config from the local storage.
+    // +-------------------------------
+    // console.log("OUTLINE", outline);
+    if (appContext.isLocalstorageDisabled) {
+        console.log("[INFO] Localstorage is disabled.");
+        // setDefaultPathInstance(false);
+    }
+    else {
+        console.log("[INFO] Localstorage enabled.");
+        var localstorageIO = new ngdg_1.ngdg.LocalstorageIO();
+        localstorageIO.onPathRestored(function (jsonString, bendAngle, twistAngle, baseShapeExcentricity) {
+            console.log("[INFO] Path restored from localstorage.");
+            // This is called when json string was loaded from storage
+            if (!appContext.GUP.rbdata) {
+                console.log("[INFO] Loading path JSON.");
+                appContext.loadPathJSON(jsonString);
+            }
+            if (!appContext.GUP.bendAngle) {
+                appContext.config.bendAngle = bendAngle;
+            }
+            if (!appContext.GUP.twistAngle) {
+                appContext.config.twistAngle = twistAngle;
+            }
+            if (!appContext.GUP.baseShapeExcentricity) {
+                appContext.config.baseShapeExcentricity = baseShapeExcentricity;
+            }
+        }, function () {
+            //  return outline ? outline.toJSON() : null;
+            return {
+                bezierJSON: appContext.getBezierJSON(),
+                bendAngle: appContext.config.bendAngle,
+                twistAngle: appContext.config.twistAngle,
+                baseShapeExcentricity: appContext.config.baseShapeExcentricity
+            };
+        });
+    }
+};
+exports.retrieveFromLocalStorage = retrieveFromLocalStorage;
+//# sourceMappingURL=retrieveFromLocalStorage.js.map
+
+/***/ },
+
 /***/ "./src/cjs/appcontext/setDefaultPathInstance.js"
 /*!******************************************************!*\
   !*** ./src/cjs/appcontext/setDefaultPathInstance.js ***!
@@ -4050,6 +4155,41 @@ var setPathInstance = function (appContext) {
 };
 exports.setPathInstance = setPathInstance;
 //# sourceMappingURL=setPathInstance.js.map
+
+/***/ },
+
+/***/ "./src/cjs/appcontext/setRandomizedResult.js"
+/*!***************************************************!*\
+  !*** ./src/cjs/appcontext/setRandomizedResult.js ***!
+  \***************************************************/
+(__unused_webpack_module, exports) {
+
+
+/**
+ * An AppContext function: set the global outline to use.
+ *
+ * @date 2026-03-16 Refactored from the global `index.js`.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setRandomizedResult = void 0;
+// +---------------------------------------------------------------------------------
+// | Updates the sculpt map by recalculating the image data from the 3d model.
+// +-------------------------------
+var setRandomizedResult = function (appContext) {
+    return function (result) {
+        // setPathInstance(result.outline);
+        // TODO: WHY IS PLOTBOILERPLATE NOT RECOGNIZING THE BEZIER INSTANCE???!
+        //       Somehow there are two copies of the PlotBoilerplate library, A and B.
+        //       A.BezierPath and B.BezierPath are not compatible :(
+        // temp solution: serialize and de-serialize :/
+        // appContext.setPathInstance(BezierPath.fromJSON(result.outline.toJSON()));
+        appContext.setPathInstanceByJSON(result.outline.toJSON(false)); // prettyFormat=false
+        appContext.config.bendAngle = result.bendAngle;
+        appContext.rebuild();
+    };
+};
+exports.setRandomizedResult = setRandomizedResult;
+//# sourceMappingURL=setRandomizedResult.js.map
 
 /***/ },
 
@@ -4891,6 +5031,8 @@ var updatePathResizer_1 = __webpack_require__(/*! ./appcontext/updatePathResizer
 var updateSilhouette_1 = __webpack_require__(/*! ./appcontext/updateSilhouette */ "./src/cjs/appcontext/updateSilhouette.js");
 var getBezierJSON_1 = __webpack_require__(/*! ./appcontext/getBezierJSON */ "./src/cjs/appcontext/getBezierJSON.js");
 var scaleBounds_1 = __webpack_require__(/*! ./scaleBounds */ "./src/cjs/scaleBounds.js");
+var filedropHandler_1 = __webpack_require__(/*! ./appcontext/filedropHandler */ "./src/cjs/appcontext/filedropHandler.js");
+var retrieveFromLocalStorage_1 = __webpack_require__(/*! ./appcontext/retrieveFromLocalStorage */ "./src/cjs/appcontext/retrieveFromLocalStorage.js");
 // import * as UIStats from "uistats-typescript";
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
@@ -4904,6 +5046,7 @@ exports.ngdg = {
     removePathListeners: addRemovePathListeners_1.removePathListeners,
     acquireOptimalPathView: acquireOptimalPathView_1.acquireOptimalPathView,
     exportSTL: exportSTL_1.exportSTL,
+    filedropHandler: filedropHandler_1.filedropHandler,
     fitViewToSilhouette: fitViewToSilhouette_1.fitViewToSilhouette,
     getBezierJSON: getBezierJSON_1.getBezierJSON,
     getSculptmapDataURL: getSculptmapDataURL_1.getSculptmapDataURL,
@@ -4913,6 +5056,7 @@ exports.ngdg = {
     insertPathJSON: insertPathJSON_1.insertPathJSON,
     loadPathJSON: loadPathJSON_1.loadPathJSON,
     rebuild: rebuild_1.rebuild,
+    retrieveFromLocalStorage: retrieveFromLocalStorage_1.retrieveFromLocalStorage,
     setDefaultPathInstance: setDefaultPathInstance_1.setDefaultPathInstance,
     setPathInstance: setPathInstance_1.setPathInstance,
     showPathJSON: showPathJSON_1.showPathJSON,

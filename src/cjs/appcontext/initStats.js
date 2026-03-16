@@ -6,9 +6,9 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initStats = void 0;
-var uistats_typescript_1 = require("uistats-typescript");
+var UIStats_1 = require("uistats-typescript/src/cjs/UIStats");
 // import * as UIStats from "uistats-typescript";
-var initStats = function (makeUIStats) {
+var initStats = function () {
     // +---------------------------------------------------------------------------------
     // | Add stats.
     // +-------------------------------
@@ -20,11 +20,9 @@ var initStats = function (makeUIStats) {
         diameter: 0,
         area: 0
     };
-    console.log("UIStats", uistats_typescript_1.UIStats);
+    console.log("UIStats", UIStats_1.UIStats);
     try {
-        // var uiStats = new UIStats(stats);
-        var uiStats = makeUIStats(stats);
-        // stats = uiStats.proxy;
+        var uiStats = new UIStats_1.UIStats(stats);
         uiStats.add("mouseX").precision(1);
         uiStats.add("mouseY").precision(1);
         uiStats.add("width").precision(1).suffix(" mm");

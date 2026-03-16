@@ -45,6 +45,8 @@ import { updatePathResizer } from "./appcontext/updatePathResizer";
 import { updateSilhouette } from "./appcontext/updateSilhouette";
 import { getBezierJSON } from "./appcontext/getBezierJSON";
 import { scaleBounds } from "./scaleBounds";
+import { filedropHandler } from "./appcontext/filedropHandler";
+import { retrieveFromLocalStorage } from "./appcontext/retrieveFromLocalStorage";
 // import * as UIStats from "uistats-typescript";
 export const ngdg = {
     DEFAULT_BEZIER_JSON,
@@ -58,6 +60,7 @@ export const ngdg = {
     removePathListeners,
     acquireOptimalPathView,
     exportSTL,
+    filedropHandler,
     fitViewToSilhouette,
     getBezierJSON,
     getSculptmapDataURL,
@@ -67,6 +70,7 @@ export const ngdg = {
     insertPathJSON,
     loadPathJSON,
     rebuild,
+    retrieveFromLocalStorage,
     setDefaultPathInstance,
     setPathInstance,
     showPathJSON,

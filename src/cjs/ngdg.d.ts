@@ -31,6 +31,7 @@ export declare const ngdg: {
     removePathListeners: (appContex: AppContext) => (path: import("plotboilerplate").BezierPath) => void;
     acquireOptimalPathView: (appContext: AppContext) => (pb: import("plotboilerplate").PlotBoilerplate, outline: import("plotboilerplate").BezierPath) => void;
     exportSTL: (appContext: AppContext, makeSTLExporter: () => import("three/examples/jsm/exporters/STLExporter").STLExporter) => () => void;
+    filedropHandler: (appContext: AppContext) => void;
     fitViewToSilhouette: (appContext: AppContext) => () => void;
     getBezierJSON: (appContext: AppContext) => (prettyFormat?: boolean) => string;
     getSculptmapDataURL: (appContext: AppContext) => () => string;
@@ -106,7 +107,7 @@ export declare const ngdg: {
         fitViewToSilhouette: () => void;
         setDefaultPathJSON: () => void;
     };
-    initStats: (makeUIStats: (stats: object) => UIStats) => {
+    initStats: () => {
         mouseX: number;
         mouseY: number;
         width: number;
@@ -117,6 +118,7 @@ export declare const ngdg: {
     insertPathJSON: (appContext: AppContext) => () => void;
     loadPathJSON: (appContext: AppContext) => (jsonData: string) => void;
     rebuild: (appContex: AppContext) => () => Promise<boolean>;
+    retrieveFromLocalStorage: (appContext: AppContext) => void;
     setDefaultPathInstance: (appContext: AppContext) => (doRebuild: boolean) => void;
     setPathInstance: (appContext: AppContext) => (newOutline: import("plotboilerplate").BezierPath) => void;
     showPathJSON: (appContext: AppContext) => () => void;

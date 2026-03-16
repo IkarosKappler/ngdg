@@ -17,24 +17,29 @@
   "use strict";
 
   window.addEventListener("load", function () {
-    // console.log("UIStats [4]", UIStats);
-
+    // +---------------------------------------------------------------------------------
+    // | Initialize the app context.
+    // +-------------------------------
     var appContext = new ngdg.AppContext({
+      // Initializing the STL exporter in Typescript level leads to import conflicts.
+      // -> Pass through.
       makeSTLExporter: function () {
         return new THREE.STLExporter();
       },
+      // Initializing the orbit controls in Typescript level leads to import conflicts.
+      // -> Pass through.
       makeOrbitControls: function (camera, domElement) {
         return new THREE.OrbitControls(camera, domElement);
       },
+      // The modal is currently not implemented in Typescript.
+      // -> Pass through.
       makeModal: function () {
         return new Modal();
       },
-      makeUIStats: function (stats) {
-        return new UIStats(stats);
-      },
-      saveAs: saveAs // (Blob, filename) => void;
+      // Use a custom `saveAs` function.
+      // -> Pass through.
+      saveAs: saveAs // (blob:Blob, filename:string) => void;
     });
-    // console.log("UIStats [5]", UIStats);
 
     // +---------------------------------------------------------------------------------
     // | Draw some stuff before rendering?
@@ -103,15 +108,8 @@
     var drawBezierDistanceLine = function (draw, fill) {
       if (appContext.bezierDistanceLine != null) {
         draw.line(appContext.bezierDistanceLine.a, appContext.bezierDistanceLine.b, "rgba(255,192,0,0.25)", 1);
-        // pb.fill.circleHandle(bezierDistanceLine.a, 3.0, "rgb(255,192,0)");
-        drawCross(draw, fill, appContext.bezierDistanceLine.a, "rgb(255,192,0)", 1.0);
+        draw.cross(appContext.bezierDistanceLine.a, 3, "rgb(255,192,0)", 1.0);
       }
-    };
-
-    // TODO: in plotboilerplate@1.17.0 there will be a function for this.
-    var drawCross = function (draw, fill, position, color, lineWidth) {
-      draw.line({ x: position.x - 3, y: position.y - 3 }, { x: position.x + 3, y: position.y + 3 }, color, lineWidth);
-      draw.line({ x: position.x + 3, y: position.y - 3 }, { x: position.x - 3, y: position.y + 3 }, color, lineWidth);
     };
 
     var drawRulers = function (draw, fill) {
@@ -122,7 +120,6 @@
     // THIS IS JUST EXPERIMENTAL
     var drawOutlineToPolygon = function (draw, fill) {
       outline.updateArcLengths();
-      // var vertices = bezier2polygon(outline, 50);
       var vertices = outline.getEvenDistributionVertices(50);
       // console.log("drawOutlineToPolygon vertices", vertices);
       for (var i = 0; i < vertices.length; i++) {
@@ -130,8 +127,6 @@
       }
     };
 
-    // This will trigger the first initial postDraw/draw/redraw call
-    // setPathInstance(BezierPath.fromJSON(initialPathJSON));
     if (appContext.GUP.rbdata) {
       // If you need some test data:
       //    this seems to be the most favourite dildo shape regarding the ranking on Google (2021-10-12)
@@ -148,80 +143,12 @@
         modal.setActions([Modal.ACTION_CLOSE]);
         modal.open();
       }
-    } else {
-      // setDefaultPathInstance(false);
-      // updateSilhouette(false);
-      // acquireOptimalPathView(pb, outline);
     }
-
-    // +---------------------------------------------------------------------------------
-    // | Load the config from the local storage.
-    // | Handle file drop.
-    // +-------------------------------
-    var fileDrop = new FileDrop(appContext.pb.eventCatcher);
-    fileDrop.onFileJSONDropped(function (jsonObject) {
-      try {
-        appContext.setPathInstance(BezierPath.fromArray(jsonObject));
-        appContext.rebuild();
-      } catch (e) {
-        console.error("Failed to retrieve Bézier path from dropped file.", jsonObject);
-        console.log(e);
-      }
-    });
-    // console.log("OUTLINE", outline);
-    if (appContext.isLocalstorageDisabled) {
-      console.log("[INFO] Localstorage is disabled.");
-      // setDefaultPathInstance(false);
-    } else {
-      console.log("[INFO] Localstorage enabled.");
-
-      var localstorageIO = new ngdg.LocalstorageIO();
-      localstorageIO.onPathRestored(
-        function (jsonString, bendAngle, twistAngle, baseShapeExcentricity) {
-          console.log("[INFO] Path restored from localstorage.");
-          // This is called when json string was loaded from storage
-          if (!appContext.GUP.rbdata) {
-            console.log("[INFO] Loading path JSON.");
-            appContext.loadPathJSON(jsonString);
-          }
-          if (!appContext.GUP.bendAngle) {
-            appContext.config.bendAngle = bendAngle;
-          }
-          if (!appContext.GUP.twistAngle) {
-            appContext.config.twistAngle = twistAngle;
-          }
-          if (!appContext.GUP.baseShapeExcentricity) {
-            appContext.config.baseShapeExcentricity = baseShapeExcentricity;
-          }
-        },
-        function () {
-          //  return outline ? outline.toJSON() : null;
-          return {
-            bezierJSON: appContext.getBezierJSON(),
-            bendAngle: appContext.config.bendAngle,
-            twistAngle: appContext.config.twistAngle,
-            baseShapeExcentricity: appContext.config.baseShapeExcentricity
-          };
-        }
-      );
-    }
-
-    /* var getBezierJSON = function () {
-      return outline ? outline.toJSON() : null;
-    }; */
 
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
     // +-------------------------------
-    initGUI(
-      appContext.pb,
-      appContext.config,
-      appContext.GUP,
-      appContext.rebuild,
-      appContext.updateModifiers,
-      appContext.updateSilhouette,
-      appContext.handlePathVisibilityChanged
-    );
+    initGUI(appContext);
 
     appContext.pb.config.preDraw = preDraw;
     appContext.pb.config.postDraw = postDraw;
@@ -240,20 +167,8 @@
       pb.fitToView(scaledBounds);
     });
 
-    // +---------------------------------------------------------------------------------
-    // | Updates the sculpt map by recalculating the image data from the 3d model.
-    // +-------------------------------
-    var setRandomizedResult = function (result) {
-      // setPathInstance(result.outline);
-      // TODO: WHY IS PLOTBOILERPLATE NOT RECOGNIZING THE BEZIER INSTANCE???!
-      // temp solution: serialize and de-serialize :/
-      // appContext.setPathInstance(BezierPath.fromJSON(result.outline.toJSON()));
-      appContext.setPathInstanceByJSON(result.outline.toJSON());
-      appContext.config.bendAngle = result.bendAngle;
-      appContext.rebuild();
-    };
     var dildoRandomizerDialog = new DildoRandomizerDialog(appContext.pb, appContext.modal, appContext.config, {
-      outlineChangedCallback: setRandomizedResult,
+      outlineChangedCallback: appContext.setRandomizedResult,
       onPathVisibilityChanged: appContext.handlePathVisibilityChanged,
       getBezierJSON: appContext.getBezierJSON,
       getSculptmapDataURL: appContext.getSculptmapDataURL,

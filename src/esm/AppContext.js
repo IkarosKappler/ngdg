@@ -32,6 +32,10 @@ import { acquireOptimalView } from "./appcontext/acquireOptimalView";
 import { acquireOptimalPathView } from "./appcontext/acquireOptimalPathView";
 import { setDefaultPathInstance } from "./appcontext/setDefaultPathInstance";
 import { getBezierJSON } from "./appcontext/getBezierJSON";
+// import { UIStats } from "uistats-typescript";
+import { filedropHandler } from "./appcontext/filedropHandler";
+import { retrieveFromLocalStorage } from "./appcontext/retrieveFromLocalStorage";
+import { setRandomizedResult } from "./appcontext/setRandomizedResult";
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 export class AppContext {
     constructor(options) {
@@ -43,7 +47,7 @@ export class AppContext {
         this.isMobile = detectMobileMode(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
         this.config = initConfig(this);
-        this.stats = initStats(options.makeUIStats);
+        this.stats = initStats();
         // TODO: Move to appcontex/...
         // +---------------------------------------------------------------------------------
         // | Each outline vertex requires a drag (end) listener. We need this to update
@@ -153,6 +157,12 @@ export class AppContext {
         this.acquireOptimalPathView = acquireOptimalPathView(this);
         this.setDefaultPathInstance = setDefaultPathInstance(this);
         this.getBezierJSON = getBezierJSON(this);
+        this.setRandomizedResult = setRandomizedResult(this);
+        // +---------------------------------------------------------------------------------
+        // | Handle file drop.
+        // +-------------------------------
+        const filedrop = filedropHandler(this);
+        retrieveFromLocalStorage(this);
     }
 }
 //# sourceMappingURL=AppContext.js.map

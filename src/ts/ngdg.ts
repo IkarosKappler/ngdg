@@ -46,6 +46,9 @@ import { updatePathResizer } from "./appcontext/updatePathResizer";
 import { updateSilhouette } from "./appcontext/updateSilhouette";
 import { getBezierJSON } from "./appcontext/getBezierJSON";
 import { scaleBounds } from "./scaleBounds";
+import { filedropHandler } from "./appcontext/filedropHandler";
+import { retrieveFromLocalStorage } from "./appcontext/retrieveFromLocalStorage";
+import { setRandomizedResult } from "./appcontext/setRandomizedResult";
 // import * as UIStats from "uistats-typescript";
 
 export const ngdg = {
@@ -62,6 +65,7 @@ export const ngdg = {
   removePathListeners,
   acquireOptimalPathView,
   exportSTL,
+  filedropHandler,
   fitViewToSilhouette,
   getBezierJSON,
   getSculptmapDataURL,
@@ -71,8 +75,10 @@ export const ngdg = {
   insertPathJSON,
   loadPathJSON,
   rebuild,
+  retrieveFromLocalStorage,
   setDefaultPathInstance,
   setPathInstance,
+  setRandomizedResult,
   showPathJSON,
   updateBumpmapPreview,
   updateModifiers,

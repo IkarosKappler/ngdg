@@ -23,7 +23,7 @@ import { fitViewToSilhouette } from "./appcontext/fitViewToSilhouette";
 import { acquireOptimalView } from "./appcontext/acquireOptimalView";
 import { acquireOptimalPathView } from "./appcontext/acquireOptimalPathView";
 import { setDefaultPathInstance } from "./appcontext/setDefaultPathInstance";
-import { UIStats } from "uistats-typescript";
+import { setRandomizedResult } from "./appcontext/setRandomizedResult";
 export declare class AppContext {
     readonly DEFAULT_BEZIER_COLOR: string;
     readonly DEFAULT_BEZIER_HANDLE_LINE_COLOR: string;
@@ -58,7 +58,8 @@ export declare class AppContext {
     readonly acquireOptimalView: ReturnType<typeof acquireOptimalView>;
     readonly acquireOptimalPathView: ReturnType<typeof acquireOptimalPathView>;
     readonly setDefaultPathInstance: ReturnType<typeof setDefaultPathInstance>;
-    readonly getBezierJSON: () => void;
+    readonly getBezierJSON: () => string;
+    readonly setRandomizedResult: ReturnType<typeof setRandomizedResult>;
     baseShape: Polygon;
     outline: BezierPath;
     bezierResizer: BezierResizeHelper;
@@ -76,7 +77,6 @@ export declare class AppContext {
         makeSTLExporter: () => STLExporter;
         makeOrbitControls: (camera: THREE.Camera, domElement: HTMLCanvasElement) => any;
         makeModal: () => Modal;
-        makeUIStats: (stats: object) => UIStats;
         saveAs: (Blob: any, filename: any) => void;
     });
 }
