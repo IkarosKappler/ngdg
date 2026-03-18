@@ -2,11 +2,9 @@
  * An AppContext function: set the global outline to use.
  *
  * @date 2026-03-13 Refactored from the global `index.js`.
- * @param newOutline
  */
 
-import { BezierPath } from "plotboilerplate/src/cjs/BezierPath";
-import { BezierPathInteractionHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper";
+import { BezierPath, BezierPathInteractionHelper } from "plotboilerplate";
 import { AppContext } from "../AppContext";
 
 export const addPathListeners = (appContex: AppContext) => {

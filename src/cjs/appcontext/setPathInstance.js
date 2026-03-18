@@ -6,7 +6,6 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setPathInstance = void 0;
-var BezierPathInteractionHelper_1 = require("plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper");
 var plotboilerplate_1 = require("plotboilerplate");
 var setPathInstance = function (appContext) {
     return function (newOutline) {
@@ -21,7 +20,7 @@ var setPathInstance = function (appContext) {
         // +---------------------------------------------------------------------------------
         // | Install a BÃ©zier interaction helper.
         // +-------------------------------
-        new BezierPathInteractionHelper_1.BezierPathInteractionHelper(appContext.pb, [appContext.outline], {
+        new plotboilerplate_1.BezierPathInteractionHelper(appContext.pb, [appContext.outline], {
             maxDetectDistance: 32.0,
             autoAdjustPaths: true,
             allowPathRemoval: false, // It is not alowed to remove the outline path

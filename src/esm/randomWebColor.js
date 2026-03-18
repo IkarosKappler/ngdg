@@ -10,9 +10,7 @@
  * @modified 2021-08-29 Ported to Typescript from vanilla Js.
  * @version  1.0.1
  */
-import { WebColorsMalachite } from "plotboilerplate/src/esm/utils/WebColorsMalachite";
-import { WebColorsContrast } from "plotboilerplate/src/esm/utils/WebColorsContrast";
-import { WebColors } from "plotboilerplate/src/esm/utils/WebColors";
+import { WebColorsMalachite, WebColorsContrast, WebColors } from "plotboilerplate";
 /**
  * Pick a color from the WebColors array.
  *

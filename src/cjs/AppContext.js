@@ -6,9 +6,6 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppContext = void 0;
-// import { BezierPath, Bounds, Polygon, Vertex } from "plotboilerplate";
-var Params_1 = require("plotboilerplate/src/esm/utils/Params");
-var gup_1 = require("plotboilerplate/src/esm/utils/gup");
 var detectDarkMode_1 = require("./detectDarkMode");
 var detectMobileMode_1 = require("./detectMobileMode");
 var plotboilerplate_1 = require("plotboilerplate");
@@ -45,8 +42,8 @@ var AppContext = /** @class */ (function () {
         var _this = this;
         this.bezierDistanceT = 0;
         this.bezierDistanceLine = null;
-        this.GUP = (0, gup_1.gup)();
-        this.params = new Params_1.Params(this.GUP);
+        this.GUP = (0, plotboilerplate_1.gup)();
+        this.params = new plotboilerplate_1.Params(this.GUP);
         this.isDarkmode = (0, detectDarkMode_1.detectDarkMode)(this.GUP);
         this.isMobile = (0, detectMobileMode_1.detectMobileMode)(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);

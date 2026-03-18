@@ -7,13 +7,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.filedropHandler = void 0;
 var plotboilerplate_1 = require("plotboilerplate");
-var FileDrop_1 = require("plotboilerplate/src/cjs/utils/io/FileDrop");
 var filedropHandler = function (appContext) {
     // +---------------------------------------------------------------------------------
     // | Load the config from the local storage.
     // | Handle file drop.
     // +-------------------------------
-    var fileDrop = new FileDrop_1.FileDrop(appContext.pb.eventCatcher);
+    var fileDrop = new plotboilerplate_1.FileDrop(appContext.pb.eventCatcher);
     fileDrop.onFileJSONDropped(function (jsonObject) {
         try {
             appContext.setPathInstance(plotboilerplate_1.BezierPath.fromArray(jsonObject));

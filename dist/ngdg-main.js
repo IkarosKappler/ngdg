@@ -16,12 +16,9 @@
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppContext = void 0;
-// import { BezierPath, Bounds, Polygon, Vertex } from "plotboilerplate";
-var Params_1 = __webpack_require__(/*! plotboilerplate/src/esm/utils/Params */ "./node_modules/plotboilerplate/src/esm/utils/Params.js");
-var gup_1 = __webpack_require__(/*! plotboilerplate/src/esm/utils/gup */ "./node_modules/plotboilerplate/src/esm/utils/gup.js");
 var detectDarkMode_1 = __webpack_require__(/*! ./detectDarkMode */ "./src/cjs/detectDarkMode.js");
 var detectMobileMode_1 = __webpack_require__(/*! ./detectMobileMode */ "./src/cjs/detectMobileMode.js");
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var setPathInstance_1 = __webpack_require__(/*! ./appcontext/setPathInstance */ "./src/cjs/appcontext/setPathInstance.js");
 var addRemovePathListeners_1 = __webpack_require__(/*! ./appcontext/addRemovePathListeners */ "./src/cjs/appcontext/addRemovePathListeners.js");
 var updatePathResizer_1 = __webpack_require__(/*! ./appcontext/updatePathResizer */ "./src/cjs/appcontext/updatePathResizer.js");
@@ -55,8 +52,8 @@ var AppContext = /** @class */ (function () {
         var _this = this;
         this.bezierDistanceT = 0;
         this.bezierDistanceLine = null;
-        this.GUP = (0, gup_1.gup)();
-        this.params = new Params_1.Params(this.GUP);
+        this.GUP = (0, plotboilerplate_1.gup)();
+        this.params = new plotboilerplate_1.Params(this.GUP);
         this.isDarkmode = (0, detectDarkMode_1.detectDarkMode)(this.GUP);
         this.isMobile = (0, detectMobileMode_1.detectMobileMode)(this.params);
         this.isLocalstorageDisabled = this.params.getBoolean("disableLocalStorage", false);
@@ -207,7 +204,7 @@ exports.AppContext = AppContext;
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BezierResizeHelper = void 0;
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 // A closure to hide helper functions.
 var BezierResizeHelper = /** @class */ (function () {
     /**
@@ -940,7 +937,7 @@ exports.DildoGeometry = void 0;
 // + Move vertex-creating helper functions out of the class
 // + Move face-creating helper functions out of the class
 // + Move UV-creating helper functions out of the class
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
 var earcut_typescript_1 = __webpack_require__(/*! earcut-typescript */ "./node_modules/earcut-typescript/src/cjs/earcut.js");
@@ -1702,8 +1699,8 @@ exports.DildoMaterials = (function () {
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DildoRandomizer = void 0;
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
-var plotboilerplate_2 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
+var plotboilerplate_2 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var DildoRandomizer = /** @class */ (function () {
     function DildoRandomizer(bounds, minPathSegments, maxPathSegments, minBendAngle, maxBendAngle) {
         this.bounds = bounds;
@@ -1828,7 +1825,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DildoSilhouette2D = void 0;
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var GeometryGenerationHelpers_1 = __webpack_require__(/*! ./GeometryGenerationHelpers */ "./src/cjs/GeometryGenerationHelpers.js");
 var DildoGeometry_1 = __webpack_require__(/*! ./DildoGeometry */ "./src/cjs/DildoGeometry.js");
 var DildoSilhouette2D = /** @class */ (function () {
@@ -1901,7 +1898,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GeometryGenerationHelpers = void 0;
 var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
 var earcut_typescript_1 = __webpack_require__(/*! earcut-typescript */ "./node_modules/earcut-typescript/src/cjs/earcut.js");
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var threejs_slice_geometry_typescript_1 = __webpack_require__(/*! threejs-slice-geometry-typescript */ "./node_modules/threejs-slice-geometry-typescript/src/esm/index.js");
 var PlaneMeshIntersection_1 = __webpack_require__(/*! ./PlaneMeshIntersection */ "./src/cjs/PlaneMeshIntersection.js");
 var clearDuplicateVertices3_1 = __webpack_require__(/*! ./clearDuplicateVertices3 */ "./src/cjs/clearDuplicateVertices3.js");
@@ -3256,7 +3253,7 @@ exports.SculptMap = SculptMap;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UVHelpers = void 0;
 var THREE = __webpack_require__(/*! three */ "./node_modules/three/build/three.cjs");
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 exports.UVHelpers = {
     /**
      * Helper function to create triangular UV Mappings for a triangle. The passed shape bounds
@@ -3403,22 +3400,21 @@ exports.acquireOptimalView = acquireOptimalView;
  * An AppContext function: set the global outline to use.
  *
  * @date 2026-03-13 Refactored from the global `index.js`.
- * @param newOutline
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.removePathListeners = exports.addPathListeners = void 0;
-var BezierPathInteractionHelper_1 = __webpack_require__(/*! plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper */ "./node_modules/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var addPathListeners = function (appContex) {
     return function (path) {
-        BezierPathInteractionHelper_1.BezierPathInteractionHelper.addPathVertexDragEndListeners(path, appContex.dragEndListener);
-        BezierPathInteractionHelper_1.BezierPathInteractionHelper.addPathVertexDragListeners(path, appContex.dragListener);
+        plotboilerplate_1.BezierPathInteractionHelper.addPathVertexDragEndListeners(path, appContex.dragEndListener);
+        plotboilerplate_1.BezierPathInteractionHelper.addPathVertexDragListeners(path, appContex.dragListener);
     };
 };
 exports.addPathListeners = addPathListeners;
 var removePathListeners = function (appContex) {
     return function (path) {
-        BezierPathInteractionHelper_1.BezierPathInteractionHelper.removePathVertexDragEndListeners(path, appContex.dragEndListener);
-        BezierPathInteractionHelper_1.BezierPathInteractionHelper.removePathVertexDragListeners(path, appContex.dragListener);
+        plotboilerplate_1.BezierPathInteractionHelper.removePathVertexDragEndListeners(path, appContex.dragEndListener);
+        plotboilerplate_1.BezierPathInteractionHelper.removePathVertexDragListeners(path, appContex.dragListener);
     };
 };
 exports.removePathListeners = removePathListeners;
@@ -3502,14 +3498,13 @@ exports.exportSTL = exportSTL;
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.filedropHandler = void 0;
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
-var FileDrop_1 = __webpack_require__(/*! plotboilerplate/src/cjs/utils/io/FileDrop */ "./node_modules/plotboilerplate/src/cjs/utils/io/FileDrop.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var filedropHandler = function (appContext) {
     // +---------------------------------------------------------------------------------
     // | Load the config from the local storage.
     // | Handle file drop.
     // +-------------------------------
-    var fileDrop = new FileDrop_1.FileDrop(appContext.pb.eventCatcher);
+    var fileDrop = new plotboilerplate_1.FileDrop(appContext.pb.eventCatcher);
     fileDrop.onFileJSONDropped(function (jsonObject) {
         try {
             appContext.setPathInstance(plotboilerplate_1.BezierPath.fromArray(jsonObject));
@@ -3910,7 +3905,7 @@ exports.insertPathJSON = insertPathJSON;
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.loadPathJSON = void 0;
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var loadPathJSON = function (appContext) {
     return function (jsonData) {
         var newOutline = null;
@@ -4079,7 +4074,7 @@ exports.retrieveFromLocalStorage = retrieveFromLocalStorage;
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.setDefaultPathInstance = void 0;
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var ngdg_1 = __webpack_require__(/*! ../ngdg */ "./src/cjs/ngdg.js");
 var setDefaultPathInstance = function (appContext) {
     return function (doRebuild) {
@@ -4108,8 +4103,7 @@ exports.setDefaultPathInstance = setDefaultPathInstance;
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.setPathInstance = void 0;
-var BezierPathInteractionHelper_1 = __webpack_require__(/*! plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper */ "./node_modules/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js");
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var setPathInstance = function (appContext) {
     return function (newOutline) {
         if (typeof appContext.outline != "undefined") {
@@ -4123,7 +4117,7 @@ var setPathInstance = function (appContext) {
         // +---------------------------------------------------------------------------------
         // | Install a BÃ©zier interaction helper.
         // +-------------------------------
-        new BezierPathInteractionHelper_1.BezierPathInteractionHelper(appContext.pb, [appContext.outline], {
+        new plotboilerplate_1.BezierPathInteractionHelper(appContext.pb, [appContext.outline], {
             maxDetectDistance: 32.0,
             autoAdjustPaths: true,
             allowPathRemoval: false, // It is not alowed to remove the outline path
@@ -4373,7 +4367,7 @@ exports.updateModifiers = updateModifiers;
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.updateOutlineStats = void 0;
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var Rulers_1 = __webpack_require__(/*! ../Rulers */ "./src/cjs/Rulers.js");
 var updateOutlineStats = function (appContext) {
     return function () {
@@ -4800,7 +4794,7 @@ globalThis.ngdg = (__webpack_require__(/*! ./ngdg */ "./src/cjs/ngdg.js").ngdg);
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getImageFromCanvas = void 0;
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var getImageFromCanvas = function (canvas, context, bounds) {
     var w = canvas.width;
     var h = canvas.height;
@@ -5108,9 +5102,7 @@ exports.ngdg = {
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.randomWebColor = void 0;
-var WebColorsMalachite_1 = __webpack_require__(/*! plotboilerplate/src/esm/utils/WebColorsMalachite */ "./node_modules/plotboilerplate/src/esm/utils/WebColorsMalachite.js");
-var WebColorsContrast_1 = __webpack_require__(/*! plotboilerplate/src/esm/utils/WebColorsContrast */ "./node_modules/plotboilerplate/src/esm/utils/WebColorsContrast.js");
-var WebColors_1 = __webpack_require__(/*! plotboilerplate/src/esm/utils/WebColors */ "./node_modules/plotboilerplate/src/esm/utils/WebColors.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 /**
  * Pick a color from the WebColors array.
  *
@@ -5121,27 +5113,27 @@ var WebColors_1 = __webpack_require__(/*! plotboilerplate/src/esm/utils/WebColor
  **/
 var randomWebColor = function (index, colorSet) {
     if (typeof index === "undefined") {
-        var maxLen = Math.max(typeof WebColorsMalachite_1.WebColorsMalachite !== "undefined" ? WebColorsMalachite_1.WebColorsMalachite.length : 0, typeof WebColorsContrast_1.WebColorsContrast !== "undefined" ? WebColorsContrast_1.WebColorsContrast.length : 0, typeof WebColors_1.WebColors !== "undefined" ? WebColors_1.WebColors.length : 0);
+        var maxLen = Math.max(typeof plotboilerplate_1.WebColorsMalachite !== "undefined" ? plotboilerplate_1.WebColorsMalachite.length : 0, typeof plotboilerplate_1.WebColorsContrast !== "undefined" ? plotboilerplate_1.WebColorsContrast.length : 0, typeof plotboilerplate_1.WebColors !== "undefined" ? plotboilerplate_1.WebColors.length : 0);
         index = Math.round(Math.random() * maxLen);
     }
     switch (colorSet) {
         case "Malachite":
-            if (typeof WebColorsMalachite_1.WebColorsMalachite !== "undefined") {
-                return WebColorsMalachite_1.WebColorsMalachite[index % WebColorsMalachite_1.WebColorsMalachite.length].cssRGB();
+            if (typeof plotboilerplate_1.WebColorsMalachite !== "undefined") {
+                return plotboilerplate_1.WebColorsMalachite[index % plotboilerplate_1.WebColorsMalachite.length].cssRGB();
             }
             else {
                 console.warn("You decided to use the 'WebColorsMalachite' color palette but it is not installed. Falling back.");
             }
         case "Mixed":
-            if (typeof WebColorsContrast_1.WebColorsContrast !== "undefined") {
-                return WebColorsContrast_1.WebColorsContrast[index % WebColorsContrast_1.WebColorsContrast.length].cssRGB();
+            if (typeof plotboilerplate_1.WebColorsContrast !== "undefined") {
+                return plotboilerplate_1.WebColorsContrast[index % plotboilerplate_1.WebColorsContrast.length].cssRGB();
             }
             else {
                 console.warn("You decided to use the 'WebColorsContrast' color palette but it is not installed. Falling back.");
             }
         case "WebColors":
         default:
-            return WebColors_1.WebColors[index % WebColors_1.WebColors.length].cssRGB();
+            return plotboilerplate_1.WebColors[index % plotboilerplate_1.WebColors.length].cssRGB();
     }
 };
 exports.randomWebColor = randomWebColor;
@@ -5163,7 +5155,7 @@ exports.randomWebColor = randomWebColor;
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.scaleBounds = void 0;
-var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/esm/index.js");
+var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 // +---------------------------------------------------------------------------------
 // | Scale a given Bounds instance to a new size (from its center).
 // +-------------------------------

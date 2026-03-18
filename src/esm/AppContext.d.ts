@@ -3,8 +3,7 @@
  *
  * @date 2026-03-13
  */
-import { Params } from "plotboilerplate/src/esm/utils/Params";
-import { BezierPath, Line, PlotBoilerplate, Polygon } from "plotboilerplate";
+import { BezierPath, Line, PlotBoilerplate, Polygon, Params } from "plotboilerplate";
 import { BezierResizeHelper } from "./BezierResizeHelper";
 import { initConfig } from "./appcontext/initConfig";
 import { DildoSilhouette2D } from "./DildoSilhouette2D";

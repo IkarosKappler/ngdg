@@ -3,12 +3,9 @@
  *
  * @date 2026-03-13
  */
-// import { BezierPath, Bounds, Polygon, Vertex } from "plotboilerplate";
-import { Params } from "plotboilerplate/src/esm/utils/Params";
-import { gup } from "plotboilerplate/src/esm/utils/gup";
 import { detectDarkMode } from "./detectDarkMode";
 import { detectMobileMode } from "./detectMobileMode";
-import { BezierPath, PlotBoilerplate } from "plotboilerplate";
+import { BezierPath, PlotBoilerplate, Params, gup } from "plotboilerplate";
 import { setPathInstance } from "./appcontext/setPathInstance";
 import { addPathListeners, removePathListeners } from "./appcontext/addRemovePathListeners";
 import { updatePathResizer } from "./appcontext/updatePathResizer";

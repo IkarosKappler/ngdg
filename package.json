@@ -17,7 +17,7 @@
     "earcut-typescript": "^2.2.3",
     "eslint": "^7.32.0",
     "path": "^0.12.7",
-    "plotboilerplate": "^1.26.0",
+    "plotboilerplate": "^1.27.1",
     "source-map-loader": "^3.0.1",
     "three": "^0.137.5",
     "three-geometry-hellfix": "^1.1.0",

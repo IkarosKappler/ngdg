@@ -13,9 +13,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.randomWebColor = void 0;
-var WebColorsMalachite_1 = require("plotboilerplate/src/esm/utils/WebColorsMalachite");
-var WebColorsContrast_1 = require("plotboilerplate/src/esm/utils/WebColorsContrast");
-var WebColors_1 = require("plotboilerplate/src/esm/utils/WebColors");
+var plotboilerplate_1 = require("plotboilerplate");
 /**
  * Pick a color from the WebColors array.
  *
@@ -26,27 +24,27 @@ var WebColors_1 = require("plotboilerplate/src/esm/utils/WebColors");
  **/
 var randomWebColor = function (index, colorSet) {
     if (typeof index === "undefined") {
-        var maxLen = Math.max(typeof WebColorsMalachite_1.WebColorsMalachite !== "undefined" ? WebColorsMalachite_1.WebColorsMalachite.length : 0, typeof WebColorsContrast_1.WebColorsContrast !== "undefined" ? WebColorsContrast_1.WebColorsContrast.length : 0, typeof WebColors_1.WebColors !== "undefined" ? WebColors_1.WebColors.length : 0);
+        var maxLen = Math.max(typeof plotboilerplate_1.WebColorsMalachite !== "undefined" ? plotboilerplate_1.WebColorsMalachite.length : 0, typeof plotboilerplate_1.WebColorsContrast !== "undefined" ? plotboilerplate_1.WebColorsContrast.length : 0, typeof plotboilerplate_1.WebColors !== "undefined" ? plotboilerplate_1.WebColors.length : 0);
         index = Math.round(Math.random() * maxLen);
     }
     switch (colorSet) {
         case "Malachite":
-            if (typeof WebColorsMalachite_1.WebColorsMalachite !== "undefined") {
-                return WebColorsMalachite_1.WebColorsMalachite[index % WebColorsMalachite_1.WebColorsMalachite.length].cssRGB();
+            if (typeof plotboilerplate_1.WebColorsMalachite !== "undefined") {
+                return plotboilerplate_1.WebColorsMalachite[index % plotboilerplate_1.WebColorsMalachite.length].cssRGB();
             }
             else {
                 console.warn("You decided to use the 'WebColorsMalachite' color palette but it is not installed. Falling back.");
             }
         case "Mixed":
-            if (typeof WebColorsContrast_1.WebColorsContrast !== "undefined") {
-                return WebColorsContrast_1.WebColorsContrast[index % WebColorsContrast_1.WebColorsContrast.length].cssRGB();
+            if (typeof plotboilerplate_1.WebColorsContrast !== "undefined") {
+                return plotboilerplate_1.WebColorsContrast[index % plotboilerplate_1.WebColorsContrast.length].cssRGB();
             }
             else {
                 console.warn("You decided to use the 'WebColorsContrast' color palette but it is not installed. Falling back.");
             }
         case "WebColors":
         default:
-            return WebColors_1.WebColors[index % WebColors_1.WebColors.length].cssRGB();
+            return plotboilerplate_1.WebColors[index % plotboilerplate_1.WebColors.length].cssRGB();
     }
 };
 exports.randomWebColor = randomWebColor;

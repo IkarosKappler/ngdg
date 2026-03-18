@@ -4,10 +4,9 @@
  * @date 2026-03-13 Refactored from the global `index.js`.
  */
 
-import { BezierPath } from "plotboilerplate/src/cjs/BezierPath";
-import { BezierPathInteractionHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper";
+import { BezierPath, BezierPathInteractionHelper, Line } from "plotboilerplate";
+
 import { AppContext } from "../AppContext";
-import { Line } from "plotboilerplate";
 
 export const setPathInstance = (appContext: AppContext) => {
   return (newOutline: BezierPath) => {

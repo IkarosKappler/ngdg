@@ -3,8 +3,7 @@
  *
  * @date 2026-03-16 Refactored from the global `index.js`.
  */
-import { BezierPath } from "plotboilerplate";
-import { FileDrop } from "plotboilerplate/src/cjs/utils/io/FileDrop";
+import { BezierPath, FileDrop } from "plotboilerplate";
 export const filedropHandler = (appContext) => {
     // +---------------------------------------------------------------------------------
     // | Load the config from the local storage.
