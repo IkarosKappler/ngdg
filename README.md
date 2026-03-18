@@ -26,7 +26,7 @@ Because 3D printing, 3D web, and dildos are fun.
 - [x] Create a Typescript port from mapbox/earcut.
 - [x] Create a Typescript port from tdhooper/threejs-slice-geometry.
 - [x] Add a proper Typescript interface for all available dildo generation options.
-- [ ] STL-Export: merge all exportable geometries together and export as one.
+- [x] STL-Export: merge all exportable geometries together and export as one.
 - [ ] Add a 'Material' switch/tab.
 - [ ] Update the package.json's copy scripts (currently using OS dependent `cp` command). Better use an npm compatible copy here.
 - [x] Define one global library export to avoid environment pollution.
@@ -36,13 +36,13 @@ Because 3D printing, 3D web, and dildos are fun.
 - [x] Add a session storage for the bend setting.
 - [x] Make the Bézier curve more look like in the old version.
 - [x] Add horizonal and vertical scale like in the old version.
-- [ ] Fix the string.substr deprecation issue in `isMobileDevice`.
+- [x] Fix the string.substr deprecation issue in `isMobileDevice`.
 - [x] Add sculptmaps.
-- [ ] Show full 2D outline preview (with bend).
+- [x] Show full 2D outline preview (with bend).
 - [ ] Convert all `var` to `const` where possible.
 - [ ] Add proper and complete TSDoc comments.
-- [ ] Upgrade to Typescript 5.
-- [ ] Install latest Plotboilerplate 1.26.0 (requires Typescript 5).
+- [x] Upgrade to Typescript 5.
+- [x] Install Plotboilerplate 1.26.0 or higher (requires Typescript 5).
 
 ### LocalStorage
 
