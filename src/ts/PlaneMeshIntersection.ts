@@ -13,7 +13,6 @@
  */
 
 import * as THREE from "three";
-import { IDildoGeometry } from "./interfaces";
 import { Gmetry } from "three-geometry-hellfix";
 import { DildoGeometry } from "./DildoGeometry";
 

@@ -1,0 +1,1 @@
+{"version":3,"file":"getBezierJSON.js","sourceRoot":"","sources":["../../ts/appcontext/getBezierJSON.ts"],"names":[],"mappings":";AAAA;;;;GAIG;;;AAII,IAAM,aAAa,GAAG,UAAC,UAAsB;IAClD,OAAO,UAAC,YAAsB;QAC5B,OAAO,UAAU,CAAC,OAAO,CAAC,CAAC,CAAC,UAAU,CAAC,OAAO,CAAC,MAAM,CAAC,YAAY,CAAC,CAAC,CAAC,CAAC,IAAI,CAAC;IAC7E,CAAC,CAAC;AACJ,CAAC,CAAC;AAJW,QAAA,aAAa,iBAIxB"}

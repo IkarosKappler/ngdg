@@ -8,14 +8,15 @@
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
  * @modified 2022-02-03 Added `clearResults` function.
  * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version  1.2.3
+ * @modified 2026-02-26 The `baseShape` param is now mandatory.
+ * @version  1.3.0
  **/
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper";
 import { STLExporter } from "three/examples/jsm/exporters/STLExporter";
-import { /* DildoBaseClass, */ DildoGeometry } from "./DildoGeometry";
+import { DildoGeometry } from "./DildoGeometry";
 import { DildoMaterials } from "./DildoMaterials";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import {
@@ -24,8 +25,7 @@ import {
   ExportOptions,
   ExtendedDildoOptions,
   IBumpmap,
-  IDildoGeneration,
-  IDildoGeometry
+  IDildoGeneration
 } from "./interfaces";
 import { mergeGeometries } from "./mergeGeometries";
 import { PathFinder } from "./PathFinder";
@@ -43,8 +43,8 @@ import {
   KEY_SLICED_MESH_RIGHT,
   KEY_SLICED_MESH_LEFT
 } from "./constants";
-import { Polygon } from "plotboilerplate";
-import { computeVertexNormals } from "./computeVertexNormals";
+import { Polygon, XYDimension } from "plotboilerplate";
+// import { computeVertexNormals } from "./computeVertexNormals";
 import { BumpMapper } from "./BumpMapper";
 import { Gmetry } from "three-geometry-hellfix";
 
@@ -67,6 +67,10 @@ export class DildoGeneration implements IDildoGeneration {
 
   renderer: THREE.WebGLRenderer;
   controls: OrbitControls;
+
+  // The first level computed dildo geometry. Stored here for later use.
+  // (like computing a sculpt map)
+  primaryDildoGeometry: DildoGeometry;
 
   // Cache all geometries for later removal
   geometries: Array<THREE.Object3D>;
@@ -142,8 +146,20 @@ export class DildoGeneration implements IDildoGeneration {
    * Resize the 3d canvas to fit its container.
    */
   resizeCanvas() {
-    let width: number = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    let height: number = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    console.log("resizeCanvas");
+
+    const space: XYDimension = this.getAvailableContainerSpace();
+    // _self.canvas.style.width = (_self.config.canvasWidthFactor ?? 1.0) * space.width + "px";
+    // _self.canvas.style.height = (_self.config.canvasHeightFactor ?? 1.0) * space.height + "px";
+    // _self.canvas.style.top = "";
+    // _self.canvas.style.left = "";
+
+    // let width: number = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    // let height: number = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    let width = space.width;
+    let height = space.height;
+    console.log("resizeCanvas width", width, " height", height);
+
     this.canvas.width = width;
     this.canvas.height = height;
     this.canvas.style.width = "" + width + "px";
@@ -151,8 +167,37 @@ export class DildoGeneration implements IDildoGeneration {
     this.canvas.setAttribute("width", "" + width + "px");
     this.canvas.setAttribute("height", height + "px");
     this.renderer.setSize(width, height);
-    // What am I doing here?
-    this.camera.setViewOffset(width, height, width / 4, height / 20, width, height);
+    // What am I doing here? -> Space for bending
+    this.camera.setViewOffset(width, height, width / 25, height / 40, width, height);
+  }
+
+  // TODO: this was moved to the DOM utils
+  private getAvailableContainerSpace(): XYDimension {
+    const container: HTMLElement = this.canvas.parentNode as unknown as HTMLElement; // Element | Document | DocumentFragment;
+    // _self.canvas.style.display = "none";
+    var padding: number = this.getFProp(container, "padding") || 0,
+      border: number = this.getFProp(this.canvas, "border-width") || 0,
+      pl: number = this.getFProp(container, "padding-left") || padding,
+      pr: number = this.getFProp(container, "padding-right") || padding,
+      pt: number = this.getFProp(container, "padding-top") || padding,
+      pb: number = this.getFProp(container, "padding-bottom") || padding,
+      bl: number = this.getFProp(this.canvas, "border-left-width") || border,
+      br: number = this.getFProp(this.canvas, "border-right-width") || border,
+      bt: number = this.getFProp(this.canvas, "border-top-width") || border,
+      bb: number = this.getFProp(this.canvas, "border-bottom-width") || border;
+    var w: number = container.clientWidth;
+    var h: number = container.clientHeight;
+    // _self.canvas.style.display = "block";
+    return { width: w - pl - pr - bl - br, height: h - pt - pb - bt - bb };
+  }
+
+  /**
+   * Internal helper function used to get 'float' properties from elements.
+   * Used to determine border withs and paddings that were defined using CSS.
+   */
+  // TODO: this was moved to the DOM utils
+  private getFProp(elem: HTMLElement | SVGElement, propName: string): number {
+    return parseFloat(globalThis.getComputedStyle(elem, null).getPropertyValue(propName));
   }
 
   /**
@@ -173,12 +218,7 @@ export class DildoGeneration implements IDildoGeneration {
     this.removeCachedGeometries();
     this.clearResults();
 
-    const baseRadius: number = options.outline.getBounds().width;
-    const baseShape: Polygon = GeometryGenerationHelpers.mkCircularPolygon(
-      baseRadius,
-      options.shapeSegmentCount,
-      options.baseShapeExcentricity
-    );
+    const baseShape: Polygon = options.baseShape;
     const useBumpmap: boolean = typeof options.useBumpmap !== "undefined" ? options.useBumpmap : false;
     // const bumpmapPath = "./assets/img/bumpmap.png";
     // const bumpmapTexture: THREE.Texture | null = useBumpmap ? DildoMaterials.loadTextureImage(bumpmapPath) : null;
@@ -186,6 +226,8 @@ export class DildoGeneration implements IDildoGeneration {
     const dildoGeometry: DildoGeometry = new DildoGeometry(
       Object.assign({ baseShape: baseShape /*, bumpmapTexture: bumpmapTexture */ }, options)
     );
+    // Store for later use
+    this.primaryDildoGeometry = dildoGeometry;
     const useTextureImage: boolean = options.useTextureImage && typeof options.textureImagePath !== "undefined";
     const textureImagePath: string = typeof options.textureImagePath !== "undefined" ? options.textureImagePath : null;
     const doubleSingleSide: THREE.Side =

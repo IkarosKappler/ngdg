@@ -19,7 +19,7 @@
 
 import { BezierPath, Bounds, Polygon, Vertex } from "plotboilerplate";
 import * as THREE from "three";
-import { ExtendedDildoOptions } from "./interfaces";
+import { DildoGeometryOptions } from "./interfaces";
 import { GeometryGenerationHelpers } from "./GeometryGenerationHelpers";
 import { earcut } from "earcut-typescript";
 import { UVHelpers } from "./UVHelpers";
@@ -57,7 +57,7 @@ export class DildoGeometry extends Gmetry {
    * @param {boolean} options.isBending - Switch bending on/off no matter what the bend angle says.
    * @param {boolean} options.makeHollow - Make a hollow mold.
    **/
-  constructor(options: ExtendedDildoOptions) {
+  constructor(options: DildoGeometryOptions) {
     super();
     // TODO: verify
     Gmetry.call(this);
@@ -100,6 +100,34 @@ export class DildoGeometry extends Gmetry {
   }
 
   /**
+   * Calculate the bounding box of this geometry.
+   *
+   * @method getBounds
+   * @instance
+   * @memberof DildoGeometry
+   * @return {THREE.Box3}
+   */
+  getBounds(): THREE.Box3 {
+    return new THREE.Box3().setFromPoints(this.vertices);
+  }
+
+  getMatrixHeight(): number {
+    return this.vertexMatrix.length;
+  }
+
+  getMatrixWidth(): number {
+    if (!this.vertexMatrix || this.vertexMatrix.length === 0) {
+      return 0;
+    }
+    return this.vertexMatrix[0].length;
+  }
+
+  getVertexAt(xCoord: number, yCoord: number): THREE.Vector3 {
+    const vertIndex = this.vertexMatrix[yCoord][xCoord];
+    return this.vertices[vertIndex];
+  }
+
+  /**
    *
    * @param {Polygon} baseShape
    * @param {Vertex} shapeCenter
@@ -128,14 +156,14 @@ export class DildoGeometry extends Gmetry {
   ) {
     var outlineXPct = (outlineBounds.max.x - outlineVert.x) / outlineBounds.width;
     // TODO: are these is use?
-    var yMin, yMax;
+    // var yMin, yMax;
     for (var i = 0; i < baseShape.vertices.length; i++) {
       var shapeVert = baseShape.vertices[i];
       if (isBending) {
         var vert = new THREE.Vector3(shapeVert.x * outlineXPct, 0, shapeVert.y * outlineXPct);
         // Apply twist
         GeometryGenerationHelpers.rotateVertY(vert, shapeTwistAngle, 0, 0);
-        this._bendVertex(vert, bendAngle, arcRadius, heightT);
+        DildoGeometry._bendVertex(vert, bendAngle, arcRadius, heightT);
         vert.y += outlineBounds.max.y;
       } else {
         var vert = new THREE.Vector3(shapeVert.x * outlineXPct, outlineVert.y, shapeVert.y * outlineXPct);
@@ -144,10 +172,10 @@ export class DildoGeometry extends Gmetry {
       }
       this.vertexMatrix[sliceIndex][i] = this.vertices.length;
       this.vertices.push(vert);
-      if (sliceIndex == 0) {
-        if (i == 0) yMin = vert.y;
-        if (i + 1 == baseShape.vertices.length) yMax = vert.y;
-      }
+      // if (sliceIndex == 0) {
+      //   if (i == 0) yMin = vert.y;
+      //   if (i + 1 == baseShape.vertices.length) yMax = vert.y;
+      // }
     } // END for
   }
 
@@ -173,7 +201,7 @@ export class DildoGeometry extends Gmetry {
     var spineVert = shapeCenter.clone();
     if (isBending) {
       var vert = new THREE.Vector3(spineVert.x * outlineXPct, 0, spineVert.y * outlineXPct);
-      this._bendVertex(vert, bendAngle, arcRadius, heightT);
+      DildoGeometry._bendVertex(vert, bendAngle, arcRadius, heightT);
       vert.y += outlineBounds.max.y;
     } else {
       var vert = new THREE.Vector3(spineVert.x * outlineXPct, outlineVert.y, spineVert.y * outlineXPct);
@@ -214,7 +242,7 @@ export class DildoGeometry extends Gmetry {
       var shapeVert = baseShape.vertices[i];
       if (isBending) {
         var vert = new THREE.Vector3(shapeVert.x * outlineXPct, 0, shapeVert.y * outlineXPct);
-        this._bendVertex(vert, bendAngle, arcRadius, heightT);
+        DildoGeometry._bendVertex(vert, bendAngle, arcRadius, heightT);
         vert.y += outlineBounds.max.y;
       } else {
         var vert = new THREE.Vector3(shapeVert.x * outlineXPct, outlineVert.y, shapeVert.y * outlineXPct);
@@ -371,7 +399,7 @@ export class DildoGeometry extends Gmetry {
   _getTopVertex(outlineBounds: Bounds, isBending: boolean, bendAngle: number, arcRadius: number) {
     if (isBending) {
       var topPoint = new THREE.Vector3(0, 0, 0);
-      this._bendVertex(topPoint, bendAngle, arcRadius, 1.0);
+      DildoGeometry._bendVertex(topPoint, bendAngle, arcRadius, 1.0);
       topPoint.y += outlineBounds.max.y;
       return topPoint;
     } else {
@@ -399,7 +427,7 @@ export class DildoGeometry extends Gmetry {
    * @param {number} arcRadius
    * @param {number} heightT
    */
-  _bendVertex(vert: THREE.Vector3, bendAngle: number, arcRadius: number, heightT: number) {
+  static _bendVertex(vert: THREE.Vector3, bendAngle: number, arcRadius: number, heightT: number) {
     var axis = new THREE.Vector3(0, 0, 1);
     var angle = bendAngle * heightT;
     // Move slice point along radius, rotate, then move back
@@ -424,7 +452,7 @@ export class DildoGeometry extends Gmetry {
    * Build up the faces for this geometry.
    * @param {ExtendedDildoOptions} options
    */
-  private _buildFaces(options: ExtendedDildoOptions) {
+  private _buildFaces(options: DildoGeometryOptions) {
     const baseShape = options.baseShape;
     const outlineSegmentCount = options.outlineSegmentCount;
     const closeTop = Boolean(options.closeTop);
@@ -553,9 +581,9 @@ export class DildoGeometry extends Gmetry {
   /**
    * Build the texture UV mapping for all faces.
    *
-   * @param {ExtendedDildoOptions} options
+   * @param {DildoGeometryOptions} options
    */
-  private _buildUVMapping(options: ExtendedDildoOptions) {
+  private _buildUVMapping(options: DildoGeometryOptions) {
     var baseShape = options.baseShape;
     var outlineSegmentCount = options.outlineSegmentCount;
     var baseShapeSegmentCount = baseShape.vertices.length;
@@ -694,7 +722,7 @@ export class DildoGeometry extends Gmetry {
    *
    * @param {} options
    */
-  private _buildVertices(options: ExtendedDildoOptions) {
+  private _buildVertices(options: DildoGeometryOptions) {
     const baseShape: Polygon = options.baseShape;
     const outline: BezierPath = options.outline;
     const outlineSegmentCount: number = options.outlineSegmentCount;

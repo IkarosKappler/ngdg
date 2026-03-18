@@ -1,6 +1,6 @@
-# Codename NGDG
+# Dildo Generator: Next Generation
 
-Because 3d printing, web 3d, and dildos are fun.
+Because 3D printing, 3D web, and dildos are fun.
 
 ![Screenshot](screenshot.png)
 
@@ -26,29 +26,58 @@ Because 3d printing, web 3d, and dildos are fun.
 - [x] Create a Typescript port from mapbox/earcut.
 - [x] Create a Typescript port from tdhooper/threejs-slice-geometry.
 - [x] Add a proper Typescript interface for all available dildo generation options.
-- [ ] STL-Export: merge all exportable geometries together and export as one.
+- [x] STL-Export: merge all exportable geometries together and export as one.
 - [ ] Add a 'Material' switch/tab.
-- [ ] Update the package.json's copy scripts (using OS dependent `cp` command). Better use an npm compatible copy here.
+- [ ] Update the package.json's copy scripts (currently using OS dependent `cp` command). Better use an npm compatible copy here.
 - [x] Define one global library export to avoid environment pollution.
 - [x] Remove unused build libraries: babel, rollup.
 - [x] Remove old alloyfinger library. Replace by alloyfinger-typescript.
 - [x] Add a session storage for the current settings, especially the Bézier curve..
-- [ ] Add a session storage for the bend setting.
+- [x] Add a session storage for the bend setting.
 - [x] Make the Bézier curve more look like in the old version.
 - [x] Add horizonal and vertical scale like in the old version.
-- [ ] Fix the string.substr deprecation issue in `isMobileDevice`.
+- [x] Fix the string.substr deprecation issue in `isMobileDevice`.
+- [x] Add sculptmaps.
+- [x] Show full 2D outline preview (with bend).
+- [ ] Convert all `var` to `const` where possible.
+- [ ] Add proper and complete TSDoc comments.
+- [x] Upgrade to Typescript 5.
+- [x] Install Plotboilerplate 1.26.0 or higher (requires Typescript 5).
 
 ### LocalStorage
 
 The following config values are stored in the `LocalStorage`:
 
-- bezier_path
-- bend_angle
-- twist_angle");
-- base_shape_excentricity
+- `bezier_path`
+- `bend_angle`
+- `twist_angle`
+- `base_shape_excentricity`
+
+### Toggle 2d silhouette view
+
+http://localhost:8080/public/index-dev.html?drawRulers=0&drawResizeHandleLines=0&drawOutline=0&fillOutline=0&drawRaster=0&darkmode=0&fitViewToSilhouette=1
 
 ### Changelog
 
+- 2026-03-13
+  - Adding `AppContext` class fot wrapping all 'global' stuff together.
+  - Fixing a bug in the 3d canvas resizer (always used full window width).
+- 2026-03-08
+  - Adding a progressbar and infinite model generation to the randomizer.
+- 2026-03-06
+  - Fixing an error in the STL exportet (class path).
+  - Finalizing a simple sculpt map viewer.
+- 2026-03-02
+  - GUI: removed the GUI-Size-Toggler: is now part of PlotBoierplate.
+  - Replacing dat.gui by lil-gui.
+  - Replacing `bezier2polygoon()` by `BezierPath.getEvenDistributionVertices()`.
+- 2026-03-01
+  - Adding several new flags for drawing and hiding 2D element from the canvas.
+- 2026-02-25
+  - Fixing package json: replacing relative path for threejs-slice-geometry-typscript library by proper npm package.
+  - Adding class `SculptMap`.
+  - Adding `DildoGeometry.getBounds` method.
+  - Adding a dialog feature for displaying the sculpt map.
 - 2022-02-23
   - Added proper types to all function params.
 - 2022-02-22
@@ -117,13 +146,14 @@ The following config values are stored in the `LocalStorage`:
 
 Dependencies
 
-- HTML5 Canvas
-- HTML5 WebGL
+- [theejs](https://threejs.org/)
 - [threejs-slice-geometry](https://github.com/tdhooper/threejs-slice-geometry)
 
 ### Used Libraries
 
-- dat.gui
+- [~~dat.gui~~](https://github.com/dataarts/dat.gui)
+- [lil-gui](https://lil-gui.georgealways.com/)
+- [nice-forms.css](https://nielsvoogt.github.io/nice-forms.css/#installation)
 
 ### Credits
 

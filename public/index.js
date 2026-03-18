@@ -17,370 +17,38 @@
   "use strict";
 
   window.addEventListener("load", function () {
-    // Fetch the GET params
-    var GUP = gup();
-    var isDarkmode = detectDarkMode(GUP);
-
-    // All config params are optional.
-    var pb = new PlotBoilerplate(
-      PlotBoilerplate.utils.safeMergeByKeys(
-        {
-          canvas: document.getElementById("my-canvas"),
-          fullSize: true,
-          fitToParent: true,
-          scaleX: 1.0,
-          scaleY: 1.0,
-          rasterGrid: true,
-          drawOrigin: false,
-          rasterAdjustFactor: 2.0,
-          redrawOnResize: true,
-          defaultCanvasWidth: 1024,
-          defaultCanvasHeight: 768,
-          canvasWidthFactor: 1.0,
-          canvasHeightFactor: 1.0,
-          cssScaleX: 1.0,
-          cssScaleY: 1.0,
-          cssUniformScale: true,
-          autoAdjustOffset: true,
-          offsetAdjustXPercent: 50,
-          offsetAdjustYPercent: 50,
-          backgroundColor: isDarkmode ? "rgb(09, 12, 23)" : "#ffffff",
-          enableMouse: true,
-          enableKeys: true,
-          enableTouch: true,
-          enableSVGExport: false
-        },
-        GUP
-      )
-    );
-    pb.drawConfig.bezier.color = isDarkmode ? "rgba(128,128,128, 0.8)" : "#000000";
-    pb.drawConfig.bezier.lineWidth = 2.0;
-    pb.drawConfig.bezier.handleLine.color = isDarkmode ? "rgba(92,92,92,0.8)" : "rgba(0,0,0,0.35)";
-    pb.drawConfig.bezier.pathVertex.color = "#B400FF";
-    pb.drawConfig.bezier.pathVertex.fill = true;
-    pb.drawConfig.bezier.controlVertex.color = "#B8D438";
-    pb.drawConfig.bezier.controlVertex.fill = true;
-
-    var bezierDistanceT = 0;
-    var bezierDistanceLine = null;
-
-    // Note: bumpmapping is not yet finished.
-    var bumpmapPath = "./assets/img/bumpmap-blurred-2.png";
-    var bumpmap = null;
-    var bumpmapRasterImage = ngdg.ImageStore.getImage(bumpmapPath, function (completeImage) {
-      rebuild && rebuild();
-    });
-    var bezierPathInteractionHelper = null;
-
     // +---------------------------------------------------------------------------------
-    // | A global config that's attached to the dat.gui control interface.
+    // | Initialize the app context.
     // +-------------------------------
-    var config = PlotBoilerplate.utils.safeMergeByKeys(
-      {
-        outlineSegmentCount: 128,
-        shapeSegmentCount: 64,
-        bendAngle: 0,
-        closeTop: true,
-        closeBottom: true,
-        showNormals: false,
-        normalsLength: 10.0,
-        normalizePerpendiculars: true,
-        useTextureImage: true,
-        textureImagePath: "assets/img/wood.png",
-        wireframe: false,
-        performSlice: false,
-        makeHollow: false,
-        hollowStrengthX: 15.0, // equivalent for Y is 'normalsLength'
-        renderFaces: "double", // "double" or "front" or "back"
-        twistAngle: 0.0,
-        baseShapeExcentricity: 1.0,
-        closeCutAreas: true,
-        // previewBumpmap: false, // TODO: Is this actually in use?
-        useBumpmap: false,
-        showBumpmapTargets: false,
-        showBumpmapImage: false, // Not part of the generator interface
-        bumpmap: null, // This is not configurable at the moment and merge in later
-        bumpmapStrength: 10.0,
-        // Render settings
-        showBasicPerpendiculars: false,
-        addSpine: false,
-        showSplitPane: true,
-        showLeftSplit: true,
-        showRightSplit: true,
-        showSplitShape: true,
-        showSplitShapeTriangulation: true,
-        addPrecalculatedMassiveFaces: false,
-        addPrecalculatedHollowFaces: false,
-        addRawIntersectionTriangleMesh: false,
-        addPrecalculatedShapeOutlines: false,
-        bezierFillColor: isDarkmode ? "rgba(64,64,64,.35)" : "rgba(0,0,0,0.15)",
-        pathBoundsColor: isDarkmode ? "rgba(64,64,64,.5)" : "rgba(0,0,0,0.5)",
-        resizeHandleLineColor: isDarkmode ? "rgba(192,192,192,0.5)" : "rgba(128,128,128,0.5)",
-        rulerColor: isDarkmode ? "rgba(0,128,192,1.0)" : "rgba(0,128,192,0.5)",
-        showDiscreteOutlinePoints: false,
-        // Modifiers
-        leftSplitMeshRotationX: 180.0, // align properly according to split algorithm
-        leftSplitMeshRotationY: 0.0,
-        leftSplitMeshRotationZ: 0.0,
-        rightSplitMeshRotationX: 180.0, // align properly according to split algorithm
-        rightSplitMeshRotationY: 0.0,
-        rightSplitMeshRotationZ: 0.0,
-        leftSplitMeshTranslationX: ngdg.SPLIT_MESH_OFFSET.x,
-        leftSplitMeshTranslationY: ngdg.SPLIT_MESH_OFFSET.y,
-        leftSplitMeshTranslationZ: -ngdg.SPLIT_MESH_OFFSET.z, // Important: invert this (as in the algorithm)
-        rightSplitMeshTranslationX: ngdg.SPLIT_MESH_OFFSET.x,
-        rightSplitMeshTranslationY: ngdg.SPLIT_MESH_OFFSET.y,
-        rightSplitMeshTranslationZ: ngdg.SPLIT_MESH_OFFSET.z,
-        alignSplitsOnPlane: function () {
-          config.leftSplitMeshRotationX = 90;
-          config.leftSplitMeshRotationY = 0;
-          config.leftSplitMeshRotationZ = 90;
-          config.rightSplitMeshRotationX = 90;
-          config.rightSplitMeshRotationY = 180;
-          config.rightSplitMeshRotationZ = 90;
-          config.leftSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
-          config.leftSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
-          config.leftSplitMeshTranslationZ = -ngdg.SPLIT_MESH_OFFSET.z * 2; // Important: invert this (as in the algorithm)
-          config.rightSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
-          config.rightSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
-          config.rightSplitMeshTranslationZ = ngdg.SPLIT_MESH_OFFSET.z * 2;
-          updateModifiers();
-        },
-        restoreSplitAlignment: function () {
-          config.leftSplitMeshRotationX = 180;
-          config.leftSplitMeshRotationY = 0;
-          config.leftSplitMeshRotationZ = 0;
-          config.rightSplitMeshRotationX = 180;
-          config.rightSplitMeshRotationY = 0;
-          config.rightSplitMeshRotationZ = 0;
-          config.leftSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
-          config.leftSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
-          config.leftSplitMeshTranslationZ = -ngdg.SPLIT_MESH_OFFSET.z; // Important: invert this (as in the algorithm)
-          config.rightSplitMeshTranslationX = ngdg.SPLIT_MESH_OFFSET.x;
-          config.rightSplitMeshTranslationY = ngdg.SPLIT_MESH_OFFSET.y;
-          config.rightSplitMeshTranslationZ = ngdg.SPLIT_MESH_OFFSET.z;
-          updateModifiers();
-        },
-        // Functions
-        exportSTL: function () {
-          exportSTL();
-        },
-        showPathJSON: function () {
-          showPathJSON();
-        },
-        insertPathJSON: function () {
-          insertPathJSON();
-        },
-        acquireOptimalPathView: function () {
-          acquireOptimalPathView(pb, outline);
-        },
-        setDefaultPathJSON: function () {
-          setDefaultPathInstance(true);
-        }
+    var appContext = new ngdg.AppContext({
+      // Initializing the STL exporter in Typescript level leads to import conflicts.
+      // -> Pass through.
+      makeSTLExporter: function () {
+        return new THREE.STLExporter();
       },
-      GUP
-    );
-
-    var dildoGeneration = new ngdg.DildoGeneration("dildo-canvas", {
+      // Initializing the orbit controls in Typescript level leads to import conflicts.
+      // -> Pass through.
       makeOrbitControls: function (camera, domElement) {
         return new THREE.OrbitControls(camera, domElement);
-      }
+      },
+      // The modal is currently not implemented in Typescript.
+      // -> Pass through.
+      makeModal: function () {
+        return new Modal();
+      },
+      // Use a custom `saveAs` function.
+      // -> Pass through.
+      saveAs: saveAs // (blob:Blob, filename:string) => void;
     });
-
-    var modal = new Modal();
-
-    // +---------------------------------------------------------------------------------
-    // | Export the model as an STL file.
-    // +-------------------------------
-    var exportSTL = function () {
-      function saveFile(data, filename) {
-        saveAs(new Blob([data], { type: "application/sla" }), filename);
-      }
-      modal.setTitle("Export STL");
-      modal.setFooter("");
-      modal.setActions([
-        {
-          label: "Cancel",
-          action: function () {
-            modal.close();
-            console.log("canceled");
-          }
-        }
-      ]);
-      modal.setBody("Loading ...");
-      modal.open();
-      try {
-        dildoGeneration.generateSTL(
-          {
-            onComplete: function (stlData) {
-              window.setTimeout(function () {
-                modal.setBody("File ready.");
-                modal.setActions([Modal.ACTION_CLOSE]);
-                saveFile(stlData, "dildomodel.stl");
-              }, 500);
-              // modal.close();
-            }
-          },
-          new THREE.STLExporter()
-        );
-      } catch (e) {
-        console.error(e);
-        modal.setBody("Error: " + e);
-        modal.setActions([Modal.ACTION_CLOSE]);
-        modal.open();
-      }
-    };
-
-    var showPathJSON = function () {
-      modal.setTitle("Show Path JSON");
-      modal.setFooter("");
-      modal.setActions([Modal.ACTION_CLOSE]);
-      modal.setBody(outline.toJSON(true));
-      modal.open();
-    };
-
-    var insertPathJSON = function () {
-      var textarea = document.createElement("textarea");
-      textarea.style.width = "100%";
-      textarea.style.height = "50vh";
-      textarea.innerHTML = outline.toJSON(true);
-      modal.setTitle("Insert Path JSON");
-      modal.setFooter("");
-      modal.setActions([
-        Modal.ACTION_CANCEL,
-        {
-          label: "Load JSON",
-          action: function () {
-            loadPathJSON(textarea.value);
-            modal.close();
-          }
-        }
-      ]);
-      modal.setBody(textarea);
-      modal.open();
-    };
-
-    var loadPathJSON = function (jsonData) {
-      var newOutline = null;
-      try {
-        newOutline = BezierPath.fromJSON(jsonData);
-      } catch (e) {
-        console.log("Error parsing JSON path:", e.getMessage());
-      } finally {
-        if (newOutline) {
-          setPathInstance(newOutline);
-          acquireOptimalPathView(pb, outline);
-          rebuild();
-        }
-      }
-    };
-
-    // +---------------------------------------------------------------------------------
-    // | Delay the build a bit. And cancel stale builds.
-    // | This avoids too many rebuilds (pretty expensive) on mouse drag events.
-    // +-------------------------------
-    var buildId = null;
-    var rebuild = function () {
-      buildId = new Date().getTime();
-      window.setTimeout(
-        (function (bId) {
-          return function () {
-            if (bId === buildId) {
-              if (config.useBumpmap && ImageStore.isImageLoaded(bumpmapRasterImage)) {
-                // Resize the bumpmap to satisfy the mesh resolution.
-                bumpmap = new RasteredBumpmap(bumpmapRasterImage, config.shapeSegmentCount, config.outlineSegmentCount);
-              }
-              updateBumpmapPreview(bumpmap, config.useBumpmap && typeof bumpmap !== "undefined" && config.showBumpmapImage);
-              // Set the bending flag only if bendAngle if not zero.
-              dildoGeneration.rebuild(
-                Object.assign(config, { outline: outline, isBending: config.bendAngle !== 0, bumpmap: bumpmap })
-              );
-              updateModifiers();
-            }
-          };
-        })(buildId),
-        50
-      );
-    };
-
-    // +---------------------------------------------------------------------------------
-    // | Whenever the modifier settings change (post built and post split) apply
-    // | them here: rotation and translation.
-    // +-------------------------------
-    var updateModifiers = function () {
-      // Fetch the sliced result (if options tell it was created)
-      // and apply some modifiers.
-      if (config.performSlice) {
-        if (dildoGeneration.splitResults[ngdg.KEY_SLICED_MESH_RIGHT]) {
-          var rightSliceMesh = dildoGeneration.splitResults[ngdg.KEY_SLICED_MESH_RIGHT];
-          rightSliceMesh.rotation.x = config.leftSplitMeshRotationX * ngdg.DEG_TO_RAD;
-          rightSliceMesh.rotation.y = config.leftSplitMeshRotationY * ngdg.DEG_TO_RAD;
-          rightSliceMesh.rotation.z = config.leftSplitMeshRotationZ * ngdg.DEG_TO_RAD;
-          rightSliceMesh.position.x = config.leftSplitMeshTranslationX;
-          rightSliceMesh.position.y = config.leftSplitMeshTranslationY;
-          rightSliceMesh.position.z = config.leftSplitMeshTranslationZ;
-        }
-        if (dildoGeneration.splitResults[ngdg.KEY_SLICED_MESH_LEFT]) {
-          var leftSliceMesh = dildoGeneration.splitResults[ngdg.KEY_SLICED_MESH_LEFT];
-          leftSliceMesh.rotation.x = config.rightSplitMeshRotationX * ngdg.DEG_TO_RAD;
-          leftSliceMesh.rotation.y = config.rightSplitMeshRotationY * ngdg.DEG_TO_RAD;
-          leftSliceMesh.rotation.z = config.rightSplitMeshRotationZ * ngdg.DEG_TO_RAD;
-          leftSliceMesh.position.x = config.rightSplitMeshTranslationX;
-          leftSliceMesh.position.y = config.rightSplitMeshTranslationY;
-          leftSliceMesh.position.z = config.rightSplitMeshTranslationZ;
-        }
-      }
-    };
-
-    /**
-     * Create a pewview for the used bumpmap.
-     *
-     * @param {IBumpmap|undefined} bumpmap
-     * @param {boolean} isPreviewVisible
-     */
-    var updateBumpmapPreview = function (bumpmap, isPreviewVisible) {
-      // Note: this is currently not in use
-      var previewWrapper = document.getElementById("bumpmap-preview");
-      if (bumpmap && isPreviewVisible) {
-        var previewImageElem = bumpmap.createPreviewImage();
-        previewImageElem.style["object-fit"] = "contain";
-        previewImageElem.style["position"] = "relative";
-        previewImageElem.style["box-flex"] = 1;
-        previewImageElem.style["flex"] = "1 1 auto";
-        previewImageElem.style["width"] = "100%";
-        previewImageElem.style["height"] = "100%";
-        GeometryGenerationHelpers.removeAllChildNodes(previewWrapper);
-        previewWrapper.appendChild(previewImageElem);
-        previewWrapper.style.display = "flex";
-      } else {
-        previewWrapper.style.display = "none";
-      }
-    };
-
-    // +---------------------------------------------------------------------------------
-    // | Each outline vertex requires a drag (end) listener. We need this to update
-    // | the 3d mesh on changes, update stats, and resize handle positions.
-    // +-------------------------------
-    var dragListener = function (dragEvent) {
-      // Uhm, well, some curve point moved.
-      updatePathResizer();
-      updateOutlineStats();
-      rebuild();
-    };
-    var addPathListeners = function (path) {
-      BezierPathInteractionHelper.addPathVertexDragEndListeners(path, dragListener);
-    };
-    var removePathListeners = function (path) {
-      BezierPathInteractionHelper.removePathVertexDragEndListeners(path, dragListener);
-    };
 
     // +---------------------------------------------------------------------------------
     // | Draw some stuff before rendering?
     // +-------------------------------
-    var preDraw = function () {
+    var preDraw = function (draw, fill) {
       // Draw bounds
-      var pathBounds = outline.getBounds();
-      pb.draw.rect(pathBounds.min, pathBounds.width, pathBounds.height, config.pathBoundsColor, 1);
+      var pathBounds = appContext.outline.getBounds();
+      appContext.config.drawPathBounds &&
+        draw.rect(pathBounds.min, pathBounds.width, pathBounds.height, appContext.config.pathBoundsColor, 1);
 
       // Fill inner area
       var polyline = [
@@ -390,270 +58,153 @@
       ];
       var pathSteps = 50;
       for (var i = 0; i < pathSteps; i++) {
-        polyline.push(outline.getPointAt(i / pathSteps));
+        polyline.push(appContext.outline.getPointAt(i / pathSteps));
       }
-      pb.fill.polyline(polyline, false, config.bezierFillColor);
+      appContext.config.fillOutline && fill.polyline(polyline, false, appContext.config.bezierFillColor);
+
+      if (appContext.config.showSilhouette && appContext.dildoSilhouette) {
+        draw.polyline(
+          appContext.dildoSilhouette.leftPathVertices,
+          true,
+          appContext.config.silhouetteLineColor,
+          appContext.config.silhouetteLineWidth
+        );
+        draw.polyline(
+          appContext.dildoSilhouette.rightPathVertices,
+          true,
+          appContext.config.silhouetteLineColor,
+          appContext.config.silhouetteLineWidth
+        );
+      }
+
+      if (dildoRandomizerDialog) {
+        try {
+          dildoRandomizerDialog.drawIdealBounds(draw, fill);
+        } catch (exc) {
+          console.error("Failed to pre-draw the dildoRandomizerDialog's settings.");
+          console.error(exc);
+        }
+      }
     };
 
     // +---------------------------------------------------------------------------------
     // | Draw the split-indicator (if split position ready).
     // +-------------------------------
     var postDraw = function (draw, fill) {
-      drawBezierDistanceLine();
-      drawRulers();
-      drawResizeHandleLines(pb, outline, bezierResizer, config.resizeHandleLineColor);
-      if (config.showDiscreteOutlinePoints) {
+      drawBezierDistanceLine(draw, fill);
+      appContext.config.drawRulers && drawRulers(draw, fill);
+      appContext.config.drawResizeHandleLines &&
+        drawResizeHandleLines(
+          appContext.pb,
+          appContext.outline,
+          appContext.bezierResizer,
+          appContext.config.resizeHandleLineColor
+        );
+      if (appContext.config.showDiscreteOutlinePoints) {
         drawOutlineToPolygon(draw, fill);
       }
     };
 
-    var drawBezierDistanceLine = function () {
-      if (bezierDistanceLine != null) {
-        pb.draw.line(bezierDistanceLine.a, bezierDistanceLine.b, "rgba(255,192,0,0.25)", 1);
-        // pb.fill.circleHandle(bezierDistanceLine.a, 3.0, "rgb(255,192,0)");
-        drawCross(bezierDistanceLine.a, "rgb(255,192,0)", 1.0);
+    var drawBezierDistanceLine = function (draw, fill) {
+      if (appContext.bezierDistanceLine != null) {
+        draw.line(appContext.bezierDistanceLine.a, appContext.bezierDistanceLine.b, "rgba(255,192,0,0.25)", 1);
+        draw.cross(appContext.bezierDistanceLine.a, 3, "rgb(255,192,0)", 1.0);
       }
     };
 
-    // TODO: in plotboilerplate@1.17.0 there will be a function for this.
-    var drawCross = function (position, color, lineWidth) {
-      pb.draw.line({ x: position.x - 3, y: position.y - 3 }, { x: position.x + 3, y: position.y + 3 }, color, lineWidth);
-      pb.draw.line({ x: position.x + 3, y: position.y - 3 }, { x: position.x - 3, y: position.y + 3 }, color, lineWidth);
-    };
-
-    var drawRulers = function () {
-      Rulers.drawVerticalRuler(pb, outline, config.rulerColor);
-      Rulers.drawHorizontalRuler(pb, outline, config.rulerColor);
-    };
-
-    // +---------------------------------------------------------------------------------
-    // | Scale a given Bounds instance to a new size (from its center).
-    // +-------------------------------
-    var scaleBounds = function (bounds, scaleFactor) {
-      var center = new Vertex(bounds.min.x + bounds.width / 2.0, bounds.min.y + bounds.height / 2.0);
-      return new Bounds(new Vertex(bounds.min).scale(scaleFactor, center), new Vertex(bounds.max).scale(scaleFactor, center));
-    };
-
-    var updatePathResizer = function () {
-      if (bezierResizer) {
-        pb.remove([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
-        bezierResizer.destroy();
-        bezierResizer = null;
-      }
-      var onUpdate = function () {
-        updateOutlineStats();
-        rebuild();
-      };
-      bezierResizer = new BezierResizeHelper(pb, outline, onUpdate);
-      pb.add([bezierResizer.verticalResizeHandle, bezierResizer.horizontalResizeHandle]);
-    };
-
-    // +---------------------------------------------------------------------------------
-    // | Set the new path instance and install a Bézier interaction helper.
-    // +-------------------------------
-    var setPathInstance = function (newOutline, keepOldInteractionHelper) {
-      if (outline && typeof outline !== "undefined") {
-        removePathListeners(outline);
-      }
-
-      if (outline && !keepOldInteractionHelper) {
-        // pb.removeAll(false); // Do not keep vertices
-        pb.remove(outline, false, true);
-        pb.add(newOutline); //, false);
-      }
-
-      outline = newOutline;
-      updatePathResizer();
-      addPathListeners(outline);
-      updateOutlineStats();
-
-      // Install a Bézier interaction helper.
-      if (!bezierPathInteractionHelper || !keepOldInteractionHelper) {
-        if (bezierPathInteractionHelper) {
-          bezierPathInteractionHelper.destroy();
-        }
-
-        bezierPathInteractionHelper = new BezierPathInteractionHelper(pb, [outline], {
-          maxDetectDistance: 32.0,
-          autoAdjustPaths: true,
-          allowPathRemoval: false, // It is not alowed to remove the outline path
-          onPointerMoved: function (pathIndex, newA, newB, newT) {
-            if (pathIndex == -1) {
-              bezierDistanceLine = null;
-            } else {
-              bezierDistanceLine = new Line(newA, newB);
-              bezierDistanceT = newT;
-            }
-          },
-          onVertexInserted: function (_pathIndex, _insertAfterIndex, newPath, _oldPath) {
-            removePathListeners(outline);
-            setPathInstance(newPath, true);
-            rebuild();
-          },
-          onVerticesDeleted: function (_pathIndex, _deletedVertIndices, newPath, _oldPath) {
-            removePathListeners(outline);
-            setPathInstance(newPath, true);
-            rebuild();
-          }
-        });
-      }
-    }; // END setPathInstance
-
-    var setDefaultPathInstance = function (doRebuild) {
-      setPathInstance(BezierPath.fromJSON(ngdg.DEFAULT_BEZIER_JSON));
-      if (doRebuild) {
-        rebuild();
-      }
-    };
-
-    // +---------------------------------------------------------------------------------
-    // | Add stats.
-    // +-------------------------------
-    var stats = {
-      mouseX: 0,
-      mouseY: 0,
-      width: 0,
-      height: 0,
-      diameter: 0,
-      area: 0
-    };
-    var uiStats = new UIStats(stats);
-    stats = uiStats.proxy;
-    uiStats.add("mouseX").precision(1);
-    uiStats.add("mouseY").precision(1);
-    uiStats.add("width").precision(1).suffix(" mm");
-    uiStats.add("height").precision(1).suffix(" mm");
-    uiStats.add("diameter").precision(1).suffix(" mm");
-    uiStats.add("area").precision(1).suffix(" mm²");
-
-    // Add a mouse listener to track the mouse position.-
-    new MouseHandler(pb.canvas).move(function (e) {
-      var relPos = pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
-      stats.mouseX = relPos.x;
-      stats.mouseY = relPos.y;
-    });
-
-    var updateOutlineStats = function () {
-      var pathBounds = outline.getBounds();
-      stats.width = pathBounds.width * Rulers.mmPerUnit;
-      stats.height = pathBounds.height * Rulers.mmPerUnit;
-      stats.diameter = 2 * pathBounds.width * Rulers.mmPerUnit;
-      // Compute area from outline
-      var vertices = outline.getEvenDistributionVertices(100);
-      var bounds = outline.getBounds();
-      vertices.push(new Vertex(bounds.max));
-      var polygon = new Polygon(vertices, false);
-      stats.area = polygon.area();
+    var drawRulers = function (draw, fill) {
+      ngdg.Rulers.drawVerticalRuler(draw, fill, appContext.outline, appContext.config.rulerColor);
+      ngdg.Rulers.drawHorizontalRuler(draw, fill, appContext.outline, appContext.config.rulerColor);
     };
 
     // THIS IS JUST EXPERIMENTAL
     var drawOutlineToPolygon = function (draw, fill) {
-      outline.updateArcLengths();
-      var vertices = bezier2polygon(outline, 50);
+      appContext.outline.updateArcLengths();
+      var vertices = appContext.outline.getEvenDistributionVertices(50);
       // console.log("drawOutlineToPolygon vertices", vertices);
       for (var i = 0; i < vertices.length; i++) {
         draw.circleHandle(vertices[i], 3, "rgba(0,192,128,0.5)");
       }
     };
 
-    // +---------------------------------------------------------------------------------
-    // | Create the bezier resize helper.
-    // +-------------------------------
-    var bezierResizer = null;
-
-    // +---------------------------------------------------------------------------------
-    // | Create the outline: a Bézier path.
-    // +-------------------------------
-    var outline = null;
-    // This will trigger the first initial postDraw/draw/redraw call
-    // setPathInstance(BezierPath.fromJSON(initialPathJSON));
-    if (GUP.rbdata) {
+    if (appContext.GUP.rbdata) {
       // If you need some test data:
       //    this seems to be the most favourite dildo shape regarding the ranking on Google (2021-10-12)
       //    (plus bendAngle=23.0)
       // [-58.5,243,-59.2,200,-12,217,6.3,196,23.3,176.6,38.7,113,-4.6,76.2,-69.8,20.9,6.2,-65.1,-5.7,-112.6,-30.8,-213,35.4,-243,58.5,-243]
-      if (!GUP.rbdata.endsWith("]")) {
-        GUP.rbdata += "]"; // Twitter hack
+      if (!appContext.GUP.rbdata.endsWith("]")) {
+        appContext.GUP.rbdata += "]"; // Twitter hack
       }
       try {
-        setPathInstance(BezierPath.fromReducedListRepresentation(GUP.rbdata));
+        appContext.setPathInstance(BezierPath.fromReducedListRepresentation(appContext.GUP.rbdata));
       } catch (e) {
         console.error(e);
-        modal.setBody("Your Bézier path data could not be parsed: <pre>" + GUP.rbdata + "</pre>");
+        modal.setBody("Your Bézier path data could not be parsed: <pre>" + appContext.GUP.rbdata + "</pre>");
         modal.setActions([Modal.ACTION_CLOSE]);
         modal.open();
       }
-    } else {
-      setDefaultPathInstance(false);
     }
-
-    // +---------------------------------------------------------------------------------
-    // | Load the config from the local storage.
-    // | Handle file drop.
-    // +-------------------------------
-    var localstorageIO = new ngdg.LocalstorageIO();
-    var fileDrop = new FileDrop(pb.eventCatcher);
-    fileDrop.onFileJSONDropped(function (jsonObject) {
-      try {
-        setPathInstance(BezierPath.fromArray(jsonObject));
-        rebuild();
-      } catch (e) {
-        console.error("Failed to retrieve Bézier path from localstorage", jsonObject);
-        console.log(e);
-      }
-    });
-    localstorageIO.onPathRestored(
-      function (jsonString, bendAngle, twistAngle, baseShapeExcentricity) {
-        // This is called when json string was loaded from storage
-        if (!GUP.rbdata) {
-          loadPathJSON(jsonString);
-        }
-        if (!GUP.bendAngle) {
-          config.bendAngle = bendAngle;
-        }
-        if (!GUP.twistAngle) {
-          config.twistAngle = twistAngle;
-        }
-        if (!GUP.baseShapeExcentricity) {
-          config.baseShapeExcentricity = baseShapeExcentricity;
-        }
-      },
-      function () {
-        //  return outline ? outline.toJSON() : null;
-        return {
-          bezierJSON: outline ? outline.toJSON() : null,
-          bendAngle: config.bendAngle,
-          twistAngle: config.twistAngle,
-          baseShapeExcentricity: config.baseShapeExcentricity
-        };
-      }
-    );
 
     // +---------------------------------------------------------------------------------
     // | Initialize dat.gui
     // +-------------------------------
-    initGUI(pb, config, GUP, rebuild, updateModifiers);
+    initGUI(appContext);
 
-    pb.config.preDraw = preDraw;
-    pb.config.postDraw = postDraw;
-    pb.fitToView(scaleBounds(outline.getBounds(), 1.6));
-    rebuild();
+    appContext.pb.config.preDraw = preDraw;
+    appContext.pb.config.postDraw = postDraw;
+    if (!appContext.outline) {
+      console.log("[INFO] No path retrieved. Using default path.");
+      appContext.setDefaultPathInstance(true);
+      appContext.updateSilhouette(false);
+      // acquireOptimalPathView(pb, outline);
+      appContext.acquireOptimalView();
+    }
+    // pb.fitToView(scaleBounds(outline.getBounds(), 1.6));
+    appContext.rebuild();
 
     window.addEventListener("resize", function () {
-      var scaledBounds = scaleBounds(outline.getBounds(), 1.6);
-      pb.fitToView(scaledBounds);
+      var scaledBounds = ngdg.scaleBounds(appContext.outline.getBounds(), 1.6);
+      appContext.pb.fitToView(scaledBounds);
     });
+
+    var dildoRandomizerDialog = new DildoRandomizerDialog(appContext.pb, appContext.modal, appContext.config, {
+      outlineChangedCallback: appContext.setRandomizedResult,
+      onPathVisibilityChanged: appContext.handlePathVisibilityChanged,
+      getBezierJSON: appContext.getBezierJSON,
+      getSculptmapDataURL: appContext.getSculptmapDataURL,
+      getPreviewImageDataURL: function (type) {
+        return appContext.dildoGeneration.canvas.toDataURL(type);
+      }
+    });
+    var showDildoRandomizer = function () {
+      dildoRandomizerDialog.open();
+    };
+
+    // Add a mouse listener to track the mouse position.
+    try {
+      new MouseHandler(appContext.pb.eventCatcher).move(function (e) {
+        var relPos = appContext.pb.transformMousePosition(e.params.pos.x, e.params.pos.y);
+        appContext.stats.mouseX = relPos.x;
+        appContext.stats.mouseY = relPos.y;
+      });
+    } catch (exc) {
+      console.log("Failed to init stats.", exc);
+    }
 
     // Add action buttons
     // prettier-ignore
     ActionButtons.addNewButton(function() {
-      config.bendAngle = 0.0;
-      config.twistAngle = 0.0;
-      config.baseShapeExcentricity = 1.0;
-      setDefaultPathInstance(true); 
-      acquireOptimalPathView(pb,outline ) 
+      appContext.config.bendAngle = 23.0;
+      appContext.config.twistAngle = 0.0;
+      appContext.config.baseShapeExcentricity = 1.0;
+      appContext.setDefaultPathInstance(true);
+      appContext.updateSilhouette(false);
+      // acquireOptimalPathView(pb,outline);
+      appContext.acquireOptimalView();
     });
     // prettier-ignore
-    ActionButtons.addFitToViewButton( function() { acquireOptimalPathView(pb, outline); } );
+    ActionButtons.addFitToViewButton( function() { appContext.acquireOptimalView() } );
+    ActionButtons.addShowSculptMapButton(appContext.showSculptmap);
+    ActionButtons.addShowRandomizerButton(showDildoRandomizer);
   });
 })(window);

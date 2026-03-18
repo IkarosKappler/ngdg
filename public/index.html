@@ -21,15 +21,20 @@
     <script src="lib/globalthis-polyfill.min.js"></script> 
     <script src="lib/path2d-polyfill.min.js"></script>
 
-    <script src="lib/dat.gui.min.js"></script>
+    
+    <!-- <script src="lib/dat.gui.min.js"></script> -->
+    <script src="lib/lil-gui-0.19.min.js"></script>
     <script src="lib/FileSaver.min.js"></script>
     <!-- <script src="lib/Color.js"></script> -->
-  
-    <script src="lib/plotboilerplate/src/cjs/utils/dat.gui.title.polyfill.js"></script>
-    <script src="lib/plotboilerplate/src/cjs/utils/dat.gui.arrowbounce.polyfill.js"></script>
+    
+    <!-- <script src="lib/plotboilerplate/src/cjs/utils/dat.gui.title.polyfill.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/dat.gui.arrowbounce.polyfill.js"></script> -->
+    <script src="lib/plotboilerplate/src/cjs/utils/lil.gui.title.polyfill.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/lil.gui.arrowbounce.polyfill.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/creategui.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/module.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/gup.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/Params.js"></script>
     
     <!-- <script src="lib/ngdg/src/cjs/defaults.js"></script>
     <script src="lib/ngdg/src/cjs/computeVertexNormals.js"></script>
@@ -38,6 +43,7 @@
     <script src="lib/ngdg/src/cjs/DildoMaterials.js"></script>
     <script src="lib/ngdg/src/cjs/PlaneMeshIntersection.js"></script>
     <script src="lib/ngdg/src/cjs/GeometryGenerationHelpers.js"></script>
+    <script src="lib/ngdg/src/cjs/getImageFromCanvas.js"></script>
     <script src="lib/ngdg/src/cjs/PathFinder.js"></script>
     <script src="lib/ngdg/src/cjs/clearDuplicateVertices3.js"></script>
     <script src="lib/ngdg/src/cjs/locateVertexInArray.js"></script>
@@ -46,14 +52,21 @@
     <script src="lib/ngdg/src/cjs/ImageStore.js"></script>
     <script src="lib/ngdg/src/cjs/RasteredBumpmap.js"></script>
     <script src="lib/ngdg/src/cjs/BumpMapper.js"></script> -->
+    <!-- <script src="lib/ngdg/src/cjs/SculptMap.js"></script> -->
+    <!-- <script src="lib/ngdg/src/cjs/DildoSilhouette2D.js"></script> -->
+    <!-- <script src="lib/ngdg/src/cjs/AppContext.js"></script> -->
+    <script src="lib/earcut-typescript/dist/earcut.min.js"></script>
+    <script src="lib/alloyfinger-typescript/src/cjs/alloy_finger.js"></script>
+    <script src="lib/plotboilerplate/dist/plotboilerplate.min.js"></script>
     <script src="lib/ngdg/dist/ngdg-vendor.js"></script>
     <script src="lib/ngdg/dist/ngdg-main.js"></script>
-    
-
-    <script src="lib/plotboilerplate/dist/plotboilerplate.min.js"></script>
-    <script src="lib/alloyfinger-typescript/src/cjs/alloy_finger.js"></script>
-    <script src="lib/earcut-typescript/dist/earcut.min.js"></script>
     <script src="lib/uistats-typescript/uistats.min.js"></script>
+    <script>
+      console.log("UIStats", UIStats); 
+      globalThis["UIStats"] = UIStats;
+      globalThis["uistats-typescript"] = UIStats;
+    </script>
+
     <script src="lib/plotboilerplate/src/cjs/utils/datastructures/Color.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/helpers/BezierPathInteractionHelper.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/WebColors.js"></script>
@@ -63,27 +76,31 @@
     <script src="lib/plotboilerplate/src/cjs/utils/WebColors.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/WebColorsContrast.js"></script>
     <script src="lib/plotboilerplate/src/cjs/utils/io/FileDrop.js"></script>
-    <script src="lib/ngdg/src/cjs/randomWebColor.js"></script>
-    <script src="modal.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="modal.css">
+    <script src="lib/plotboilerplate/src/cjs/utils/detectDarkMode.js"></script>
+    <script src="lib/plotboilerplate/src/cjs/utils/dom/guiSizeToggler.js"></script>
 
-    <script src="lib/three/build/three.min.js"></script> 
-    <script src="OrbitControls.js"></script>
-    <!-- <script src="../node_modules/three/examples/jsm/controls/OrbitControls.js"></script> -->
-    <script src="lib/three-geometry-hellfix/dist/three-geometry-hellfix-main.min.js"></script>
-    <script src="STLExporter.js"></script>
-    <script src="VertexNormalsHelper.js"></script>
-    <script src="BezierResizeHelper.js"></script>
-    <script src="Rulers.js"></script>
-    <script src="drawResizeHandleLines.js"></script>
-    <script src="detectDarkMode.js"></script>
-    <script src="ActionButtons.js"></script>
-    <script src="acquireOptimalPathView.js"></script>
-    <!-- <script src="isMobileDevice.js"></script> -->
-    <script src="bezier2polygon.js"></script>
-    <script src="guiSizeToggler.js"></script>
-    <script src="initGUI.js"></script>
+    <script src="lib/ngdg/src/cjs/randomWebColor.js"></script>
+    <script src="lib/ngdg/src/cjs/isMobileDevice.js"></script>
+    <script src="js-pure/modal.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/modal-modern.css">
+    <link rel="stylesheet" href="css/progressbar.css">
+
+    <script src="lib/axios/dist/axios.min.js"></script> 
+    <script src="lib/three-r124/build/three.min.js"></script> 
+    <!-- <script src="../node_modules/three-r124/examples/jsm/controls/OrbitControls.js"></script> -->
+    <!-- <script src="lib/three-geometry-hellfix/dist/three-geometry-hellfix-main.min.js"></script> -->
+    <script src="lib/three-geometry-hellfix/src/cjs/DefaultFactory.js"></script> 
+    <script src="lib/three-geometry-hellfix/src/cjs/DirectGeometry.js"></script> 
+    <script src="lib/three-geometry-hellfix/src/cjs/Face3.js"></script> 
+    <script src="lib/three-geometry-hellfix/src/cjs/Gmetry.js"></script> 
+    <script src="js-pure/OrbitControls.js"></script>
+    <script src="js-pure/STLExporter.js"></script>
+    <script src="js-pure/VertexNormalsHelper.js"></script>
+    <script src="js-pure/drawResizeHandleLines.js"></script>
+    <script src="js-pure/ActionButtons.js"></script>
+    <script src="js-pure/dildoRandomizerDialog.js"></script>
+    <script src="js-pure/initGUI.js"></script>
     <script src="index.js"></script>
   </head>
   <body class="fullscreen">
@@ -96,7 +113,7 @@
       <canvas id="dildo-canvas" width="1024" height="768" title="Drag and rotate here.">Your browser does not support the canvas tag.</canvas>
     </div>
     <div id="bumpmap-preview"></div>
-
+    <div id="action-buttons"></div>
   </body>
   <style>
     body {
@@ -112,6 +129,6 @@
     .right {
        float : right;
     }
-    #gui { position: absolute; top: 2px; left: 2px }
+    /* #gui { position: absolute; top: 2px; left: 2px } */
   </style>
 </html>

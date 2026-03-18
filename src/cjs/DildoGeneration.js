@@ -9,7 +9,8 @@
  * @modified 2021-08-29 Ported this class to Typescript from vanilla JS.
  * @modified 2022-02-03 Added `clearResults` function.
  * @modified 2022-02-22 Replaced Gmetry by ThreeGeometryHellfix.Gmetry.
- * @version  1.2.3
+ * @modified 2026-02-26 The `baseShape` param is now mandatory.
+ * @version  1.3.0
  **/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DildoGeneration = void 0;
@@ -22,6 +23,7 @@ var mergeGeometries_1 = require("./mergeGeometries");
 var PathFinder_1 = require("./PathFinder");
 var randomWebColor_1 = require("./randomWebColor");
 var constants_1 = require("./constants");
+// import { computeVertexNormals } from "./computeVertexNormals";
 var BumpMapper_1 = require("./BumpMapper");
 var DildoGeneration = /** @class */ (function () {
     function DildoGeneration(canvasId, options) {
@@ -50,7 +52,7 @@ var DildoGeneration = /** @class */ (function () {
         this.scene.add(this.directionalLightB);
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
-            preserveDrawingBuffer: true,
+            preserveDrawingBuffer: true, // This is required to take screen shots
             antialias: true // false
         });
         // TODO: check if this works!
@@ -80,8 +82,17 @@ var DildoGeneration = /** @class */ (function () {
      * Resize the 3d canvas to fit its container.
      */
     DildoGeneration.prototype.resizeCanvas = function () {
-        var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        console.log("resizeCanvas");
+        var space = this.getAvailableContainerSpace();
+        // _self.canvas.style.width = (_self.config.canvasWidthFactor ?? 1.0) * space.width + "px";
+        // _self.canvas.style.height = (_self.config.canvasHeightFactor ?? 1.0) * space.height + "px";
+        // _self.canvas.style.top = "";
+        // _self.canvas.style.left = "";
+        // let width: number = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        // let height: number = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var width = space.width;
+        var height = space.height;
+        console.log("resizeCanvas width", width, " height", height);
         this.canvas.width = width;
         this.canvas.height = height;
         this.canvas.style.width = "" + width + "px";
@@ -89,8 +100,26 @@ var DildoGeneration = /** @class */ (function () {
         this.canvas.setAttribute("width", "" + width + "px");
         this.canvas.setAttribute("height", height + "px");
         this.renderer.setSize(width, height);
-        // What am I doing here?
-        this.camera.setViewOffset(width, height, width / 4, height / 20, width, height);
+        // What am I doing here? -> Space for bending
+        this.camera.setViewOffset(width, height, width / 25, height / 40, width, height);
+    };
+    // TODO: this was moved to the DOM utils
+    DildoGeneration.prototype.getAvailableContainerSpace = function () {
+        var container = this.canvas.parentNode; // Element | Document | DocumentFragment;
+        // _self.canvas.style.display = "none";
+        var padding = this.getFProp(container, "padding") || 0, border = this.getFProp(this.canvas, "border-width") || 0, pl = this.getFProp(container, "padding-left") || padding, pr = this.getFProp(container, "padding-right") || padding, pt = this.getFProp(container, "padding-top") || padding, pb = this.getFProp(container, "padding-bottom") || padding, bl = this.getFProp(this.canvas, "border-left-width") || border, br = this.getFProp(this.canvas, "border-right-width") || border, bt = this.getFProp(this.canvas, "border-top-width") || border, bb = this.getFProp(this.canvas, "border-bottom-width") || border;
+        var w = container.clientWidth;
+        var h = container.clientHeight;
+        // _self.canvas.style.display = "block";
+        return { width: w - pl - pr - bl - br, height: h - pt - pb - bt - bb };
+    };
+    /**
+     * Internal helper function used to get 'float' properties from elements.
+     * Used to determine border withs and paddings that were defined using CSS.
+     */
+    // TODO: this was moved to the DOM utils
+    DildoGeneration.prototype.getFProp = function (elem, propName) {
+        return parseFloat(globalThis.getComputedStyle(elem, null).getPropertyValue(propName));
     };
     /**
      * Clears the current scene and rebuilds everything from scratch according to the
@@ -109,13 +138,14 @@ var DildoGeneration = /** @class */ (function () {
     DildoGeneration.prototype.rebuild = function (options) {
         this.removeCachedGeometries();
         this.clearResults();
-        var baseRadius = options.outline.getBounds().width;
-        var baseShape = GeometryGenerationHelpers_1.GeometryGenerationHelpers.mkCircularPolygon(baseRadius, options.shapeSegmentCount, options.baseShapeExcentricity);
+        var baseShape = options.baseShape;
         var useBumpmap = typeof options.useBumpmap !== "undefined" ? options.useBumpmap : false;
         // const bumpmapPath = "./assets/img/bumpmap.png";
         // const bumpmapTexture: THREE.Texture | null = useBumpmap ? DildoMaterials.loadTextureImage(bumpmapPath) : null;
         var bumpmap = useBumpmap && options.bumpmap ? options.bumpmap : null;
         var dildoGeometry = new DildoGeometry_1.DildoGeometry(Object.assign({ baseShape: baseShape /*, bumpmapTexture: bumpmapTexture */ }, options));
+        // Store for later use
+        this.primaryDildoGeometry = dildoGeometry;
         var useTextureImage = options.useTextureImage && typeof options.textureImagePath !== "undefined";
         var textureImagePath = typeof options.textureImagePath !== "undefined" ? options.textureImagePath : null;
         var doubleSingleSide = options.renderFaces === "double" ? THREE.DoubleSide : options.renderFaces === "back" ? THREE.BackSide : THREE.FrontSide;

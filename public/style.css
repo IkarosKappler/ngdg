@@ -19,6 +19,12 @@ body.fullscreen {
   overflow: hidden;
 }
 
+/* .w-50 {
+  width : 50%;
+  min-width: 50%;
+  max-width: 50%;
+} */
+
 #my-canvas {
   border: 1px solid black;
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAMAAAANf8AYAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAYUExURUxpcf///////////wCA/////wB7/w6H/3bDZgMAAAAIdFJOUwABAwIQBB8RHT6p9AAAAGJJREFUSMft0OEKgCAMBOC7ben7v3GKpAUVzB9SsG8gKhwbAxyInEnCifBnMNHnp9i3dNQJqNRBWkm/bLWG8hKB+NTUpelQmt98ahvqIfMKIYQQwlpmKzPmCVhK5ZjKfHgHO7OoAi6rfI2ZAAAAAElFTkSuQmCC");
@@ -73,10 +79,139 @@ od-bl {
 }
 /* --- END --- Dialog classes --- */
 
+#action-buttons {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+body.mobile #action-buttons {
+  transform-origin: left bottom;
+  transform: scale(3.0);
+}
+
 .action-button:hover {
   background-color: white;
 }
 
-#gui {
+/* #gui {
   left: 50% !important;
+} */
+
+/* Override lil-gui scroll setting (activate scrolling) */
+.lil-gui.root .children  {
+  overflow-y: scroll !important;
+}
+
+
+.modal .randomizerForm h4 {
+  margin-bottom: 0.5em;
+}
+
+.modal .randomizerForm .flex-flow {
+  display: flex;
+  /* width: 100%; */
+  justify-content: space-evenly;
+}
+
+.modal .randomizerForm input[type=number], 
+.modal .randomizerForm select {
+  /* min-width: 64px; */
+  min-width: 50%;
+}
+
+.modal .randomizerForm .isPutEnabled {
+  /* empty */
+}
+
+.modal .randomizerForm .putURL {
+  /* width: 100%; */
+  font-family: 'Courier New', Courier, monospace;
+  flex-grow: 1;
+}
+
+
+/* Basic grid system */
+.flow-containter {
+  display: flex;
+  /* justify-content: space-evenly; */
+  width: 100%;
+}
+
+.grid-w-25 {
+  width: 25%;
+  max-width: 25%;
+}
+
+.grid-w-33 {
+  width: 33%;
+  max-width: 33%;
+}
+
+.grid-w-50 {
+  width: 50%;
+  max-width: 50%;
+}
+
+.grid-w-66 {
+  width: 66%;
+  max-width: 66%;
+}
+
+.grid-w-100 {
+  width: 100%;
+  min-width: 100%;
+}
+
+.center-h {
+  /* align-items: center; */
+  justify-content: center;
+}
+
+.center-v {
+  align-items: center;
+  /* justify-content: center; */
+}
+
+.right {
+  justify-content: right;
+}
+
+
+.sculptmap-viewer .flow-containter button {
+  padding: 1em;
+  margin: 1em;
+}
+
+.sculptmap-viewer #sculptmap-action-buttons {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
+
+
+.hidden {
+  display: none;
+}
+
+.error {
+  color: rgb(93, 0, 0);
+  border: 1px solid rgb(93, 0, 0);
+}
+
+.success {
+  color: rgb(0, 93, 14);
+  border: 1px solid rgb(0, 93, 14);
+}
+
+body:not(.mobile) .font-600-desktop {
+  font-size: 0.6em;
+}
+
+.font-600 input {
+  max-height: 0.8em;
+}
+
+.font-600 button {
+  font-size: 0.9em;
 }
