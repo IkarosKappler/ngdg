@@ -98,7 +98,7 @@ export class DildoGeneration {
         this.canvas.setAttribute("height", height + "px");
         this.renderer.setSize(width, height);
         // What am I doing here? -> Space for bending
-        this.camera.setViewOffset(width, height, width / 2, height / 20, width, height);
+        this.camera.setViewOffset(width, height, width / 25, height / 40, width, height);
     }
     // TODO: this was moved to the DOM utils
     getAvailableContainerSpace() {
