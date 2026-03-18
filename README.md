@@ -43,6 +43,7 @@ Because 3D printing, 3D web, and dildos are fun.
 - [ ] Add proper and complete TSDoc comments.
 - [x] Upgrade to Typescript 5.
 - [x] Install Plotboilerplate 1.26.0 or higher (requires Typescript 5).
+- [ ] Fix: size and area are initially not calculated (only after first drag)
 
 ### LocalStorage
 
