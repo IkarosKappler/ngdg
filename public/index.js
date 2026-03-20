@@ -17,6 +17,8 @@
   "use strict";
 
   window.addEventListener("load", function () {
+    console.log("NoReact", NoReact);
+
     // +---------------------------------------------------------------------------------
     // | Initialize the app context.
     // +-------------------------------
@@ -167,7 +169,7 @@
       appContext.pb.fitToView(scaledBounds);
     });
 
-    var dildoRandomizerDialog = new DildoRandomizerDialog(appContext.pb, appContext.modal, appContext.config, {
+    var dildoRandomizerDialog = new ngdg.DildoRandomizerDialog(appContext.pb, appContext.modal, appContext.config, {
       outlineChangedCallback: appContext.setRandomizedResult,
       onPathVisibilityChanged: appContext.handlePathVisibilityChanged,
       getBezierJSON: appContext.getBezierJSON,

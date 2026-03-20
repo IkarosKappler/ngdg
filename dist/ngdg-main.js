@@ -1821,6 +1821,7 @@ exports.DildoRandomizer = DildoRandomizer;
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DildoRandomizerDialog = void 0;
+var noreact_1 = __webpack_require__(/*! noreact */ "./node_modules/noreact/src/esm/index.js");
 var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var DildoRandomizer_1 = __webpack_require__(/*! ./DildoRandomizer */ "./src/cjs/DildoRandomizer.js");
 var getImageFromCanvas_1 = __webpack_require__(/*! ./getImageFromCanvas */ "./src/cjs/getImageFromCanvas.js");
@@ -1859,28 +1860,113 @@ var DildoRandomizerDialog = /** @class */ (function () {
         this.isOpen = false;
         this.isDrawIdealBoundsEnabled = true;
         // The ideal bounds to export the final image data from.
-        this.idealExportBounds = null;
+        this.idealExportBounds = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(), new plotboilerplate_1.Vertex());
         // The real bounds _inside_ the export bounds to generate the outline in.
-        this.idealGenerateBounds = null;
-        this.curSettings = null;
+        this.idealGenerateBounds = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(), new plotboilerplate_1.Vertex());
         this.viewport = null;
         this.iterationNumber = 0;
         this.sequenceID = 0;
         this.isRunning = false;
-        this.rootElement.innerHTML = "\n      <div class=\"font-600-desktop\">\n        <div class=\"flow-containter\">\n          <div class=\"grid-w-25\"><h4>Outline Path</h4></div>\n          <div class=\"grid-w-25\">\n            <label for=\"segmentCountMin\">Min Segments</label><br>\n            <input type=\"number\" id=\"segmentCountMin\" min=\"1\" max=\"24\" value=\"3\" name=\"segmentCountMin\" />\n          </div>\n          <div class=\"grid-w-25\">\n            <label for=\"segmentCountMax\">Max Segments</label><br>\n            <input type=\"number\" id=\"segmentCountMax\" min=\"1\" max=\"24\" value=\"8\" name=\"segmentCountMax\" />\n          </div>\n          <div class=\"grid-w-25 flow-containter right center-v\">\n            <button id=\"btn-hide-path\">Hide Path</button>\n            <button id=\"btn-show-path\">Show Path</button>\n          </div>\n        </div>\n        <div class=\"flow-containter\">\n          <div class=\"grid-w-25\"><h4>Mesh bend value (Deg)</h4></div>\n          <div class=\"grid-w-25\">\n            <label for=\"bendValueMin\">Min Bend Value</label><br>\n            <input type=\"number\" id=\"bendValueMin\" min=\"0\" max=\"180\" value=\"0\" name=\"bendValueMin\" />\n            \u00B0\n          </div>\n          <div class=\"grid-w-25\">\n            <label for=\"bendValueMax\">Max Bend Value</label><br>\n            <input type=\"number\" id=\"bendValueMax\" min=\"0\" max=\"180\" value=\"120\" name=\"bendValueMax\" />\n            \u00B0\n          </div>\n          <div class=\"grid-w-25 flow-containter right center-v\">\n            <label for=\"checkbox-hide-outlines-on-save\">Hide outlines on save</label>\n            <input type=\"checkbox\" name=\"checkbox-hide-outlines-on-save\" id=\"checkbox-hide-outlines-on-save\" checked>\n          </div>\n        </div>\n        <div class=\"flow-containter center\">\n          <div class=\"grid-w-25\"><h4>Target Bounds Size</h4></div>\n          <div class=\"grid-w-25\">\n            <label for=\"boundsRatio\">Box ratio</label><br>\n            <select id=\"boundsRatio\">\n              <option value=\"2.0\">2:1</option>\n              <option value=\"1.333\">4:3</option>\n              <option value=\"1.0\" selected>1:1</option>\n              <option value=\"0.75\">3:4</option>\n              <option value=\"0.5\">1:2</option>\n            </select>\n          </div>\n          <div class=\"grid-w-25\">\n            <label for=\"optimalBoxWidthPx\">Optimal box width</label><br>\n            <select id=\"optimalBoxWidthPx\">\n              <option value=\"256\" selected>256</option>\n              <option value=\"512\">512</option>\n              <option value=\"1024\">1024</option>\n              <option value=\"2048\">2048</option>\n            </select> px\n          </div>\n          <div class=\"grid-w-25 flow-containter right center-v\">\n            <label for=\"checkbox-silhouette-black-color\">Use black color for silhouette</label>\n            <input type=\"checkbox\" name=\"checkbox-silhouette-black-color\" id=\"checkbox-silhouette-black-color\" checked>\n          </div>\n        </div>\n        <div class=\"flow-containter\">\n          <div class=\"grid-w-33\"><!-- empty --></div>\n          <div class=\"grid-w-33 flex-flow center\">\n            <button id=\"randomizeButton\">Randomize</button>\n          </div>\n          <div class=\"grid-w-33\">\n            <div class=\"flex-flow grid-w-50\">\n              <label for=\"isCreateManyEnabled\">Create&nbsp;Many</label>\n              <input type=\"checkbox\" name=\"isCreateManyEnabled\" id=\"isCreateManyEnabled\">\n            </div>\n            <div class=\"flex-flow grid-w-50\">\n            <label for=\"maxIterationCount\">Max&nbsp;Iterations</label>\n              <input type=\"number\" id=\"maxIterationCount\" name=\"maxIterationCount\" min=\"0\" value=\"99\" />\n            </div>\n            <span id=\"iterationDisplay\"></span>\n          </div>\n        </div>\n        <div class=\"flow-container\" style=\"background-color: rgba(0,0,0,0.25);\">\n          <div class=\"progressbar w-100\"></div>\n        </div>\n        <div class=\"flow-containter flex-flow\">\n            <label for=\"isPutEnabled\">Store data</label>\n            <input type=\"checkbox\" name=\"isPutEnabled\" id=\"isPutEnabled\">\n            <input type=\"text\" id=\"putURL\" class=\"putURL\" name=\"putURL\" value=\"http://127.0.0.1:1337/model/put\" disabled>\n            <button id=\"btn_store-now\">Store Now</button>\n        </div>\n        <div class=\"status-container w-100 error\"></div>\n      </div> <!-- END small font -->\n  ";
-        this.rootElement.querySelector("#randomizeButton").addEventListener("click", this._randomizeButtonEventHandler());
-        this.rootElement.querySelector("#btn-show-path").addEventListener("click", this._togglePathVisibilityHandler(true));
-        this.rootElement.querySelector("#btn-hide-path").addEventListener("click", this._togglePathVisibilityHandler(false));
-        this.rootElement.querySelector("#btn_store-now").addEventListener("click", this._storeNowHandler());
-        console.log("this.modal.modalElements", this.modal.modalElements);
+        this.curSettings = null; // this.getCurrentFormSettings();
+        var ref_btnRandomize = noreact_1.NoReact.useRef();
+        var ref_btnShowPath = noreact_1.NoReact.useRef();
+        var ref_btnHidePath = noreact_1.NoReact.useRef();
+        var ref_btnStoreNow = noreact_1.NoReact.useRef();
+        var ref_slctBoundsRatio = noreact_1.NoReact.useRef();
+        var ref_slctOptimalBoxWidthPx = noreact_1.NoReact.useRef();
+        var htmlContent = (noreact_1.NoReact.createElement("div", { class: "font-600-desktop" },
+            noreact_1.NoReact.createElement("div", { class: "flow-containter" },
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
+                    noreact_1.NoReact.createElement("h4", null, "Outline Path")),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
+                    noreact_1.NoReact.createElement("label", { for: "segmentCountMin" }, "Min Segments"),
+                    noreact_1.NoReact.createElement("br", null),
+                    noreact_1.NoReact.createElement("input", { type: "number", id: "segmentCountMin", min: "1", max: "24", value: "3", name: "segmentCountMin" })),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
+                    noreact_1.NoReact.createElement("label", { for: "segmentCountMax" }, "Max Segments"),
+                    noreact_1.NoReact.createElement("br", null),
+                    noreact_1.NoReact.createElement("input", { type: "number", id: "segmentCountMax", min: "1", max: "24", value: "8", name: "segmentCountMax" })),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25 flow-containter right center-v" },
+                    noreact_1.NoReact.createElement("button", { id: "btn-hide-path", ref: ref_btnHidePath }, "Hide Path"),
+                    noreact_1.NoReact.createElement("button", { id: "btn-show-path", ref: ref_btnShowPath }, "Show Path"))),
+            noreact_1.NoReact.createElement("div", { class: "flow-containter" },
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
+                    noreact_1.NoReact.createElement("h4", null, "Mesh bend value (Deg)")),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
+                    noreact_1.NoReact.createElement("label", { for: "bendValueMin" }, "Min Bend Value"),
+                    noreact_1.NoReact.createElement("br", null),
+                    noreact_1.NoReact.createElement("input", { type: "number", id: "bendValueMin", min: "0", max: "180", value: "0", name: "bendValueMin" }),
+                    "\u00B0"),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
+                    noreact_1.NoReact.createElement("label", { for: "bendValueMax" }, "Max Bend Value"),
+                    noreact_1.NoReact.createElement("br", null),
+                    noreact_1.NoReact.createElement("input", { type: "number", id: "bendValueMax", min: "0", max: "180", value: "120", name: "bendValueMax" }),
+                    "\u00B0"),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25 flow-containter right center-v" },
+                    noreact_1.NoReact.createElement("label", { for: "checkbox-hide-outlines-on-save" }, "Hide outlines on save"),
+                    noreact_1.NoReact.createElement("input", { type: "checkbox", name: "checkbox-hide-outlines-on-save", id: "checkbox-hide-outlines-on-save", checked: true }))),
+            noreact_1.NoReact.createElement("div", { class: "flow-containter center" },
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
+                    noreact_1.NoReact.createElement("h4", null, "Target Bounds Size")),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
+                    noreact_1.NoReact.createElement("label", { for: "boundsRatio" }, "Box ratio"),
+                    noreact_1.NoReact.createElement("br", null),
+                    noreact_1.NoReact.createElement("select", { id: "boundsRatio", ref: ref_slctBoundsRatio },
+                        noreact_1.NoReact.createElement("option", { value: "2.0" }, "2:1"),
+                        noreact_1.NoReact.createElement("option", { value: "1.333" }, "4:3"),
+                        noreact_1.NoReact.createElement("option", { value: "1.0", selected: true }, "1:1"),
+                        noreact_1.NoReact.createElement("option", { value: "0.75" }, "3:4"),
+                        noreact_1.NoReact.createElement("option", { value: "0.5" }, "1:2"))),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
+                    noreact_1.NoReact.createElement("label", { for: "optimalBoxWidthPx" }, "Optimal box width"),
+                    noreact_1.NoReact.createElement("br", null),
+                    noreact_1.NoReact.createElement("select", { id: "optimalBoxWidthPx" },
+                        noreact_1.NoReact.createElement("option", { value: "256", ref: ref_slctOptimalBoxWidthPx, selected: true }, "256"),
+                        noreact_1.NoReact.createElement("option", { value: "512" }, "512"),
+                        noreact_1.NoReact.createElement("option", { value: "1024" }, "1024"),
+                        noreact_1.NoReact.createElement("option", { value: "2048" }, "2048")),
+                    " ",
+                    "px"),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-25 flow-containter right center-v" },
+                    noreact_1.NoReact.createElement("label", { for: "checkbox-silhouette-black-color" }, "Use black color for silhouette"),
+                    noreact_1.NoReact.createElement("input", { type: "checkbox", name: "checkbox-silhouette-black-color", id: "checkbox-silhouette-black-color", checked: true }))),
+            noreact_1.NoReact.createElement("div", { class: "flow-containter" },
+                noreact_1.NoReact.createElement("div", { class: "grid-w-33" }),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-33 flex-flow center" },
+                    noreact_1.NoReact.createElement("button", { id: "randomizeButton", ref: ref_btnRandomize }, "Randomize")),
+                noreact_1.NoReact.createElement("div", { class: "grid-w-33" },
+                    noreact_1.NoReact.createElement("div", { class: "flex-flow grid-w-50" },
+                        noreact_1.NoReact.createElement("label", { for: "isCreateManyEnabled" }, "Create\u00A0Many"),
+                        noreact_1.NoReact.createElement("input", { type: "checkbox", name: "isCreateManyEnabled", id: "isCreateManyEnabled" })),
+                    noreact_1.NoReact.createElement("div", { class: "flex-flow grid-w-50" },
+                        noreact_1.NoReact.createElement("label", { for: "maxIterationCount" }, "Max\u00A0Iterations"),
+                        noreact_1.NoReact.createElement("input", { type: "number", id: "maxIterationCount", name: "maxIterationCount", min: "0", value: "99" })),
+                    noreact_1.NoReact.createElement("span", { id: "iterationDisplay" }))),
+            noreact_1.NoReact.createElement("div", { class: "flow-container", style: "background-color: rgba(0,0,0,0.25);" },
+                noreact_1.NoReact.createElement("div", { class: "progressbar w-100" })),
+            noreact_1.NoReact.createElement("div", { class: "flow-containter flex-flow" },
+                noreact_1.NoReact.createElement("label", { for: "isPutEnabled" }, "Store data"),
+                noreact_1.NoReact.createElement("input", { type: "checkbox", name: "isPutEnabled", id: "isPutEnabled" }),
+                noreact_1.NoReact.createElement("input", { type: "text", id: "putURL", class: "putURL", name: "putURL", value: "http://127.0.0.1:1337/model/put", disabled: true }),
+                noreact_1.NoReact.createElement("button", { id: "btn_store-now", ref: ref_btnStoreNow }, "Store Now")),
+            noreact_1.NoReact.createElement("div", { class: "status-container w-100 error" })));
+        this.rootElement.appendChild(htmlContent);
+        if (!ref_btnRandomize.current || !ref_btnShowPath.current || !ref_btnHidePath.current || !ref_btnStoreNow.current) {
+            throw Error("Cannot initialize dailog: some buttons are null.");
+        }
+        // elem_btnRandomize.addEventListener("click", this._randomizeButtonEventHandler());
+        ref_btnRandomize.current.addEventListener("click", this._randomizeButtonEventHandler());
+        ref_btnShowPath.current.addEventListener("click", this._togglePathVisibilityHandler(true));
+        ref_btnHidePath.current.addEventListener("click", this._togglePathVisibilityHandler(false));
+        ref_btnStoreNow.current.addEventListener("click", this._storeNowHandler());
+        // console.log("this.modal.modalElements", this.modal.modalElements);
         this.modal.modalElements.modal.header.closeBtn.addEventListener("click", this._onCloseHandler());
+        if (!ref_slctOptimalBoxWidthPx.current || !ref_slctBoundsRatio.current) {
+            throw Error("Cannot initialize dailog: some select elements are null.");
+        }
         var formChangeHandler = this._onFormChangeHandler();
-        // this.rootElement.querySelector("#segmentCountMin").addEventListener("click", formChangeHandler);
-        // this.rootElement.querySelector("#segmentCountMax").addEventListener("click", formChangeHandler);
-        // this.rootElement.querySelector("#bendValueMin").addEventListener("click", formChangeHandler);
-        // this.rootElement.querySelector("#bendValueMax").addEventListener("click", formChangeHandler);
-        this.rootElement.querySelector("#boundsRatio").addEventListener("click", formChangeHandler);
-        this.rootElement.querySelector("#optimalBoxWidthPx").addEventListener("click", formChangeHandler);
+        ref_slctOptimalBoxWidthPx.current.addEventListener("click", formChangeHandler);
+        ref_slctBoundsRatio.current.addEventListener("click", formChangeHandler);
         globalThis.addEventListener("resize", formChangeHandler);
     }
     // +---------------------------------------------------------------------------------
@@ -1923,18 +2009,28 @@ var DildoRandomizerDialog = /** @class */ (function () {
     };
     DildoRandomizerDialog.prototype.__setRunning = function (isRunning) {
         this.isRunning = isRunning;
+        var elem_progressBar = this.rootElement.querySelector(".progressbar");
+        if (!elem_progressBar) {
+            console.warn("Cannot update progress bar: element not found.");
+            return;
+        }
         if (isRunning) {
-            this.rootElement.querySelector(".progressbar").classList.add("animate");
+            elem_progressBar.classList.add("animate");
         }
         else {
-            this.rootElement.querySelector(".progressbar").classList.remove("animate");
+            elem_progressBar.classList.remove("animate");
         }
     };
     // +---------------------------------------------------------------------------------
     // | When iterating many randomized results: set the current iteration message.
     // +-------------------------------
     DildoRandomizerDialog.prototype._setIterationDisplay = function (msg) {
-        this.rootElement.querySelector("#iterationDisplay").innerHTML = msg;
+        var elem_iterationDisplay = this.rootElement.querySelector("#iterationDisplay");
+        if (!elem_iterationDisplay) {
+            console.warn("Cannot update iteration display: element not found.");
+            return;
+        }
+        elem_iterationDisplay.innerHTML = msg;
     };
     // +---------------------------------------------------------------------------------
     // | Handle close events.
@@ -2183,19 +2279,19 @@ var DildoRandomizerDialog = /** @class */ (function () {
         var elem_putURL = this.rootElement.querySelector("#putURL");
         var elem_hideOutlineOnSave = this.rootElement.querySelector("#checkbox-hide-outlines-on-save");
         var elem_isSilhouetteBlackColor = this.rootElement.querySelector("#checkbox-silhouette-black-color");
-        var segmentCountMin = Number(elem_segmentCountMin.value);
-        var segmentCountMax = Number(elem_segmentCountMax.value);
-        var bendValueMin = Number(elem_bendValueMin.value);
-        var bendValueMax = Number(elem_bendValueMax.value);
+        var segmentCountMin = elem_segmentCountMin ? Number(elem_segmentCountMin.value) : NaN;
+        var segmentCountMax = elem_segmentCountMax ? Number(elem_segmentCountMax.value) : NaN;
+        var bendValueMin = elem_bendValueMin ? Number(elem_bendValueMin.value) : NaN;
+        var bendValueMax = elem_bendValueMax ? Number(elem_bendValueMax.value) : NaN;
         // var boundsRatio = Number(this.rootElement.querySelector("#boundsRatio option[selected]").value);
         var boundsRatio = Number(getSelectedOption(this.rootElement, "#boundsRatio", 1.0));
         var optimalBoxWidthPx = Number(getSelectedOption(this.rootElement, "#optimalBoxWidthPx", 1024));
-        var isCreateManyEnabled = Boolean(elem_isCreateManyEnabled.checked);
-        var maxIterationCount = Number(elem_maxIterationCount.value);
-        var isPutEnabled = Boolean(elem_isPutEnabled.checked);
-        var putURL = elem_putURL.value;
-        var hideOutlineOnSave = Boolean(elem_hideOutlineOnSave.checked);
-        var isSilhouetteBlackColor = Boolean(elem_isSilhouetteBlackColor.checked);
+        var isCreateManyEnabled = elem_isCreateManyEnabled ? Boolean(elem_isCreateManyEnabled.checked) : false;
+        var maxIterationCount = elem_maxIterationCount ? Number(elem_maxIterationCount.value) : 0;
+        var isPutEnabled = elem_isPutEnabled ? Boolean(elem_isPutEnabled.checked) : false;
+        var putURL = elem_putURL ? elem_putURL.value : "";
+        var hideOutlineOnSave = elem_hideOutlineOnSave ? Boolean(elem_hideOutlineOnSave.checked) : false;
+        var isSilhouetteBlackColor = elem_isSilhouetteBlackColor ? Boolean(elem_isSilhouetteBlackColor.checked) : false;
         // var segmentCountMin = Number(this.rootElement.querySelector("#segmentCountMin").value);
         // var segmentCountMax = Number(this.rootElement.querySelector("#segmentCountMax").value);
         // var bendValueMin = Number(this.rootElement.querySelector("#bendValueMin").value);

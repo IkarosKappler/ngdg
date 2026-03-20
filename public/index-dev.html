@@ -55,7 +55,6 @@
     <script src="lib/plotboilerplate/src/cjs/utils/io/FileDrop.js"></script>
     <!-- <script src="lib/plotboilerplate/src/cjs/utils/detectDarkMode.js"></script> -->
     <script src="lib/plotboilerplate/src/cjs/utils/dom/guiSizeToggler.js"></script>
-
     
     <script src="lib/ngdg/src/cjs/defaults.js"></script>
     <script src="lib/ngdg/src/cjs/computeVertexNormals.js"></script>
@@ -112,8 +111,8 @@
     <script src="lib/ngdg/src/cjs/AppContext.js"></script>
     <script src="lib/ngdg/src/cjs/Rulers.js"></script>
     <script src="lib/ngdg/src/cjs/scaleBounds.js"></script>
-    <script src="lib/ngdg/src/cjs/ngdg.js"></script>
     <script src="lib/ngdg/src/cjs/DildoRandomizerDialog.js"></script>
+    <script src="lib/ngdg/src/cjs/ngdg.js"></script>
     <script src="lib/uistats-typescript/uistats.min.js"></script>
     <script src="lib/alloyfinger-typescript/src/cjs/alloy_finger.js"></script>
     
@@ -121,6 +120,13 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="css/modal-modern.css">
     <link rel="stylesheet" href="css/progressbar.css">
+
+    <script src="lib/noreact/noreact-main.js"></script>
+    <script>
+      console.log("NoReact", NoReact); 
+      globalThis["NoReact"] = NoReact;
+      // globalThis["uistats-typescript"] = UIStats;
+    </script>
     
     <script src="lib/axios/dist/axios.min.js"></script> 
     <script src="lib/three-r124/build/three.min.js"></script> 

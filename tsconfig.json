@@ -7,6 +7,9 @@
 
 		"allowJs": false,
 
+		"jsx": "react",
+		"reactNamespace": "NoReact",
+
 		"forceConsistentCasingInFileNames": true,
 		"noImplicitReturns": false,
 		"noImplicitThis": false,
@@ -15,7 +18,7 @@
 		"noUnusedLocals": false,
 		"noUnusedParameters": false
     },
-    "include": ["./src/ts/**/*.ts"],
+    "include": ["./src/ts/**/*.ts", "./src/ts/**/*.tsx"],
     "exclude": ["./dist", "./tmp", "./src/js", "./src/vanilla", "./npm-package", "./demos", "node_modules"],
-    "removeComments": false
+	"removeComments": false
 }

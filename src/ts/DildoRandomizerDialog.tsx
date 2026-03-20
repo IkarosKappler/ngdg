@@ -1,26 +1,68 @@
 /**
  * @require DildoRandomizer
  *
- * @author  Ikaros Kappler
- * @date    2026-03-02
- * @version 1.0.0
+ * @author   Ikaros Kappler
+ * @date     2026-03-02
+ * @modified 2026-03-20 Ported to Typescript/TSX.
+ * @version  1.1.0
  */
 
-(function (_context) {
-  //   const DEG_TO_RAD = Math.PI / 180.0;
+import { NoReact } from "noreact";
+import { JsxElement } from "typescript";
 
-  // outlineChangedCallback
-  // onPathVisibilityChanged
-  // getBezierJSON
-  // getSculptmapDataURL
-  // getPreviewImageDataURL
-  var DildoRandomizerDialog = function (pb, modal, config, callbackOptions) {
-    // outlineChangedCallback, onPathVisibilityChanged, getBezierJSON) {
+import { Bounds, PlotBoilerplate, Vertex, drawutils } from "plotboilerplate";
+import { Modal } from "./Modal";
+import { AppContext } from "./AppContext";
+import { DildoRandomizer, DildoRandomizerResult } from "./DildoRandomizer";
+import { getImageFromCanvas } from "./getImageFromCanvas";
+import axios from "axios";
+
+export interface ICallbackOptions {
+  outlineChangedCallback: (result: DildoRandomizerResult) => void;
+  onPathVisibilityChanged: () => void;
+  getBezierJSON: () => void;
+  getSculptmapDataURL: () => void;
+  getPreviewImageDataURL: (mimetype: string) => void;
+}
+
+export class DildoRandomizerDialog {
+  private pb: PlotBoilerplate;
+  private modal: Modal;
+  private config: typeof AppContext.prototype.config;
+
+  private callbackOptions: ICallbackOptions;
+  private rootElement: HTMLFormElement;
+  private isOpen: boolean;
+  private isDrawIdealBoundsEnabled: boolean;
+
+  // The ideal bounds to export the final image data from.
+  private idealExportBounds: Bounds;
+
+  // The real bounds _inside_ the export bounds to generate the outline in.
+  private idealGenerateBounds: Bounds;
+
+  private curSettings: ReturnType<typeof DildoRandomizerDialog.prototype.getCurrentFormSettings>;
+  private viewport: Bounds;
+  private iterationNumber: number;
+  private sequenceID: any;
+  private isRunning: boolean;
+
+  /**
+   * outlineChangedCallback
+   * onPathVisibilityChanged
+   * getBezierJSON
+   * getSculptmapDataURL
+   * getPreviewImageDataURL
+   **/
+  constructor(pb: PlotBoilerplate, modal: Modal, config: typeof AppContext.prototype.config, callbackOptions: ICallbackOptions) {
+    if (!(pb.canvas instanceof HTMLCanvasElement)) {
+      throw new Error(
+        "Cannot instantiate DildoRandomizerDialog from plotboilerplate instance: this works only with <canvas> elements!"
+      );
+    }
     this.pb = pb;
     this.modal = modal;
     this.config = config;
-    // this.outlineChangedCallback = outlineChangedCallback;
-    // this.onPathVisibilityChanged = onPathVisibilityChanged;
     this.callbackOptions = callbackOptions;
     this.rootElement = document.createElement("form");
     this.rootElement.setAttribute("id", "randomizerForm");
@@ -29,142 +71,177 @@
     this.isDrawIdealBoundsEnabled = true;
 
     // The ideal bounds to export the final image data from.
-    this.idealExportBounds = null;
+    this.idealExportBounds = new Bounds(new Vertex(), new Vertex());
 
     // The real bounds _inside_ the export bounds to generate the outline in.
-    this.idealGenerateBounds = null;
+    this.idealGenerateBounds = new Bounds(new Vertex(), new Vertex());
 
-    this.curSettings = null;
     this.viewport = null;
     this.iterationNumber = 0;
     this.sequenceID = 0;
     this.isRunning = false;
+    this.curSettings = null; // this.getCurrentFormSettings();
 
-    this.rootElement.innerHTML = `
-    <div class="font-600-desktop">
-      <div class="flow-containter">
-        <div class="grid-w-25"><h4>Outline Path</h4></div>
-        <div class="grid-w-25">
-          <label for="segmentCountMin">Min Segments</label><br>
-          <input type="number" id="segmentCountMin" min="1" max="24" value="3" name="segmentCountMin" />
-        </div>
-        <div class="grid-w-25">
-          <label for="segmentCountMax">Max Segments</label><br>
-          <input type="number" id="segmentCountMax" min="1" max="24" value="8" name="segmentCountMax" />
-        </div>
-        <div class="grid-w-25 flow-containter right center-v">
-          <button id="btn-hide-path">Hide Path</button>
-          <button id="btn-show-path">Show Path</button>
-        </div>
-      </div>
-      <div class="flow-containter">
-        <div class="grid-w-25"><h4>Mesh bend value (Deg)</h4></div>
-        <div class="grid-w-25">
-          <label for="bendValueMin">Min Bend Value</label><br>
-          <input type="number" id="bendValueMin" min="0" max="180" value="0" name="bendValueMin" />
-          °
-        </div>
-        <div class="grid-w-25">
-          <label for="bendValueMax">Max Bend Value</label><br>
-          <input type="number" id="bendValueMax" min="0" max="180" value="120" name="bendValueMax" />
-          °
-        </div>
-        <div class="grid-w-25 flow-containter right center-v">
-          <label for="checkbox-hide-outlines-on-save">Hide outlines on save</label>
-          <input type="checkbox" name="checkbox-hide-outlines-on-save" id="checkbox-hide-outlines-on-save" checked>
-        </div>
-      </div>
-      <div class="flow-containter center">
-        <div class="grid-w-25"><h4>Target Bounds Size</h4></div>
-        <div class="grid-w-25">
-          <label for="boundsRatio">Box ratio</label><br>
-          <select id="boundsRatio">
-            <option value="2.0">2:1</option>
-            <option value="1.333">4:3</option>
-            <option value="1.0" selected>1:1</option>
-            <option value="0.75">3:4</option>
-            <option value="0.5">1:2</option>
-          </select>
-        </div>
-        <div class="grid-w-25">
-          <label for="optimalBoxWidthPx">Optimal box width</label><br>
-          <select id="optimalBoxWidthPx">
-            <option value="256" selected>256</option>
-            <option value="512">512</option>
-            <option value="1024">1024</option>
-            <option value="2048">2048</option>
-          </select> px
-        </div>
-        <div class="grid-w-25 flow-containter right center-v">
-          <label for="checkbox-silhouette-black-color">Use black color for silhouette</label>
-          <input type="checkbox" name="checkbox-silhouette-black-color" id="checkbox-silhouette-black-color" checked>
-        </div>
-      </div>
-      <div class="flow-containter">
-        <div class="grid-w-33"><!-- empty --></div>
-        <div class="grid-w-33 flex-flow center">
-          <button id="randomizeButton">Randomize</button>
-        </div>
-        <div class="grid-w-33">
-          <div class="flex-flow grid-w-50">
-            <label for="isCreateManyEnabled">Create&nbsp;Many</label>
-            <input type="checkbox" name="isCreateManyEnabled" id="isCreateManyEnabled">
+    const ref_btnRandomize = NoReact.useRef<HTMLButtonElement>();
+    const ref_btnShowPath = NoReact.useRef<HTMLButtonElement>();
+    const ref_btnHidePath = NoReact.useRef<HTMLButtonElement>();
+    const ref_btnStoreNow = NoReact.useRef<HTMLButtonElement>();
+    const ref_slctBoundsRatio = NoReact.useRef<HTMLButtonElement>();
+    const ref_slctOptimalBoxWidthPx = NoReact.useRef<HTMLButtonElement>();
+    const htmlContent: HTMLElement = (
+      <div class="font-600-desktop">
+        <div class="flow-containter">
+          <div class="grid-w-25">
+            <h4>Outline Path</h4>
           </div>
-          <div class="flex-flow grid-w-50">
-          <label for="maxIterationCount">Max&nbsp;Iterations</label>
-            <input type="number" id="maxIterationCount" name="maxIterationCount" min="0" value="99" />
+          <div class="grid-w-25">
+            <label for="segmentCountMin">Min Segments</label>
+            <br />
+            <input type="number" id="segmentCountMin" min="1" max="24" value="3" name="segmentCountMin" />
           </div>
-          <span id="iterationDisplay"></span>
+          <div class="grid-w-25">
+            <label for="segmentCountMax">Max Segments</label>
+            <br />
+            <input type="number" id="segmentCountMax" min="1" max="24" value="8" name="segmentCountMax" />
+          </div>
+          <div class="grid-w-25 flow-containter right center-v">
+            <button id="btn-hide-path" ref={ref_btnHidePath}>
+              Hide Path
+            </button>
+            <button id="btn-show-path" ref={ref_btnShowPath}>
+              Show Path
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="flow-container" style="background-color: rgba(0,0,0,0.25);">
-        <div class="progressbar w-100"></div>
-      </div>
-      <div class="flow-containter flex-flow">
+        <div class="flow-containter">
+          <div class="grid-w-25">
+            <h4>Mesh bend value (Deg)</h4>
+          </div>
+          <div class="grid-w-25">
+            <label for="bendValueMin">Min Bend Value</label>
+            <br />
+            <input type="number" id="bendValueMin" min="0" max="180" value="0" name="bendValueMin" />°
+          </div>
+          <div class="grid-w-25">
+            <label for="bendValueMax">Max Bend Value</label>
+            <br />
+            <input type="number" id="bendValueMax" min="0" max="180" value="120" name="bendValueMax" />°
+          </div>
+          <div class="grid-w-25 flow-containter right center-v">
+            <label for="checkbox-hide-outlines-on-save">Hide outlines on save</label>
+            <input type="checkbox" name="checkbox-hide-outlines-on-save" id="checkbox-hide-outlines-on-save" checked />
+          </div>
+        </div>
+        <div class="flow-containter center">
+          <div class="grid-w-25">
+            <h4>Target Bounds Size</h4>
+          </div>
+          <div class="grid-w-25">
+            <label for="boundsRatio">Box ratio</label>
+            <br />
+            <select id="boundsRatio" ref={ref_slctBoundsRatio}>
+              <option value="2.0">2:1</option>
+              <option value="1.333">4:3</option>
+              <option value="1.0" selected>
+                1:1
+              </option>
+              <option value="0.75">3:4</option>
+              <option value="0.5">1:2</option>
+            </select>
+          </div>
+          <div class="grid-w-25">
+            <label for="optimalBoxWidthPx">Optimal box width</label>
+            <br />
+            <select id="optimalBoxWidthPx">
+              <option value="256" ref={ref_slctOptimalBoxWidthPx} selected>
+                256
+              </option>
+              <option value="512">512</option>
+              <option value="1024">1024</option>
+              <option value="2048">2048</option>
+            </select>{" "}
+            px
+          </div>
+          <div class="grid-w-25 flow-containter right center-v">
+            <label for="checkbox-silhouette-black-color">Use black color for silhouette</label>
+            <input type="checkbox" name="checkbox-silhouette-black-color" id="checkbox-silhouette-black-color" checked />
+          </div>
+        </div>
+        <div class="flow-containter">
+          <div class="grid-w-33">{/* empty */}</div>
+          <div class="grid-w-33 flex-flow center">
+            <button id="randomizeButton" ref={ref_btnRandomize}>
+              Randomize
+            </button>
+          </div>
+          <div class="grid-w-33">
+            <div class="flex-flow grid-w-50">
+              <label for="isCreateManyEnabled">Create&nbsp;Many</label>
+              <input type="checkbox" name="isCreateManyEnabled" id="isCreateManyEnabled" />
+            </div>
+            <div class="flex-flow grid-w-50">
+              <label for="maxIterationCount">Max&nbsp;Iterations</label>
+              <input type="number" id="maxIterationCount" name="maxIterationCount" min="0" value="99" />
+            </div>
+            <span id="iterationDisplay"></span>
+          </div>
+        </div>
+        <div class="flow-container" style="background-color: rgba(0,0,0,0.25);">
+          <div class="progressbar w-100"></div>
+        </div>
+        <div class="flow-containter flex-flow">
           <label for="isPutEnabled">Store data</label>
-          <input type="checkbox" name="isPutEnabled" id="isPutEnabled">
-          <input type="text" id="putURL" class="putURL" name="putURL" value="http://127.0.0.1:1337/model/put" disabled>
-          <button id="btn_store-now">Store Now</button>
+          <input type="checkbox" name="isPutEnabled" id="isPutEnabled" />
+          <input type="text" id="putURL" class="putURL" name="putURL" value="http://127.0.0.1:1337/model/put" disabled />
+          <button id="btn_store-now" ref={ref_btnStoreNow}>
+            Store Now
+          </button>
+        </div>
+        <div class="status-container w-100 error"></div>
       </div>
-      <div class="status-container w-100 error"></div>
-    </div> <!-- END small font -->
-`;
+    );
 
-    this.rootElement.querySelector("#randomizeButton").addEventListener("click", this._randomizeButtonEventHandler());
-    this.rootElement.querySelector("#btn-show-path").addEventListener("click", this._togglePathVisibilityHandler(true));
-    this.rootElement.querySelector("#btn-hide-path").addEventListener("click", this._togglePathVisibilityHandler(false));
-    this.rootElement.querySelector("#btn_store-now").addEventListener("click", this._storeNowHandler());
+    this.rootElement.appendChild(htmlContent);
 
-    console.log("this.modal.modalElements", this.modal.modalElements);
+    if (!ref_btnRandomize.current || !ref_btnShowPath.current || !ref_btnHidePath.current || !ref_btnStoreNow.current) {
+      throw Error("Cannot initialize dailog: some buttons are null.");
+    }
+
+    // elem_btnRandomize.addEventListener("click", this._randomizeButtonEventHandler());
+    ref_btnRandomize.current.addEventListener("click", this._randomizeButtonEventHandler());
+    ref_btnShowPath.current.addEventListener("click", this._togglePathVisibilityHandler(true));
+    ref_btnHidePath.current.addEventListener("click", this._togglePathVisibilityHandler(false));
+    ref_btnStoreNow.current.addEventListener("click", this._storeNowHandler());
+
+    // console.log("this.modal.modalElements", this.modal.modalElements);
     this.modal.modalElements.modal.header.closeBtn.addEventListener("click", this._onCloseHandler());
 
-    var formChangeHandler = this._onFormChangeHandler();
+    if (!ref_slctOptimalBoxWidthPx.current || !ref_slctBoundsRatio.current) {
+      throw Error("Cannot initialize dailog: some select elements are null.");
+    }
 
-    // this.rootElement.querySelector("#segmentCountMin").addEventListener("click", formChangeHandler);
-    // this.rootElement.querySelector("#segmentCountMax").addEventListener("click", formChangeHandler);
-    // this.rootElement.querySelector("#bendValueMin").addEventListener("click", formChangeHandler);
-    // this.rootElement.querySelector("#bendValueMax").addEventListener("click", formChangeHandler);
-    this.rootElement.querySelector("#boundsRatio").addEventListener("click", formChangeHandler);
-    this.rootElement.querySelector("#optimalBoxWidthPx").addEventListener("click", formChangeHandler);
+    var formChangeHandler = this._onFormChangeHandler();
+    ref_slctOptimalBoxWidthPx.current.addEventListener("click", formChangeHandler);
+    ref_slctBoundsRatio.current.addEventListener("click", formChangeHandler);
 
     globalThis.addEventListener("resize", formChangeHandler);
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Handle form changes.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._onFormChangeHandler = function () {
+  private _onFormChangeHandler() {
     var _self = this;
-    return function (event) {
+    return function (event: Event) {
       _self._updateIdealBounds(true);
       _self.pb.redraw();
     };
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Open the randomizer dialog.
   // +-------------------------------
-  DildoRandomizerDialog.prototype.open = function () {
+  public open() {
     this.modal.setTitle("Dildo Randomizer");
     this.modal.setFooter("");
     // this.modal.setActions([Modal.ACTION_CLOSE]);
@@ -189,41 +266,51 @@
     this._updateIdealBounds(true); // reevaluateFormSettings=true
     this.pb.redraw();
     this.__setRunning(false);
-  };
+  }
 
-  DildoRandomizerDialog.prototype.__setRunning = function (isRunning) {
+  private __setRunning(isRunning) {
     this.isRunning = isRunning;
-    if (isRunning) {
-      this.rootElement.querySelector(".progressbar").classList.add("animate");
-    } else {
-      this.rootElement.querySelector(".progressbar").classList.remove("animate");
+    const elem_progressBar = this.rootElement.querySelector(".progressbar");
+    if (!elem_progressBar) {
+      console.warn("Cannot update progress bar: element not found.");
+      return;
     }
-  };
+    if (isRunning) {
+      elem_progressBar.classList.add("animate");
+    } else {
+      elem_progressBar.classList.remove("animate");
+    }
+  }
 
   // +---------------------------------------------------------------------------------
   // | When iterating many randomized results: set the current iteration message.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._setIterationDisplay = function (msg) {
-    this.rootElement.querySelector("#iterationDisplay").innerHTML = msg;
-  };
+  private _setIterationDisplay(msg) {
+    const elem_iterationDisplay = this.rootElement.querySelector("#iterationDisplay");
+    if (!elem_iterationDisplay) {
+      console.warn("Cannot update iteration display: element not found.");
+      return;
+    }
+    elem_iterationDisplay.innerHTML = msg;
+  }
 
   // +---------------------------------------------------------------------------------
   // | Handle close events.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._onCloseHandler = function () {
+  private _onCloseHandler() {
     var _self = this;
-    return function (_event) {
+    return function (_event?: Event) {
       _self.isOpen = false;
       _self.pb.redraw();
       console.log("Set running = false");
       _self.__setRunning(false);
     };
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Draw the ideal bounds for randomization.
   // +-------------------------------
-  DildoRandomizerDialog.prototype.drawIdealBounds = function (draw, fill) {
+  private drawIdealBounds(draw, fill) {
     if (!this.isOpen || this.isRunning || !this.isDrawIdealBoundsEnabled) {
       return;
     }
@@ -237,12 +324,12 @@
         dashArray: [5, 5]
       });
     }
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Internal method for displaying error messages inside the dialog.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._displayStatus = function (errmsg, className) {
+  private _displayStatus(errmsg, className) {
     const errorContainer = this.rootElement.querySelector(".status-container");
     if (!errorContainer) {
       return;
@@ -250,26 +337,26 @@
     errorContainer.classList.remove("error", "success");
     errorContainer.classList.add(className);
     errorContainer.innerHTML = errmsg;
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Internal method for displaying error messages inside the dialog.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._displayError = function (errmsg) {
+  private _displayError(errmsg) {
     this._displayStatus(errmsg ? `⚠️ ${errmsg}` : "", "error");
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Internal method for displaying error messages inside the dialog.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._displaySuccess = function (msg) {
+  private _displaySuccess(msg) {
     this._displayStatus(msg ? `✅ ${msg}` : "", "success");
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Handle path visibility events.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._togglePathVisibilityHandler = function (isVisible) {
+  private _togglePathVisibilityHandler = function (isVisible) {
     var _self = this;
     return function (event) {
       event.preventDefault();
@@ -282,7 +369,7 @@
   // +---------------------------------------------------------------------------------
   // | Toggle other paths except the outline on/off.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._togglePathVisibility = function (isVisible) {
+  private _togglePathVisibility(isVisible) {
     // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
     this.config.drawRulers = isVisible;
     this.config.drawOutline = isVisible;
@@ -294,24 +381,24 @@
       this.config.showDiscreteOutlinePoints = false;
     }
     this.callbackOptions.onPathVisibilityChanged();
-  };
+  }
 
-  DildoRandomizerDialog.prototype._getPathVisibility = function () {
+  private _getPathVisibility() {
     // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
     return (
       this.config.drawRulers ||
-      this.config.drawOutlines ||
-      this.config.fillOutlines ||
-      this.config.drawResizeHandleLiness ||
-      this.config.drawPathBoundss ||
+      this.config.drawOutline ||
+      this.config.fillOutline ||
+      this.config.drawResizeHandleLines ||
+      this.config.drawPathBounds ||
       this.isDrawIdealBoundsEnabled
     );
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Toggle other paths except the outline on/off.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._storeNowHandler = function () {
+  private _storeNowHandler() {
     var _self = this;
     return function (event) {
       console.log("Request to store model (click).");
@@ -326,12 +413,12 @@
           // NOOP (message is already displayed)
         });
     };
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Randomize the next dildo model from the current settings.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._randomizeButtonEventHandler = function () {
+  private _randomizeButtonEventHandler() {
     var _self = this;
     return function (event) {
       event.preventDefault();
@@ -341,12 +428,12 @@
       _self.__setRunning(true);
       _self._randomizeDildoSettings(_self.sequenceID);
     };
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Compute the next randomized dildo settings.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._randomizeDildoSettings = function (curSequenceID) {
+  private _randomizeDildoSettings(curSequenceID) {
     this._displayError("");
     this.curSettings = this.getCurrentFormSettings();
     if (this.iterationNumber >= this.curSettings.maxIterationCount) {
@@ -377,7 +464,7 @@
     );
 
     console.log("Ideal bounds", this.idealGenerateBounds, "idealLeftHalfBounds", idealLeftHalfBounds);
-    var dildoRandomizer = new ngdg.DildoRandomizer(
+    var dildoRandomizer = new DildoRandomizer(
       idealLeftHalfBounds,
       this.curSettings.segmentCountMin,
       this.curSettings.segmentCountMax,
@@ -406,12 +493,12 @@
         console.error(e);
         _self.__setRunning(false);
       });
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Tries to store the current model, screenshots sculpt map and settings.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._storeCurrentResult = function (isPutEnabled) {
+  private _storeCurrentResult(isPutEnabled) {
     if (isPutEnabled && this.curSettings.hideOutlineOnSave && this._getPathVisibility()) {
       if (this.curSettings.isSilhouetteBlackColor) {
         this.config.silhouetteLineColor = "rgb(0,0,0)";
@@ -419,11 +506,11 @@
       this._togglePathVisibility(false);
     }
     var _self = this;
-    return new Promise(function (accept, reject) {
+    return new Promise<boolean>(function (accept, reject) {
       console.log("[_storeCurrentResult] called [0].");
       if (!isPutEnabled) {
         console.log("Storing data is not allowed by settings/configuration. Returning.");
-        accept();
+        accept(false);
         return;
       }
       console.log("[_storeCurrentResult] called [1].");
@@ -435,7 +522,11 @@
         );
         // var boundsToCanvasRect = _self.idealExportBounds;
         console.log("boundsToCanvasRect", boundsToCanvasRect);
-        const preview2dSubImageResult = ngdg.getImageFromCanvas(_self.pb.canvas, _self.pb.draw.ctx, boundsToCanvasRect);
+        const preview2dSubImageResult = getImageFromCanvas(
+          _self.pb.canvas as HTMLCanvasElement,
+          (_self.pb.draw as drawutils).ctx,
+          boundsToCanvasRect
+        );
         const preview2dImageDataURL = preview2dSubImageResult.canvas.toDataURL("image/png");
         const preview3dImageDataURL = _self.callbackOptions.getPreviewImageDataURL("image/png");
         // Use AJAX/Axios
@@ -459,7 +550,7 @@
             // response.data.pipe(fs.createWriteStream("ada_lovelace.jpg"));
             console.log("Succeeded");
             _self._displaySuccess("Model stored.");
-            accept();
+            accept(true);
           })
           .catch(function (err) {
             console.error(err);
@@ -479,25 +570,39 @@
         reject(exc);
       }
     });
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Get the current settings as numbers from the displayed HTML form.
   // +-------------------------------
-  DildoRandomizerDialog.prototype.getCurrentFormSettings = function () {
-    var segmentCountMin = Number(this.rootElement.querySelector("#segmentCountMin").value);
-    var segmentCountMax = Number(this.rootElement.querySelector("#segmentCountMax").value);
-    var bendValueMin = Number(this.rootElement.querySelector("#bendValueMin").value);
-    var bendValueMax = Number(this.rootElement.querySelector("#bendValueMax").value);
+  private getCurrentFormSettings() {
+    var elem_segmentCountMin: HTMLInputElement | null = this.rootElement.querySelector("#segmentCountMin");
+    var elem_segmentCountMax: HTMLInputElement | null = this.rootElement.querySelector("#segmentCountMax");
+    var elem_bendValueMin: HTMLInputElement | null = this.rootElement.querySelector("#bendValueMin");
+    var elem_bendValueMax: HTMLInputElement | null = this.rootElement.querySelector("#bendValueMax");
+    // var boundsRatio = Number(this.rootElement.querySelector("#boundsRatio option[selected]").value);
+    // var elem_boundsRatio : HTMLInputElement = getSelectedOption(this.rootElement, "#boundsRatio", 1.0);
+    // var elem_optimalBoxWidthPx : HTMLInputElement = getSelectedOption(this.rootElement, "#optimalBoxWidthPx", 1024);
+    var elem_isCreateManyEnabled: HTMLInputElement | null = this.rootElement.querySelector("#isCreateManyEnabled");
+    var elem_maxIterationCount: HTMLInputElement | null = this.rootElement.querySelector("#maxIterationCount");
+    var elem_isPutEnabled: HTMLInputElement | null = this.rootElement.querySelector("#isPutEnabled");
+    var elem_putURL: HTMLInputElement | null = this.rootElement.querySelector("#putURL");
+    var elem_hideOutlineOnSave: HTMLInputElement | null = this.rootElement.querySelector("#checkbox-hide-outlines-on-save");
+    var elem_isSilhouetteBlackColor: HTMLInputElement | null = this.rootElement.querySelector("#checkbox-silhouette-black-color");
+
+    var segmentCountMin = elem_segmentCountMin ? Number(elem_segmentCountMin.value) : NaN;
+    var segmentCountMax = elem_segmentCountMax ? Number(elem_segmentCountMax.value) : NaN;
+    var bendValueMin = elem_bendValueMin ? Number(elem_bendValueMin.value) : NaN;
+    var bendValueMax = elem_bendValueMax ? Number(elem_bendValueMax.value) : NaN;
     // var boundsRatio = Number(this.rootElement.querySelector("#boundsRatio option[selected]").value);
     var boundsRatio = Number(getSelectedOption(this.rootElement, "#boundsRatio", 1.0));
     var optimalBoxWidthPx = Number(getSelectedOption(this.rootElement, "#optimalBoxWidthPx", 1024));
-    var isCreateManyEnabled = Boolean(this.rootElement.querySelector("#isCreateManyEnabled").checked);
-    var maxIterationCount = Number(this.rootElement.querySelector("#maxIterationCount").value);
-    var isPutEnabled = Boolean(this.rootElement.querySelector("#isPutEnabled").checked);
-    var putURL = this.rootElement.querySelector("#putURL").value;
-    var hideOutlineOnSave = Boolean(this.rootElement.querySelector("#checkbox-hide-outlines-on-save").checked);
-    var isSilhouetteBlackColor = Boolean(this.rootElement.querySelector("#checkbox-silhouette-black-color").checked);
+    var isCreateManyEnabled = elem_isCreateManyEnabled ? Boolean(elem_isCreateManyEnabled.checked) : false;
+    var maxIterationCount = elem_maxIterationCount ? Number(elem_maxIterationCount.value) : 0;
+    var isPutEnabled = elem_isPutEnabled ? Boolean(elem_isPutEnabled.checked) : false;
+    var putURL = elem_putURL ? elem_putURL.value : "";
+    var hideOutlineOnSave = elem_hideOutlineOnSave ? Boolean(elem_hideOutlineOnSave.checked) : false;
+    var isSilhouetteBlackColor = elem_isSilhouetteBlackColor ? Boolean(elem_isSilhouetteBlackColor.checked) : false;
 
     console.log("boundsRatio", boundsRatio, "optimalBoxWidthPx", optimalBoxWidthPx);
 
@@ -515,12 +620,12 @@
       isSilhouetteBlackColor: isSilhouetteBlackColor,
       putURL: putURL
     };
-  };
+  }
 
   // +---------------------------------------------------------------------------------
   // | Update the ideal bounds from the current form settings.
   // +-------------------------------
-  DildoRandomizerDialog.prototype._updateIdealBounds = function (reevaluateFormSettings) {
+  private _updateIdealBounds(reevaluateFormSettings) {
     // Get the maximum bounds the final 2D model should ideallically be
     // displayed in.
 
@@ -530,7 +635,7 @@
     }
 
     // var width = Math.min(this.viewport.width, this.curSettings.optimalBoxWidthPx);
-    var canvasWidth = Math.min(this.pb.canvas.width, this.curSettings.optimalBoxWidthPx);
+    var canvasWidth = Math.min((this.pb.canvas as HTMLCanvasElement).width, this.curSettings.optimalBoxWidthPx);
     // var height = canvasWidth / this.curSettings.boundsRatio;
     var canvasHeight = canvasWidth / this.curSettings.boundsRatio;
     // var widthInPhysicalPixels = this.pb.canvas.width;
@@ -565,26 +670,24 @@
 
     this.idealExportBounds = bounds;
     this.idealGenerateBounds = bounds.getScaled(0.666);
-  };
+  }
+}
 
-  // +---------------------------------------------------------------------------------
-  // | A helper function to retrieve the selected value from an <select> element.
-  // +-------------------------------
-  var getSelectedOption = function (rootContainer, selector, fallback) {
-    // var e = document.getElementById("elementId");
-    var selectElement = rootContainer.querySelector(selector);
-    if (!selectElement) {
-      console.warn("Select element not found. Using fallback", selector, fallback);
-      return fallback;
-    }
-    var value = selectElement.options[selectElement.selectedIndex].value;
-    // var text = selectElement.options[selectElement.selectedIndex].text;
-    if (!value) {
-      console.warn("Select value not available. Using fallback", fallback);
-      return fallback;
-    }
-    return value;
-  };
-
-  _context.DildoRandomizerDialog = DildoRandomizerDialog;
-})(globalThis);
+// +---------------------------------------------------------------------------------
+// | A helper function to retrieve the selected value from an <select> element.
+// +-------------------------------
+var getSelectedOption = function (rootContainer, selector, fallback) {
+  // var e = document.getElementById("elementId");
+  var selectElement = rootContainer.querySelector(selector);
+  if (!selectElement) {
+    console.warn("Select element not found. Using fallback", selector, fallback);
+    return fallback;
+  }
+  var value = selectElement.options[selectElement.selectedIndex].value;
+  // var text = selectElement.options[selectElement.selectedIndex].text;
+  if (!value) {
+    console.warn("Select value not available. Using fallback", fallback);
+    return fallback;
+  }
+  return value;
+};
