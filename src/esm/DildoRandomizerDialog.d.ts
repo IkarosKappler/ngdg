@@ -6,21 +6,13 @@
  * @modified 2026-03-20 Ported to Typescript/TSX.
  * @version  1.1.0
  */
-import { PlotBoilerplate } from "plotboilerplate";
-import { Modal } from "./Modal";
 import { AppContext } from "./AppContext";
-import { DildoRandomizerResult } from "./DildoRandomizer";
-export interface ICallbackOptions {
-    outlineChangedCallback: (result: DildoRandomizerResult) => void;
-    onPathVisibilityChanged: () => void;
-    getBezierJSON: () => void;
-    getSculptmapDataURL: () => void;
-    getPreviewImageDataURL: (mimetype: string) => void;
+import { Axios } from "axios";
+export interface IDildoRandomizerDialogOptions {
+    axios: Axios;
 }
 export declare class DildoRandomizerDialog {
-    private pb;
-    private modal;
-    private config;
+    private appContext;
     private callbackOptions;
     private rootElement;
     private isOpen;
@@ -39,7 +31,7 @@ export declare class DildoRandomizerDialog {
      * getSculptmapDataURL
      * getPreviewImageDataURL
      **/
-    constructor(pb: PlotBoilerplate, modal: Modal, config: typeof AppContext.prototype.config, callbackOptions: ICallbackOptions);
+    constructor(appContext: AppContext, callbackOptions: IDildoRandomizerDialogOptions);
     private _onFormChangeHandler;
     open(): void;
     private __setRunning;

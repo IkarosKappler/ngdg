@@ -40,6 +40,8 @@ import { getBezierJSON } from "./appcontext/getBezierJSON";
 import { filedropHandler } from "./appcontext/filedropHandler";
 import { retrieveFromLocalStorage } from "./appcontext/retrieveFromLocalStorage";
 import { setRandomizedResult } from "./appcontext/setRandomizedResult";
+import { DildoRandomizerDialog } from "./DildoRandomizerDialog";
+import { Axios } from "axios";
 
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 
@@ -84,6 +86,7 @@ export class AppContext {
   readonly setDefaultPathInstance: ReturnType<typeof setDefaultPathInstance>;
   readonly getBezierJSON: () => string;
   readonly setRandomizedResult: ReturnType<typeof setRandomizedResult>;
+  readonly dildoRandomizerDialog: DildoRandomizerDialog;
 
   // +---------------------------------------------------------------------------------
   // | The base shape that's used for the extrusion geometry part.
@@ -123,6 +126,7 @@ export class AppContext {
     makeSTLExporter: () => STLExporter;
     makeOrbitControls: (camera: THREE.Camera, domElement: HTMLCanvasElement) => any;
     makeModal: () => Modal;
+    axios: Axios;
     saveAs: (Blob, filename) => void;
   }) {
     this.GUP = gup();
@@ -252,6 +256,9 @@ export class AppContext {
     this.setDefaultPathInstance = setDefaultPathInstance(this);
     this.getBezierJSON = getBezierJSON(this);
     this.setRandomizedResult = setRandomizedResult(this);
+    this.dildoRandomizerDialog = new DildoRandomizerDialog(this, {
+      axios: options.axios
+    });
 
     // +---------------------------------------------------------------------------------
     // | Handle file drop.

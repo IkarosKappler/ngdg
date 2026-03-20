@@ -36,6 +36,7 @@ var getBezierJSON_1 = require("./appcontext/getBezierJSON");
 var filedropHandler_1 = require("./appcontext/filedropHandler");
 var retrieveFromLocalStorage_1 = require("./appcontext/retrieveFromLocalStorage");
 var setRandomizedResult_1 = require("./appcontext/setRandomizedResult");
+var DildoRandomizerDialog_1 = require("./DildoRandomizerDialog");
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 var AppContext = /** @class */ (function () {
     function AppContext(options) {
@@ -159,6 +160,9 @@ var AppContext = /** @class */ (function () {
         this.setDefaultPathInstance = (0, setDefaultPathInstance_1.setDefaultPathInstance)(this);
         this.getBezierJSON = (0, getBezierJSON_1.getBezierJSON)(this);
         this.setRandomizedResult = (0, setRandomizedResult_1.setRandomizedResult)(this);
+        this.dildoRandomizerDialog = new DildoRandomizerDialog_1.DildoRandomizerDialog(this, {
+            axios: options.axios
+        });
         // +---------------------------------------------------------------------------------
         // | Handle file drop.
         // +-------------------------------

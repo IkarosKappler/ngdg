@@ -33,6 +33,7 @@ import { getBezierJSON } from "./appcontext/getBezierJSON";
 import { filedropHandler } from "./appcontext/filedropHandler";
 import { retrieveFromLocalStorage } from "./appcontext/retrieveFromLocalStorage";
 import { setRandomizedResult } from "./appcontext/setRandomizedResult";
+import { DildoRandomizerDialog } from "./DildoRandomizerDialog";
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 export class AppContext {
     constructor(options) {
@@ -155,6 +156,9 @@ export class AppContext {
         this.setDefaultPathInstance = setDefaultPathInstance(this);
         this.getBezierJSON = getBezierJSON(this);
         this.setRandomizedResult = setRandomizedResult(this);
+        this.dildoRandomizerDialog = new DildoRandomizerDialog(this, {
+            axios: options.axios
+        });
         // +---------------------------------------------------------------------------------
         // | Handle file drop.
         // +-------------------------------

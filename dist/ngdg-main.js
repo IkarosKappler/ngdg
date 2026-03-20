@@ -46,6 +46,7 @@ var getBezierJSON_1 = __webpack_require__(/*! ./appcontext/getBezierJSON */ "./s
 var filedropHandler_1 = __webpack_require__(/*! ./appcontext/filedropHandler */ "./src/cjs/appcontext/filedropHandler.js");
 var retrieveFromLocalStorage_1 = __webpack_require__(/*! ./appcontext/retrieveFromLocalStorage */ "./src/cjs/appcontext/retrieveFromLocalStorage.js");
 var setRandomizedResult_1 = __webpack_require__(/*! ./appcontext/setRandomizedResult */ "./src/cjs/appcontext/setRandomizedResult.js");
+var DildoRandomizerDialog_1 = __webpack_require__(/*! ./DildoRandomizerDialog */ "./src/cjs/DildoRandomizerDialog.js");
 // import { BezierResizeHelper } from "plotboilerplate/src/cjs/utils/helpers/BezierResizeHelper";
 var AppContext = /** @class */ (function () {
     function AppContext(options) {
@@ -169,6 +170,9 @@ var AppContext = /** @class */ (function () {
         this.setDefaultPathInstance = (0, setDefaultPathInstance_1.setDefaultPathInstance)(this);
         this.getBezierJSON = (0, getBezierJSON_1.getBezierJSON)(this);
         this.setRandomizedResult = (0, setRandomizedResult_1.setRandomizedResult)(this);
+        this.dildoRandomizerDialog = new DildoRandomizerDialog_1.DildoRandomizerDialog(this, {
+            axios: options.axios
+        });
         // +---------------------------------------------------------------------------------
         // | Handle file drop.
         // +-------------------------------
@@ -1825,7 +1829,6 @@ var noreact_1 = __webpack_require__(/*! noreact */ "./node_modules/noreact/src/e
 var plotboilerplate_1 = __webpack_require__(/*! plotboilerplate */ "./node_modules/plotboilerplate/src/cjs/index.js");
 var DildoRandomizer_1 = __webpack_require__(/*! ./DildoRandomizer */ "./src/cjs/DildoRandomizer.js");
 var getImageFromCanvas_1 = __webpack_require__(/*! ./getImageFromCanvas */ "./src/cjs/getImageFromCanvas.js");
-var axios_1 = __webpack_require__(/*! axios */ "./node_modules/axios/dist/browser/axios.cjs");
 var DildoRandomizerDialog = /** @class */ (function () {
     /**
      * outlineChangedCallback
@@ -1834,7 +1837,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
      * getSculptmapDataURL
      * getPreviewImageDataURL
      **/
-    function DildoRandomizerDialog(pb, modal, config, callbackOptions) {
+    function DildoRandomizerDialog(appContext, callbackOptions) {
         // +---------------------------------------------------------------------------------
         // | Handle path visibility events.
         // +-------------------------------
@@ -1847,12 +1850,13 @@ var DildoRandomizerDialog = /** @class */ (function () {
                 _self._togglePathVisibility(isVisible);
             };
         };
-        if (!(pb.canvas instanceof HTMLCanvasElement)) {
+        if (!(appContext.pb.canvas instanceof HTMLCanvasElement)) {
             throw new Error("Cannot instantiate DildoRandomizerDialog from plotboilerplate instance: this works only with <canvas> elements!");
         }
-        this.pb = pb;
-        this.modal = modal;
-        this.config = config;
+        // this.pb = pb;
+        // this.modal = modal;
+        // this.config = config;
+        this.appContext = appContext;
         this.callbackOptions = callbackOptions;
         this.rootElement = document.createElement("form");
         this.rootElement.setAttribute("id", "randomizerForm");
@@ -1960,7 +1964,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
         ref_btnHidePath.current.addEventListener("click", this._togglePathVisibilityHandler(false));
         ref_btnStoreNow.current.addEventListener("click", this._storeNowHandler());
         // console.log("this.modal.modalElements", this.modal.modalElements);
-        this.modal.modalElements.modal.header.closeBtn.addEventListener("click", this._onCloseHandler());
+        this.appContext.modal.modalElements.modal.header.closeBtn.addEventListener("click", this._onCloseHandler());
         if (!ref_slctOptimalBoxWidthPx.current || !ref_slctBoundsRatio.current) {
             throw Error("Cannot initialize dailog: some select elements are null.");
         }
@@ -1976,35 +1980,35 @@ var DildoRandomizerDialog = /** @class */ (function () {
         var _self = this;
         return function (event) {
             _self._updateIdealBounds(true);
-            _self.pb.redraw();
+            _self.appContext.pb.redraw();
         };
     };
     // +---------------------------------------------------------------------------------
     // | Open the randomizer dialog.
     // +-------------------------------
     DildoRandomizerDialog.prototype.open = function () {
-        this.modal.setTitle("Dildo Randomizer");
-        this.modal.setFooter("");
+        this.appContext.modal.setTitle("Dildo Randomizer");
+        this.appContext.modal.setFooter("");
         // this.modal.setActions([Modal.ACTION_CLOSE]);
         var _self = this;
-        this.modal.setActions([
+        this.appContext.modal.setActions([
             {
                 label: "Close",
                 action: function () {
                     console.log("CLOSE ACTION HIT!");
-                    _self.modal.close();
+                    _self.appContext.modal.close();
                     // _self.__setRunning(false);
                     _self._onCloseHandler()();
                 }
             }
         ]);
-        this.modal.setBody(this.rootElement);
-        this.modal.open();
+        this.appContext.modal.setBody(this.rootElement);
+        this.appContext.modal.open();
         this.isOpen = true;
         this._setIterationDisplay("");
         this._displayError("");
         this._updateIdealBounds(true); // reevaluateFormSettings=true
-        this.pb.redraw();
+        this.appContext.pb.redraw();
         this.__setRunning(false);
     };
     DildoRandomizerDialog.prototype.__setRunning = function (isRunning) {
@@ -2039,7 +2043,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
         var _self = this;
         return function (_event) {
             _self.isOpen = false;
-            _self.pb.redraw();
+            _self.appContext.pb.redraw();
             console.log("Set running = false");
             _self.__setRunning(false);
         };
@@ -2091,24 +2095,25 @@ var DildoRandomizerDialog = /** @class */ (function () {
     // +-------------------------------
     DildoRandomizerDialog.prototype._togglePathVisibility = function (isVisible) {
         // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
-        this.config.drawRulers = isVisible;
-        this.config.drawOutline = isVisible;
-        this.config.fillOutline = isVisible;
-        this.config.drawResizeHandleLines = isVisible;
-        this.config.drawPathBounds = isVisible;
+        this.appContext.config.drawRulers = isVisible;
+        this.appContext.config.drawOutline = isVisible;
+        this.appContext.config.fillOutline = isVisible;
+        this.appContext.config.drawResizeHandleLines = isVisible;
+        this.appContext.config.drawPathBounds = isVisible;
         this.isDrawIdealBoundsEnabled = isVisible;
         if (!isVisible) {
-            this.config.showDiscreteOutlinePoints = false;
+            this.appContext.config.showDiscreteOutlinePoints = false;
         }
-        this.callbackOptions.onPathVisibilityChanged();
+        // this.callbackOptions.onPathVisibilityChanged();
+        this.appContext.handlePathVisibilityChanged();
     };
     DildoRandomizerDialog.prototype._getPathVisibility = function () {
         // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
-        return (this.config.drawRulers ||
-            this.config.drawOutline ||
-            this.config.fillOutline ||
-            this.config.drawResizeHandleLines ||
-            this.config.drawPathBounds ||
+        return (this.appContext.config.drawRulers ||
+            this.appContext.config.drawOutline ||
+            this.appContext.config.fillOutline ||
+            this.appContext.config.drawResizeHandleLines ||
+            this.appContext.config.drawPathBounds ||
             this.isDrawIdealBoundsEnabled);
     };
     // +---------------------------------------------------------------------------------
@@ -2174,7 +2179,8 @@ var DildoRandomizerDialog = /** @class */ (function () {
         var dildoRandomizer = new DildoRandomizer_1.DildoRandomizer(idealLeftHalfBounds, this.curSettings.segmentCountMin, this.curSettings.segmentCountMax, this.curSettings.bendValueMin, this.curSettings.bendValueMax);
         var result = dildoRandomizer.next();
         console.log("Result", result);
-        this.callbackOptions.outlineChangedCallback(result);
+        // this.callbackOptions.outlineChangedCallback(result);
+        this.appContext.setRandomizedResult(result);
         var _self = this;
         this._storeCurrentResult(_self.curSettings.isPutEnabled)
             .then(function () {
@@ -2200,7 +2206,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
     DildoRandomizerDialog.prototype._storeCurrentResult = function (isPutEnabled) {
         if (isPutEnabled && this.curSettings.hideOutlineOnSave && this._getPathVisibility()) {
             if (this.curSettings.isSilhouetteBlackColor) {
-                this.config.silhouetteLineColor = "rgb(0,0,0)";
+                this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
             }
             this._togglePathVisibility(false);
         }
@@ -2215,27 +2221,29 @@ var DildoRandomizerDialog = /** @class */ (function () {
             console.log("[_storeCurrentResult] called [1].");
             // Retrieve image data
             try {
-                var boundsToCanvasRect = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(_self.pb.revertMousePosition(_self.idealExportBounds.min.x, _self.idealExportBounds.min.y)), new plotboilerplate_1.Vertex(_self.pb.revertMousePosition(_self.idealExportBounds.max.x, _self.idealExportBounds.max.y)));
+                var boundsToCanvasRect = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(_self.appContext.pb.revertMousePosition(_self.idealExportBounds.min.x, _self.idealExportBounds.min.y)), new plotboilerplate_1.Vertex(_self.appContext.pb.revertMousePosition(_self.idealExportBounds.max.x, _self.idealExportBounds.max.y)));
                 // var boundsToCanvasRect = _self.idealExportBounds;
                 console.log("boundsToCanvasRect", boundsToCanvasRect);
-                var preview2dSubImageResult = (0, getImageFromCanvas_1.getImageFromCanvas)(_self.pb.canvas, _self.pb.draw.ctx, boundsToCanvasRect);
+                var preview2dSubImageResult = (0, getImageFromCanvas_1.getImageFromCanvas)(_self.appContext.pb.canvas, _self.appContext.pb.draw.ctx, boundsToCanvasRect);
                 var preview2dImageDataURL = preview2dSubImageResult.canvas.toDataURL("image/png");
-                var preview3dImageDataURL = _self.callbackOptions.getPreviewImageDataURL("image/png");
+                var preview3dImageDataURL = _self.appContext.dildoGeneration.canvas.toDataURL("image/png"); // _self.callbackOptions.getPreviewImageDataURL("image/png");
                 // Use AJAX/Axios
                 console.log("Sending data to ", _self.curSettings.putURL);
-                (0, axios_1.default)({
+                console.log("_self.callbackOptions.axios", _self.callbackOptions.axios);
+                _self.callbackOptions.axios
+                    .request({
                     method: "post",
                     url: _self.curSettings.putURL, // "/user/12345",
                     data: {
                         hidenfield: "123456",
                         modelName: "My Model",
-                        shapeSegmentCount: _self.config.shapeSegmentCount,
-                        outlineSegmentCount: _self.config.outlineSegmentCount,
+                        shapeSegmentCount: _self.appContext.config.shapeSegmentCount,
+                        outlineSegmentCount: _self.appContext.config.outlineSegmentCount,
                         preview2d_b64: preview2dImageDataURL,
                         preview3d_b64: preview3dImageDataURL,
-                        sculptmap_b64: _self.callbackOptions.getSculptmapDataURL(),
-                        bezierJSON: _self.callbackOptions.getBezierJSON(),
-                        bendAngle: _self.config.bendAngle
+                        sculptmap_b64: _self.appContext.getSculptmapDataURL(), // _self.callbackOptions.getSculptmapDataURL(),
+                        bezierJSON: _self.appContext.getBezierJSON(), // _self.callbackOptions.getBezierJSON(),
+                        bendAngle: _self.appContext.config.bendAngle
                     }
                 })
                     .then(function (response) {
@@ -2292,19 +2300,6 @@ var DildoRandomizerDialog = /** @class */ (function () {
         var putURL = elem_putURL ? elem_putURL.value : "";
         var hideOutlineOnSave = elem_hideOutlineOnSave ? Boolean(elem_hideOutlineOnSave.checked) : false;
         var isSilhouetteBlackColor = elem_isSilhouetteBlackColor ? Boolean(elem_isSilhouetteBlackColor.checked) : false;
-        // var segmentCountMin = Number(this.rootElement.querySelector("#segmentCountMin").value);
-        // var segmentCountMax = Number(this.rootElement.querySelector("#segmentCountMax").value);
-        // var bendValueMin = Number(this.rootElement.querySelector("#bendValueMin").value);
-        // var bendValueMax = Number(this.rootElement.querySelector("#bendValueMax").value);
-        // // var boundsRatio = Number(this.rootElement.querySelector("#boundsRatio option[selected]").value);
-        // var boundsRatio = Number(getSelectedOption(this.rootElement, "#boundsRatio", 1.0));
-        // var optimalBoxWidthPx = Number(getSelectedOption(this.rootElement, "#optimalBoxWidthPx", 1024));
-        // var isCreateManyEnabled = Boolean(this.rootElement.querySelector("#isCreateManyEnabled").checked);
-        // var maxIterationCount = Number(this.rootElement.querySelector("#maxIterationCount").value);
-        // var isPutEnabled = Boolean(this.rootElement.querySelector("#isPutEnabled").checked);
-        // var putURL = this.rootElement.querySelector("#putURL").value;
-        // var hideOutlineOnSave = Boolean(this.rootElement.querySelector("#checkbox-hide-outlines-on-save").checked);
-        // var isSilhouetteBlackColor = Boolean(this.rootElement.querySelector("#checkbox-silhouette-black-color").checked);
         console.log("boundsRatio", boundsRatio, "optimalBoxWidthPx", optimalBoxWidthPx);
         return {
             segmentCountMin: segmentCountMin,
@@ -2327,12 +2322,12 @@ var DildoRandomizerDialog = /** @class */ (function () {
     DildoRandomizerDialog.prototype._updateIdealBounds = function (reevaluateFormSettings) {
         // Get the maximum bounds the final 2D model should ideallically be
         // displayed in.
-        this.viewport = this.pb.viewport();
+        this.viewport = this.appContext.pb.viewport();
         if (reevaluateFormSettings) {
             this.curSettings = this.getCurrentFormSettings();
         }
         // var width = Math.min(this.viewport.width, this.curSettings.optimalBoxWidthPx);
-        var canvasWidth = Math.min(this.pb.canvas.width, this.curSettings.optimalBoxWidthPx);
+        var canvasWidth = Math.min(this.appContext.pb.canvas.width, this.curSettings.optimalBoxWidthPx);
         // var height = canvasWidth / this.curSettings.boundsRatio;
         var canvasHeight = canvasWidth / this.curSettings.boundsRatio;
         // var widthInPhysicalPixels = this.pb.canvas.width;
@@ -2344,7 +2339,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
         else {
             this._displaySuccess("The viewport size satisfies the required box width ".concat(this.curSettings.optimalBoxWidthPx.toFixed(0), "px."));
         }
-        var bounds = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(this.viewport.min.x + (this.viewport.width - canvasWidth / this.pb.config.scaleX) / 2.0, this.viewport.min.y + (this.viewport.height - canvasHeight / this.pb.config.scaleY) / 2.0), new plotboilerplate_1.Vertex(this.viewport.max.x - (this.viewport.width - canvasWidth / this.pb.config.scaleX) / 2.0, this.viewport.max.y - (this.viewport.height - canvasHeight / this.pb.config.scaleY) / 2.0));
+        var bounds = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(this.viewport.min.x + (this.viewport.width - canvasWidth / this.appContext.pb.config.scaleX) / 2.0, this.viewport.min.y + (this.viewport.height - canvasHeight / this.appContext.pb.config.scaleY) / 2.0), new plotboilerplate_1.Vertex(this.viewport.max.x - (this.viewport.width - canvasWidth / this.appContext.pb.config.scaleX) / 2.0, this.viewport.max.y - (this.viewport.height - canvasHeight / this.appContext.pb.config.scaleY) / 2.0));
         // Move to the lower part to make it easier to see the full result below the dialog.
         var offsetX = 0.0;
         var offsetY = this.viewport.max.y - bounds.max.y;
@@ -5821,18 +5816,6 @@ exports.scaleBounds = scaleBounds;
 /******/ 				}
 /******/ 			}
 /******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/global */
-/******/ 	(() => {
-/******/ 		__webpack_require__.g = (function() {
-/******/ 			if (typeof globalThis === 'object') return globalThis;
-/******/ 			try {
-/******/ 				return this || new Function('return this')();
-/******/ 			} catch (e) {
-/******/ 				if (typeof window === 'object') return window;
-/******/ 			}
-/******/ 		})();
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */

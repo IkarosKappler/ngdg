@@ -38,6 +38,8 @@
       makeModal: function () {
         return new Modal();
       },
+      // Pass the link to the axios libary as Typescript has difficulties resolving it.
+      axios: axios,
       // Use a custom `saveAs` function.
       // -> Pass through.
       saveAs: saveAs // (blob:Blob, filename:string) => void;
@@ -79,9 +81,9 @@
         );
       }
 
-      if (dildoRandomizerDialog) {
+      if (appContext.dildoRandomizerDialog) {
         try {
-          dildoRandomizerDialog.drawIdealBounds(draw, fill);
+          appContext.dildoRandomizerDialog.drawIdealBounds(draw, fill);
         } catch (exc) {
           console.error("Failed to pre-draw the dildoRandomizerDialog's settings.");
           console.error(exc);
@@ -169,17 +171,8 @@
       appContext.pb.fitToView(scaledBounds);
     });
 
-    var dildoRandomizerDialog = new ngdg.DildoRandomizerDialog(appContext.pb, appContext.modal, appContext.config, {
-      outlineChangedCallback: appContext.setRandomizedResult,
-      onPathVisibilityChanged: appContext.handlePathVisibilityChanged,
-      getBezierJSON: appContext.getBezierJSON,
-      getSculptmapDataURL: appContext.getSculptmapDataURL,
-      getPreviewImageDataURL: function (type) {
-        return appContext.dildoGeneration.canvas.toDataURL(type);
-      }
-    });
     var showDildoRandomizer = function () {
-      dildoRandomizerDialog.open();
+      appContext.dildoRandomizerDialog.open();
     };
 
     // Add a mouse listener to track the mouse position.
