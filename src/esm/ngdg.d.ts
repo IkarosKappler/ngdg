@@ -15,6 +15,7 @@ import { DildoSilhouette2D } from "./DildoSilhouette2D";
 import { DildoRandomizer } from "./DildoRandomizer";
 import { AppContext } from "./AppContext";
 import { Rulers } from "./Rulers";
+import { DildoRandomizerDialog } from "./DildoRandomizerDialog";
 export declare const ngdg: {
     DEFAULT_BEZIER_JSON: string;
     DEG_TO_RAD: number;
@@ -131,6 +132,7 @@ export declare const ngdg: {
     detectDarkMode: (GUP: Record<string, string>) => boolean;
     DildoGeneration: typeof DildoGeneration;
     DildoRandomizer: typeof DildoRandomizer;
+    DildoRandomizerDialog: typeof DildoRandomizerDialog;
     DildoSilhouette2D: typeof DildoSilhouette2D;
     GeometryGenerationHelpers: {
         makeFace3: (geometry: import("three-geometry-hellfix").Gmetry | import("./DildoGeometry").DildoGeometry, vertIndexA: number, vertIndexB: number, vertIndexC: number, inverseFaceDirection?: boolean) => void;

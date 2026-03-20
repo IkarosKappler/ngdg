@@ -48,6 +48,7 @@ import { scaleBounds } from "./scaleBounds";
 import { filedropHandler } from "./appcontext/filedropHandler";
 import { retrieveFromLocalStorage } from "./appcontext/retrieveFromLocalStorage";
 import { setRandomizedResult } from "./appcontext/setRandomizedResult";
+import { DildoRandomizerDialog } from "./DildoRandomizerDialog";
 // import * as UIStats from "uistats-typescript";
 export const ngdg = {
     DEFAULT_BEZIER_JSON,
@@ -84,6 +85,7 @@ export const ngdg = {
     detectDarkMode,
     DildoGeneration,
     DildoRandomizer,
+    DildoRandomizerDialog,
     DildoSilhouette2D,
     GeometryGenerationHelpers,
     getImageFromCanvas,

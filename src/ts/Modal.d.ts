@@ -17,6 +17,22 @@ export type Modal = {
   setBody: (body: string | HTMLElement) => void;
   open: () => void;
   close: () => void;
+  modalElements: {
+    modal: {
+      id: string;
+      parent: Modal;
+      backdrop: HTMLDivElement;
+      header: {
+        closeBtn: HTMLElement;
+        content: HTMLHeadingElement;
+      };
+      body: { content: HTMLElement };
+      footer: {
+        content: HTMLHeadingElement;
+        actions: HTMLDivElement;
+      };
+    };
+  };
 };
 
 // setTitle("Export STL");

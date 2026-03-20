@@ -51,6 +51,7 @@ var scaleBounds_1 = require("./scaleBounds");
 var filedropHandler_1 = require("./appcontext/filedropHandler");
 var retrieveFromLocalStorage_1 = require("./appcontext/retrieveFromLocalStorage");
 var setRandomizedResult_1 = require("./appcontext/setRandomizedResult");
+var DildoRandomizerDialog_1 = require("./DildoRandomizerDialog");
 // import * as UIStats from "uistats-typescript";
 exports.ngdg = {
     DEFAULT_BEZIER_JSON: defaults_1.DEFAULT_BEZIER_JSON,
@@ -87,6 +88,7 @@ exports.ngdg = {
     detectDarkMode: detectDarkMode_1.detectDarkMode,
     DildoGeneration: DildoGeneration_1.DildoGeneration,
     DildoRandomizer: DildoRandomizer_1.DildoRandomizer,
+    DildoRandomizerDialog: DildoRandomizerDialog_1.DildoRandomizerDialog,
     DildoSilhouette2D: DildoSilhouette2D_1.DildoSilhouette2D,
     GeometryGenerationHelpers: GeometryGenerationHelpers_1.GeometryGenerationHelpers,
     getImageFromCanvas: getImageFromCanvas_1.getImageFromCanvas,

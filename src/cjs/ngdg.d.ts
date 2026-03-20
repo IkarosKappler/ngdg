@@ -131,6 +131,7 @@ export declare const ngdg: {
     detectDarkMode: (GUP: Record<string, string>) => boolean;
     DildoGeneration: typeof DildoGeneration;
     DildoRandomizer: typeof DildoRandomizer;
+    DildoRandomizerDialog: any;
     DildoSilhouette2D: typeof DildoSilhouette2D;
     GeometryGenerationHelpers: {
         makeFace3: (geometry: import("three-geometry-hellfix").Gmetry | import("./DildoGeometry").DildoGeometry, vertIndexA: number, vertIndexB: number, vertIndexC: number, inverseFaceDirection?: boolean) => void;
