@@ -5,7 +5,7 @@ div.flow-container:has(> .progressbar) {
 
 .progressbar {
     min-height: 1.5em;
-    webkit-background-size: 50px 50px;
+    -webkit-background-size: 50px 50px;
     -moz-background-size: 50px 50px;
     background-size: 50px 50px;
     background-image:

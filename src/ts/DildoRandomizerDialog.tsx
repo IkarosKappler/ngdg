@@ -184,7 +184,7 @@ export class DildoRandomizerDialog {
             <span id="iterationDisplay"></span>
           </div>
         </div>
-        <div class="flow-container" style="background-color: rgba(0,0,0,0.25);">
+        <div class="flow-container" style={{ backgroundColor: "rgba(0,0,0,0.25)" }}>
           <div class="progressbar w-100"></div>
         </div>
         <div class="flow-containter flex-flow">
