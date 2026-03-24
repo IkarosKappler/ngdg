@@ -5,4 +5,4 @@
  */
 import { BezierPath } from "plotboilerplate";
 import { AppContext } from "../AppContext";
-export declare const setPathInstance: (appContext: AppContext) => (newOutline: BezierPath) => void;
+export declare const setPathInstance: (appContext: AppContext) => (newOutline: BezierPath, bendAngle?: number) => void;

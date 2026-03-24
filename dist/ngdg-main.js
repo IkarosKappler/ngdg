@@ -1946,7 +1946,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
                         noreact_1.NoReact.createElement("label", { for: "maxIterationCount" }, "Max\u00A0Iterations"),
                         noreact_1.NoReact.createElement("input", { type: "number", id: "maxIterationCount", name: "maxIterationCount", min: "0", value: "99" })),
                     noreact_1.NoReact.createElement("span", { id: "iterationDisplay" }))),
-            noreact_1.NoReact.createElement("div", { class: "flow-container", style: "background-color: rgba(0,0,0,0.25);" },
+            noreact_1.NoReact.createElement("div", { class: "flow-container", style: { backgroundColor: "rgba(0,0,0,0.25)" } },
                 noreact_1.NoReact.createElement("div", { class: "progressbar w-100" })),
             noreact_1.NoReact.createElement("div", { class: "flow-containter flex-flow" },
                 noreact_1.NoReact.createElement("label", { for: "isPutEnabled" }, "Store data"),

@@ -39,8 +39,8 @@ export declare class AppContext {
     readonly addPathListeners: (path: BezierPath) => void;
     readonly removePathListeners: (path: BezierPath) => void;
     readonly updatePathResizer: (triggerRedraw: boolean) => void;
-    readonly setPathInstance: (newOutline: BezierPath) => void;
-    readonly setPathInstanceByJSON: (pathJSON: string) => void;
+    readonly setPathInstance: (newOutline: BezierPath, bendAngle?: number) => void;
+    readonly setPathInstanceByJSON: (pathJSON: string, bendAngle?: number) => void;
     readonly updateSilhouette: (noRedraw: boolean) => void;
     readonly updateOutlineStats: () => void;
     readonly updateModifiers: () => void;

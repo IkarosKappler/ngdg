@@ -130,6 +130,11 @@ body.mobile #action-buttons {
   flex-grow: 1;
 }
 
+.modal .randomizerForm .store-preview {
+  max-width: 128px; 
+  max-height: 128px;
+}
+
 
 /* Basic grid system */
 .flow-containter {

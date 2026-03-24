@@ -32,7 +32,6 @@ var acquireOptimalView_1 = require("./appcontext/acquireOptimalView");
 var acquireOptimalPathView_1 = require("./appcontext/acquireOptimalPathView");
 var setDefaultPathInstance_1 = require("./appcontext/setDefaultPathInstance");
 var getBezierJSON_1 = require("./appcontext/getBezierJSON");
-// import { UIStats } from "uistats-typescript";
 var filedropHandler_1 = require("./appcontext/filedropHandler");
 var retrieveFromLocalStorage_1 = require("./appcontext/retrieveFromLocalStorage");
 var setRandomizedResult_1 = require("./appcontext/setRandomizedResult");
@@ -74,8 +73,8 @@ var AppContext = /** @class */ (function () {
          * If there are multiple instance of PB present, then it might be easier
          * to just pass the JSON string instead of the BezierPath instance.
          */
-        this.setPathInstanceByJSON = function (pathJSON) {
-            _this.setPathInstance(plotboilerplate_1.BezierPath.fromJSON(pathJSON));
+        this.setPathInstanceByJSON = function (pathJSON, bendAngle) {
+            _this.setPathInstance(plotboilerplate_1.BezierPath.fromJSON(pathJSON), bendAngle);
         };
         // Init PB
         // All config appContext.params are optional.
@@ -132,9 +131,6 @@ var AppContext = /** @class */ (function () {
         });
         this.dildoGeneration = new ngdg_1.ngdg.DildoGeneration("dildo-canvas", {
             makeOrbitControls: options.makeOrbitControls
-            //   makeOrbitControls: function (camera, domElement) {
-            //     return new THREE.OrbitControls(camera, domElement);
-            //   }
         });
         this.modal = options.makeModal();
         this.saveAs = options.saveAs;

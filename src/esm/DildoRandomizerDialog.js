@@ -127,7 +127,7 @@ export class DildoRandomizerDialog {
                         NoReact.createElement("label", { for: "maxIterationCount" }, "Max\u00A0Iterations"),
                         NoReact.createElement("input", { type: "number", id: "maxIterationCount", name: "maxIterationCount", min: "0", value: "99" })),
                     NoReact.createElement("span", { id: "iterationDisplay" }))),
-            NoReact.createElement("div", { class: "flow-container", style: "background-color: rgba(0,0,0,0.25);" },
+            NoReact.createElement("div", { class: "flow-container", style: { backgroundColor: "rgba(0,0,0,0.25)" } },
                 NoReact.createElement("div", { class: "progressbar w-100" })),
             NoReact.createElement("div", { class: "flow-containter flex-flow" },
                 NoReact.createElement("label", { for: "isPutEnabled" }, "Store data"),
