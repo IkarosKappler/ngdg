@@ -34,9 +34,6 @@ export class DildoRandomizerDialog {
         if (!(appContext.pb.canvas instanceof HTMLCanvasElement)) {
             throw new Error("Cannot instantiate DildoRandomizerDialog from plotboilerplate instance: this works only with <canvas> elements!");
         }
-        // this.pb = pb;
-        // this.modal = modal;
-        // this.config = config;
         this.appContext = appContext;
         this.callbackOptions = callbackOptions;
         this.rootElement = document.createElement("form");
@@ -53,12 +50,15 @@ export class DildoRandomizerDialog {
         this.sequenceID = 0;
         this.isRunning = false;
         this.curSettings = null; // this.getCurrentFormSettings();
-        const ref_btnRandomize = NoReact.useRef();
-        const ref_btnShowPath = NoReact.useRef();
-        const ref_btnHidePath = NoReact.useRef();
-        const ref_btnStoreNow = NoReact.useRef();
-        const ref_slctBoundsRatio = NoReact.useRef();
-        const ref_slctOptimalBoxWidthPx = NoReact.useRef();
+        this.ref_btnRandomize = NoReact.useRef();
+        this.ref_btnShowPath = NoReact.useRef();
+        this.ref_btnHidePath = NoReact.useRef();
+        this.ref_btnStoreNow = NoReact.useRef();
+        this.ref_slctBoundsRatio = NoReact.useRef();
+        this.ref_slctOptimalBoxWidthPx = NoReact.useRef();
+        this.ref_storePreviewContainer_2d = NoReact.useRef();
+        this.ref_storePreviewContainer_sculptmap = NoReact.useRef();
+        this.ref_storePreviewContainer_3d = NoReact.useRef();
         const htmlContent = (NoReact.createElement("div", { class: "font-600-desktop" },
             NoReact.createElement("div", { class: "flow-containter" },
                 NoReact.createElement("div", { class: "grid-w-25" },
@@ -72,8 +72,8 @@ export class DildoRandomizerDialog {
                     NoReact.createElement("br", null),
                     NoReact.createElement("input", { type: "number", id: "segmentCountMax", min: "1", max: "24", value: "8", name: "segmentCountMax" })),
                 NoReact.createElement("div", { class: "grid-w-25 flow-containter right center-v" },
-                    NoReact.createElement("button", { id: "btn-hide-path", ref: ref_btnHidePath }, "Hide Path"),
-                    NoReact.createElement("button", { id: "btn-show-path", ref: ref_btnShowPath }, "Show Path"))),
+                    NoReact.createElement("button", { id: "btn-hide-path", ref: this.ref_btnHidePath }, "Hide Path"),
+                    NoReact.createElement("button", { id: "btn-show-path", ref: this.ref_btnShowPath }, "Show Path"))),
             NoReact.createElement("div", { class: "flow-containter" },
                 NoReact.createElement("div", { class: "grid-w-25" },
                     NoReact.createElement("h4", null, "Mesh bend value (Deg)")),
@@ -96,7 +96,7 @@ export class DildoRandomizerDialog {
                 NoReact.createElement("div", { class: "grid-w-25" },
                     NoReact.createElement("label", { for: "boundsRatio" }, "Box ratio"),
                     NoReact.createElement("br", null),
-                    NoReact.createElement("select", { id: "boundsRatio", ref: ref_slctBoundsRatio },
+                    NoReact.createElement("select", { id: "boundsRatio", ref: this.ref_slctBoundsRatio },
                         NoReact.createElement("option", { value: "2.0" }, "2:1"),
                         NoReact.createElement("option", { value: "1.333" }, "4:3"),
                         NoReact.createElement("option", { value: "1.0", selected: true }, "1:1"),
@@ -106,7 +106,7 @@ export class DildoRandomizerDialog {
                     NoReact.createElement("label", { for: "optimalBoxWidthPx" }, "Optimal box width"),
                     NoReact.createElement("br", null),
                     NoReact.createElement("select", { id: "optimalBoxWidthPx" },
-                        NoReact.createElement("option", { value: "256", ref: ref_slctOptimalBoxWidthPx, selected: true }, "256"),
+                        NoReact.createElement("option", { value: "256", ref: this.ref_slctOptimalBoxWidthPx, selected: true }, "256"),
                         NoReact.createElement("option", { value: "512" }, "512"),
                         NoReact.createElement("option", { value: "1024" }, "1024"),
                         NoReact.createElement("option", { value: "2048" }, "2048")),
@@ -114,11 +114,11 @@ export class DildoRandomizerDialog {
                     "px"),
                 NoReact.createElement("div", { class: "grid-w-25 flow-containter right center-v" },
                     NoReact.createElement("label", { for: "checkbox-silhouette-black-color" }, "Use black color for silhouette"),
-                    NoReact.createElement("input", { type: "checkbox", name: "checkbox-silhouette-black-color", id: "checkbox-silhouette-black-color", checked: true }))),
+                    NoReact.createElement("input", { type: "checkbox", name: "checkbox-silhouette-black-color", id: "checkbox-silhouette-black-color", checked: true, onChange: this._onSilhouetteColorChangeHandler() }))),
             NoReact.createElement("div", { class: "flow-containter" },
                 NoReact.createElement("div", { class: "grid-w-33" }),
                 NoReact.createElement("div", { class: "grid-w-33 flex-flow center" },
-                    NoReact.createElement("button", { id: "randomizeButton", ref: ref_btnRandomize }, "Randomize")),
+                    NoReact.createElement("button", { id: "randomizeButton", ref: this.ref_btnRandomize }, "Randomize")),
                 NoReact.createElement("div", { class: "grid-w-33" },
                     NoReact.createElement("div", { class: "flex-flow grid-w-50" },
                         NoReact.createElement("label", { for: "isCreateManyEnabled" }, "Create\u00A0Many"),
@@ -133,25 +133,35 @@ export class DildoRandomizerDialog {
                 NoReact.createElement("label", { for: "isPutEnabled" }, "Store data"),
                 NoReact.createElement("input", { type: "checkbox", name: "isPutEnabled", id: "isPutEnabled" }),
                 NoReact.createElement("input", { type: "text", id: "putURL", class: "putURL", name: "putURL", value: "http://127.0.0.1:1337/model/put", disabled: true }),
-                NoReact.createElement("button", { id: "btn_store-now", ref: ref_btnStoreNow }, "Store Now")),
-            NoReact.createElement("div", { class: "status-container w-100 error" })));
+                NoReact.createElement("button", { id: "btn_store-now", ref: this.ref_btnStoreNow }, "Store Now")),
+            NoReact.createElement("div", { class: "status-container w-100 error" }),
+            NoReact.createElement("div", { class: "flow-containter right" },
+                NoReact.createElement("label", { for: "checkbox-show-preview-before-store" }, "Show preview before storing"),
+                NoReact.createElement("input", { type: "checkbox", name: "checkbox-show-preview-before-store", id: "checkbox-show-preview-before-store", checked: true })),
+            NoReact.createElement("div", { class: "flow-containter flex-flow" },
+                NoReact.createElement("div", { class: "grid-w-33 flex-flow right", ref: this.ref_storePreviewContainer_2d }),
+                NoReact.createElement("div", { class: "grid-w-33 flex-flow center", ref: this.ref_storePreviewContainer_sculptmap }),
+                NoReact.createElement("div", { class: "grid-w-33 flex-flow left", ref: this.ref_storePreviewContainer_3d }))));
         this.rootElement.appendChild(htmlContent);
-        if (!ref_btnRandomize.current || !ref_btnShowPath.current || !ref_btnHidePath.current || !ref_btnStoreNow.current) {
+        if (!this.ref_btnRandomize.current ||
+            !this.ref_btnShowPath.current ||
+            !this.ref_btnHidePath.current ||
+            !this.ref_btnStoreNow.current) {
             throw Error("Cannot initialize dailog: some buttons are null.");
         }
         // elem_btnRandomize.addEventListener("click", this._randomizeButtonEventHandler());
-        ref_btnRandomize.current.addEventListener("click", this._randomizeButtonEventHandler());
-        ref_btnShowPath.current.addEventListener("click", this._togglePathVisibilityHandler(true));
-        ref_btnHidePath.current.addEventListener("click", this._togglePathVisibilityHandler(false));
-        ref_btnStoreNow.current.addEventListener("click", this._storeNowHandler());
+        this.ref_btnRandomize.current.addEventListener("click", this._randomizeButtonEventHandler());
+        this.ref_btnShowPath.current.addEventListener("click", this._togglePathVisibilityHandler(true));
+        this.ref_btnHidePath.current.addEventListener("click", this._togglePathVisibilityHandler(false));
+        this.ref_btnStoreNow.current.addEventListener("click", this._storeNowHandler());
         // console.log("this.modal.modalElements", this.modal.modalElements);
         this.appContext.modal.modalElements.modal.header.closeBtn.addEventListener("click", this._onCloseHandler());
-        if (!ref_slctOptimalBoxWidthPx.current || !ref_slctBoundsRatio.current) {
+        if (!this.ref_slctOptimalBoxWidthPx.current || !this.ref_slctBoundsRatio.current) {
             throw Error("Cannot initialize dailog: some select elements are null.");
         }
         var formChangeHandler = this._onFormChangeHandler();
-        ref_slctOptimalBoxWidthPx.current.addEventListener("click", formChangeHandler);
-        ref_slctBoundsRatio.current.addEventListener("click", formChangeHandler);
+        this.ref_slctOptimalBoxWidthPx.current.addEventListener("click", formChangeHandler);
+        this.ref_slctBoundsRatio.current.addEventListener("click", formChangeHandler);
         globalThis.addEventListener("resize", formChangeHandler);
     }
     // +---------------------------------------------------------------------------------
@@ -165,11 +175,37 @@ export class DildoRandomizerDialog {
         };
     }
     // +---------------------------------------------------------------------------------
+    // | Handle form changes.
+    // +-------------------------------
+    _onSilhouetteColorChangeHandler() {
+        var _self = this;
+        return function (_event) {
+            _self.curSettings = _self.getCurrentFormSettings();
+            _self.__handleSilhouetteColorChange();
+        };
+    }
+    __handleSilhouetteColorChange() {
+        if (this.curSettings.isSilhouetteBlackColor) {
+            this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
+        }
+        else {
+            this.appContext.config.silhouetteLineColor = this.initialSilhouetteColor;
+        }
+        // if ((event.target as HTMLInputElement).checked) {
+        //   _self.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
+        // } else {
+        //   _self.appContext.config.silhouetteLineColor = _self.initialSilhouetteColor;
+        // }
+        this.appContext.pb.redraw();
+        this.__create2DPreview();
+    }
+    // +---------------------------------------------------------------------------------
     // | Open the randomizer dialog.
     // +-------------------------------
     open() {
         this.appContext.modal.setTitle("Dildo Randomizer");
         this.appContext.modal.setFooter("");
+        this.initialSilhouetteColor = this.appContext.config.silhouetteLineColor;
         // this.modal.setActions([Modal.ACTION_CLOSE]);
         var _self = this;
         this.appContext.modal.setActions([
@@ -189,6 +225,7 @@ export class DildoRandomizerDialog {
         this._setIterationDisplay("");
         this._displayError("");
         this._updateIdealBounds(true); // reevaluateFormSettings=true
+        this.__handleSilhouetteColorChange(); // Initially the color might be set to black
         this.appContext.pb.redraw();
         this.__setRunning(false);
     }
@@ -199,6 +236,7 @@ export class DildoRandomizerDialog {
             console.warn("Cannot update progress bar: element not found.");
             return;
         }
+        this.ref_btnRandomize.current.disabled = isRunning;
         if (isRunning) {
             elem_progressBar.classList.add("animate");
         }
@@ -215,7 +253,7 @@ export class DildoRandomizerDialog {
             console.warn("Cannot update iteration display: element not found.");
             return;
         }
-        elem_iterationDisplay.innerHTML = msg;
+        elem_iterationDisplay.innerHTML = `${msg}`;
     }
     // +---------------------------------------------------------------------------------
     // | Handle close events.
@@ -227,6 +265,9 @@ export class DildoRandomizerDialog {
             _self.appContext.pb.redraw();
             console.log("Set running = false");
             _self.__setRunning(false);
+            _self.appContext.config.silhouetteLineColor = _self.initialSilhouetteColor;
+            // _self.__handleSilhouetteColorChange();
+            _self.appContext.pb.redraw();
         };
     }
     // +---------------------------------------------------------------------------------
@@ -356,41 +397,57 @@ export class DildoRandomizerDialog {
         // Scale down to roughtly one third to make room for the full model and bent to the right.
         // var idealLeftHalfBounds = idealBounds.getScaled(0.333);
         var idealLeftHalfBounds = new Bounds(this.idealGenerateBounds.min, new Vertex(this.idealGenerateBounds.min.x + this.idealGenerateBounds.width / 3, this.idealGenerateBounds.max.y));
-        console.log("Ideal bounds", this.idealGenerateBounds, "idealLeftHalfBounds", idealLeftHalfBounds);
+        // console.log("Ideal bounds", this.idealGenerateBounds, "idealLeftHalfBounds", idealLeftHalfBounds);
         var dildoRandomizer = new DildoRandomizer(idealLeftHalfBounds, this.curSettings.segmentCountMin, this.curSettings.segmentCountMax, this.curSettings.bendValueMin, this.curSettings.bendValueMax);
         var result = dildoRandomizer.next();
         console.log("Result", result);
         // this.callbackOptions.outlineChangedCallback(result);
-        this.appContext.setRandomizedResult(result);
         var _self = this;
-        this._storeCurrentResult(_self.curSettings.isPutEnabled)
-            .then(function () {
-            if (_self.curSettings.isCreateManyEnabled && _self.isRunning) {
-                console.log("NEXT ITERATION? isRunning=", _self.isRunning);
-                globalThis.setTimeout(function () {
-                    _self._randomizeDildoSettings(curSequenceID);
-                }, 1000);
+        this.appContext
+            .setRandomizedResult(result)
+            .then((buildStatus) => {
+            if (!buildStatus) {
+                // Means: built process got interrupted by some other/new process.
+                console.warn("Sopping. built process got interrupted by some other/new process.");
+                return;
             }
-            else {
-                console.log("Done ramdomizing.");
+            this._storeCurrentResult(_self.curSettings.isPutEnabled)
+                .then(function () {
+                if (_self.curSettings.isCreateManyEnabled && _self.isRunning) {
+                    // console.log("NEXT ITERATION? isRunning=", _self.isRunning);
+                    globalThis.setTimeout(function () {
+                        _self._randomizeDildoSettings(curSequenceID);
+                    }, 1000);
+                }
+                else {
+                    console.log("Done ramdomizing.");
+                    _self.__setRunning(false);
+                }
+            })
+                .catch(function (e) {
+                console.error(e);
                 _self.__setRunning(false);
-            }
+            });
         })
-            .catch(function (e) {
-            console.error(e);
-            _self.__setRunning(false);
+            .catch((error) => {
+            console.error("Failed to build new model.", error);
+            _self._displayError("Failed to build new model. Consult error console for details.");
         });
     }
     // +---------------------------------------------------------------------------------
     // | Tries to store the current model, screenshots sculpt map and settings.
     // +-------------------------------
     _storeCurrentResult(isPutEnabled) {
-        if (isPutEnabled && this.curSettings.hideOutlineOnSave && this._getPathVisibility()) {
-            if (this.curSettings.isSilhouetteBlackColor) {
-                this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
-            }
+        if (this.curSettings.hideOutlineOnSave == this._getPathVisibility()) {
             this._togglePathVisibility(false);
         }
+        else {
+        }
+        this.appContext.pb.redraw();
+        // this._togglePathVisibility(!this.curSettings.hideOutlineOnSave);
+        const preview2dImageDataURL = this.__create2DPreview();
+        const previewSculptmapImageDataURL = this.__createSculptmapPreview();
+        const preview3dImageDataURL = this.__create3DPreview();
         var _self = this;
         return new Promise(function (accept, reject) {
             console.log("[_storeCurrentResult] called [0].");
@@ -402,12 +459,6 @@ export class DildoRandomizerDialog {
             console.log("[_storeCurrentResult] called [1].");
             // Retrieve image data
             try {
-                var boundsToCanvasRect = new Bounds(new Vertex(_self.appContext.pb.revertMousePosition(_self.idealExportBounds.min.x, _self.idealExportBounds.min.y)), new Vertex(_self.appContext.pb.revertMousePosition(_self.idealExportBounds.max.x, _self.idealExportBounds.max.y)));
-                // var boundsToCanvasRect = _self.idealExportBounds;
-                console.log("boundsToCanvasRect", boundsToCanvasRect);
-                const preview2dSubImageResult = getImageFromCanvas(_self.appContext.pb.canvas, _self.appContext.pb.draw.ctx, boundsToCanvasRect);
-                const preview2dImageDataURL = preview2dSubImageResult.canvas.toDataURL("image/png");
-                const preview3dImageDataURL = _self.appContext.dildoGeneration.canvas.toDataURL("image/png"); // _self.callbackOptions.getPreviewImageDataURL("image/png");
                 // Use AJAX/Axios
                 console.log("Sending data to ", _self.curSettings.putURL);
                 console.log("_self.callbackOptions.axios", _self.callbackOptions.axios);
@@ -422,7 +473,7 @@ export class DildoRandomizerDialog {
                         outlineSegmentCount: _self.appContext.config.outlineSegmentCount,
                         preview2d_b64: preview2dImageDataURL,
                         preview3d_b64: preview3dImageDataURL,
-                        sculptmap_b64: _self.appContext.getSculptmapDataURL(), // _self.callbackOptions.getSculptmapDataURL(),
+                        sculptmap_b64: previewSculptmapImageDataURL, // _self.appContext.getSculptmapDataURL(),
                         bezierJSON: _self.appContext.getBezierJSON(), // _self.callbackOptions.getBezierJSON(),
                         bendAngle: _self.appContext.config.bendAngle
                     }
@@ -452,6 +503,53 @@ export class DildoRandomizerDialog {
         });
     }
     // +---------------------------------------------------------------------------------
+    // | Create the 2D preview (silhouette) dataURl – and update the preview image inside the dialog,
+    // | if requested by settings.
+    // +-------------------------------
+    __create2DPreview() {
+        var boundsToCanvasRect = new Bounds(new Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.min.x, this.idealExportBounds.min.y)), new Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.max.x, this.idealExportBounds.max.y)));
+        // var boundsToCanvasRect = _self.idealExportBounds;
+        console.log("boundsToCanvasRect", boundsToCanvasRect);
+        const preview2dSubImageResult = getImageFromCanvas(this.appContext.pb.canvas, this.appContext.pb.draw.ctx, boundsToCanvasRect);
+        const preview2dImageDataURL = preview2dSubImageResult.canvas.toDataURL("image/png");
+        if (this.curSettings.isShowPreviewBevoreStore) {
+            this.ref_storePreviewContainer_2d.current.innerHTML = '<img class="store-preview" src=' + preview2dImageDataURL + " />";
+        }
+        else {
+            this.ref_storePreviewContainer_2d.current.innerHTML = "";
+        }
+        return preview2dImageDataURL;
+    }
+    // +---------------------------------------------------------------------------------
+    // | Create the sculptmap preview dataURl – and update the preview image inside the dialog,
+    // | if requested by settings.
+    // +-------------------------------
+    __createSculptmapPreview() {
+        const previewScultpmapImageDataURL = this.appContext.getSculptmapDataURL();
+        if (this.curSettings.isShowPreviewBevoreStore) {
+            this.ref_storePreviewContainer_sculptmap.current.innerHTML =
+                '<img class="store-preview" src=' + previewScultpmapImageDataURL + " />";
+        }
+        else {
+            this.ref_storePreviewContainer_sculptmap.current.innerHTML = "";
+        }
+        return previewScultpmapImageDataURL;
+    }
+    // +---------------------------------------------------------------------------------
+    // | Create the 3D preview dataURl – and update the preview image inside the dialog,
+    // | if requested by settings.
+    // +-------------------------------
+    __create3DPreview() {
+        const preview3dImageDataURL = this.appContext.dildoGeneration.canvas.toDataURL("image/png");
+        if (this.curSettings.isShowPreviewBevoreStore) {
+            this.ref_storePreviewContainer_3d.current.innerHTML = '<img class="store-preview" src=' + preview3dImageDataURL + " />";
+        }
+        else {
+            this.ref_storePreviewContainer_3d.current.innerHTML = "";
+        }
+        return preview3dImageDataURL;
+    }
+    // +---------------------------------------------------------------------------------
     // | Get the current settings as numbers from the displayed HTML form.
     // +-------------------------------
     getCurrentFormSettings() {
@@ -468,6 +566,7 @@ export class DildoRandomizerDialog {
         var elem_putURL = this.rootElement.querySelector("#putURL");
         var elem_hideOutlineOnSave = this.rootElement.querySelector("#checkbox-hide-outlines-on-save");
         var elem_isSilhouetteBlackColor = this.rootElement.querySelector("#checkbox-silhouette-black-color");
+        var elem_isShowPreviewBeforeSaving = this.rootElement.querySelector("#checkbox-show-preview-before-store");
         var segmentCountMin = elem_segmentCountMin ? Number(elem_segmentCountMin.value) : NaN;
         var segmentCountMax = elem_segmentCountMax ? Number(elem_segmentCountMax.value) : NaN;
         var bendValueMin = elem_bendValueMin ? Number(elem_bendValueMin.value) : NaN;
@@ -481,6 +580,7 @@ export class DildoRandomizerDialog {
         var putURL = elem_putURL ? elem_putURL.value : "";
         var hideOutlineOnSave = elem_hideOutlineOnSave ? Boolean(elem_hideOutlineOnSave.checked) : false;
         var isSilhouetteBlackColor = elem_isSilhouetteBlackColor ? Boolean(elem_isSilhouetteBlackColor.checked) : false;
+        var isShowPreviewBevoreStore = elem_isShowPreviewBeforeSaving ? Boolean(elem_isShowPreviewBeforeSaving.checked) : false;
         console.log("boundsRatio", boundsRatio, "optimalBoxWidthPx", optimalBoxWidthPx);
         return {
             segmentCountMin: segmentCountMin,
@@ -494,6 +594,7 @@ export class DildoRandomizerDialog {
             isPutEnabled: isPutEnabled,
             hideOutlineOnSave: hideOutlineOnSave,
             isSilhouetteBlackColor: isSilhouetteBlackColor,
+            isShowPreviewBevoreStore: isShowPreviewBevoreStore,
             putURL: putURL
         };
     }

@@ -24,6 +24,16 @@ export declare class DildoRandomizerDialog {
     private iterationNumber;
     private sequenceID;
     private isRunning;
+    private initialSilhouetteColor;
+    private ref_btnRandomize;
+    private ref_btnShowPath;
+    private ref_btnHidePath;
+    private ref_btnStoreNow;
+    private ref_slctBoundsRatio;
+    private ref_slctOptimalBoxWidthPx;
+    private ref_storePreviewContainer_2d;
+    private ref_storePreviewContainer_sculptmap;
+    private ref_storePreviewContainer_3d;
     /**
      * outlineChangedCallback
      * onPathVisibilityChanged
@@ -33,11 +43,13 @@ export declare class DildoRandomizerDialog {
      **/
     constructor(appContext: AppContext, callbackOptions: IDildoRandomizerDialogOptions);
     private _onFormChangeHandler;
+    private _onSilhouetteColorChangeHandler;
+    private __handleSilhouetteColorChange;
     open(): void;
     private __setRunning;
     private _setIterationDisplay;
     private _onCloseHandler;
-    private drawIdealBounds;
+    drawIdealBounds(draw: any, fill: any): void;
     private _displayStatus;
     private _displayError;
     private _displaySuccess;
@@ -48,6 +60,9 @@ export declare class DildoRandomizerDialog {
     private _randomizeButtonEventHandler;
     private _randomizeDildoSettings;
     private _storeCurrentResult;
+    private __create2DPreview;
+    private __createSculptmapPreview;
+    private __create3DPreview;
     private getCurrentFormSettings;
     private _updateIdealBounds;
 }

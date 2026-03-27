@@ -8,7 +8,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePathResizer = void 0;
 var BezierResizeHelper_1 = require("../BezierResizeHelper");
 var updatePathResizer = function (appContext) {
-    return function (triggerRedraw) {
+    return function (isTriggerRedraw) {
         if (appContext.bezierResizer) {
             appContext.pb.remove([appContext.bezierResizer.verticalResizeHandle, appContext.bezierResizer.horizontalResizeHandle]);
             appContext.bezierResizer.destroy();
@@ -21,8 +21,9 @@ var updatePathResizer = function (appContext) {
             appContext.rebuild();
         };
         appContext.bezierResizer = new BezierResizeHelper_1.BezierResizeHelper(appContext.pb, appContext.outline, onUpdate);
-        appContext.pb.add([appContext.bezierResizer.verticalResizeHandle, appContext.bezierResizer.horizontalResizeHandle], triggerRedraw);
-        appContext.handlePathVisibilityChanged();
+        appContext.pb.add([appContext.bezierResizer.verticalResizeHandle, appContext.bezierResizer.horizontalResizeHandle], false // isTriggerRedraw=false
+        );
+        appContext.handlePathVisibilityChanged(isTriggerRedraw);
         // }
     };
 };

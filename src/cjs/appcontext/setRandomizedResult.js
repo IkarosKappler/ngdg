@@ -19,7 +19,7 @@ var setRandomizedResult = function (appContext) {
         // appContext.setPathInstance(BezierPath.fromJSON(result.outline.toJSON()));
         appContext.setPathInstanceByJSON(result.outline.toJSON(false), result.bendAngle); // prettyFormat=false
         // appContext.config.bendAngle = result.bendAngle;
-        appContext.rebuild();
+        return appContext.rebuild();
     };
 };
 exports.setRandomizedResult = setRandomizedResult;

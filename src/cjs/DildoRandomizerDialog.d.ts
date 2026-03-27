@@ -44,6 +44,7 @@ export declare class DildoRandomizerDialog {
     constructor(appContext: AppContext, callbackOptions: IDildoRandomizerDialogOptions);
     private _onFormChangeHandler;
     private _onSilhouetteColorChangeHandler;
+    private __handleSilhouetteColorChange;
     open(): void;
     private __setRunning;
     private _setIterationDisplay;
@@ -59,6 +60,7 @@ export declare class DildoRandomizerDialog {
     private _randomizeButtonEventHandler;
     private _randomizeDildoSettings;
     private _storeCurrentResult;
+    private __collectPreviewData;
     private __create2DPreview;
     private __createSculptmapPreview;
     private __create3DPreview;

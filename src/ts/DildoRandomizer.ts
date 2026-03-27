@@ -31,7 +31,7 @@ export class DildoRandomizer {
 
   next(): DildoRandomizerResult {
     const segmentCount = DildoRandomizer.randIntInRange(this.minPathSegments, this.maxPathSegments);
-    console.log("segmentCount", segmentCount, "minPathSegments", this.minPathSegments, "maxPathSegments", this.maxPathSegments);
+    // console.log("segmentCount", segmentCount, "minPathSegments", this.minPathSegments, "maxPathSegments", this.maxPathSegments);
     const outline: BezierPath = this.randomOutline(segmentCount);
 
     return { outline: outline, bendAngle: DildoRandomizer.randFloatInRange(this.minBendAngle, this.maxBendAngle) };

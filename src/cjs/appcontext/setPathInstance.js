@@ -19,7 +19,6 @@ var setPathInstance = function (appContext) {
         appContext.addPathListeners(appContext.outline);
         appContext.updateSilhouette(true); // noRedraw=true
         appContext.updatePathResizer(false); // triggerRedraw=false
-        appContext.pb.add(newOutline);
         // pb.add(BezierPath.fromJSON(newOutline.toJSON()));
         // +---------------------------------------------------------------------------------
         // | Install a Bézier interaction helper.
@@ -53,6 +52,9 @@ var setPathInstance = function (appContext) {
                 appContext.rebuild();
             }
         });
+        // Important: add outline _after_ readjusting by BezierPathInteractionHelper
+        // to avoid glitch-like visual changes.
+        appContext.pb.add(newOutline); // This will trigger a redraw.
     }; // END setPathInstance
 };
 exports.setPathInstance = setPathInstance;

@@ -7,8 +7,8 @@
 import { AppContext } from "../AppContext";
 
 export const handlePathVisibilityChanged = (appContext: AppContext) => {
-  return () => {
-    console.log("handlePathVisibilityChanged");
+  return (isTriggerRedraw: boolean) => {
+    // console.log("handlePathVisibilityChanged");
     // if (!outline) {
     //   return;
     // }
@@ -41,6 +41,6 @@ export const handlePathVisibilityChanged = (appContext: AppContext) => {
     appContext.bezierResizer.horizontalResizeHandle.attr.visible = appContext.config.drawResizeHandleLines;
     appContext.bezierResizer.horizontalResizeHandle.attr.draggable = appContext.config.drawResizeHandleLines;
     // outline.
-    appContext.pb.redraw();
+    isTriggerRedraw && appContext.pb.redraw();
   };
 };

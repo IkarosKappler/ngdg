@@ -16,7 +16,7 @@ export interface RandomizerResult {
 // | Updates the sculpt map by recalculating the image data from the 3d model.
 // +-------------------------------
 export const setRandomizedResult = (appContext: AppContext) => {
-  return (result: RandomizerResult) => {
+  return (result: RandomizerResult): Promise<boolean> => {
     // setPathInstance(result.outline);
     // TODO: WHY IS PLOTBOILERPLATE NOT RECOGNIZING THE BEZIER INSTANCE???!
     //       Somehow there are two copies of the PlotBoilerplate library, A and B.
@@ -25,6 +25,6 @@ export const setRandomizedResult = (appContext: AppContext) => {
     // appContext.setPathInstance(BezierPath.fromJSON(result.outline.toJSON()));
     appContext.setPathInstanceByJSON(result.outline.toJSON(false), result.bendAngle); // prettyFormat=false
     // appContext.config.bendAngle = result.bendAngle;
-    appContext.rebuild();
+    return appContext.rebuild();
   };
 };

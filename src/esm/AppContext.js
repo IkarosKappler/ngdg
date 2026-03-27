@@ -29,7 +29,6 @@ import { acquireOptimalView } from "./appcontext/acquireOptimalView";
 import { acquireOptimalPathView } from "./appcontext/acquireOptimalPathView";
 import { setDefaultPathInstance } from "./appcontext/setDefaultPathInstance";
 import { getBezierJSON } from "./appcontext/getBezierJSON";
-// import { UIStats } from "uistats-typescript";
 import { filedropHandler } from "./appcontext/filedropHandler";
 import { retrieveFromLocalStorage } from "./appcontext/retrieveFromLocalStorage";
 import { setRandomizedResult } from "./appcontext/setRandomizedResult";
@@ -70,8 +69,8 @@ export class AppContext {
          * If there are multiple instance of PB present, then it might be easier
          * to just pass the JSON string instead of the BezierPath instance.
          */
-        this.setPathInstanceByJSON = (pathJSON) => {
-            this.setPathInstance(BezierPath.fromJSON(pathJSON));
+        this.setPathInstanceByJSON = (pathJSON, bendAngle) => {
+            this.setPathInstance(BezierPath.fromJSON(pathJSON), bendAngle);
         };
         // Init PB
         // All config appContext.params are optional.
@@ -128,9 +127,6 @@ export class AppContext {
         });
         this.dildoGeneration = new ngdg.DildoGeneration("dildo-canvas", {
             makeOrbitControls: options.makeOrbitControls
-            //   makeOrbitControls: function (camera, domElement) {
-            //     return new THREE.OrbitControls(camera, domElement);
-            //   }
         });
         this.modal = options.makeModal();
         this.saveAs = options.saveAs;

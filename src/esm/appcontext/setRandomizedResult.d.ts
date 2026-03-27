@@ -9,4 +9,4 @@ export interface RandomizerResult {
     outline: BezierPath;
     bendAngle: number;
 }
-export declare const setRandomizedResult: (appContext: AppContext) => (result: RandomizerResult) => void;
+export declare const setRandomizedResult: (appContext: AppContext) => (result: RandomizerResult) => Promise<boolean>;

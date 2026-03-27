@@ -7,8 +7,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handlePathVisibilityChanged = void 0;
 var handlePathVisibilityChanged = function (appContext) {
-    return function () {
-        console.log("handlePathVisibilityChanged");
+    return function (isTriggerRedraw) {
+        // console.log("handlePathVisibilityChanged");
         // if (!outline) {
         //   return;
         // }
@@ -42,7 +42,7 @@ var handlePathVisibilityChanged = function (appContext) {
         appContext.bezierResizer.horizontalResizeHandle.attr.visible = appContext.config.drawResizeHandleLines;
         appContext.bezierResizer.horizontalResizeHandle.attr.draggable = appContext.config.drawResizeHandleLines;
         // outline.
-        appContext.pb.redraw();
+        isTriggerRedraw && appContext.pb.redraw();
     };
 };
 exports.handlePathVisibilityChanged = handlePathVisibilityChanged;

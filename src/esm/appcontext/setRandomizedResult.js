@@ -14,9 +14,9 @@ export const setRandomizedResult = (appContext) => {
         //       A.BezierPath and B.BezierPath are not compatible :(
         // temp solution: serialize and de-serialize :/
         // appContext.setPathInstance(BezierPath.fromJSON(result.outline.toJSON()));
-        appContext.setPathInstanceByJSON(result.outline.toJSON(false)); // prettyFormat=false
-        appContext.config.bendAngle = result.bendAngle;
-        appContext.rebuild();
+        appContext.setPathInstanceByJSON(result.outline.toJSON(false), result.bendAngle); // prettyFormat=false
+        // appContext.config.bendAngle = result.bendAngle;
+        return appContext.rebuild();
     };
 };
 //# sourceMappingURL=setRandomizedResult.js.map

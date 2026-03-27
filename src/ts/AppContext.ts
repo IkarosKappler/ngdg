@@ -69,7 +69,7 @@ export class AppContext {
   readonly updateModifiers: () => void;
   readonly config: ReturnType<typeof initConfig>;
   readonly rebuild: () => Promise<boolean>;
-  readonly handlePathVisibilityChanged: () => void;
+  readonly handlePathVisibilityChanged: ReturnType<typeof handlePathVisibilityChanged>;
   readonly stats: ReturnType<typeof initStats>;
   readonly updateBumpmapPreview: typeof updateBumpmapPreview;
   readonly exportSTL: ReturnType<typeof exportSTL>;

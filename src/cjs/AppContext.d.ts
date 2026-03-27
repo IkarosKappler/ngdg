@@ -7,6 +7,7 @@ import { BezierPath, Line, PlotBoilerplate, Polygon, Params } from "plotboilerpl
 import { BezierResizeHelper } from "./BezierResizeHelper";
 import { initConfig } from "./appcontext/initConfig";
 import { DildoSilhouette2D } from "./DildoSilhouette2D";
+import { handlePathVisibilityChanged } from "./appcontext/handlePathVisibilityChanged";
 import { initStats } from "./appcontext/initStats";
 import { DildoGeneration } from "./DildoGeneration";
 import { updateBumpmapPreview } from "./appcontext/updateBumpmapPreview";
@@ -46,7 +47,7 @@ export declare class AppContext {
     readonly updateModifiers: () => void;
     readonly config: ReturnType<typeof initConfig>;
     readonly rebuild: () => Promise<boolean>;
-    readonly handlePathVisibilityChanged: () => void;
+    readonly handlePathVisibilityChanged: ReturnType<typeof handlePathVisibilityChanged>;
     readonly stats: ReturnType<typeof initStats>;
     readonly updateBumpmapPreview: typeof updateBumpmapPreview;
     readonly exportSTL: ReturnType<typeof exportSTL>;

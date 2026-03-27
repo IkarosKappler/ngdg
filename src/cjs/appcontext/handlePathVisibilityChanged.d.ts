@@ -4,4 +4,4 @@
  * @date 2026-03-13 Refactored from the global `index.js`.
  */
 import { AppContext } from "../AppContext";
-export declare const handlePathVisibilityChanged: (appContext: AppContext) => () => void;
+export declare const handlePathVisibilityChanged: (appContext: AppContext) => (isTriggerRedraw: boolean) => void;

@@ -165,7 +165,6 @@ var DildoRandomizerDialog = /** @class */ (function () {
         var formChangeHandler = this._onFormChangeHandler();
         this.ref_slctOptimalBoxWidthPx.current.addEventListener("click", formChangeHandler);
         this.ref_slctBoundsRatio.current.addEventListener("click", formChangeHandler);
-        this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
         globalThis.addEventListener("resize", formChangeHandler);
     }
     // +---------------------------------------------------------------------------------
@@ -183,21 +182,25 @@ var DildoRandomizerDialog = /** @class */ (function () {
     // +-------------------------------
     DildoRandomizerDialog.prototype._onSilhouetteColorChangeHandler = function () {
         var _self = this;
-        return function (event) {
-            // if (_self.curSettings.isSilhouetteBlackColor) {
-            //   _self.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
-            // } else {
-            //   _self.appContext.config.silhouetteLineColor = _self.initialSilhouetteColor;
-            // }
-            if (event.target.checked) {
-                _self.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
-            }
-            else {
-                _self.appContext.config.silhouetteLineColor = _self.initialSilhouetteColor;
-            }
-            _self.appContext.pb.redraw();
-            _self.__create2DPreview();
+        return function (_event) {
+            _self.curSettings = _self.getCurrentFormSettings();
+            _self.__handleSilhouetteColorChange();
         };
+    };
+    DildoRandomizerDialog.prototype.__handleSilhouetteColorChange = function () {
+        if (this.curSettings.isSilhouetteBlackColor) {
+            this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
+        }
+        else {
+            this.appContext.config.silhouetteLineColor = this.initialSilhouetteColor;
+        }
+        // if ((event.target as HTMLInputElement).checked) {
+        //   _self.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
+        // } else {
+        //   _self.appContext.config.silhouetteLineColor = _self.initialSilhouetteColor;
+        // }
+        this.appContext.pb.redraw();
+        this.__create2DPreview();
     };
     // +---------------------------------------------------------------------------------
     // | Open the randomizer dialog.
@@ -225,6 +228,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
         this._setIterationDisplay("");
         this._displayError("");
         this._updateIdealBounds(true); // reevaluateFormSettings=true
+        this.__handleSilhouetteColorChange(); // Initially the color might be set to black
         this.appContext.pb.redraw();
         this.__setRunning(false);
     };
@@ -252,7 +256,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
             console.warn("Cannot update iteration display: element not found.");
             return;
         }
-        elem_iterationDisplay.innerHTML = msg;
+        elem_iterationDisplay.innerHTML = "".concat(msg);
     };
     // +---------------------------------------------------------------------------------
     // | Handle close events.
@@ -262,10 +266,11 @@ var DildoRandomizerDialog = /** @class */ (function () {
         return function (_event) {
             _self.isOpen = false;
             _self.appContext.pb.redraw();
-            console.log("Set running = false");
+            // console.log("Set running = false");
             _self.__setRunning(false);
-            this.appContext.config.silhouetteLineColor = this.initialSilhouetteColor;
-            this.appContext.pb.redraw();
+            _self.appContext.config.silhouetteLineColor = _self.initialSilhouetteColor;
+            // _self.__handleSilhouetteColorChange();
+            _self.appContext.pb.redraw();
         };
     };
     // +---------------------------------------------------------------------------------
@@ -313,7 +318,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
     // +---------------------------------------------------------------------------------
     // | Toggle other paths except the outline on/off.
     // +-------------------------------
-    DildoRandomizerDialog.prototype._togglePathVisibility = function (isVisible) {
+    DildoRandomizerDialog.prototype._togglePathVisibility = function (isVisible, isTriggerRedraw) {
         // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
         this.appContext.config.drawRulers = isVisible;
         this.appContext.config.drawOutline = isVisible;
@@ -325,7 +330,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
             this.appContext.config.showDiscreteOutlinePoints = false;
         }
         // this.callbackOptions.onPathVisibilityChanged();
-        this.appContext.handlePathVisibilityChanged();
+        this.appContext.handlePathVisibilityChanged(isTriggerRedraw);
     };
     DildoRandomizerDialog.prototype._getPathVisibility = function () {
         // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
@@ -342,7 +347,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
     DildoRandomizerDialog.prototype._storeNowHandler = function () {
         var _self = this;
         return function (event) {
-            console.log("Request to store model (click).");
+            // console.log("Request to store model (click).");
             event.preventDefault();
             event.stopPropagation();
             _self
@@ -392,6 +397,9 @@ var DildoRandomizerDialog = /** @class */ (function () {
         this._setIterationDisplay("".concat(this.iterationNumber, "/").concat(this.curSettings.maxIterationCount));
         // Give the viewport some safe areas to all directions.
         this._updateIdealBounds(false); // reevaluateFormSettings=false
+        if (this.curSettings.hideOutlineOnSave == this._getPathVisibility()) {
+            this._togglePathVisibility(false, false); // isVisible=false, isTriggerRedraw=false
+        }
         // Scale down to roughtly one third to make room for the full model and bent to the right.
         // var idealLeftHalfBounds = idealBounds.getScaled(0.333);
         var idealLeftHalfBounds = new plotboilerplate_1.Bounds(this.idealGenerateBounds.min, new plotboilerplate_1.Vertex(this.idealGenerateBounds.min.x + this.idealGenerateBounds.width / 3, this.idealGenerateBounds.max.y));
@@ -400,96 +408,129 @@ var DildoRandomizerDialog = /** @class */ (function () {
         var result = dildoRandomizer.next();
         console.log("Result", result);
         // this.callbackOptions.outlineChangedCallback(result);
-        this.appContext.setRandomizedResult(result);
         var _self = this;
-        this._storeCurrentResult(_self.curSettings.isPutEnabled)
-            .then(function () {
-            if (_self.curSettings.isCreateManyEnabled && _self.isRunning) {
-                // console.log("NEXT ITERATION? isRunning=", _self.isRunning);
-                globalThis.setTimeout(function () {
-                    _self._randomizeDildoSettings(curSequenceID);
-                }, 1000);
+        this.appContext
+            .setRandomizedResult(result)
+            .then(function (buildStatus) {
+            if (!buildStatus) {
+                // Means: built process got interrupted by some other/new process.
+                console.warn("Stopping. built process got interrupted by some other/new process.");
+                return;
             }
-            else {
-                console.log("Done ramdomizing.");
+            // if (this.curSettings.hideOutlineOnSave == this._getPathVisibility()) {
+            //   this._togglePathVisibility(false);
+            // }
+            // this.appContext.pb.redraw();
+            _self
+                ._storeCurrentResult(_self.curSettings.isPutEnabled)
+                .then(function () {
+                if (_self.curSettings.isCreateManyEnabled && _self.isRunning) {
+                    // console.log("NEXT ITERATION? isRunning=", _self.isRunning);
+                    globalThis.setTimeout(function () {
+                        _self._randomizeDildoSettings(curSequenceID);
+                    }, 1000);
+                }
+                else {
+                    // console.log("Done ramdomizing.");
+                    _self.__setRunning(false);
+                }
+            })
+                .catch(function (e) {
+                console.error(e);
                 _self.__setRunning(false);
-            }
+            });
         })
-            .catch(function (e) {
-            console.error(e);
-            _self.__setRunning(false);
+            .catch(function (error) {
+            console.error("Failed to build new model.", error);
+            _self._displayError("Failed to build new model. Consult error console for details.");
         });
     };
     // +---------------------------------------------------------------------------------
     // | Tries to store the current model, screenshots sculpt map and settings.
     // +-------------------------------
     DildoRandomizerDialog.prototype._storeCurrentResult = function (isPutEnabled) {
-        if (this.curSettings.hideOutlineOnSave == this._getPathVisibility()) {
-            this._togglePathVisibility(false);
-        }
-        else {
-        }
-        this.appContext.pb.redraw();
+        var _this = this;
         // this._togglePathVisibility(!this.curSettings.hideOutlineOnSave);
-        var preview2dImageDataURL = this.__create2DPreview();
-        var previewSculptmapImageDataURL = this.__createSculptmapPreview();
-        var preview3dImageDataURL = this.__create3DPreview();
+        // const preview2dImageDataURL = this.__create2DPreview();
+        // const previewSculptmapImageDataURL = this.__createSculptmapPreview();
+        // const preview3dImageDataURL = this.__create3DPreview();
         var _self = this;
         return new Promise(function (accept, reject) {
-            console.log("[_storeCurrentResult] called [0].");
-            if (!isPutEnabled) {
-                console.log("Storing data is not allowed by settings/configuration. Returning.");
-                accept(false);
-                return;
-            }
-            console.log("[_storeCurrentResult] called [1].");
-            // Retrieve image data
-            try {
-                // const preview2dImageDataURL = preview2dSubImageResult.canvas.toDataURL("image/png");
-                // const preview3dImageDataURL = _self.appContext.dildoGeneration.canvas.toDataURL("image/png");
-                // Use AJAX/Axios
-                console.log("Sending data to ", _self.curSettings.putURL);
-                console.log("_self.callbackOptions.axios", _self.callbackOptions.axios);
-                _self.callbackOptions.axios
-                    .request({
-                    method: "post",
-                    url: _self.curSettings.putURL, // "/user/12345",
-                    data: {
-                        hidenfield: "123456",
-                        modelName: "My Model",
-                        shapeSegmentCount: _self.appContext.config.shapeSegmentCount,
-                        outlineSegmentCount: _self.appContext.config.outlineSegmentCount,
-                        preview2d_b64: preview2dImageDataURL,
-                        preview3d_b64: preview3dImageDataURL,
-                        sculptmap_b64: previewSculptmapImageDataURL, // _self.appContext.getSculptmapDataURL(),
-                        bezierJSON: _self.appContext.getBezierJSON(), // _self.callbackOptions.getBezierJSON(),
-                        bendAngle: _self.appContext.config.bendAngle
-                    }
-                })
-                    .then(function (response) {
-                    // response.data.pipe(fs.createWriteStream("ada_lovelace.jpg"));
-                    console.log("Succeeded");
-                    _self._displaySuccess("Model stored.");
-                    accept(true);
-                })
-                    .catch(function (err) {
-                    console.error(err);
-                    _self._displayError("Failed to store model. See error console for details." +
-                        (err &&
-                            err.response &&
-                            err.response.data &&
-                            err.response.data.message &&
-                            " Message from server: " + err.response.data.message));
-                    reject();
-                });
-            }
-            catch (exc) {
-                console.log("Failed to prepare/send axios request.", exc);
-                _self._displayError("Failed to prepare/send axios request. See error console for details.");
-                reject(exc);
-            }
+            _this.__collectPreviewData().then(function (previewData) {
+                if (!isPutEnabled) {
+                    console.log("Storing data is not allowed by settings/configuration. Returning.");
+                    accept(false);
+                    return;
+                }
+                // Retrieve image data
+                try {
+                    // Use AJAX/Axios
+                    // console.log("Sending data to ", _self.curSettings.putURL);
+                    // console.log("_self.callbackOptions.axios", _self.callbackOptions.axios);
+                    _self.callbackOptions.axios
+                        .request({
+                        method: "post",
+                        url: _self.curSettings.putURL, // "/user/12345",
+                        data: {
+                            hidenfield: "123456",
+                            modelName: "My Model",
+                            shapeSegmentCount: _self.appContext.config.shapeSegmentCount,
+                            outlineSegmentCount: _self.appContext.config.outlineSegmentCount,
+                            preview2d_b64: previewData.preview2dImageDataURL,
+                            preview3d_b64: previewData.preview3dImageDataURL,
+                            sculptmap_b64: previewData.previewSculptmapImageDataURL, // _self.appContext.getSculptmapDataURL(),
+                            bezierJSON: _self.appContext.getBezierJSON(), // _self.callbackOptions.getBezierJSON(),
+                            bendAngle: _self.appContext.config.bendAngle
+                        }
+                    })
+                        .then(function (_response) {
+                        // response.data.pipe(fs.createWriteStream("ada_lovelace.jpg"));
+                        console.log("Succeeded");
+                        _self._displaySuccess("Model stored.");
+                        accept(true);
+                    })
+                        .catch(function (err) {
+                        console.error(err);
+                        _self._displayError("Failed to store model. See error console for details." +
+                            (err &&
+                                err.response &&
+                                err.response.data &&
+                                err.response.data.message &&
+                                " Message from server: " + err.response.data.message));
+                        reject();
+                    });
+                }
+                catch (exc) {
+                    console.log("Failed to prepare/send axios request.", exc);
+                    _self._displayError("Failed to prepare/send axios request. See error console for details.");
+                    reject(exc);
+                }
+            }); // END then (collectPreviewData)
         });
     };
+    DildoRandomizerDialog.prototype.__collectPreviewData = function () {
+        var preview2dImageDataURL = this.__create2DPreview();
+        var previewSculptmapImageDataURL = this.__createSculptmapPreview();
+        var _self = this;
+        return new Promise(function (accept, _reject) {
+            // The last one is asynchronous because we need a short delay to
+            // be sure we fetch the most recent 3d data (wait at least one 3d draw cycle).
+            // Note: this is pretty dirty as we rely on x milliseconds effective time – but
+            //       how can we know when the new data is _really_ available?
+            // Task for future me.
+            _self.__create3DPreview().then(function (preview3dImageDataURL) {
+                accept({
+                    preview2dImageDataURL: preview2dImageDataURL,
+                    previewSculptmapImageDataURL: previewSculptmapImageDataURL,
+                    preview3dImageDataURL: preview3dImageDataURL
+                });
+            });
+        });
+    };
+    // +---------------------------------------------------------------------------------
+    // | Create the 2D preview (silhouette) dataURl – and update the preview image inside the dialog,
+    // | if requested by settings.
+    // +-------------------------------
     DildoRandomizerDialog.prototype.__create2DPreview = function () {
         var boundsToCanvasRect = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.min.x, this.idealExportBounds.min.y)), new plotboilerplate_1.Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.max.x, this.idealExportBounds.max.y)));
         // var boundsToCanvasRect = _self.idealExportBounds;
@@ -504,6 +545,10 @@ var DildoRandomizerDialog = /** @class */ (function () {
         }
         return preview2dImageDataURL;
     };
+    // +---------------------------------------------------------------------------------
+    // | Create the sculptmap preview dataURl – and update the preview image inside the dialog,
+    // | if requested by settings.
+    // +-------------------------------
     DildoRandomizerDialog.prototype.__createSculptmapPreview = function () {
         var previewScultpmapImageDataURL = this.appContext.getSculptmapDataURL();
         if (this.curSettings.isShowPreviewBevoreStore) {
@@ -515,15 +560,25 @@ var DildoRandomizerDialog = /** @class */ (function () {
         }
         return previewScultpmapImageDataURL;
     };
+    // +---------------------------------------------------------------------------------
+    // | Create the 3D preview dataURl – and update the preview image inside the dialog,
+    // | if requested by settings.
+    // +-------------------------------
     DildoRandomizerDialog.prototype.__create3DPreview = function () {
-        var preview3dImageDataURL = this.appContext.dildoGeneration.canvas.toDataURL("image/png");
-        if (this.curSettings.isShowPreviewBevoreStore) {
-            this.ref_storePreviewContainer_3d.current.innerHTML = '<img class="store-preview" src=' + preview3dImageDataURL + " />";
-        }
-        else {
-            this.ref_storePreviewContainer_3d.current.innerHTML = "";
-        }
-        return preview3dImageDataURL;
+        var _this = this;
+        return new Promise(function (accept, _reject) {
+            globalThis.setTimeout(function () {
+                var preview3dImageDataURL = _this.appContext.dildoGeneration.canvas.toDataURL("image/png");
+                if (_this.curSettings.isShowPreviewBevoreStore) {
+                    _this.ref_storePreviewContainer_3d.current.innerHTML = '<img class="store-preview" src=' + preview3dImageDataURL + " />";
+                }
+                else {
+                    _this.ref_storePreviewContainer_3d.current.innerHTML = "";
+                }
+                // return preview3dImageDataURL;
+                accept(preview3dImageDataURL);
+            }, 500); // Are 500ms a safe delay?
+        });
     };
     // +---------------------------------------------------------------------------------
     // | Get the current settings as numbers from the displayed HTML form.
@@ -557,7 +612,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
         var hideOutlineOnSave = elem_hideOutlineOnSave ? Boolean(elem_hideOutlineOnSave.checked) : false;
         var isSilhouetteBlackColor = elem_isSilhouetteBlackColor ? Boolean(elem_isSilhouetteBlackColor.checked) : false;
         var isShowPreviewBevoreStore = elem_isShowPreviewBeforeSaving ? Boolean(elem_isShowPreviewBeforeSaving.checked) : false;
-        console.log("boundsRatio", boundsRatio, "optimalBoxWidthPx", optimalBoxWidthPx);
+        // console.log("boundsRatio", boundsRatio, "optimalBoxWidthPx", optimalBoxWidthPx);
         return {
             segmentCountMin: segmentCountMin,
             segmentCountMax: segmentCountMax,

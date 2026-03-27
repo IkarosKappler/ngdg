@@ -20,7 +20,7 @@ var DildoRandomizer = /** @class */ (function () {
     }
     DildoRandomizer.prototype.next = function () {
         var segmentCount = DildoRandomizer.randIntInRange(this.minPathSegments, this.maxPathSegments);
-        console.log("segmentCount", segmentCount, "minPathSegments", this.minPathSegments, "maxPathSegments", this.maxPathSegments);
+        // console.log("segmentCount", segmentCount, "minPathSegments", this.minPathSegments, "maxPathSegments", this.maxPathSegments);
         var outline = this.randomOutline(segmentCount);
         return { outline: outline, bendAngle: DildoRandomizer.randFloatInRange(this.minBendAngle, this.maxBendAngle) };
     };
