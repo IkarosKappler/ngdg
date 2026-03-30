@@ -10,8 +10,8 @@ export const getImageFromCanvas = (canvas: HTMLCanvasElement, context: CanvasRen
   const h = canvas.height;
 
   const safeBounds = new Bounds(
-    new Vertex(Math.max(bounds.min.x, 0), Math.min(bounds.min.y, h)),
-    new Vertex(Math.max(bounds.max.x, 0), Math.min(bounds.max.y, h))
+    new Vertex(Math.max(bounds.min.x, 0), Math.min(bounds.min.y, h + 1)),
+    new Vertex(Math.max(bounds.max.x, 0), Math.min(bounds.max.y, h + 1))
   );
 
   //   var imageData = context.getImageData(0, 0, canvas.width, canvas.height);

@@ -241,7 +241,7 @@ export class DildoRandomizerDialog {
           </button>
         </div>
         <div class="status-container w-100 error"></div>
-        <div class="flow-containter right">
+        <div class="flow-containter right center-v">
           <label for="checkbox-show-preview-before-store">Show preview before storing</label>
           <input type="checkbox" name="checkbox-show-preview-before-store" id="checkbox-show-preview-before-store" checked />
         </div>
@@ -471,13 +471,13 @@ export class DildoRandomizerDialog {
   // +---------------------------------------------------------------------------------
   // | Handle path visibility events.
   // +-------------------------------
-  private _togglePathVisibilityHandler = function (isVisible) {
+  private _togglePathVisibilityHandler = function (isVisible: boolean) {
     var _self = this;
-    return function (event) {
+    return event => {
       event.preventDefault();
       event.stopPropagation();
       // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
-      _self._togglePathVisibility(isVisible);
+      _self._togglePathVisibility(isVisible, true);
     };
   };
 
@@ -718,12 +718,6 @@ export class DildoRandomizerDialog {
       new Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.min.x, this.idealExportBounds.min.y)),
       new Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.max.x, this.idealExportBounds.max.y))
     );
-    // ISSUE: For some strange reason the exported image is 1 pixel smaller in
-    //        height (only height, not width). This is strange. But for LLM training
-    //        purposes exact 256x256 pixels are required.
-    //        This is a workaround, but somehow this is strange.
-    boundsToCanvasRect.max.y += 1;
-    console.log("boundsToCanvasRect", boundsToCanvasRect);
     const preview2dSubImageResult = getImageFromCanvas(
       this.appContext.pb.canvas as HTMLCanvasElement,
       (this.appContext.pb.draw as drawutils).ctx,

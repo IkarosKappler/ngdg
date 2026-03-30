@@ -31,7 +31,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
                 event.preventDefault();
                 event.stopPropagation();
                 // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
-                _self._togglePathVisibility(isVisible);
+                _self._togglePathVisibility(isVisible, true);
             };
         };
         if (!(appContext.pb.canvas instanceof HTMLCanvasElement)) {
@@ -150,7 +150,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
                 noreact_1.NoReact.createElement("input", { type: "text", id: "putURL", class: "putURL", name: "putURL", value: "http://127.0.0.1:1337/model/put", disabled: true }),
                 noreact_1.NoReact.createElement("button", { id: "btn_store-now", ref: this.ref_btnStoreNow }, "Store Now")),
             noreact_1.NoReact.createElement("div", { class: "status-container w-100 error" }),
-            noreact_1.NoReact.createElement("div", { class: "flow-containter right" },
+            noreact_1.NoReact.createElement("div", { class: "flow-containter right center-v" },
                 noreact_1.NoReact.createElement("label", { for: "checkbox-show-preview-before-store" }, "Show preview before storing"),
                 noreact_1.NoReact.createElement("input", { type: "checkbox", name: "checkbox-show-preview-before-store", id: "checkbox-show-preview-before-store", checked: true })),
             noreact_1.NoReact.createElement("div", { class: "flow-containter flex-flow" },
@@ -557,12 +557,6 @@ var DildoRandomizerDialog = /** @class */ (function () {
     // +-------------------------------
     DildoRandomizerDialog.prototype.__create2DPreview = function () {
         var boundsToCanvasRect = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.min.x, this.idealExportBounds.min.y)), new plotboilerplate_1.Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.max.x, this.idealExportBounds.max.y)));
-        // ISSUE: For some strange reason the exported image is 1 pixel smaller in
-        //        height (only height, not width). This is strange. But for LLM training
-        //        purposes exact 256x256 pixels are required.
-        //        This is a workaround, but somehow this is strange.
-        boundsToCanvasRect.max.y += 1;
-        console.log("boundsToCanvasRect", boundsToCanvasRect);
         var preview2dSubImageResult = (0, getImageFromCanvas_1.getImageFromCanvas)(this.appContext.pb.canvas, this.appContext.pb.draw.ctx, boundsToCanvasRect);
         var preview2dImageDataURL = preview2dSubImageResult.canvas.toDataURL("image/png");
         if (this.curSettings.isShowPreviewBevoreStore) {
