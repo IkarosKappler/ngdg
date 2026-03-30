@@ -4,8 +4,8 @@
  * @date 2026-03-13 Refactored from the global `index.js`.
  */
 export const handlePathVisibilityChanged = (appContext) => {
-    return () => {
-        console.log("handlePathVisibilityChanged");
+    return (isTriggerRedraw) => {
+        // console.log("handlePathVisibilityChanged");
         // if (!outline) {
         //   return;
         // }
@@ -39,7 +39,7 @@ export const handlePathVisibilityChanged = (appContext) => {
         appContext.bezierResizer.horizontalResizeHandle.attr.visible = appContext.config.drawResizeHandleLines;
         appContext.bezierResizer.horizontalResizeHandle.attr.draggable = appContext.config.drawResizeHandleLines;
         // outline.
-        appContext.pb.redraw();
+        isTriggerRedraw && appContext.pb.redraw();
     };
 };
 //# sourceMappingURL=handlePathVisibilityChanged.js.map

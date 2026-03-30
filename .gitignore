@@ -51,3 +51,4 @@ src/ts/thirdparty-ported/_earcut/
 src/esm/thirdparty-ported/_earcut/
 
 .env*
+temp/

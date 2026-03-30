@@ -5,7 +5,7 @@
  */
 import { BezierResizeHelper } from "../BezierResizeHelper";
 export const updatePathResizer = (appContext) => {
-    return (triggerRedraw) => {
+    return (isTriggerRedraw) => {
         if (appContext.bezierResizer) {
             appContext.pb.remove([appContext.bezierResizer.verticalResizeHandle, appContext.bezierResizer.horizontalResizeHandle]);
             appContext.bezierResizer.destroy();
@@ -18,8 +18,9 @@ export const updatePathResizer = (appContext) => {
             appContext.rebuild();
         };
         appContext.bezierResizer = new BezierResizeHelper(appContext.pb, appContext.outline, onUpdate);
-        appContext.pb.add([appContext.bezierResizer.verticalResizeHandle, appContext.bezierResizer.horizontalResizeHandle], triggerRedraw);
-        appContext.handlePathVisibilityChanged();
+        appContext.pb.add([appContext.bezierResizer.verticalResizeHandle, appContext.bezierResizer.horizontalResizeHandle], false // isTriggerRedraw=false
+        );
+        appContext.handlePathVisibilityChanged(isTriggerRedraw);
         // }
     };
 };

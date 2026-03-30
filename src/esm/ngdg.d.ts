@@ -36,7 +36,7 @@ export declare const ngdg: {
     fitViewToSilhouette: (appContext: AppContext) => () => void;
     getBezierJSON: (appContext: AppContext) => (prettyFormat?: boolean) => string;
     getSculptmapDataURL: (appContext: AppContext) => () => string;
-    handlePathVisibilityChanged: (appContext: AppContext) => () => void;
+    handlePathVisibilityChanged: (appContext: AppContext) => (isTriggerRedraw: boolean) => void;
     initConfig: (appContext: AppContext) => {
         outlineSegmentCount: number;
         shapeSegmentCount: number;
@@ -127,7 +127,7 @@ export declare const ngdg: {
     updateBumpmapPreview: (bumpmap: import("./interfaces").IBumpmap, isPreviewVisible: boolean) => void;
     updateModifiers: (appContex: AppContext) => () => void;
     updateOutlineStats: (appContext: AppContext) => () => void;
-    updatePathResizer: (appContext: AppContext) => (triggerRedraw: boolean) => void;
+    updatePathResizer: (appContext: AppContext) => (isTriggerRedraw: boolean) => void;
     updateSilhouette: (appContext: AppContext) => (noRedraw: boolean) => void;
     detectDarkMode: (GUP: Record<string, string>) => boolean;
     DildoGeneration: typeof DildoGeneration;

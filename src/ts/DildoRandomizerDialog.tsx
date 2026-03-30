@@ -47,6 +47,8 @@ export class DildoRandomizerDialog {
   private isRunning: boolean;
 
   private initialSilhouetteColor: string;
+  private initialOutlineSegmentCount: number;
+  private initialShapeSegmentCountegmentCount: number;
 
   private ref_btnRandomize: Ref<HTMLButtonElement>;
   private ref_btnShowPath: Ref<HTMLButtonElement>;
@@ -57,6 +59,7 @@ export class DildoRandomizerDialog {
   private ref_storePreviewContainer_2d: Ref<HTMLDivElement>;
   private ref_storePreviewContainer_sculptmap: Ref<HTMLDivElement>;
   private ref_storePreviewContainer_3d: Ref<HTMLDivElement>;
+  private ref_slctTargetMeshResolution: Ref<HTMLSelectElement>;
 
   /**
    * outlineChangedCallback
@@ -100,6 +103,7 @@ export class DildoRandomizerDialog {
     this.ref_storePreviewContainer_2d = NoReact.useRef<HTMLDivElement>();
     this.ref_storePreviewContainer_sculptmap = NoReact.useRef<HTMLDivElement>();
     this.ref_storePreviewContainer_3d = NoReact.useRef<HTMLDivElement>();
+    this.ref_slctTargetMeshResolution = NoReact.useRef<HTMLSelectElement>();
     const htmlContent: HTMLElement = (
       <div class="font-600-desktop">
         <div class="flow-containter">
@@ -139,9 +143,23 @@ export class DildoRandomizerDialog {
             <br />
             <input type="number" id="bendValueMax" min="0" max="180" value="120" name="bendValueMax" />°
           </div>
-          <div class="grid-w-25 flow-containter right center-v">
-            <label for="checkbox-hide-outlines-on-save">Hide outlines on save</label>
-            <input type="checkbox" name="checkbox-hide-outlines-on-save" id="checkbox-hide-outlines-on-save" checked />
+          <div class="grid-w-25 flow-containter column">
+            <div class="w-100 flow-containter right center-v">
+              <label for="checkbox-hide-outlines-on-save">Hide outlines on save</label>
+              <input type="checkbox" name="checkbox-hide-outlines-on-save" id="checkbox-hide-outlines-on-save" checked />
+            </div>
+            <div class="w-100 flow-containter right center-v">
+              <label for="checkbox-silhouette-black-color" class="text-right">
+                Use black color for silhouette
+              </label>
+              <input
+                type="checkbox"
+                name="checkbox-silhouette-black-color"
+                id="checkbox-silhouette-black-color"
+                checked
+                onChange={this._onSilhouetteColorChangeHandler()}
+              />
+            </div>
           </div>
         </div>
         <div class="flow-containter center">
@@ -164,8 +182,8 @@ export class DildoRandomizerDialog {
           <div class="grid-w-25">
             <label for="optimalBoxWidthPx">Optimal box width</label>
             <br />
-            <select id="optimalBoxWidthPx">
-              <option value="256" ref={this.ref_slctOptimalBoxWidthPx} selected>
+            <select id="optimalBoxWidthPx" ref={this.ref_slctOptimalBoxWidthPx} onChange={this._onResulutionChangeHandler()}>
+              <option value="256" selected>
                 256
               </option>
               <option value="512">512</option>
@@ -174,15 +192,22 @@ export class DildoRandomizerDialog {
             </select>{" "}
             px
           </div>
-          <div class="grid-w-25 flow-containter right center-v">
-            <label for="checkbox-silhouette-black-color">Use black color for silhouette</label>
-            <input
-              type="checkbox"
-              name="checkbox-silhouette-black-color"
-              id="checkbox-silhouette-black-color"
-              checked
-              onChange={this._onSilhouetteColorChangeHandler()}
-            />
+          <div class="grid-w-25">
+            <label for="select-target-mesh-resolution">Target Mesh Resolution</label>
+            <br />
+            <select
+              id="select-target-mesh-resolution"
+              ref={this.ref_slctTargetMeshResolution}
+              onChange={this._onResulutionChangeHandler()}
+            >
+              <option value="256" selected>
+                256
+              </option>
+              <option value="512">512</option>
+              <option value="1024">1024</option>
+              <option value="2048">2048</option>
+            </select>{" "}
+            px
           </div>
         </div>
         <div class="flow-containter">
@@ -287,6 +312,23 @@ export class DildoRandomizerDialog {
     };
   }
 
+  // +---------------------------------------------------------------------------------
+  // | Handle form changes.
+  // +-------------------------------
+  private _onResulutionChangeHandler() {
+    var _self = this;
+    return function (_event: Event) {
+      // _self.curSettings = _self.getCurrentFormSettings();
+      // _self.__handleSilhouetteColorChange();
+      _self.curSettings = _self.getCurrentFormSettings();
+      if (_self.curSettings.targetMeshResolution != _self.curSettings.optimalBoxWidthPx) {
+        _self._displayError("Warning: recommended is using same values for targetMeshResolution and optimalBoxWidthPx.");
+      } else {
+        _self._displayError(null);
+      }
+    };
+  }
+
   private __handleSilhouetteColorChange() {
     if (this.curSettings.isSilhouetteBlackColor) {
       this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
@@ -309,6 +351,9 @@ export class DildoRandomizerDialog {
     this.appContext.modal.setTitle("Dildo Randomizer");
     this.appContext.modal.setFooter("");
     this.initialSilhouetteColor = this.appContext.config.silhouetteLineColor;
+    this.initialOutlineSegmentCount = this.appContext.config.outlineSegmentCount;
+    this.initialShapeSegmentCountegmentCount = this.appContext.config.shapeSegmentCount;
+
     // this.modal.setActions([Modal.ACTION_CLOSE]);
     var _self = this;
     this.appContext.modal.setActions([
@@ -546,6 +591,10 @@ export class DildoRandomizerDialog {
       this.curSettings.bendValueMax
     );
 
+    // Use the mesh target resoluation
+    this.appContext.config.outlineSegmentCount = this.curSettings.targetMeshResolution;
+    this.appContext.config.shapeSegmentCount = this.curSettings.targetMeshResolution;
+
     var result = dildoRandomizer.next();
     console.log("Result", result);
     // this.callbackOptions.outlineChangedCallback(result);
@@ -558,16 +607,12 @@ export class DildoRandomizerDialog {
           console.warn("Stopping. built process got interrupted by some other/new process.");
           return;
         }
-        // if (this.curSettings.hideOutlineOnSave == this._getPathVisibility()) {
-        //   this._togglePathVisibility(false);
-        // }
-        // this.appContext.pb.redraw();
         _self
           ._storeCurrentResult(_self.curSettings.isPutEnabled)
-          .then(function () {
+          .then(() => {
             if (_self.curSettings.isCreateManyEnabled && _self.isRunning) {
               // console.log("NEXT ITERATION? isRunning=", _self.isRunning);
-              globalThis.setTimeout(function () {
+              globalThis.setTimeout(() => {
                 _self._randomizeDildoSettings(curSequenceID);
               }, 1000);
             } else {
@@ -575,7 +620,7 @@ export class DildoRandomizerDialog {
               _self.__setRunning(false);
             }
           })
-          .catch(function (e) {
+          .catch(e => {
             console.error(e);
             _self.__setRunning(false);
           });
@@ -589,11 +634,7 @@ export class DildoRandomizerDialog {
   // +---------------------------------------------------------------------------------
   // | Tries to store the current model, screenshots sculpt map and settings.
   // +-------------------------------
-  private _storeCurrentResult(isPutEnabled) {
-    // this._togglePathVisibility(!this.curSettings.hideOutlineOnSave);
-    // const preview2dImageDataURL = this.__create2DPreview();
-    // const previewSculptmapImageDataURL = this.__createSculptmapPreview();
-    // const preview3dImageDataURL = this.__create3DPreview();
+  private _storeCurrentResult(isPutEnabled: boolean) {
     var _self = this;
     return new Promise<boolean>((accept, reject) => {
       this.__collectPreviewData().then((previewData: PrewiewData) => {
@@ -605,8 +646,6 @@ export class DildoRandomizerDialog {
         // Retrieve image data
         try {
           // Use AJAX/Axios
-          // console.log("Sending data to ", _self.curSettings.putURL);
-          // console.log("_self.callbackOptions.axios", _self.callbackOptions.axios);
           _self.callbackOptions.axios
             .request({
               method: "post",
@@ -623,13 +662,13 @@ export class DildoRandomizerDialog {
                 bendAngle: _self.appContext.config.bendAngle
               }
             })
-            .then(function (_response) {
+            .then(_response => {
               // response.data.pipe(fs.createWriteStream("ada_lovelace.jpg"));
               console.log("Succeeded");
               _self._displaySuccess("Model stored.");
               accept(true);
             })
-            .catch(function (err) {
+            .catch(err => {
               console.error(err);
               _self._displayError(
                 "Failed to store model. See error console for details." +
@@ -679,7 +718,11 @@ export class DildoRandomizerDialog {
       new Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.min.x, this.idealExportBounds.min.y)),
       new Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.max.x, this.idealExportBounds.max.y))
     );
-    // var boundsToCanvasRect = _self.idealExportBounds;
+    // ISSUE: For some strange reason the exported image is 1 pixel smaller in
+    //        height (only height, not width). This is strange. But for LLM training
+    //        purposes exact 256x256 pixels are required.
+    //        This is a workaround, but somehow this is strange.
+    boundsToCanvasRect.max.y += 1;
     console.log("boundsToCanvasRect", boundsToCanvasRect);
     const preview2dSubImageResult = getImageFromCanvas(
       this.appContext.pb.canvas as HTMLCanvasElement,
@@ -749,6 +792,7 @@ export class DildoRandomizerDialog {
     var elem_isShowPreviewBeforeSaving: HTMLInputElement | null = this.rootElement.querySelector(
       "#checkbox-show-preview-before-store"
     );
+    var elem_targetMeshResolution = this.ref_slctTargetMeshResolution.current;
 
     var segmentCountMin = elem_segmentCountMin ? Number(elem_segmentCountMin.value) : NaN;
     var segmentCountMax = elem_segmentCountMax ? Number(elem_segmentCountMax.value) : NaN;
@@ -764,6 +808,7 @@ export class DildoRandomizerDialog {
     var hideOutlineOnSave = elem_hideOutlineOnSave ? Boolean(elem_hideOutlineOnSave.checked) : false;
     var isSilhouetteBlackColor = elem_isSilhouetteBlackColor ? Boolean(elem_isSilhouetteBlackColor.checked) : false;
     var isShowPreviewBevoreStore = elem_isShowPreviewBeforeSaving ? Boolean(elem_isShowPreviewBeforeSaving.checked) : false;
+    var targetMeshResolution = Number(getSelectedSelectOption(elem_targetMeshResolution, 256));
 
     // console.log("boundsRatio", boundsRatio, "optimalBoxWidthPx", optimalBoxWidthPx);
 
@@ -780,7 +825,8 @@ export class DildoRandomizerDialog {
       hideOutlineOnSave: hideOutlineOnSave,
       isSilhouetteBlackColor: isSilhouetteBlackColor,
       isShowPreviewBevoreStore: isShowPreviewBevoreStore,
-      putURL: putURL
+      putURL: putURL,
+      targetMeshResolution: targetMeshResolution
     };
   }
 
@@ -798,10 +844,9 @@ export class DildoRandomizerDialog {
 
     // var width = Math.min(this.viewport.width, this.curSettings.optimalBoxWidthPx);
     var canvasWidth = Math.min((this.appContext.pb.canvas as HTMLCanvasElement).width, this.curSettings.optimalBoxWidthPx);
-    // var height = canvasWidth / this.curSettings.boundsRatio;
     var canvasHeight = canvasWidth / this.curSettings.boundsRatio;
-    // var widthInPhysicalPixels = this.pb.canvas.width;
-    // var widthInPhysicalPixels = width * this.pb.config.scaleX;
+    // console.log("XXX canvasWidth", canvasWidth, "canvasHeight", canvasHeight);
+
     console.log("canvasWidth", canvasWidth, "canvasHeight", canvasHeight, "boundsRatio", this.curSettings.boundsRatio);
     if (canvasWidth < this.curSettings.optimalBoxWidthPx) {
       this._displayError(
@@ -824,6 +869,7 @@ export class DildoRandomizerDialog {
         this.viewport.max.y - (this.viewport.height - canvasHeight / this.appContext.pb.config.scaleY) / 2.0
       )
     );
+    // console.log("YYY bounds", bounds);
 
     // Move to the lower part to make it easier to see the full result below the dialog.
     var offsetX = 0.0;
@@ -838,9 +884,9 @@ export class DildoRandomizerDialog {
 // +---------------------------------------------------------------------------------
 // | A helper function to retrieve the selected value from an <select> element.
 // +-------------------------------
-var getSelectedOption = function (rootContainer, selector, fallback) {
+var getSelectedOption = function (rootContainer: HTMLElement, selector: string, fallback: number): number {
   // var e = document.getElementById("elementId");
-  var selectElement = rootContainer.querySelector(selector);
+  const selectElement: HTMLSelectElement = rootContainer.querySelector(selector);
   if (!selectElement) {
     console.warn("Select element not found. Using fallback", selector, fallback);
     return fallback;
@@ -851,5 +897,22 @@ var getSelectedOption = function (rootContainer, selector, fallback) {
     console.warn("Select value not available. Using fallback", fallback);
     return fallback;
   }
-  return value;
+  return Number(value);
+};
+
+// +---------------------------------------------------------------------------------
+// | A helper function to retrieve the selected value from an <select> element.
+// +-------------------------------
+var getSelectedSelectOption = function (selectElement: HTMLSelectElement, fallback: number): number {
+  if (!selectElement) {
+    console.warn("Select element is null. Using fallback", fallback);
+    return fallback;
+  }
+  var value = selectElement.options[selectElement.selectedIndex].value;
+  // var text = selectElement.options[selectElement.selectedIndex].text;
+  if (!value) {
+    console.warn("Select value not available. Using fallback", fallback);
+    return fallback;
+  }
+  return Number(value);
 };

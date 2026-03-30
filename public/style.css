@@ -143,6 +143,15 @@ body.mobile #action-buttons {
   width: 100%;
 }
 
+/* Basic grid system */
+.flow-containter.column {
+  flex-direction: column;
+}
+
+.text-right {
+  text-align: right;
+}
+
 .grid-w-25 {
   width: 25%;
   max-width: 25%;
