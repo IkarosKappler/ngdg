@@ -44,6 +44,9 @@ var DildoRandomizerDialog = /** @class */ (function () {
         this.rootElement.classList.add("randomizerForm");
         this.isOpen = false;
         this.isDrawIdealBoundsEnabled = true;
+        var i18n = {
+            targetMeshResolution: "The number of shape segements and outline segments in the target mesh. For LLM training reasons these two should be equal to get a square data image."
+        };
         // The ideal bounds to export the final image data from.
         this.idealExportBounds = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(), new plotboilerplate_1.Vertex());
         // The real bounds _inside_ the export bounds to generate the outline in.
@@ -52,6 +55,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
         this.iterationNumber = 0;
         this.sequenceID = 0;
         this.isRunning = false;
+        this.isStopRequested = false;
         this.curSettings = null; // this.getCurrentFormSettings();
         this.ref_btnRandomize = noreact_1.NoReact.useRef();
         this.ref_btnShowPath = noreact_1.NoReact.useRef();
@@ -121,8 +125,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
                     " ",
                     "px"),
                 noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
-                    noreact_1.NoReact.createElement("label", { for: "select-target-mesh-resolution" }, "Target Mesh Resolution"),
-                    noreact_1.NoReact.createElement("br", null),
+                    this.__renderInfoButton("select-target-mesh-resolution", "Target Mesh Resolution", i18n.targetMeshResolution),
                     noreact_1.NoReact.createElement("select", { id: "select-target-mesh-resolution", ref: this.ref_slctTargetMeshResolution, onChange: this._onResulutionChangeHandler() },
                         noreact_1.NoReact.createElement("option", { value: "256", selected: true }, "256"),
                         noreact_1.NoReact.createElement("option", { value: "512" }, "512"),
@@ -144,13 +147,13 @@ var DildoRandomizerDialog = /** @class */ (function () {
                     noreact_1.NoReact.createElement("span", { id: "iterationDisplay" }))),
             noreact_1.NoReact.createElement("div", { class: "flow-container", style: { backgroundColor: "rgba(0,0,0,0.25)" } },
                 noreact_1.NoReact.createElement("div", { class: "progressbar w-100" })),
-            noreact_1.NoReact.createElement("div", { class: "flow-containter flex-flow" },
+            noreact_1.NoReact.createElement("div", { class: "flow-containter flex-flow center-v" },
                 noreact_1.NoReact.createElement("label", { for: "isPutEnabled" }, "Store data"),
                 noreact_1.NoReact.createElement("input", { type: "checkbox", name: "isPutEnabled", id: "isPutEnabled" }),
                 noreact_1.NoReact.createElement("input", { type: "text", id: "putURL", class: "putURL", name: "putURL", value: "http://127.0.0.1:1337/model/put", disabled: true }),
                 noreact_1.NoReact.createElement("button", { id: "btn_store-now", ref: this.ref_btnStoreNow }, "Store Now")),
             noreact_1.NoReact.createElement("div", { class: "status-container w-100 error" }),
-            noreact_1.NoReact.createElement("div", { class: "flow-containter right center-v" },
+            noreact_1.NoReact.createElement("div", { class: "flow-containter right" },
                 noreact_1.NoReact.createElement("label", { for: "checkbox-show-preview-before-store" }, "Show preview before storing"),
                 noreact_1.NoReact.createElement("input", { type: "checkbox", name: "checkbox-show-preview-before-store", id: "checkbox-show-preview-before-store", checked: true })),
             noreact_1.NoReact.createElement("div", { class: "flow-containter flex-flow" },
@@ -178,7 +181,18 @@ var DildoRandomizerDialog = /** @class */ (function () {
         this.ref_slctOptimalBoxWidthPx.current.addEventListener("click", formChangeHandler);
         this.ref_slctBoundsRatio.current.addEventListener("click", formChangeHandler);
         globalThis.addEventListener("resize", formChangeHandler);
-    }
+    } // END constructor
+    // +---------------------------------------------------------------------------------
+    // | Render a label with an info button.
+    // +-------------------------------
+    DildoRandomizerDialog.prototype.__renderInfoButton = function (labelForId, labelText, infoText) {
+        // <label for="select-target-mesh-resolution">Target Mesh Resolution</label>
+        return (noreact_1.NoReact.createElement("div", { class: "label-with-info" },
+            noreact_1.NoReact.createElement("label", { for: labelForId }, labelText),
+            noreact_1.NoReact.createElement("span", { class: "infosign tooltip" },
+                "\uD83D\uDEC8",
+                noreact_1.NoReact.createElement("span", { class: "tooltiptext tooltip-left" }, infoText))));
+    };
     // +---------------------------------------------------------------------------------
     // | Handle form changes.
     // +-------------------------------
@@ -205,8 +219,6 @@ var DildoRandomizerDialog = /** @class */ (function () {
     DildoRandomizerDialog.prototype._onResulutionChangeHandler = function () {
         var _self = this;
         return function (_event) {
-            // _self.curSettings = _self.getCurrentFormSettings();
-            // _self.__handleSilhouetteColorChange();
             _self.curSettings = _self.getCurrentFormSettings();
             if (_self.curSettings.targetMeshResolution != _self.curSettings.optimalBoxWidthPx) {
                 _self._displayError("Warning: recommended is using same values for targetMeshResolution and optimalBoxWidthPx.");
@@ -216,6 +228,9 @@ var DildoRandomizerDialog = /** @class */ (function () {
             }
         };
     };
+    // +---------------------------------------------------------------------------------
+    // | Handle silhouette form changes.
+    // +-------------------------------
     DildoRandomizerDialog.prototype.__handleSilhouetteColorChange = function () {
         if (this.curSettings.isSilhouetteBlackColor) {
             this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
@@ -223,11 +238,6 @@ var DildoRandomizerDialog = /** @class */ (function () {
         else {
             this.appContext.config.silhouetteLineColor = this.initialSilhouetteColor;
         }
-        // if ((event.target as HTMLInputElement).checked) {
-        //   _self.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
-        // } else {
-        //   _self.appContext.config.silhouetteLineColor = _self.initialSilhouetteColor;
-        // }
         this.appContext.pb.redraw();
         this.__create2DPreview();
     };
@@ -248,7 +258,6 @@ var DildoRandomizerDialog = /** @class */ (function () {
                 action: function () {
                     console.log("CLOSE ACTION HIT!");
                     _self.appContext.modal.close();
-                    // _self.__setRunning(false);
                     _self._onCloseHandler()();
                 }
             }
@@ -265,18 +274,22 @@ var DildoRandomizerDialog = /** @class */ (function () {
     };
     DildoRandomizerDialog.prototype.__setRunning = function (isRunning) {
         this.isRunning = isRunning;
+        this.isStopRequested = false;
         var elem_progressBar = this.rootElement.querySelector(".progressbar");
         if (!elem_progressBar) {
             console.warn("Cannot update progress bar: element not found.");
             return;
         }
-        this.ref_btnRandomize.current.disabled = isRunning;
+        // this.ref_btnRandomize.current.disabled = isRunning;
         if (isRunning) {
+            this.ref_btnRandomize.current.innerHTML = "Stop";
             elem_progressBar.classList.add("animate");
         }
         else {
+            this.ref_btnRandomize.current.innerHTML = "Randomize";
             elem_progressBar.classList.remove("animate");
         }
+        this.ref_btnRandomize.current.disabled = false;
     };
     // +---------------------------------------------------------------------------------
     // | When iterating many randomized results: set the current iteration message.
@@ -399,10 +412,17 @@ var DildoRandomizerDialog = /** @class */ (function () {
         return function (event) {
             event.preventDefault();
             event.stopPropagation();
-            _self.iterationNumber = 0;
-            _self.sequenceID = Math.round(Math.random() * 365535);
-            _self.__setRunning(true);
-            _self._randomizeDildoSettings(_self.sequenceID);
+            if (_self.isRunning) {
+                // _self.__setRunning(false);
+                _self.isStopRequested = true;
+                _self.ref_btnRandomize.current.disabled = true;
+            }
+            else {
+                _self.iterationNumber = 0;
+                _self.sequenceID = Math.round(Math.random() * 365535);
+                _self.__setRunning(true);
+                _self._randomizeDildoSettings(_self.sequenceID);
+            }
         };
     };
     // +---------------------------------------------------------------------------------
@@ -420,6 +440,12 @@ var DildoRandomizerDialog = /** @class */ (function () {
         if (this.sequenceID != curSequenceID) {
             // A new sequence has started. Stop this one immediately!
             console.log("A new sequence has started. Stopping.");
+            this.__setRunning(false);
+            return;
+        }
+        if (this.isStopRequested) {
+            // A new sequence has started. Stop this one immediately!
+            console.log("Top was requested.");
             this.__setRunning(false);
             return;
         }
@@ -557,6 +583,9 @@ var DildoRandomizerDialog = /** @class */ (function () {
     // +-------------------------------
     DildoRandomizerDialog.prototype.__create2DPreview = function () {
         var boundsToCanvasRect = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.min.x, this.idealExportBounds.min.y)), new plotboilerplate_1.Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.max.x, this.idealExportBounds.max.y)));
+        // Note: the `getImageFromCanvas` method will crop the rectangle if exceeds canvas bounds.
+        //       move one pixel up.
+        // var boundsToCanvasRect_safe = new Bounds(new Vertex(boundsToCanvasRect.min).subY(1.0), new Vertex(boundsToCanvasRect.max));
         var preview2dSubImageResult = (0, getImageFromCanvas_1.getImageFromCanvas)(this.appContext.pb.canvas, this.appContext.pb.draw.ctx, boundsToCanvasRect);
         var preview2dImageDataURL = preview2dSubImageResult.canvas.toDataURL("image/png");
         if (this.curSettings.isShowPreviewBevoreStore) {
@@ -680,7 +709,9 @@ var DildoRandomizerDialog = /** @class */ (function () {
         // Move to the lower part to make it easier to see the full result below the dialog.
         var offsetX = 0.0;
         var offsetY = this.viewport.max.y - bounds.max.y;
-        bounds = bounds.getMoved({ x: offsetX, y: offsetY });
+        // Note: the `getImageFromCanvas` method will crop the rectangle if exceeds canvas bounds.
+        //       move one pixel up.
+        bounds = bounds.getMoved({ x: offsetX, y: offsetY - 1 });
         this.idealExportBounds = bounds;
         this.idealGenerateBounds = bounds.getScaled(0.666);
     };

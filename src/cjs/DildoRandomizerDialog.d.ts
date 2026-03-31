@@ -23,6 +23,7 @@ export declare class DildoRandomizerDialog {
     private viewport;
     private iterationNumber;
     private sequenceID;
+    private isStopRequested;
     private isRunning;
     private initialSilhouetteColor;
     private initialOutlineSegmentCount;
@@ -45,6 +46,7 @@ export declare class DildoRandomizerDialog {
      * getPreviewImageDataURL
      **/
     constructor(appContext: AppContext, callbackOptions: IDildoRandomizerDialogOptions);
+    private __renderInfoButton;
     private _onFormChangeHandler;
     private _onSilhouetteColorChangeHandler;
     private _onResulutionChangeHandler;

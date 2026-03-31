@@ -120,6 +120,23 @@ body.mobile #action-buttons {
   min-width: 50%;
 }
 
+.modal .randomizerForm div.label-with-info {
+  display: flex;
+  flex-direction: row;
+}
+
+.modal .randomizerForm div.label-with-info span.infosign {
+  display: block;
+  width: 1em;
+  height: 1em;
+  padding: 0;
+  margin-left: 0.1em;
+  line-height: 1em;
+  background: transparent;
+  color: grey;
+  cursor: pointer;
+}
+
 .modal .randomizerForm .isPutEnabled {
   /* empty */
 }

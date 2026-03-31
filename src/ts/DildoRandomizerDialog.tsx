@@ -44,6 +44,7 @@ export class DildoRandomizerDialog {
   private viewport: Bounds;
   private iterationNumber: number;
   private sequenceID: any;
+  private isStopRequested: boolean;
   private isRunning: boolean;
 
   private initialSilhouetteColor: string;
@@ -82,6 +83,11 @@ export class DildoRandomizerDialog {
     this.isOpen = false;
     this.isDrawIdealBoundsEnabled = true;
 
+    const i18n = {
+      targetMeshResolution:
+        "The number of shape segements and outline segments in the target mesh. For LLM training reasons these two should be equal to get a square data image."
+    };
+
     // The ideal bounds to export the final image data from.
     this.idealExportBounds = new Bounds(new Vertex(), new Vertex());
 
@@ -92,6 +98,7 @@ export class DildoRandomizerDialog {
     this.iterationNumber = 0;
     this.sequenceID = 0;
     this.isRunning = false;
+    this.isStopRequested = false;
     this.curSettings = null; // this.getCurrentFormSettings();
 
     this.ref_btnRandomize = NoReact.useRef<HTMLButtonElement>();
@@ -193,8 +200,7 @@ export class DildoRandomizerDialog {
             px
           </div>
           <div class="grid-w-25">
-            <label for="select-target-mesh-resolution">Target Mesh Resolution</label>
-            <br />
+            {this.__renderInfoButton("select-target-mesh-resolution", "Target Mesh Resolution", i18n.targetMeshResolution)}
             <select
               id="select-target-mesh-resolution"
               ref={this.ref_slctTargetMeshResolution}
@@ -232,7 +238,7 @@ export class DildoRandomizerDialog {
         <div class="flow-container" style={{ backgroundColor: "rgba(0,0,0,0.25)" }}>
           <div class="progressbar w-100"></div>
         </div>
-        <div class="flow-containter flex-flow">
+        <div class="flow-containter flex-flow center-v">
           <label for="isPutEnabled">Store data</label>
           <input type="checkbox" name="isPutEnabled" id="isPutEnabled" />
           <input type="text" id="putURL" class="putURL" name="putURL" value="http://127.0.0.1:1337/model/put" disabled />
@@ -241,7 +247,7 @@ export class DildoRandomizerDialog {
           </button>
         </div>
         <div class="status-container w-100 error"></div>
-        <div class="flow-containter right center-v">
+        <div class="flow-containter right">
           <label for="checkbox-show-preview-before-store">Show preview before storing</label>
           <input type="checkbox" name="checkbox-show-preview-before-store" id="checkbox-show-preview-before-store" checked />
         </div>
@@ -288,6 +294,22 @@ export class DildoRandomizerDialog {
     this.ref_slctBoundsRatio.current.addEventListener("click", formChangeHandler);
 
     globalThis.addEventListener("resize", formChangeHandler);
+  } // END constructor
+
+  // +---------------------------------------------------------------------------------
+  // | Render a label with an info button.
+  // +-------------------------------
+  private __renderInfoButton(labelForId: string, labelText: string, infoText: string) {
+    // <label for="select-target-mesh-resolution">Target Mesh Resolution</label>
+    return (
+      <div class="label-with-info">
+        <label for={labelForId}>{labelText}</label>
+        <span class="infosign tooltip">
+          🛈
+          <span class="tooltiptext tooltip-left">{infoText}</span>
+        </span>
+      </div>
+    );
   }
 
   // +---------------------------------------------------------------------------------
@@ -318,8 +340,6 @@ export class DildoRandomizerDialog {
   private _onResulutionChangeHandler() {
     var _self = this;
     return function (_event: Event) {
-      // _self.curSettings = _self.getCurrentFormSettings();
-      // _self.__handleSilhouetteColorChange();
       _self.curSettings = _self.getCurrentFormSettings();
       if (_self.curSettings.targetMeshResolution != _self.curSettings.optimalBoxWidthPx) {
         _self._displayError("Warning: recommended is using same values for targetMeshResolution and optimalBoxWidthPx.");
@@ -329,17 +349,15 @@ export class DildoRandomizerDialog {
     };
   }
 
+  // +---------------------------------------------------------------------------------
+  // | Handle silhouette form changes.
+  // +-------------------------------
   private __handleSilhouetteColorChange() {
     if (this.curSettings.isSilhouetteBlackColor) {
       this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
     } else {
       this.appContext.config.silhouetteLineColor = this.initialSilhouetteColor;
     }
-    // if ((event.target as HTMLInputElement).checked) {
-    //   _self.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
-    // } else {
-    //   _self.appContext.config.silhouetteLineColor = _self.initialSilhouetteColor;
-    // }
     this.appContext.pb.redraw();
     this.__create2DPreview();
   }
@@ -362,7 +380,6 @@ export class DildoRandomizerDialog {
         action: function () {
           console.log("CLOSE ACTION HIT!");
           _self.appContext.modal.close();
-          // _self.__setRunning(false);
           _self._onCloseHandler()();
         }
       }
@@ -381,17 +398,21 @@ export class DildoRandomizerDialog {
 
   private __setRunning(isRunning) {
     this.isRunning = isRunning;
+    this.isStopRequested = false;
     const elem_progressBar = this.rootElement.querySelector(".progressbar");
     if (!elem_progressBar) {
       console.warn("Cannot update progress bar: element not found.");
       return;
     }
-    this.ref_btnRandomize.current.disabled = isRunning;
+    // this.ref_btnRandomize.current.disabled = isRunning;
     if (isRunning) {
+      this.ref_btnRandomize.current.innerHTML = "Stop";
       elem_progressBar.classList.add("animate");
     } else {
+      this.ref_btnRandomize.current.innerHTML = "Randomize";
       elem_progressBar.classList.remove("animate");
     }
+    this.ref_btnRandomize.current.disabled = false;
   }
 
   // +---------------------------------------------------------------------------------
@@ -539,10 +560,16 @@ export class DildoRandomizerDialog {
     return function (event) {
       event.preventDefault();
       event.stopPropagation();
-      _self.iterationNumber = 0;
-      _self.sequenceID = Math.round(Math.random() * 365535);
-      _self.__setRunning(true);
-      _self._randomizeDildoSettings(_self.sequenceID);
+      if (_self.isRunning) {
+        // _self.__setRunning(false);
+        _self.isStopRequested = true;
+        _self.ref_btnRandomize.current.disabled = true;
+      } else {
+        _self.iterationNumber = 0;
+        _self.sequenceID = Math.round(Math.random() * 365535);
+        _self.__setRunning(true);
+        _self._randomizeDildoSettings(_self.sequenceID);
+      }
     };
   }
 
@@ -561,6 +588,12 @@ export class DildoRandomizerDialog {
     if (this.sequenceID != curSequenceID) {
       // A new sequence has started. Stop this one immediately!
       console.log("A new sequence has started. Stopping.");
+      this.__setRunning(false);
+      return;
+    }
+    if (this.isStopRequested) {
+      // A new sequence has started. Stop this one immediately!
+      console.log("Top was requested.");
       this.__setRunning(false);
       return;
     }
@@ -718,6 +751,9 @@ export class DildoRandomizerDialog {
       new Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.min.x, this.idealExportBounds.min.y)),
       new Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.max.x, this.idealExportBounds.max.y))
     );
+    // Note: the `getImageFromCanvas` method will crop the rectangle if exceeds canvas bounds.
+    //       move one pixel up.
+    // var boundsToCanvasRect_safe = new Bounds(new Vertex(boundsToCanvasRect.min).subY(1.0), new Vertex(boundsToCanvasRect.max));
     const preview2dSubImageResult = getImageFromCanvas(
       this.appContext.pb.canvas as HTMLCanvasElement,
       (this.appContext.pb.draw as drawutils).ctx,
@@ -868,7 +904,9 @@ export class DildoRandomizerDialog {
     // Move to the lower part to make it easier to see the full result below the dialog.
     var offsetX = 0.0;
     var offsetY = this.viewport.max.y - bounds.max.y;
-    bounds = bounds.getMoved({ x: offsetX, y: offsetY });
+    // Note: the `getImageFromCanvas` method will crop the rectangle if exceeds canvas bounds.
+    //       move one pixel up.
+    bounds = bounds.getMoved({ x: offsetX, y: offsetY - 1 });
 
     this.idealExportBounds = bounds;
     this.idealGenerateBounds = bounds.getScaled(0.666);

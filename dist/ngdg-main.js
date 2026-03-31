@@ -1843,7 +1843,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
                 event.preventDefault();
                 event.stopPropagation();
                 // drawRulers=1&drawOutline=1&fillOutline=1&drawResizeHandleLines=1&drawPathBounds=1&outlineSegmentCount=256&shapeSegmentCount=128&&disableLocalStorage=1
-                _self._togglePathVisibility(isVisible);
+                _self._togglePathVisibility(isVisible, true);
             };
         };
         if (!(appContext.pb.canvas instanceof HTMLCanvasElement)) {
@@ -1956,7 +1956,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
                     noreact_1.NoReact.createElement("span", { id: "iterationDisplay" }))),
             noreact_1.NoReact.createElement("div", { class: "flow-container", style: { backgroundColor: "rgba(0,0,0,0.25)" } },
                 noreact_1.NoReact.createElement("div", { class: "progressbar w-100" })),
-            noreact_1.NoReact.createElement("div", { class: "flow-containter flex-flow" },
+            noreact_1.NoReact.createElement("div", { class: "flow-containter flex-flow center-v" },
                 noreact_1.NoReact.createElement("label", { for: "isPutEnabled" }, "Store data"),
                 noreact_1.NoReact.createElement("input", { type: "checkbox", name: "isPutEnabled", id: "isPutEnabled" }),
                 noreact_1.NoReact.createElement("input", { type: "text", id: "putURL", class: "putURL", name: "putURL", value: "http://127.0.0.1:1337/model/put", disabled: true }),
@@ -2017,8 +2017,6 @@ var DildoRandomizerDialog = /** @class */ (function () {
     DildoRandomizerDialog.prototype._onResulutionChangeHandler = function () {
         var _self = this;
         return function (_event) {
-            // _self.curSettings = _self.getCurrentFormSettings();
-            // _self.__handleSilhouetteColorChange();
             _self.curSettings = _self.getCurrentFormSettings();
             if (_self.curSettings.targetMeshResolution != _self.curSettings.optimalBoxWidthPx) {
                 _self._displayError("Warning: recommended is using same values for targetMeshResolution and optimalBoxWidthPx.");
@@ -2028,6 +2026,9 @@ var DildoRandomizerDialog = /** @class */ (function () {
             }
         };
     };
+    // +---------------------------------------------------------------------------------
+    // | Handle silhouette form changes.
+    // +-------------------------------
     DildoRandomizerDialog.prototype.__handleSilhouetteColorChange = function () {
         if (this.curSettings.isSilhouetteBlackColor) {
             this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
@@ -2035,11 +2036,6 @@ var DildoRandomizerDialog = /** @class */ (function () {
         else {
             this.appContext.config.silhouetteLineColor = this.initialSilhouetteColor;
         }
-        // if ((event.target as HTMLInputElement).checked) {
-        //   _self.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
-        // } else {
-        //   _self.appContext.config.silhouetteLineColor = _self.initialSilhouetteColor;
-        // }
         this.appContext.pb.redraw();
         this.__create2DPreview();
     };
@@ -2060,7 +2056,6 @@ var DildoRandomizerDialog = /** @class */ (function () {
                 action: function () {
                     console.log("CLOSE ACTION HIT!");
                     _self.appContext.modal.close();
-                    // _self.__setRunning(false);
                     _self._onCloseHandler()();
                 }
             }
@@ -2369,12 +2364,9 @@ var DildoRandomizerDialog = /** @class */ (function () {
     // +-------------------------------
     DildoRandomizerDialog.prototype.__create2DPreview = function () {
         var boundsToCanvasRect = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.min.x, this.idealExportBounds.min.y)), new plotboilerplate_1.Vertex(this.appContext.pb.revertMousePosition(this.idealExportBounds.max.x, this.idealExportBounds.max.y)));
-        // ISSUE: For some strange reason the exported image is 1 pixel smaller in
-        //        height (only height, not width). This is strange. But for LLM training
-        //        purposes exact 256x256 pixels are required.
-        //        This is a workaround, but somehow this is strange.
-        boundsToCanvasRect.max.y += 1;
-        console.log("boundsToCanvasRect", boundsToCanvasRect);
+        // Note: the `getImageFromCanvas` method will crop the rectangle if exceeds canvas bounds.
+        //       move one pixel up.
+        // var boundsToCanvasRect_safe = new Bounds(new Vertex(boundsToCanvasRect.min).subY(1.0), new Vertex(boundsToCanvasRect.max));
         var preview2dSubImageResult = (0, getImageFromCanvas_1.getImageFromCanvas)(this.appContext.pb.canvas, this.appContext.pb.draw.ctx, boundsToCanvasRect);
         var preview2dImageDataURL = preview2dSubImageResult.canvas.toDataURL("image/png");
         if (this.curSettings.isShowPreviewBevoreStore) {
@@ -2498,7 +2490,9 @@ var DildoRandomizerDialog = /** @class */ (function () {
         // Move to the lower part to make it easier to see the full result below the dialog.
         var offsetX = 0.0;
         var offsetY = this.viewport.max.y - bounds.max.y;
-        bounds = bounds.getMoved({ x: offsetX, y: offsetY });
+        // Note: the `getImageFromCanvas` method will crop the rectangle if exceeds canvas bounds.
+        //       move one pixel up.
+        bounds = bounds.getMoved({ x: offsetX, y: offsetY - 1 });
         this.idealExportBounds = bounds;
         this.idealGenerateBounds = bounds.getScaled(0.666);
     };
