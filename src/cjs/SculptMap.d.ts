@@ -21,6 +21,7 @@ export declare class SculptMap {
         height: number;
         depth: number;
     }): THREE.BufferGeometry;
+    private add2Faces3;
     /**
      * Create a sculpt map from the given dildo geometry.
      *

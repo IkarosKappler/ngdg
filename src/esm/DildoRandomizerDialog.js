@@ -41,6 +41,9 @@ export class DildoRandomizerDialog {
         this.rootElement.classList.add("randomizerForm");
         this.isOpen = false;
         this.isDrawIdealBoundsEnabled = true;
+        const i18n = {
+            targetMeshResolution: "The number of shape segements and outline segments in the target mesh. For LLM training reasons these two should be equal to get a square data image."
+        };
         // The ideal bounds to export the final image data from.
         this.idealExportBounds = new Bounds(new Vertex(), new Vertex());
         // The real bounds _inside_ the export bounds to generate the outline in.
@@ -49,6 +52,7 @@ export class DildoRandomizerDialog {
         this.iterationNumber = 0;
         this.sequenceID = 0;
         this.isRunning = false;
+        this.isStopRequested = false;
         this.curSettings = null; // this.getCurrentFormSettings();
         this.ref_btnRandomize = NoReact.useRef();
         this.ref_btnShowPath = NoReact.useRef();
@@ -118,8 +122,7 @@ export class DildoRandomizerDialog {
                     " ",
                     "px"),
                 NoReact.createElement("div", { class: "grid-w-25" },
-                    NoReact.createElement("label", { for: "select-target-mesh-resolution" }, "Target Mesh Resolution"),
-                    NoReact.createElement("br", null),
+                    this.__renderInfoButton("select-target-mesh-resolution", "Target Mesh Resolution", i18n.targetMeshResolution),
                     NoReact.createElement("select", { id: "select-target-mesh-resolution", ref: this.ref_slctTargetMeshResolution, onChange: this._onResulutionChangeHandler() },
                         NoReact.createElement("option", { value: "256", selected: true }, "256"),
                         NoReact.createElement("option", { value: "512" }, "512"),
@@ -175,6 +178,17 @@ export class DildoRandomizerDialog {
         this.ref_slctOptimalBoxWidthPx.current.addEventListener("click", formChangeHandler);
         this.ref_slctBoundsRatio.current.addEventListener("click", formChangeHandler);
         globalThis.addEventListener("resize", formChangeHandler);
+    } // END constructor
+    // +---------------------------------------------------------------------------------
+    // | Render a label with an info button.
+    // +-------------------------------
+    __renderInfoButton(labelForId, labelText, infoText) {
+        // <label for="select-target-mesh-resolution">Target Mesh Resolution</label>
+        return (NoReact.createElement("div", { class: "label-with-info" },
+            NoReact.createElement("label", { for: labelForId }, labelText),
+            NoReact.createElement("span", { class: "infosign tooltip" },
+                "\uD83D\uDEC8",
+                NoReact.createElement("span", { class: "tooltiptext tooltip-left" }, infoText))));
     }
     // +---------------------------------------------------------------------------------
     // | Handle form changes.
@@ -257,18 +271,22 @@ export class DildoRandomizerDialog {
     }
     __setRunning(isRunning) {
         this.isRunning = isRunning;
+        this.isStopRequested = false;
         const elem_progressBar = this.rootElement.querySelector(".progressbar");
         if (!elem_progressBar) {
             console.warn("Cannot update progress bar: element not found.");
             return;
         }
-        this.ref_btnRandomize.current.disabled = isRunning;
+        // this.ref_btnRandomize.current.disabled = isRunning;
         if (isRunning) {
+            this.ref_btnRandomize.current.innerHTML = "Stop";
             elem_progressBar.classList.add("animate");
         }
         else {
+            this.ref_btnRandomize.current.innerHTML = "Randomize";
             elem_progressBar.classList.remove("animate");
         }
+        this.ref_btnRandomize.current.disabled = false;
     }
     // +---------------------------------------------------------------------------------
     // | When iterating many randomized results: set the current iteration message.
@@ -391,10 +409,17 @@ export class DildoRandomizerDialog {
         return function (event) {
             event.preventDefault();
             event.stopPropagation();
-            _self.iterationNumber = 0;
-            _self.sequenceID = Math.round(Math.random() * 365535);
-            _self.__setRunning(true);
-            _self._randomizeDildoSettings(_self.sequenceID);
+            if (_self.isRunning) {
+                // _self.__setRunning(false);
+                _self.isStopRequested = true;
+                _self.ref_btnRandomize.current.disabled = true;
+            }
+            else {
+                _self.iterationNumber = 0;
+                _self.sequenceID = Math.round(Math.random() * 365535);
+                _self.__setRunning(true);
+                _self._randomizeDildoSettings(_self.sequenceID);
+            }
         };
     }
     // +---------------------------------------------------------------------------------
@@ -412,6 +437,12 @@ export class DildoRandomizerDialog {
         if (this.sequenceID != curSequenceID) {
             // A new sequence has started. Stop this one immediately!
             console.log("A new sequence has started. Stopping.");
+            this.__setRunning(false);
+            return;
+        }
+        if (this.isStopRequested) {
+            // A new sequence has started. Stop this one immediately!
+            console.log("Top was requested.");
             this.__setRunning(false);
             return;
         }

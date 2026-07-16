@@ -88,16 +88,49 @@ export class SculptMap {
       indexMatrix.push(row);
     }
 
-    // Connect?
+    // Connect faces?
     for (var y = 0; y < this.height; y++) {
       for (var x = 0; x < this.width; x++) {
         if (y > 0 && x > 0) {
-          gmetry.faces.push(new Face3(indexMatrix[y][x], indexMatrix[y - 1][x], indexMatrix[y][x - 1]));
+          // var faceA = new Face3(indexMatrix[y][x], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
+          // gmetry.faces.push(faceA);
+          // // face.vertexColors[0] = new THREE.Color(0xff0000); // red
+          // // face.vertexColors[1] = new THREE.Color(0x00ff00); // green
+          // // face.vertexColors[2] = new THREE.Color(0x0000ff); // blue
+          // const colorA1: IColor = this.colorMatrix[y][x];
+          // const colorA2: IColor = this.colorMatrix[y - 1][x];
+          // const colorA3: IColor = this.colorMatrix[y][x - 1];
+          // faceA.vertexColors[0] = new THREE.Color(colorA1.r / 255.0, colorA1.g / 255.0, colorA1.b / 255.0);
+          // faceA.vertexColors[1] = new THREE.Color(colorA2.r / 255.0, colorA2.g / 255.0, colorA2.b / 255.0);
+          // faceA.vertexColors[2] = new THREE.Color(colorA3.r / 255.0, colorA3.g / 255.0, colorA3.b / 255.0);
+          this.add2Faces3(indexMatrix, gmetry, x, y);
+          // this.addFace3(indexMatrix, gmetry, indexMatrix[y - 1][x - 1], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
         }
       }
     }
 
     return gmetry.toBufferGeometry();
+  }
+
+  // private addFace3(indexMatrix: number[][], gmetry: Gmetry, vIndexA: number, vIndexB: number, vIndexC: number): void {
+  private add2Faces3(indexMatrix: number[][], gmetry: Gmetry, x: number, y: number): void {
+    const faceA = new Face3(indexMatrix[y][x], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
+    gmetry.faces.push(faceA);
+    const colorA1: IColor = this.colorMatrix[y][x];
+    const colorA2: IColor = this.colorMatrix[y - 1][x];
+    const colorA3: IColor = this.colorMatrix[y][x - 1];
+    faceA.vertexColors[0] = new THREE.Color(colorA1.r / 255.0, colorA1.g / 255.0, colorA1.b / 255.0);
+    faceA.vertexColors[1] = new THREE.Color(colorA2.r / 255.0, colorA2.g / 255.0, colorA2.b / 255.0);
+    faceA.vertexColors[2] = new THREE.Color(colorA3.r / 255.0, colorA3.g / 255.0, colorA3.b / 255.0);
+
+    const faceB = new Face3(indexMatrix[y - 1][x - 1], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
+    gmetry.faces.push(faceB);
+    const colorB1: IColor = this.colorMatrix[y - 1][x - 1];
+    const colorB2: IColor = this.colorMatrix[y - 1][x];
+    const colorB3: IColor = this.colorMatrix[y][x - 1];
+    faceB.vertexColors[0] = new THREE.Color(colorB1.r / 255.0, colorB1.g / 255.0, colorB1.b / 255.0);
+    faceB.vertexColors[1] = new THREE.Color(colorB2.r / 255.0, colorB2.g / 255.0, colorB2.b / 255.0);
+    faceB.vertexColors[2] = new THREE.Color(colorB3.r / 255.0, colorB3.g / 255.0, colorB3.b / 255.0);
   }
 
   /**

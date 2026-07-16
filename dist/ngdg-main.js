@@ -1856,6 +1856,9 @@ var DildoRandomizerDialog = /** @class */ (function () {
         this.rootElement.classList.add("randomizerForm");
         this.isOpen = false;
         this.isDrawIdealBoundsEnabled = true;
+        var i18n = {
+            targetMeshResolution: "The number of shape segements and outline segments in the target mesh. For LLM training reasons these two should be equal to get a square data image."
+        };
         // The ideal bounds to export the final image data from.
         this.idealExportBounds = new plotboilerplate_1.Bounds(new plotboilerplate_1.Vertex(), new plotboilerplate_1.Vertex());
         // The real bounds _inside_ the export bounds to generate the outline in.
@@ -1864,6 +1867,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
         this.iterationNumber = 0;
         this.sequenceID = 0;
         this.isRunning = false;
+        this.isStopRequested = false;
         this.curSettings = null; // this.getCurrentFormSettings();
         this.ref_btnRandomize = noreact_1.NoReact.useRef();
         this.ref_btnShowPath = noreact_1.NoReact.useRef();
@@ -1933,8 +1937,7 @@ var DildoRandomizerDialog = /** @class */ (function () {
                     " ",
                     "px"),
                 noreact_1.NoReact.createElement("div", { class: "grid-w-25" },
-                    noreact_1.NoReact.createElement("label", { for: "select-target-mesh-resolution" }, "Target Mesh Resolution"),
-                    noreact_1.NoReact.createElement("br", null),
+                    this.__renderInfoButton("select-target-mesh-resolution", "Target Mesh Resolution", i18n.targetMeshResolution),
                     noreact_1.NoReact.createElement("select", { id: "select-target-mesh-resolution", ref: this.ref_slctTargetMeshResolution, onChange: this._onResulutionChangeHandler() },
                         noreact_1.NoReact.createElement("option", { value: "256", selected: true }, "256"),
                         noreact_1.NoReact.createElement("option", { value: "512" }, "512"),
@@ -1990,7 +1993,18 @@ var DildoRandomizerDialog = /** @class */ (function () {
         this.ref_slctOptimalBoxWidthPx.current.addEventListener("click", formChangeHandler);
         this.ref_slctBoundsRatio.current.addEventListener("click", formChangeHandler);
         globalThis.addEventListener("resize", formChangeHandler);
-    }
+    } // END constructor
+    // +---------------------------------------------------------------------------------
+    // | Render a label with an info button.
+    // +-------------------------------
+    DildoRandomizerDialog.prototype.__renderInfoButton = function (labelForId, labelText, infoText) {
+        // <label for="select-target-mesh-resolution">Target Mesh Resolution</label>
+        return (noreact_1.NoReact.createElement("div", { class: "label-with-info" },
+            noreact_1.NoReact.createElement("label", { for: labelForId }, labelText),
+            noreact_1.NoReact.createElement("span", { class: "infosign tooltip" },
+                "\uD83D\uDEC8",
+                noreact_1.NoReact.createElement("span", { class: "tooltiptext tooltip-left" }, infoText))));
+    };
     // +---------------------------------------------------------------------------------
     // | Handle form changes.
     // +-------------------------------
@@ -2072,18 +2086,22 @@ var DildoRandomizerDialog = /** @class */ (function () {
     };
     DildoRandomizerDialog.prototype.__setRunning = function (isRunning) {
         this.isRunning = isRunning;
+        this.isStopRequested = false;
         var elem_progressBar = this.rootElement.querySelector(".progressbar");
         if (!elem_progressBar) {
             console.warn("Cannot update progress bar: element not found.");
             return;
         }
-        this.ref_btnRandomize.current.disabled = isRunning;
+        // this.ref_btnRandomize.current.disabled = isRunning;
         if (isRunning) {
+            this.ref_btnRandomize.current.innerHTML = "Stop";
             elem_progressBar.classList.add("animate");
         }
         else {
+            this.ref_btnRandomize.current.innerHTML = "Randomize";
             elem_progressBar.classList.remove("animate");
         }
+        this.ref_btnRandomize.current.disabled = false;
     };
     // +---------------------------------------------------------------------------------
     // | When iterating many randomized results: set the current iteration message.
@@ -2206,10 +2224,17 @@ var DildoRandomizerDialog = /** @class */ (function () {
         return function (event) {
             event.preventDefault();
             event.stopPropagation();
-            _self.iterationNumber = 0;
-            _self.sequenceID = Math.round(Math.random() * 365535);
-            _self.__setRunning(true);
-            _self._randomizeDildoSettings(_self.sequenceID);
+            if (_self.isRunning) {
+                // _self.__setRunning(false);
+                _self.isStopRequested = true;
+                _self.ref_btnRandomize.current.disabled = true;
+            }
+            else {
+                _self.iterationNumber = 0;
+                _self.sequenceID = Math.round(Math.random() * 365535);
+                _self.__setRunning(true);
+                _self._randomizeDildoSettings(_self.sequenceID);
+            }
         };
     };
     // +---------------------------------------------------------------------------------
@@ -2227,6 +2252,12 @@ var DildoRandomizerDialog = /** @class */ (function () {
         if (this.sequenceID != curSequenceID) {
             // A new sequence has started. Stop this one immediately!
             console.log("A new sequence has started. Stopping.");
+            this.__setRunning(false);
+            return;
+        }
+        if (this.isStopRequested) {
+            // A new sequence has started. Stop this one immediately!
+            console.log("Top was requested.");
             this.__setRunning(false);
             return;
         }
@@ -3889,15 +3920,54 @@ var SculptMap = /** @class */ (function () {
             }
             indexMatrix.push(row);
         }
-        // Connect?
+        // Connect faces?
         for (var y = 0; y < this.height; y++) {
             for (var x = 0; x < this.width; x++) {
                 if (y > 0 && x > 0) {
-                    gmetry.faces.push(new three_geometry_hellfix_1.Face3(indexMatrix[y][x], indexMatrix[y - 1][x], indexMatrix[y][x - 1]));
+                    // var faceA = new Face3(indexMatrix[y][x], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
+                    // gmetry.faces.push(faceA);
+                    // // face.vertexColors[0] = new THREE.Color(0xff0000); // red
+                    // // face.vertexColors[1] = new THREE.Color(0x00ff00); // green
+                    // // face.vertexColors[2] = new THREE.Color(0x0000ff); // blue
+                    // const colorA1: IColor = this.colorMatrix[y][x];
+                    // const colorA2: IColor = this.colorMatrix[y - 1][x];
+                    // const colorA3: IColor = this.colorMatrix[y][x - 1];
+                    // faceA.vertexColors[0] = new THREE.Color(colorA1.r / 255.0, colorA1.g / 255.0, colorA1.b / 255.0);
+                    // faceA.vertexColors[1] = new THREE.Color(colorA2.r / 255.0, colorA2.g / 255.0, colorA2.b / 255.0);
+                    // faceA.vertexColors[2] = new THREE.Color(colorA3.r / 255.0, colorA3.g / 255.0, colorA3.b / 255.0);
+                    this.add2Faces3(indexMatrix, gmetry, x, y);
+                    // this.addFace3(indexMatrix, gmetry, indexMatrix[y - 1][x - 1], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
                 }
             }
         }
         return gmetry.toBufferGeometry();
+    };
+    // private addFace3(indexMatrix: number[][], gmetry: Gmetry, vIndexA: number, vIndexB: number, vIndexC: number): void {
+    SculptMap.prototype.add2Faces3 = function (indexMatrix, gmetry, x, y) {
+        var faceA = new three_geometry_hellfix_1.Face3(indexMatrix[y][x], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
+        // var faceA = new Face3(vIndexA, vIndexB, vIndexC);
+        gmetry.faces.push(faceA);
+        // face.vertexColors[0] = new THREE.Color(0xff0000); // red
+        // face.vertexColors[1] = new THREE.Color(0x00ff00); // green
+        // face.vertexColors[2] = new THREE.Color(0x0000ff); // blue
+        var colorA1 = this.colorMatrix[y][x];
+        var colorA2 = this.colorMatrix[y - 1][x];
+        var colorA3 = this.colorMatrix[y][x - 1];
+        faceA.vertexColors[0] = new THREE.Color(colorA1.r / 255.0, colorA1.g / 255.0, colorA1.b / 255.0);
+        faceA.vertexColors[1] = new THREE.Color(colorA2.r / 255.0, colorA2.g / 255.0, colorA2.b / 255.0);
+        faceA.vertexColors[2] = new THREE.Color(colorA3.r / 255.0, colorA3.g / 255.0, colorA3.b / 255.0);
+        var faceB = new three_geometry_hellfix_1.Face3(indexMatrix[y - 1][x - 1], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
+        // var faceA = new Face3(vIndexA, vIndexB, vIndexC);
+        gmetry.faces.push(faceB);
+        // face.vertexColors[0] = new THREE.Color(0xff0000); // red
+        // face.vertexColors[1] = new THREE.Color(0x00ff00); // green
+        // face.vertexColors[2] = new THREE.Color(0x0000ff); // blue
+        var colorB1 = this.colorMatrix[y - 1][x - 1];
+        var colorB2 = this.colorMatrix[y - 1][x];
+        var colorB3 = this.colorMatrix[y][x - 1];
+        faceB.vertexColors[0] = new THREE.Color(colorB1.r / 255.0, colorB1.g / 255.0, colorB1.b / 255.0);
+        faceB.vertexColors[1] = new THREE.Color(colorB2.r / 255.0, colorB2.g / 255.0, colorB2.b / 255.0);
+        faceB.vertexColors[2] = new THREE.Color(colorB3.r / 255.0, colorB3.g / 255.0, colorB3.b / 255.0);
     };
     /**
      * Create a sculpt map from the given dildo geometry.
