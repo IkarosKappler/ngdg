@@ -6,7 +6,7 @@
 import { ngdg } from "../ngdg";
 export const initConfig = (appContext) => {
     // +---------------------------------------------------------------------------------
-    // | A global config that's attached to the dat.gui control interface.
+    // | A global config that's attached to the lil-gui/dat.gui control interface.
     // +-------------------------------
     var config = {
         outlineSegmentCount: appContext.params.getNumber("outlineSegmentCount", 128),
@@ -123,6 +123,9 @@ export const initConfig = (appContext) => {
         },
         setDefaultPathJSON: function () {
             appContext.setDefaultPathInstance(true);
+        },
+        readme: function () {
+            appContext.showReadme();
         }
     };
     return config;

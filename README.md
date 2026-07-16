@@ -60,6 +60,11 @@ http://localhost:8080/public/index-dev.html?drawRulers=0&drawResizeHandleLines=0
 
 ### Changelog
 
+- 2026-07-16
+  - Fixing a darmode bug in DildoRandomizerDialog (silhouete was black on black background).
+  - Adding `humane.js` and a notification for changing to the "class" version.
+  - Adding `marked` and `demo-meta` for displaying a readme.
+  - Extending the `AppContext` for displaying a readme.
 - 2026-03-13
   - Adding `AppContext` class fot wrapping all 'global' stuff together.
   - Fixing a bug in the 3d canvas resizer (always used full window width).

@@ -63,6 +63,7 @@ export declare class AppContext {
     readonly getBezierJSON: () => string;
     readonly setRandomizedResult: ReturnType<typeof setRandomizedResult>;
     readonly dildoRandomizerDialog: DildoRandomizerDialog;
+    readonly showReadme: () => void;
     baseShape: Polygon;
     outline: BezierPath;
     bezierResizer: BezierResizeHelper;
@@ -82,5 +83,6 @@ export declare class AppContext {
         makeModal: () => Modal;
         axios: Axios;
         saveAs: (Blob: any, filename: any) => void;
+        displayDemoMeta: () => void;
     });
 }

@@ -155,6 +155,7 @@ export class AppContext {
         this.dildoRandomizerDialog = new DildoRandomizerDialog(this, {
             axios: options.axios
         });
+        this.showReadme = options.displayDemoMeta;
         // +---------------------------------------------------------------------------------
         // | Handle file drop.
         // +-------------------------------

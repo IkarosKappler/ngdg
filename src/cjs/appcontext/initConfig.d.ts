@@ -74,4 +74,5 @@ export declare const initConfig: (appContext: AppContext) => {
     acquireOptimalPathView: () => void;
     fitViewToSilhouette: () => void;
     setDefaultPathJSON: () => void;
+    readme: () => void;
 };

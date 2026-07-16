@@ -42,7 +42,10 @@
       axios: axios,
       // Use a custom `saveAs` function.
       // -> Pass through.
-      saveAs: saveAs // (blob:Blob, filename:string) => void;
+      saveAs: saveAs, // (blob:Blob, filename:string) => void;
+      displayDemoMeta: function () {
+        displayDemoMeta();
+      }
     });
 
     // +---------------------------------------------------------------------------------
@@ -201,5 +204,6 @@
     ActionButtons.addFitToViewButton( function() { appContext.acquireOptimalView() } );
     ActionButtons.addShowSculptMapButton(appContext.showSculptmap);
     ActionButtons.addShowRandomizerButton(showDildoRandomizer);
-  });
+    humane.log('Looking for the classic dildo generator?<br><a href="http://classic.dildo-generator.com/">Find it here</a>');
+  }); // END window.addEventListener("load",...)
 })(window);

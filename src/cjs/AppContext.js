@@ -159,6 +159,7 @@ var AppContext = /** @class */ (function () {
         this.dildoRandomizerDialog = new DildoRandomizerDialog_1.DildoRandomizerDialog(this, {
             axios: options.axios
         });
+        this.showReadme = options.displayDemoMeta;
         // +---------------------------------------------------------------------------------
         // | Handle file drop.
         // +-------------------------------

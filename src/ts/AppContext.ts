@@ -85,6 +85,7 @@ export class AppContext {
   readonly getBezierJSON: () => string;
   readonly setRandomizedResult: ReturnType<typeof setRandomizedResult>;
   readonly dildoRandomizerDialog: DildoRandomizerDialog;
+  readonly showReadme: () => void;
 
   // +---------------------------------------------------------------------------------
   // | The base shape that's used for the extrusion geometry part.
@@ -126,6 +127,7 @@ export class AppContext {
     makeModal: () => Modal;
     axios: Axios;
     saveAs: (Blob, filename) => void;
+    displayDemoMeta: () => void;
   }) {
     this.GUP = gup();
     this.params = new Params(this.GUP);
@@ -254,6 +256,7 @@ export class AppContext {
     this.dildoRandomizerDialog = new DildoRandomizerDialog(this, {
       axios: options.axios
     });
+    this.showReadme = options.displayDemoMeta;
 
     // +---------------------------------------------------------------------------------
     // | Handle file drop.

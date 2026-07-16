@@ -172,6 +172,8 @@ function initGUI(appContext) {
   fold7.add(appContext.config, "setDefaultPathJSON").name('Load default Path JSON ...').title('Load the pre-appContext.configured default path JSON.');
   fold7.close();
 
+  gui.add(appContext.config, "readme");
+
   // fold2.open();
   if (!appContext.GUP.openGui) {
     gui.close();

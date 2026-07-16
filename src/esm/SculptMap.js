@@ -90,11 +90,7 @@ export class SculptMap {
     // private addFace3(indexMatrix: number[][], gmetry: Gmetry, vIndexA: number, vIndexB: number, vIndexC: number): void {
     add2Faces3(indexMatrix, gmetry, x, y) {
         const faceA = new Face3(indexMatrix[y][x], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
-        // var faceA = new Face3(vIndexA, vIndexB, vIndexC);
         gmetry.faces.push(faceA);
-        // face.vertexColors[0] = new THREE.Color(0xff0000); // red
-        // face.vertexColors[1] = new THREE.Color(0x00ff00); // green
-        // face.vertexColors[2] = new THREE.Color(0x0000ff); // blue
         const colorA1 = this.colorMatrix[y][x];
         const colorA2 = this.colorMatrix[y - 1][x];
         const colorA3 = this.colorMatrix[y][x - 1];
@@ -102,11 +98,7 @@ export class SculptMap {
         faceA.vertexColors[1] = new THREE.Color(colorA2.r / 255.0, colorA2.g / 255.0, colorA2.b / 255.0);
         faceA.vertexColors[2] = new THREE.Color(colorA3.r / 255.0, colorA3.g / 255.0, colorA3.b / 255.0);
         const faceB = new Face3(indexMatrix[y - 1][x - 1], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
-        // var faceA = new Face3(vIndexA, vIndexB, vIndexC);
         gmetry.faces.push(faceB);
-        // face.vertexColors[0] = new THREE.Color(0xff0000); // red
-        // face.vertexColors[1] = new THREE.Color(0x00ff00); // green
-        // face.vertexColors[2] = new THREE.Color(0x0000ff); // blue
         const colorB1 = this.colorMatrix[y - 1][x - 1];
         const colorB2 = this.colorMatrix[y - 1][x];
         const colorB3 = this.colorMatrix[y][x - 1];

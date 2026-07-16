@@ -10,7 +10,7 @@
 import { NoReact, Ref } from "noreact";
 import { JsxElement } from "typescript";
 
-import { Bounds, Vertex, drawutils } from "plotboilerplate";
+import { Color, Bounds, Vertex, drawutils, getContrastColor } from "plotboilerplate";
 import { AppContext } from "./AppContext";
 import { DildoRandomizer } from "./DildoRandomizer";
 import { getImageFromCanvas } from "./getImageFromCanvas";
@@ -354,7 +354,12 @@ export class DildoRandomizerDialog {
   // +-------------------------------
   private __handleSilhouetteColorChange() {
     if (this.curSettings.isSilhouetteBlackColor) {
-      this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
+      // Attention: use a good contrast color here.
+      // "black" is only meant for light mode (white canvas background)
+      // this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
+      this.appContext.config.silhouetteLineColor = getContrastColor(
+        Color.parse(this.appContext.pb.config.backgroundColor)
+      ).cssRGB();
     } else {
       this.appContext.config.silhouetteLineColor = this.initialSilhouetteColor;
     }

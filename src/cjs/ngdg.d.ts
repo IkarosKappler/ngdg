@@ -107,6 +107,7 @@ export declare const ngdg: {
         acquireOptimalPathView: () => void;
         fitViewToSilhouette: () => void;
         setDefaultPathJSON: () => void;
+        readme: () => void;
     };
     initStats: () => {
         mouseX: number;

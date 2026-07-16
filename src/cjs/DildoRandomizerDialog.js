@@ -233,7 +233,10 @@ var DildoRandomizerDialog = /** @class */ (function () {
     // +-------------------------------
     DildoRandomizerDialog.prototype.__handleSilhouetteColorChange = function () {
         if (this.curSettings.isSilhouetteBlackColor) {
-            this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
+            // Attention: use a good contrast color here.
+            // "black" is only meant for light mode (white canvas background)
+            // this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
+            this.appContext.config.silhouetteLineColor = (0, plotboilerplate_1.getContrastColor)(plotboilerplate_1.Color.parse(this.appContext.pb.config.backgroundColor)).cssRGB();
         }
         else {
             this.appContext.config.silhouetteLineColor = this.initialSilhouetteColor;

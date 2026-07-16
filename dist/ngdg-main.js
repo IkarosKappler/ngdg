@@ -169,6 +169,7 @@ var AppContext = /** @class */ (function () {
         this.dildoRandomizerDialog = new DildoRandomizerDialog_1.DildoRandomizerDialog(this, {
             axios: options.axios
         });
+        this.showReadme = options.displayDemoMeta;
         // +---------------------------------------------------------------------------------
         // | Handle file drop.
         // +-------------------------------
@@ -2045,7 +2046,10 @@ var DildoRandomizerDialog = /** @class */ (function () {
     // +-------------------------------
     DildoRandomizerDialog.prototype.__handleSilhouetteColorChange = function () {
         if (this.curSettings.isSilhouetteBlackColor) {
-            this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
+            // Attention: use a good contrast color here.
+            // "black" is only meant for light mode (white canvas background)
+            // this.appContext.config.silhouetteLineColor = "rgb(0,0,0)";
+            this.appContext.config.silhouetteLineColor = (0, plotboilerplate_1.getContrastColor)(plotboilerplate_1.Color.parse(this.appContext.pb.config.backgroundColor)).cssRGB();
         }
         else {
             this.appContext.config.silhouetteLineColor = this.initialSilhouetteColor;
@@ -3945,11 +3949,7 @@ var SculptMap = /** @class */ (function () {
     // private addFace3(indexMatrix: number[][], gmetry: Gmetry, vIndexA: number, vIndexB: number, vIndexC: number): void {
     SculptMap.prototype.add2Faces3 = function (indexMatrix, gmetry, x, y) {
         var faceA = new three_geometry_hellfix_1.Face3(indexMatrix[y][x], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
-        // var faceA = new Face3(vIndexA, vIndexB, vIndexC);
         gmetry.faces.push(faceA);
-        // face.vertexColors[0] = new THREE.Color(0xff0000); // red
-        // face.vertexColors[1] = new THREE.Color(0x00ff00); // green
-        // face.vertexColors[2] = new THREE.Color(0x0000ff); // blue
         var colorA1 = this.colorMatrix[y][x];
         var colorA2 = this.colorMatrix[y - 1][x];
         var colorA3 = this.colorMatrix[y][x - 1];
@@ -3957,11 +3957,7 @@ var SculptMap = /** @class */ (function () {
         faceA.vertexColors[1] = new THREE.Color(colorA2.r / 255.0, colorA2.g / 255.0, colorA2.b / 255.0);
         faceA.vertexColors[2] = new THREE.Color(colorA3.r / 255.0, colorA3.g / 255.0, colorA3.b / 255.0);
         var faceB = new three_geometry_hellfix_1.Face3(indexMatrix[y - 1][x - 1], indexMatrix[y - 1][x], indexMatrix[y][x - 1]);
-        // var faceA = new Face3(vIndexA, vIndexB, vIndexC);
         gmetry.faces.push(faceB);
-        // face.vertexColors[0] = new THREE.Color(0xff0000); // red
-        // face.vertexColors[1] = new THREE.Color(0x00ff00); // green
-        // face.vertexColors[2] = new THREE.Color(0x0000ff); // blue
         var colorB1 = this.colorMatrix[y - 1][x - 1];
         var colorB2 = this.colorMatrix[y - 1][x];
         var colorB3 = this.colorMatrix[y][x - 1];
@@ -4478,7 +4474,7 @@ exports.initConfig = void 0;
 var ngdg_1 = __webpack_require__(/*! ../ngdg */ "./src/cjs/ngdg.js");
 var initConfig = function (appContext) {
     // +---------------------------------------------------------------------------------
-    // | A global config that's attached to the dat.gui control interface.
+    // | A global config that's attached to the lil-gui/dat.gui control interface.
     // +-------------------------------
     var config = {
         outlineSegmentCount: appContext.params.getNumber("outlineSegmentCount", 128),
@@ -4595,6 +4591,9 @@ var initConfig = function (appContext) {
         },
         setDefaultPathJSON: function () {
             appContext.setDefaultPathInstance(true);
+        },
+        readme: function () {
+            appContext.showReadme();
         }
     };
     return config;
